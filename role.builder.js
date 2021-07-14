@@ -1,16 +1,25 @@
 var roleHarvester = require('role.harvester');
+require('creep.moveRoom');
 var roleBuilder = {
     name: 'builder',
     BodyParts: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
-
+    memory: {},
     /** @param {Creep} creep **/
     run: function(creep) {
         if(!creep.memory.currentSource) {
             creep.memory.currentSource = 0;
         }
         // Lost creeps return home
-        if(!creep.room.controller.my) {
-            creep.moveTo(Game.spawns['Spawn1'])
+        if(creep.room.name != creep.memory.baseRoomName) {
+            const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
+            if(route.length > 0) {
+                creep.say('Headin oot');
+                const exit = creep.pos.findClosestByRange(route[0].exit);
+                creep.moveTo(exit, {visualizePathStyle: {stroke: '#ffffff'}} );
+            }
+            else {
+                creep.say('No route found');
+            }
             return;
         }
         
@@ -22,7 +31,7 @@ var roleBuilder = {
             creep.memory.building = true;
             creep.say('🚧 build');
         }
-
+        
         if(creep.memory.building) {
             // var targets = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
             // if (targets.length > 0) {
@@ -57,7 +66,7 @@ var roleBuilder = {
                     return (structure.structureType == STRUCTURE_STORAGE && structure.store[RESOURCE_ENERGY] > 200);
                 }
             });
-            if(targets) {
+            if(targets.length) {
                 if(creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
                     creep.moveTo(targets[0],  {visualizePathStyle: {stroke: '#ffaa00'}})
                 }
