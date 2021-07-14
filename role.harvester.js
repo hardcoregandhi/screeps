@@ -1,4 +1,5 @@
 var roleHarvester = {
+    name: 'harvester',
 
     /** @param {Creep} creep **/
     run: function(creep, focusHealing) {

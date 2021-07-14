@@ -18,63 +18,18 @@ BaseBodyParts = [WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE]
 BaseBodyPartsCost = _.sum(BaseBodyParts, b => BODYPART_COST[b]);
 focusHealing = false
 
-function spawnHarvester() {
-    if(Game.spawns['Spawn1'].room.energyAvailable >= BaseBodyPartsCost) {
-        var newName = 'Harvester' + '_' + getRandomInt();
-        console.log('Spawning new harvester: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep(BaseBodyParts, newName, {memory: {role: 'harvester', currentSource: '0'}});
+function spawnCreep(_role) {
+    if(Game.spawns['Spawn1'].room.energyAvailable >= _.sum(_role.BodyParts, b => BODYPART_COST[b])) {
+        var newName = _.capitalize(_role.name) + '_' + getRandomInt();
+        console.log('Spawning new '+ _role.name + ' : ' + newName);
+        return Game.spawns['Spawn1'].spawnCreep(_role.BodyParts, newName, Object.assign({memory: {role: _role.name, currentSource: '0'}}, _role.memory));
     }
     else {
-        new RoomVisual().text('Next Spawn: Harvester', 1, 32, {align: 'left'}); 
-        new RoomVisual().text('Cost: ' + _.sum(BaseBodyParts, b => BODYPART_COST[b]), 1, 33, {align: 'left'}); 
+        new RoomVisual().text('Next Spawn: ' + _.capitalize(_role.name), 1, 32, {align: 'left'}); 
+        new RoomVisual().text('Cost: ' + _.sum(_role.BodyParts, b => BODYPART_COST[b]), 1, 33, {align: 'left'}); 
     }
 }
-function spawnBuilder() {
-    if(Game.spawns['Spawn1'].room.energyAvailable >= getBodyCost(roleBuilder.BodyParts)) {
-        var newName = 'Builder' + '_' + getRandomInt();
-        console.log('Spawning new Builder: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep(roleBuilder.BodyParts, newName, {memory: {role: 'builder', currentSource: '0'}});
-    }
-    else {
-        new RoomVisual().text('Next Spawn: Builder', 1, 32, {align: 'left'}); 
-        new RoomVisual().text('Cost: ' + getBodyCost(roleBuilder.BodyParts), 1, 33, {align: 'left'}); 
-    }
-}
-function spawnUpgrader() {
-    if(Game.spawns['Spawn1'].room.energyAvailable >= getBodyCost(roleUpgrader.BodyParts)) {
-        var newName = 'Upgrader' + '_' + getRandomInt();
-        console.log('Spawning new Upgrader: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep(roleUpgrader.BodyParts, newName, {memory: {role: 'upgrader', currentSource: '0'}});
-    }
-    else {
-        new RoomVisual().text('Next Spawn: Upgrader', 1, 32, {align: 'left'}); 
-        new RoomVisual().text('Cost: ' + getBodyCost(roleUpgrader.BodyParts), 1, 33, {align: 'left'}); 
-    }
-}
-function spawnClaimer() {
-    if(Game.spawns['Spawn1'].room.energyAvailable >= _.sum(roleClaimer.BodyParts, b => BODYPART_COST[b])) {
-        var newName = 'Claimer' + '_' + getRandomInt();
-        console.log('Spawning new Claimer: ' + newName);
-        if(Game.spawns['Spawn1'].spawnCreep(roleClaimer.BodyParts, newName, {memory: {role: 'claimer', HomeSpawnName: Game.spawns['Spawn1'].room.name, direction: 3}})) {
-            Memory.createClaimer = false;
-        }
-    }
-    else {
-        new RoomVisual().text('Next Spawn: Claimer', 1, 32, {align: 'left'});
-        new RoomVisual().text('Cost: ' + _.sum(roleClaimer.BodyParts, b => BODYPART_COST[b]), 1, 33, {align: 'left'}); 
-    }
-}
-function spawnMover() {
-    if(Game.spawns['Spawn1'].room.energyAvailable >= _.sum(roleMover.BodyParts, b => BODYPART_COST[b])) {
-        var newName = 'Mover' + '_' + getRandomInt();
-        console.log('Spawning new Mover: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep(roleMover.BodyParts, newName, {memory: {role: 'mover'}})
-    }
-    else {
-        new RoomVisual().text('Next Spawn: Mover', 1, 32, {align: 'left'});
-        new RoomVisual().text('Cost: ' + _.sum(roleMover.BodyParts, b => BODYPART_COST[b]), 1, 33, {align: 'left'}); 
-    }
-}
+
 var spawn = Game.spawns['Spawn1']
 
 module.exports.loop = function () {
@@ -135,33 +90,35 @@ module.exports.loop = function () {
     }
     
     if (Memory.createClaimer) {
-        spawnClaimer();
+        if(spawnCreep(roleClaimer) == 0) {
+            Memory.createClaimer = false;
+        }
     }
     else if (harvesters.length < 1) {
         oldBodyParts = BaseBodyParts;
         BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
         BaseBodyPartsCost = _.sum(BaseBodyParts, b => BODYPART_COST[b]);
-        spawnHarvester();
+        spawnCreep(roleHarvester);
         BaseBodyParts = oldBodyParts;
     }
     else if (movers.length < 1) {
-        spawnMover();
+        spawnCreep(roleMover);
     }
     else if(harvesters.length < 2) {
-        spawnHarvester();
+        spawnCreep(roleHarvester);
     }
     else if (upgraders.length < 2) {
-        spawnUpgrader();
+        spawnCreep(roleUpgrader);
     }
     else if(builders.length < spawn.room.find(FIND_CONSTRUCTION_SITES).length &&
             builders.length < 1) {
-        spawnBuilder();
+        spawnCreep(roleBuilder);
     }
     else if (movers.length < 2) {
-        spawnMover();
+        spawnCreep(roleMover);
     }
     else if(upgraders.length < 10) {
-        spawnUpgrader();
+        spawnCreep(roleUpgrader);
     }
 
     

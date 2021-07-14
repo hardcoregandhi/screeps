@@ -1,5 +1,6 @@
 var roleUpgrader = {
-    
+    name: 'upgrader',
+
     BodyParts: [WORK, CARRY, WORK, CARRY, WORK, CARRY, WORK, MOVE],
 
     /** @param {Creep} creep **/

@@ -1,6 +1,6 @@
 var roleHarvester = require('role.harvester');
 var roleBuilder = {
-    
+    name: 'builder',
     BodyParts: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
 
     /** @param {Creep} creep **/
