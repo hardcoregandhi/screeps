@@ -18,11 +18,12 @@ BaseBodyParts = [WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE]
 BaseBodyPartsCost = _.sum(BaseBodyParts, b => BODYPART_COST[b]);
 focusHealing = false
 
-function spawnCreep(_role) {
-    if (Game.spawns['Spawn1'].room.energyAvailable >= getBodyCost(_role.BodyParts)) {
+spawnCreep = function (_role) {
+    if (Game.spawns['Spawn1'].room.energyAvailable >= getBodyCost(_role.BodyParts) && !Game.spawns['Spawn1'].spawning) {
         var newName = _.capitalize(_role.name) + '_' + getRandomInt();
         console.log('Spawning new ' + _role.name + ' : ' + newName);
-        return Game.spawns['Spawn1'].spawnCreep(_role.BodyParts, newName,
+        
+        ret = Game.spawns['Spawn1'].spawnCreep(_role.BodyParts, newName,
             Object.assign(
                 {
                     memory: {
@@ -32,6 +33,9 @@ function spawnCreep(_role) {
                     }
                 },
                 _role.memory));
+        if (ret != 0) {
+            // console.log("Spawn failed: ", ret)
+        }
     }
     else {
         new RoomVisual().text('Next Spawn: ' + _.capitalize(_role.name), 1, 32, { align: 'left' });
@@ -73,7 +77,8 @@ module.exports.loop = function () {
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     var movers = _.filter(Game.creeps, (creep) => creep.memory.role == 'mover');
-
+    var constructionSites; _.sum(Game.rooms, room => { constructionSites =+ room.find(FIND_CONSTRUCTION_SITES).length });
+    
     var totalExcessEnergy = _.sum(
         spawn.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -88,7 +93,7 @@ module.exports.loop = function () {
     new RoomVisual().text('⛏️ Harvesters: ' + harvesters.length, 1, 27, { align: 'left' });
     new RoomVisual().text('⛏️ Movers: ' + movers.length, 1, 28, { align: 'left' });
     new RoomVisual().text('👷 Builders: ' + builders.length, 1, 29, { align: 'left' });
-    new RoomVisual().text('🚧 Construction sites: ' + spawn.room.find(FIND_CONSTRUCTION_SITES).length, 1, 30, { align: 'left' });
+    new RoomVisual().text('🚧 Construction sites: ' + constructionSites, 1, 30, { align: 'left' });
     new RoomVisual().text('🔺Upgraders: ' + upgraders.length, 1, 31, { align: 'left' });
 
     // Renew or Build
