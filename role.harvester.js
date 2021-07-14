@@ -1,6 +1,9 @@
 var roleHarvester = {
     name: 'harvester',
-
+    
+    BodyParts: [WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE],
+    
+    memory: '',
     /** @param {Creep} creep **/
     run: function(creep, focusHealing) {
         var sources = creep.room.find(FIND_SOURCES);
