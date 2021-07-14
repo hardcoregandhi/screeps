@@ -19,14 +19,14 @@ BaseBodyPartsCost = _.sum(BaseBodyParts, b => BODYPART_COST[b]);
 focusHealing = false
 
 function spawnCreep(_role) {
-    if(Game.spawns['Spawn1'].room.energyAvailable >= _.sum(_role.BodyParts, b => BODYPART_COST[b])) {
+    if(Game.spawns['Spawn1'].room.energyAvailable >= getBodyCost(_role.BodyParts)) {
         var newName = _.capitalize(_role.name) + '_' + getRandomInt();
         console.log('Spawning new '+ _role.name + ' : ' + newName);
         return Game.spawns['Spawn1'].spawnCreep(_role.BodyParts, newName, Object.assign({memory: {role: _role.name, currentSource: '0'}}, _role.memory));
     }
     else {
         new RoomVisual().text('Next Spawn: ' + _.capitalize(_role.name), 1, 32, {align: 'left'}); 
-        new RoomVisual().text('Cost: ' + _.sum(_role.BodyParts, b => BODYPART_COST[b]), 1, 33, {align: 'left'}); 
+        new RoomVisual().text('Cost: ' + getBodyCost(_role.BodyParts), 1, 33, {align: 'left'}); 
     }
 }
 
