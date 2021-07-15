@@ -145,6 +145,9 @@ module.exports.loop = function () {
     else if (upgraders.length < 15) {
         spawnCreep(roleUpgrader, null, { baseRoomName: "W15S21" },);
     }
+    else if (constructionSites == 0) {
+        spawnCreep(roleUpgrader, null, { baseRoomName: "W15S21" },);
+    }
 
 
 
