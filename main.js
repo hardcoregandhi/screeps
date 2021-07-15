@@ -18,9 +18,9 @@ BaseBodyParts = [WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE]
 BaseBodyPartsCost = _.sum(BaseBodyParts, b => BODYPART_COST[b]);
 focusHealing = false
 
-spawnCreep = function (_role, customBodyParts = []) {
+spawnCreep = function (_role, customBodyParts = null, customMemory = null) {
 
-    if (customBodyParts.length > 0) {
+    if (customBodyParts) {
         console.log("customActivated")
         oldBodyParts = _role.BodyParts
         _role.BodyParts = customBodyParts
@@ -31,7 +31,6 @@ spawnCreep = function (_role, customBodyParts = []) {
 
         ret = Game.spawns['Spawn1'].spawnCreep(_role.BodyParts, newName,
             _.merge(
-                _role.memory,
                 {
                     memory: {
                         role: _role.name,
@@ -39,6 +38,8 @@ spawnCreep = function (_role, customBodyParts = []) {
                         baseRoomName: Game.spawns['Spawn1'].room.name,
                     }
                 },
+                _role.memory,
+                customMemory
             ));
         if (ret != 0) {
             console.log("Spawn failed: ", ret)
@@ -49,7 +50,7 @@ spawnCreep = function (_role, customBodyParts = []) {
         new RoomVisual().text('Cost: ' + getBodyCost(_role.BodyParts), 1, 33, { align: 'left' });
     }
 
-    if (customBodyParts.length > 0) {
+    if (customBodyParts) {
         console.log("customDeactivated")
         _role.BodyParts = oldBodyParts
     }
@@ -145,6 +146,9 @@ module.exports.loop = function () {
     }
     else if (upgraders.length < 10) {
         spawnCreep(roleUpgrader);
+    }
+    else if (upgraders.length < 15) {
+        spawnCreep(roleUpgrader, null, { baseRoomName: "W15S21" },);
     }
 
 
