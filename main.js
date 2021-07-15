@@ -18,13 +18,20 @@ BaseBodyParts = [WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE]
 BaseBodyPartsCost = _.sum(BaseBodyParts, b => BODYPART_COST[b]);
 focusHealing = false
 
-spawnCreep = function (_role) {
+spawnCreep = function (_role, customBodyParts = []) {
+
+    if (customBodyParts.length > 0) {
+        console.log("customActivated")
+        oldBodyParts = _role.BodyParts
+        _role.BodyParts = customBodyParts
+    }
     if (Game.spawns['Spawn1'].room.energyAvailable >= getBodyCost(_role.BodyParts) && !Game.spawns['Spawn1'].spawning) {
         var newName = _.capitalize(_role.name) + '_' + getRandomInt();
         console.log('Spawning new ' + _role.name + ' : ' + newName);
-        
+
         ret = Game.spawns['Spawn1'].spawnCreep(_role.BodyParts, newName,
-            Object.assign(
+            _.merge(
+                _role.memory,
                 {
                     memory: {
                         role: _role.name,
@@ -32,14 +39,19 @@ spawnCreep = function (_role) {
                         baseRoomName: Game.spawns['Spawn1'].room.name,
                     }
                 },
-                _role.memory));
+            ));
         if (ret != 0) {
-            // console.log("Spawn failed: ", ret)
+            console.log("Spawn failed: ", ret)
         }
     }
     else {
         new RoomVisual().text('Next Spawn: ' + _.capitalize(_role.name), 1, 32, { align: 'left' });
         new RoomVisual().text('Cost: ' + getBodyCost(_role.BodyParts), 1, 33, { align: 'left' });
+    }
+
+    if (customBodyParts.length > 0) {
+        console.log("customDeactivated")
+        _role.BodyParts = oldBodyParts
     }
 }
 
@@ -77,8 +89,8 @@ module.exports.loop = function () {
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     var movers = _.filter(Game.creeps, (creep) => creep.memory.role == 'mover');
-    var constructionSites; _.sum(Game.rooms, room => { constructionSites =+ room.find(FIND_CONSTRUCTION_SITES).length });
-    
+    var constructionSites; _.sum(Game.rooms, room => { constructionSites = + room.find(FIND_CONSTRUCTION_SITES).length });
+
     var totalExcessEnergy = _.sum(
         spawn.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -124,8 +136,8 @@ module.exports.loop = function () {
     else if (upgraders.length < 2) {
         spawnCreep(roleUpgrader);
     }
-    else if (builders.length < spawn.room.find(FIND_CONSTRUCTION_SITES).length &&
-        builders.length < 1) {
+    else if (builders.length < constructionSites &&
+        builders.length < 6) {
         spawnCreep(roleBuilder);
     }
     else if (movers.length < 2) {
@@ -137,12 +149,12 @@ module.exports.loop = function () {
 
 
 
-    if (Game.spawns['Spawn1'].spawning) {
-        var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
-        Game.spawns['Spawn1'].room.visual.text(
+    if (spawn.spawning) {
+        var spawningCreep = Game.creeps[spawn.spawning.name];
+        spawn.room.visual.text(
             '🛠️' + spawningCreep.memory.role,
-            Game.spawns['Spawn1'].pos.x + 1,
-            Game.spawns['Spawn1'].pos.y,
+            spawn.pos.x + 1,
+            spawn.pos.y,
             { align: 'left', opacity: 0.8 });
     }
 
@@ -174,46 +186,51 @@ module.exports.loop = function () {
 
     // THIS IS ALL USING THE LAST CREEP IN GAME.CREEPS, AND IS THEREFORE NOT RIGHT
     // Auto roads
-    if (creep && creep.room.controller.my) {
-        var sources = creep.room.find(FIND_SOURCES);
-        for (var s in sources) {
-            // Sources to controller
-            for (var pathStep of sources[s].pos.findPathTo(Game.spawns['Spawn1'].room.controller.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
-                if (new Room.Terrain(creep.room.name).get(pathStep.x, pathStep.y) == TERRAIN_MASK_SWAMP) {
-                    // creep.room.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
-                    creep.room.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
-                }
-            }
-            // Sources to spawns
-            for (var pathStep of sources[s].pos.findPathTo(spawn.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
-                if (new Room.Terrain(creep.room.name).get(pathStep.x, pathStep.y) == TERRAIN_MASK_SWAMP &&
-                    creep.room.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0
-                ) {
-                    // creep.room.visual.circle(pathStep, {fill: 'red'});
-                    creep.room.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
-                }
-            }
-            // Source surroundings
-            for (var i = sources[s].pos.x - 2; i <= sources[s].pos.x + 2; i++) {
-                for (var j = sources[s].pos.y - 2; j <= sources[s].pos.y + 2; j++) {
-                    var surr = new RoomPosition(i, j, spawn.room.name)
-                    if (new Room.Terrain(creep.room.name).get(surr.x, surr.y) == TERRAIN_MASK_SWAMP) {
-                        // creep.room.visual.circle(surr, {fill: 'red'});
-                        creep.room.createConstructionSite(surr.x, surr.y, STRUCTURE_ROAD);
+    for (var room in Game.rooms) {
+        room = Game.rooms[room]
+        if (room.controller.my) {
+            var sources = room.find(FIND_SOURCES);
+            for (var s in sources) {
+                // Sources to controller
+                for (var pathStep of sources[s].pos.findPathTo(room.controller.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
+                    // room.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
+                    if (new Room.Terrain(room.name).get(pathStep.x, pathStep.y) == TERRAIN_MASK_SWAMP) {
+                        // room.visual.circle(pathStep, {color: 'green', lineStyle: 'dashed'});
+                        room.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
                     }
                 }
-            }
-            // Source to towers
-            for (var t of towers) {
-                for (var pathStep of sources[s].pos.findPathTo(t.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
-                    if (new Room.Terrain(creep.room.name).get(pathStep.x, pathStep.y) != TERRAIN_MASK_SWAMP &&
-                        creep.room.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0) {
-                        // creep.room.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
-                        creep.room.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
+                // Sources to spawns
+                for (var pathStep of sources[s].pos.findPathTo(spawn.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
+                    // room.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
+                    if (new Room.Terrain(room.name).get(pathStep.x, pathStep.y) == TERRAIN_MASK_SWAMP &&
+                        room.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0
+                    ) {
+                        // room.visual.circle(pathStep, {fill: 'green'});
+                        room.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
                     }
                 }
-            }
+                // Source surroundings
+                for (var i = sources[s].pos.x - 2; i <= sources[s].pos.x + 2; i++) {
+                    for (var j = sources[s].pos.y - 2; j <= sources[s].pos.y + 2; j++) {
+                        var surr = new RoomPosition(i, j, room.name)
+                        if (new Room.Terrain(room.name).get(surr.x, surr.y) == TERRAIN_MASK_SWAMP) {
+                            // room.visual.circle(surr, {fill: 'green'});
+                            room.createConstructionSite(surr.x, surr.y, STRUCTURE_ROAD);
+                        }
+                    }
+                }
+                // Source to towers
+                for (var t of towers) {
+                    for (var pathStep of sources[s].pos.findPathTo(t.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
+                        if (new Room.Terrain(room.name).get(pathStep.x, pathStep.y) != TERRAIN_MASK_SWAMP &&
+                            room.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0) {
+                            // room.visual.circle(pathStep, {color: 'green', lineStyle: 'dashed'});
+                            room.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
+                        }
+                    }
+                }
 
+            }
         }
     }
 

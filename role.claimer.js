@@ -1,6 +1,6 @@
 var roleClaimer = {
     name: 'claimer',
-    memory: {HomeSpawnName: Game.spawns['Spawn1'].room.name, direction: 3},
+    memory: { baseRoomName: Game.spawns['Spawn1'].room.name, direction: 3 },
     BodyParts: [CLAIM, MOVE],
 
     // 1 - UP
@@ -9,29 +9,30 @@ var roleClaimer = {
     // 7 - LEFT
 
     /** @param {Creep} creep **/
-    run: function(creep) {
+    run: function (creep) {
+        creep.memory.direction = 3
         var sources = creep.room.find(FIND_SOURCES);
-        if(creep.memory.direction == -1) {
+        if (creep.memory.direction == -1) {
             console.log(creep.name + " is awaiting direction")
         }
         else {
             // console.log(creep.memory.)
-            creep.memory.DestSpawnName = Game.map.describeExits(creep.memory.HomeSpawnName)[creep.memory.direction]
-            
-            if(creep.room.name != creep.memory.DestSpawnName) {
+            creep.memory.DestSpawnName = Game.map.describeExits(creep.memory.baseRoomName)[creep.memory.direction]
+
+            if (creep.room.name != creep.memory.DestSpawnName) {
                 const route = Game.map.findRoute(creep.room, creep.memory.DestSpawnName);
-                if(route.length > 0) {
+                if (route.length > 0) {
                     creep.say('Headin oot');
                     const exit = creep.pos.findClosestByRange(route[0].exit);
-                    creep.moveTo(exit, {visualizePathStyle: {stroke: '#ffffff'}} );
+                    creep.moveTo(exit, { visualizePathStyle: { stroke: '#ffffff' } });
                 }
                 else {
                     creep.say('No route found');
                 }
             }
-            else if(creep.claimController(creep.room.controller) != OK) {
+            else if (creep.claimController(creep.room.controller) != OK) {
                 console.log(creep.claimController(creep.room.controller));
-                creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
+                creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#ffffff' } });
             }
         }
     }
