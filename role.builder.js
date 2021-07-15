@@ -1,5 +1,4 @@
 var roleHarvester = require('role.harvester');
-require('creep.moveRoom');
 var roleBuilder = {
     name: 'builder',
     BodyParts: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
