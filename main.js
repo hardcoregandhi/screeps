@@ -231,10 +231,10 @@ module.exports.loop = function () {
                         }
                     }
                 }
-
             }
         }
     }
+    room.createConstructionSite(Game.flags.T1.pos, STRUCTURE_TOWER)
 
 }
 
