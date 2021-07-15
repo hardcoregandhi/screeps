@@ -14,8 +14,6 @@ function getBodyCost(bodyParts) {
     return _.sum(bodyParts, b => BODYPART_COST[b]);
 }
 
-BaseBodyParts = [WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE]
-BaseBodyPartsCost = _.sum(BaseBodyParts, b => BODYPART_COST[b]);
 focusHealing = false
 
 spawnCreep = function (_role, customBodyParts = null, customMemory = null) {
@@ -122,11 +120,8 @@ module.exports.loop = function () {
         }
     }
     else if (harvesters.length < 1) {
-        oldBodyParts = BaseBodyParts;
         BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
-        BaseBodyPartsCost = _.sum(BaseBodyParts, b => BODYPART_COST[b]);
-        spawnCreep(roleHarvester);
-        BaseBodyParts = oldBodyParts;
+        spawnCreep(roleHarvester, BaseBodyParts);
     }
     else if (movers.length < 1) {
         spawnCreep(roleMover);
