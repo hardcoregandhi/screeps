@@ -90,9 +90,6 @@ global.roleBuilder = {
                 }
             }
         }
-        if (creep.room.find(FIND_CONSTRUCTION_SITES).length == 0) {
-            roleHarvester.run(creep, focusHealing);
-        }
     }
 };
 
