@@ -61,6 +61,11 @@ global.roleBuilder = {
                     creep.moveTo(closest, { visualizePathStyle: { stroke: '#ffffff' } });
                 }
             }
+            else
+            {
+                // console.log("Defauling to upgrader")
+                roleUpgrader.run(creep)
+            }
         }
         else {
             var targets = creep.room.find(FIND_STRUCTURES, {
