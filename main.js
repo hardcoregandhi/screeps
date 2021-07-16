@@ -109,11 +109,11 @@ module.exports.loop = function () {
 
     // Renew or Build
     for (var s in Game.spawns)
-    for (var i in Game.creeps) {
+        for (var i in Game.creeps) {
             if (Game.spawns[s].renewCreep(Game.creeps[i])) {
-            Game.creeps[i].cancelOrder('move');
+                Game.creeps[i].cancelOrder('move');
+            }
         }
-    }
 
     if (Memory.createClaimer) {
         if (spawnCreep(roleClaimer) == 0) {
@@ -203,7 +203,12 @@ module.exports.loop = function () {
                     }
                 }
                 // Sources to spawns
-                for (var pathStep of sources[s].pos.findPathTo(spawn.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
+                room_spawner = room.find(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return (structure.structureType == STRUCTURE_SPAWN);
+                        }
+                    });
+                for (var pathStep of sources[s].pos.findPathTo(room_spawner, { "ignoreCreeps": true, "ignoreRoads": true })) {
                     // room.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
                     if (new Room.Terrain(room.name).get(pathStep.x, pathStep.y) == TERRAIN_MASK_SWAMP &&
                         room.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0
@@ -222,8 +227,14 @@ module.exports.loop = function () {
                         }
                     }
                 }
+                // Sources to spawns
+                room_towers = room.find(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return (structure.structureType == STRUCTURE_TOWER);
+                        }
+                    });
                 // Source to towers
-                for (var t of towers) {
+                for (var t of room_towers) {
                     for (var pathStep of sources[s].pos.findPathTo(t.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
                         if (new Room.Terrain(room.name).get(pathStep.x, pathStep.y) != TERRAIN_MASK_SWAMP &&
                             room.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0) {

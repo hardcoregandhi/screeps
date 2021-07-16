@@ -15,7 +15,7 @@ var roleTower = {
                 )
             )
         });
-        
+
         if (damagedStructures.length > 10) {
             rangeBased = true
             percentageBased = false
@@ -24,7 +24,7 @@ var roleTower = {
             rangeBased = false
             percentageBased = true
         }
-        
+
         if (percentageBased) {
             damagedStructures.sort((a, b) => Math.round((a.hits / a.hitsMax) * 100) - Math.round((b.hits / b.hitsMax) * 100));
             mostDamagedStructure = damagedStructures[0]

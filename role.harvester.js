@@ -1,6 +1,6 @@
 global.roleHarvester = {
     name: 'harvester',
-    roleMemory: { memory: {}},
+    roleMemory: { memory: {} },
 
     BodyParts: [WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE],
 
@@ -30,7 +30,9 @@ global.roleHarvester = {
         }
 
 
+
         if (creep.memory.mining) {
+
             if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
                 let ret = creep.moveTo(sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } })
                 // if(ret != OK) {
@@ -72,7 +74,6 @@ global.roleHarvester = {
                         }
                     });
                     target = targets[0]
-
                 }
                 else if (focusHealing || creep.room.find(FIND_STRUCTURES, { filter: (structure) => structure.structureType == STRUCTURE_ROAD && (Math.round((structure.hits / structure.hitsMax) * 100 < 40)) }).length > 0) {
                     targets = creep.room.find(FIND_STRUCTURES, {
@@ -106,11 +107,10 @@ global.roleHarvester = {
                         // console.log(targets)
                     }
                     target = creep.pos.findClosestByPath(targets)
-
                 }
 
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    if (NO_SWAMP = false) {
+                    if (NO_SWAMP = true) {
                         creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
                         // console.log(target)
                     }

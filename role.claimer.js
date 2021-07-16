@@ -1,6 +1,6 @@
 global.roleClaimer = {
     name: 'claimer',
-    roleMemory: { memory: { direction: 3 }},
+    roleMemory: { memory: { direction: 3 } },
     BodyParts: [CLAIM, MOVE],
 
     // 1 - UP
@@ -31,7 +31,7 @@ global.roleClaimer = {
                 }
             }
             else if (creep.claimController(creep.room.controller) != OK) {
-                console.log(creep.claimController(creep.room.controller));
+                // console.log(creep.claimController(creep.room.controller));
                 creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#ffffff' } });
             }
         }

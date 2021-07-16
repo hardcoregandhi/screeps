@@ -1,9 +1,10 @@
 var roleHarvester = require('role.harvester');
+require('movement')
 
 global.roleBuilder = {
     name: 'builder',
     BodyParts: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
-    roleMemory: { memory: {}},
+    roleMemory: { memory: {} },
     /** @param {Creep} creep **/
     run: function (creep) {
         if (!creep.memory.currentSource) {
@@ -50,19 +51,20 @@ global.roleBuilder = {
                 });
                 target = targets[0]
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
-                return
+                    creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
+                    return
+                }
             }
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if (targets.length) {
                 var closest = creep.pos.findClosestByPath(targets)
 
                 if (creep.build(closest) == ERR_NOT_IN_RANGE) {
+                    // moveToTarget(creep, closest, false)
                     creep.moveTo(closest, { visualizePathStyle: { stroke: '#ffffff' } });
                 }
             }
-            else
-            {
+            else {
                 // console.log("Defauling to upgrader")
                 roleUpgrader.run(creep)
             }
@@ -82,6 +84,7 @@ global.roleBuilder = {
                 var sources = creep.room.find(FIND_SOURCES);
                 if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
                     if (creep.moveTo(sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }) == ERR_NO_PATH) {
+                        // if (moveToTarget(creep, sources[creep.memory.currentSource], false) == ERR_NO_PATH) {
                         creep.memory.currentSource++;
                         if (creep.memory.currentSource > sources.length - 1) {
                             creep.memory.currentSource = 0

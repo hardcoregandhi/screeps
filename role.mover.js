@@ -1,6 +1,6 @@
 global.roleMover = {
     name: 'mover',
-    roleMemory: { memory: {}},
+    roleMemory: { memory: {} },
     BodyParts: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE,],
 
     /** @param {Creep} creep **/

@@ -1,6 +1,7 @@
+require('movement')
 global.roleUpgrader = {
     name: 'upgrader',
-    roleMemory: { memory: {}},
+    roleMemory: { memory: {} },
     // memory: { baseRoomName: "W15S21" },
     BodyParts: [WORK, CARRY, WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE, MOVE],
 
@@ -49,7 +50,7 @@ global.roleUpgrader = {
                 });
                 target = targets[0]
                 if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
-                    creep.moveTo(target, { visualizePathStyle: { stroke: '#ffaa00' }})
+                    creep.moveTo(target, { visualizePathStyle: { stroke: '#ffaa00' } })
                 }
             }
             else if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
@@ -64,24 +65,8 @@ global.roleUpgrader = {
                     // console.log(target)
                 }
                 else {
-                    const path = creep.room.findPath(creep.pos, creep.room.controller.pos, { swampCost: 20, ignoreCreeps: false });
-                    roomPos = new RoomPosition(path[0].x, path[0].y, creep.room.name)
-                    isSwamp = new Room.Terrain(creep.room.name).get(path[0].x, path[0].y) == TERRAIN_MASK_SWAMP
-                    isPath = roomPos.lookFor(LOOK_STRUCTURES).length != 0
-                    for (var pathStep of path) {
-                        if (
-                            (!isSwamp) ||
-                            (isSwamp && isPath)
-                        ) {
-                            creep.room.visual.circle(pathStep, { fill: 'red' });
-                        }
-                    }
-                    if (
-                        !isSwamp ||
-                        (isSwamp && isPath)
-                    ) {
-                        creep.moveTo(path[0].x, path[0].y, { visualizePathStyle: { stroke: '#ffffff' } });
-                    }
+                    moveToTarget(creep, creep.room.controller.pos, false)
+
                 }
             }
         }
