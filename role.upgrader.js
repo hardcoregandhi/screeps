@@ -41,11 +41,12 @@ global.roleUpgrader = {
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return structure.structureType == STRUCTURE_SPAWN
-                            && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                     }
                 });
                 target = targets[0]
-
+                if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
+                    creep.moveTo(target, { visualizePathStyle: { stroke: '#ffaa00' }})
+                }
             }
             else if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                 if (creep.room.name == "W16S21") {
