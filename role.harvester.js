@@ -81,7 +81,7 @@ global.roleHarvester = {
                                 && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                         }
                     });
-                    target = targets[0]
+                    target = creep.pos.findClosestByPath(targets)
                     // console.log(targets)
 
                 }
