@@ -20,6 +20,10 @@ global.roleUpgrader = {
             }
             return;
         }
+        var sources = creep.room.find(FIND_SOURCES);
+        if (creep.memory.currentSource > sources.length - 1) {
+            creep.memory.currentSource = 0
+        }
 
         // weird hack to keep it at the bottom source
         if (creep.room.name == "W16S21") {
@@ -87,9 +91,6 @@ global.roleUpgrader = {
                 if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
                     if (creep.moveTo(sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }) == ERR_NO_PATH) {
                         creep.memory.currentSource++;
-                        if (creep.memory.currentSource > sources.length - 1) {
-                            creep.memory.currentSource = 0
-                        }
                     }
                 }
             }
