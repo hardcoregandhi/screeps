@@ -49,6 +49,7 @@ global.roleBuilder = {
                     }
                 });
                 target = targets[0]
+                if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
                 return
             }
