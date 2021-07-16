@@ -146,7 +146,7 @@ module.exports.loop = function () {
     else if (upgraders.length < 15) {
         spawnCreep(roleUpgrader, null, { memory: {baseRoomName: "W15S21" }},);
     }
-    else if (constructionSites == 0) {
+    else if (constructionSites == 0 && upgraders.length < 20) {
         spawnCreep(roleUpgrader, null, { memory: {baseRoomName: "W15S21" }},);
     }
 
