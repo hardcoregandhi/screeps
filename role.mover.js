@@ -1,4 +1,4 @@
-var roleMover = {
+global.roleMover = {
     name: 'mover',
     roleMemory: { memory: {}},
     BodyParts: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE,],

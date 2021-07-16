@@ -1,4 +1,4 @@
-var roleClaimer = {
+global.roleClaimer = {
     name: 'claimer',
     roleMemory: { memory: { direction: 3 }},
     BodyParts: [CLAIM, MOVE],

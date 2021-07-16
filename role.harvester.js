@@ -1,4 +1,4 @@
-var roleHarvester = {
+global.roleHarvester = {
     name: 'harvester',
     roleMemory: { memory: {}},
 

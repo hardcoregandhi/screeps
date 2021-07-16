@@ -1,4 +1,4 @@
-var roleUpgrader = {
+global.roleUpgrader = {
     name: 'upgrader',
     roleMemory: { memory: {}},
     // memory: { baseRoomName: "W15S21" },

@@ -1,5 +1,6 @@
 var roleHarvester = require('role.harvester');
-var roleBuilder = {
+
+global.roleBuilder = {
     name: 'builder',
     BodyParts: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
     roleMemory: { memory: {}},
