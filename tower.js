@@ -15,12 +15,18 @@ var roleTower = {
                 )
             )
         });
+        
+        if (damagedStructures.length > 10) {
+            rangeBased = true
+            percentageBased = false
+
+        } else {
+            rangeBased = false
+            percentageBased = true
+        }
+        
         if (percentageBased) {
             damagedStructures.sort((a, b) => Math.round((a.hits / a.hitsMax) * 100) - Math.round((b.hits / b.hitsMax) * 100));
-            // damagedStructures.sort((a,b) => a.hits-b.hits);
-            // console.log(damagedStructures[0].hits)
-            // console.log(damagedStructures[1].hits)
-            // console.log(damagedStructures[2].hits)
             mostDamagedStructure = damagedStructures[0]
 
             for (var t of damagedStructures) {
@@ -32,6 +38,19 @@ var roleTower = {
             if (mostDamagedStructure) {
                 tower.room.visual.circle(mostDamagedStructure.pos, { stroke: 'green', radius: 0.5, lineStyle: 'dashed', fill: 'transparent' });
                 tower.repair(mostDamagedStructure);
+            }
+        } else if (rangeBased) {
+            damagedStructures.sort((a, b) => a.hits - b.hits);
+            closestTarget = tower.pos.findClosestByRange(damagedStructures)
+
+            for (var t of damagedStructures) {
+                new RoomVisual().text(t.hits, t.pos, { align: 'right', font: 0.2 });
+            }
+            // damagedStructures.forEach((e, i) => (new RoomVisual().text(e.hits + " Order: " + i, e.pos, {align: 'left'}))); 
+
+            if (closestTarget) {
+                tower.room.visual.circle(closestTarget.pos, { stroke: 'green', radius: 0.5, lineStyle: 'dashed', fill: 'transparent' });
+                tower.repair(closestTarget);
             }
         } else {
             damagedStructures.sort((a, b) => a.hits - b.hits);
