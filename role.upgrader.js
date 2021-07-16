@@ -1,6 +1,6 @@
 var roleUpgrader = {
     name: 'upgrader',
-    memory: {},
+    roleMemory: { memory: {}},
     // memory: { baseRoomName: "W15S21" },
     BodyParts: [WORK, CARRY, WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE, MOVE],
 

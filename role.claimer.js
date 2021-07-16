@@ -1,6 +1,6 @@
 var roleClaimer = {
     name: 'claimer',
-    memory: { baseRoomName: Game.spawns['Spawn1'].room.name, direction: 3 },
+    roleMemory: { memory: { direction: 3 }},
     BodyParts: [CLAIM, MOVE],
 
     // 1 - UP

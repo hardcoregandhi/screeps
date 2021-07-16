@@ -1,6 +1,6 @@
 var roleMover = {
     name: 'mover',
-    memory: {},
+    roleMemory: { memory: {}},
     BodyParts: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE,],
 
     /** @param {Creep} creep **/

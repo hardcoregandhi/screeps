@@ -1,6 +1,6 @@
 var roleHarvester = {
     name: 'harvester',
-    memory: { baseRoomName: 'W15S21' },
+    roleMemory: { memory: {}},
 
     BodyParts: [WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE],
 

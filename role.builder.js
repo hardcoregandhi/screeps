@@ -2,7 +2,7 @@ var roleHarvester = require('role.harvester');
 var roleBuilder = {
     name: 'builder',
     BodyParts: [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
-    memory: { baseRoomName: 'W15S21' },
+    roleMemory: { memory: {}},
     /** @param {Creep} creep **/
     run: function (creep) {
         if (!creep.memory.currentSource) {
