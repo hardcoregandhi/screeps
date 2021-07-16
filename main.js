@@ -108,8 +108,9 @@ module.exports.loop = function () {
     new RoomVisual().text('🔺Upgraders: ' + upgraders.length, 1, 31, { align: 'left' });
 
     // Renew or Build
+    for (var s in Game.spawns)
     for (var i in Game.creeps) {
-        if (spawn.renewCreep(Game.creeps[i])) {
+            if (Game.spawns[s].renewCreep(Game.creeps[i])) {
             Game.creeps[i].cancelOrder('move');
         }
     }
