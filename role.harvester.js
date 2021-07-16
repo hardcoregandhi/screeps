@@ -18,7 +18,7 @@ global.roleHarvester = {
         }
 
         // Bad hack to split the upgraders and the harvesters
-        creep.memory.currentSource = 0
+        // creep.memory.currentSource = 0
 
         if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
             creep.memory.mining = false;
