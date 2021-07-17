@@ -15,13 +15,37 @@ var roleTower = {
             )
         });
 
-        if (damagedStructures.length > 10) {
+        var highlyDamagedStructFound = tower.room.find(FIND_STRUCTURES, {
+            filter: (structure) => (
+                (
+                    (
+                        Math.round((structure.hits / structure.hitsMax) * 100 < 10)
+                    )
+                )
+            )
+        });
+        
+        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        if (closestHostile) {
+            tower.attack(closestHostile);
+            return
+        }
+        
+        if (highlyDamagedStructFound) {
+            rangeBased = false
+            percentageBased = false
+            hitsBased = true
+        }
+        else if (damagedStructures.length > 10) {
             rangeBased = true
             percentageBased = false
+            hitsBased = false
+
 
         } else {
             rangeBased = false
             percentageBased = true
+            hitsBased = false
         }
 
         if (percentageBased) {
@@ -51,7 +75,7 @@ var roleTower = {
                 tower.room.visual.circle(closestTarget.pos, { stroke: 'green', radius: 0.5, lineStyle: 'dashed', fill: 'transparent' });
                 tower.repair(closestTarget);
             }
-        } else {
+        } else if(hitsBased) {
             damagedStructures.sort((a, b) => a.hits - b.hits);
             mostDamagedStructure = damagedStructures[0]
 
