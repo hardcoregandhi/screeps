@@ -50,7 +50,7 @@ global.roleUpgrader = {
                 });
                 target = targets[0]
                 if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
-                    creep.moveTo(target, { visualizePathStyle: { stroke: '#ffaa00' } })
+                    moveToTarget(creep, target, { visualizePathStyle: { stroke: '#ffaa00' } })
                 }
             }
             else if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
@@ -66,6 +66,9 @@ global.roleUpgrader = {
                 }
                 else {
                     moveToTarget(creep, creep.room.controller.pos, false)
+                    if (creep.store[RESOURCE_ENERGY] == 0) {
+                        creep.memory.upgrading = false;
+                    }
 
                 }
             }
@@ -74,7 +77,7 @@ global.roleUpgrader = {
             var sources = creep.room.find(FIND_SOURCES);
             if (creep.store.getFreeCapacity() > 0) {
                 if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
-                    if (creep.moveTo(sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }) == ERR_NO_PATH) {
+                    if (moveToTarget(creep, sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }, false) == ERR_NO_PATH) {
                         creep.memory.currentSource++;
                     }
                 }
