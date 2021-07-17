@@ -83,7 +83,21 @@ global.roleBuilder = {
                 roleUpgrader.run(creep)
             }
         }
+        }
         else {
+            if(Game.flags.DISMANTLE) {
+                var dismantle = Game.flags.DISMANTLE.pos.lookFor(LOOK_CONSTRUCTION_SITES)[0]
+                if (dismantle) {
+                    if (creep.dismantle(dismantle) != OK) {
+                        console.log(creep.dismantle(dismantle))
+                        creep.moveTo(dismantle, { visualizePathStyle: { stroke: '#ffaa00' } })
+                    }
+                    return
+                }
+            }
+                
+            
+            
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_STORAGE && structure.store[RESOURCE_ENERGY] > 200);
