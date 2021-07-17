@@ -169,6 +169,10 @@ module.exports.loop = function () {
             roleDefence.run(creep)
             continue
         }
+        if (creep.memory.role == 'upgrader' && harvesters.length < 1) {
+            roleHarvester.run(creep);
+            continue
+        }
         if (creep.memory.role == 'harvester') {
             roleHarvester.run(creep, focusHealing);
         }
