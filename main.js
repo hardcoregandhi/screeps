@@ -90,8 +90,9 @@ module.exports.loop = function () {
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     var movers = _.filter(Game.creeps, (creep) => creep.memory.role == 'mover');
-    var constructionSites; _.sum(Game.rooms, room => { constructionSites = + room.find(FIND_CONSTRUCTION_SITES).length });
-
+    var constructionSites = [];
+    _.forEach(Game.rooms, room => { constructionSites.push({roomName: room.name, numberOfSites: room.find(FIND_CONSTRUCTION_SITES).length}) } )
+        
     var totalExcessEnergy = _.sum(
         spawn.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
