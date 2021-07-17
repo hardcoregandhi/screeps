@@ -10,7 +10,6 @@ global.roleBuilder = {
         if (!creep.memory.currentSource) {
             creep.memory.currentSource = 0;
         }
-        creep.memory.baseRoomName = 'W15S21'
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
@@ -24,6 +23,16 @@ global.roleBuilder = {
             }
             return;
         }
+        var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+        if(targets.length == 0){
+            _.forEach(Game.rooms, room => {
+                if(room.find(FIND_CONSTRUCTION_SITES).length) {
+                    creep.memory.baseRoomName = room.name
+                    return
+                }
+            })
+        }
+
 
         if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.building = false;
