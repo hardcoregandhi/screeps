@@ -112,13 +112,15 @@ module.exports.loop = function () {
     _.forEach(constructionSites, cs => { cs.numberOfSites } )
     new RoomVisual().text('🔺Upgraders: ' + upgraders.length, 1, 32, { align: 'left' });
 
-    // Renew or Build
-    for (var s in Game.spawns)
-        for (var i in Game.creeps) {
-            if (Game.spawns[s].renewCreep(Game.creeps[i])) {
-                Game.creeps[i].cancelOrder('move');
-            }
+
+     
+    if (harvesters.length == 2) {
+        // _.forEach(Game.creeps, c => { if(c.memory.role == 'harvester' && c.body.length == 5){ console.log(c.body.length)} } )
+        c = _.find(Game.creeps, function(c) { if(c.memory.role == 'harvester' && c.body.length == 5){ return c } } )
+        if(c) {
+            c.memory.role = 'DIE'
         }
+    }
 
     if (Memory.createClaimer) {
         if (spawnCreep(roleClaimer) == 0) {
@@ -199,6 +201,12 @@ module.exports.loop = function () {
                 continue
             }
             roleMover.run(creep);
+        }
+        if (creep.memory.role == 'DIE') {
+            creep.moveTo(spawn.pos)
+            if(spawn.recycleCreep(creep) != 0){
+                creep.moveTo(spawn.pos)
+            }
         }
     }
 
