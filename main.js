@@ -206,8 +206,8 @@ module.exports.loop = function () {
             for (var s in sources) {
                 // Sources to controller
                 for (var pathStep of sources[s].pos.findPathTo(room.controller.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
-                    // room.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
-                    if (new Room.Terrain(room.name).get(pathStep.x, pathStep.y) == TERRAIN_MASK_SWAMP &&
+                    room.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
+                    if (/*new Room.Terrain(room.name).get(pathStep.x, pathStep.y) == TERRAIN_MASK_SWAMP &&*/
                             room.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0) {
                         // room.visual.circle(pathStep, {color: 'green', lineStyle: 'dashed'});
                         room.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
