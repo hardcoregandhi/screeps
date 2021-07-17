@@ -93,7 +93,7 @@ module.exports.loop = function () {
     var constructionSites = [];
     _.forEach(Game.rooms, room => { constructionSites.push({roomName: room.name, numberOfSites: room.find(FIND_CONSTRUCTION_SITES).length}) } )
         
-    var totalExcessEnergy = _.sum(
+    global.totalExcessEnergy = _.sum(
         spawn.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return (structure.structureType == STRUCTURE_STORAGE);
