@@ -80,9 +80,9 @@ global.roleBuilder = {
                 }
                 else {
                     console.log("Defauling to upgrader")
-                roleUpgrader.run(creep)
+                    roleUpgrader.run(creep)
+                }
             }
-        }
         }
         else {
             if(Game.flags.DISMANTLE) {

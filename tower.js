@@ -89,7 +89,7 @@ var roleTower = {
                 tower.repair(mostDamagedStructure);
             }
         }
-
+        
         var closestCreep = tower.pos.findClosestByRange(FIND_CREEPS, {
                 filter: (creep) => (
                     Math.round((creep.hits / creep.hitsMax) * 100 < 50)
