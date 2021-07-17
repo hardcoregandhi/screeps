@@ -5,6 +5,7 @@ var roleTower = require('tower');
 var roleClaimer = require('role.claimer');
 var roleMover = require('role.mover');
 var roleDefence = require('role.defense');
+var roleScavenger = require('role.scavenger');
 
 function getRandomInt(min = 100, max = 999) {
     min = Math.ceil(min);
@@ -186,6 +187,10 @@ module.exports.loop = function () {
             roleClaimer.run(creep);
         }
         if (creep.memory.role == 'mover') {
+            if (creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES)) {
+                roleScavenger.run(creep)
+                continue
+            }
             roleMover.run(creep);
         }
     }
