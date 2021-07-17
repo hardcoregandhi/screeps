@@ -4,6 +4,7 @@ var roleBuilder = require('role.builder');
 var roleTower = require('tower');
 var roleClaimer = require('role.claimer');
 var roleMover = require('role.mover');
+var roleDefence = require('role.defense');
 
 function getRandomInt(min = 100, max = 999) {
     min = Math.ceil(min);
@@ -163,6 +164,11 @@ module.exports.loop = function () {
 
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
+        var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        if (closestHostile) {
+            roleDefence.run(creep)
+            continue
+        }
         if (creep.memory.role == 'harvester') {
             roleHarvester.run(creep, focusHealing);
         }
