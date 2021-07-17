@@ -19,7 +19,12 @@ var roleTower = {
             filter: (structure) => (
                 (
                     (
-                        Math.round((structure.hits / structure.hitsMax) * 100 < 10)
+        var roadsFiftyPercentStructs = tower.room.find(FIND_STRUCTURES, {
+            filter: (structure) => (
+                (
+                    (
+                        structure.structureType == STRUCTURE_ROAD &&
+                        Math.round((structure.hits / structure.hitsMax) * 100 < 50)
                     )
                 )
             )
@@ -31,7 +36,14 @@ var roleTower = {
             return
         }
         
-        if (highlyDamagedStructFound) {
+        if (1){
+            rangeBased = false
+            percentageBased = false
+            hitsBased = false
+            
+            roadsFiftyPercent = true
+        }
+        else if (highlyDamagedStructFound) {
             rangeBased = false
             percentageBased = false
             hitsBased = true
@@ -87,6 +99,21 @@ var roleTower = {
             if (mostDamagedStructure) {
                 tower.room.visual.circle(mostDamagedStructure.pos, { stroke: 'green', radius: 0.5, lineStyle: 'dashed', fill: 'transparent' });
                 tower.repair(mostDamagedStructure);
+            }
+        } else if (roadsFiftyPercent) {
+            roadsFiftyPercentStructs.sort((a, b) => a.hits - b.hits);
+            closestTarget = tower.pos.findClosestByRange(roadsFiftyPercentStructs)
+
+
+            for (var t of roadsFiftyPercentStructs) {
+                new RoomVisual().text(t.hits, t.pos, { align: 'right', font: 0.2 });
+            }
+            // damagedStructures.forEach((e, i) => (new RoomVisual().text(e.hits + " Order: " + i, e.pos, {align: 'left'}))); 
+
+            if (closestTarget) {
+                tower.room.visual.circle(closestTarget.pos, { stroke: 'green', radius: 0.5, lineStyle: 'dashed', fill: 'transparent' });
+                tower.repair(closestTarget);
+                return
             }
         }
         
