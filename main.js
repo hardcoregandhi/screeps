@@ -21,7 +21,7 @@ focusHealing = false
 spawnCreep = function (_role, customBodyParts = null, customMemory = null) {
 
     if (customBodyParts) {
-        console.log("customActivated")
+        // console.log("customActivated")
         oldBodyParts = _role.BodyParts
         _role.BodyParts = customBodyParts
     }
@@ -46,12 +46,12 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null) {
         }
     }
     else {
-        new RoomVisual().text('Next Spawn: ' + _.capitalize(_role.name), 1, 32, { align: 'left' });
-        new RoomVisual().text('Cost: ' + getBodyCost(_role.BodyParts), 1, 33, { align: 'left' });
+        new RoomVisual().text('Next Spawn: ' + _.capitalize(_role.name), 1, 33, { align: 'left' });
+        new RoomVisual().text('Cost: ' + getBodyCost(_role.BodyParts), 1, 34, { align: 'left' });
     }
 
     if (customBodyParts) {
-        console.log("customDeactivated")
+        // console.log("customDeactivated")
         _role.BodyParts = oldBodyParts
     }
 }
@@ -106,8 +106,10 @@ module.exports.loop = function () {
     new RoomVisual().text('⛏️ Harvesters: ' + harvesters.length, 1, 27, { align: 'left' });
     new RoomVisual().text('⛏️ Movers: ' + movers.length, 1, 28, { align: 'left' });
     new RoomVisual().text('👷 Builders: ' + builders.length, 1, 29, { align: 'left' });
-    new RoomVisual().text('🚧 Construction sites: ' + constructionSites, 1, 30, { align: 'left' });
-    new RoomVisual().text('🔺Upgraders: ' + upgraders.length, 1, 31, { align: 'left' });
+    new RoomVisual().text('🚧 Construction sites: ' + constructionSites[0].roomName + ' ' + constructionSites[0].numberOfSites, 1, 30, { align: 'left' });
+    new RoomVisual().text('🚧 Construction sites: ' + constructionSites[1].roomName + ' ' + constructionSites[1].numberOfSites, 1, 31, { align: 'left' });
+    _.forEach(constructionSites, cs => { cs.numberOfSites } )
+    new RoomVisual().text('🔺Upgraders: ' + upgraders.length, 1, 32, { align: 'left' });
 
     // Renew or Build
     for (var s in Game.spawns)
@@ -135,9 +137,13 @@ module.exports.loop = function () {
     else if (upgraders.length < 2) {
         spawnCreep(roleUpgrader);
     }
-    else if (builders.length < constructionSites &&
+    else if (builders.length < constructionSites[0].numberOfSites &&
         builders.length < 6) {
-        spawnCreep(roleBuilder);
+        spawnCreep(roleBuilder, null, { memory: {baseRoomName: constructionSites[0].roomName }});
+    }
+    else if (builders.length < constructionSites[1].numberOfSites &&
+        builders.length < 6) {
+        spawnCreep(roleBuilder, null, { memory: {baseRoomName: constructionSites[1].roomName }});
     }
     else if (movers.length < 2) {
         spawnCreep(roleMover);
