@@ -2,7 +2,7 @@ global.roleHarvester = {
     name: 'harvester',
     roleMemory: { memory: {} },
 
-    BodyParts: [WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE],
+    BodyParts: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep, focusHealing) {
@@ -75,7 +75,7 @@ global.roleHarvester = {
                     });
                     target = targets[0]
                 }
-                else if (focusHealing || creep.room.find(FIND_STRUCTURES, { filter: (structure) => structure.structureType == STRUCTURE_ROAD && (Math.round((structure.hits / structure.hitsMax) * 100 < 40)) }).length > 0) {
+                else if (focusHealing || creep.room.find(FIND_STRUCTURES, { filter: (structure) => structure.structureType == STRUCTURE_ROAD && (Math.round((structure.hits / structure.hitsMax) * 100 < 50)) }).length > 0) {
                     targets = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
                             return structure.structureType == STRUCTURE_TOWER
