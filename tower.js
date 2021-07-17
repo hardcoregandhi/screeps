@@ -8,7 +8,6 @@ var roleTower = {
         var damagedStructures = tower.room.find(FIND_STRUCTURES, {
             filter: (structure) => (
                 (
-                    structure.structureType == STRUCTURE_ROAD &&
                     (
                         Math.round((structure.hits / structure.hitsMax) * 100 < 50)
                     )
