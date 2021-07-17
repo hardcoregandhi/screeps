@@ -110,7 +110,7 @@ global.roleHarvester = {
                 }
 
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    if (NO_SWAMP = true) {
+                    if (NO_SWAMP = false) {
                         creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
                         // console.log(target)
                     }
