@@ -211,9 +211,11 @@ module.exports.loop = function () {
     }
 
     // Renew
-    for (var i in Game.creeps) {
-        if (spawn.renewCreep(Game.creeps[i]) == 0) {
-            Game.creeps[i].cancelOrder('move');
+    for (var s in Game.spawns) {
+        for (var i in Game.creeps) {
+            if (Game.spawns[s].renewCreep(Game.creeps[i]) == 0) {
+                Game.creeps[i].cancelOrder('move');
+            }
         }
     }
 
