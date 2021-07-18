@@ -14,11 +14,27 @@ var roleTower = {
                 )
             )
         });
+        
+        var hitsBasedStructures = tower.room.find(FIND_STRUCTURES, {
+            filter: (structure) => (
+                (
+                    (
+                        structure.hits < 10000
+                    )
+                )
+            )
+        });
 
         var highlyDamagedStructFound = tower.room.find(FIND_STRUCTURES, {
             filter: (structure) => (
                 (
                     (
+                        Math.round((structure.hits / structure.hitsMax) * 100 < 1)
+                    )
+                )
+            )
+        });
+        
         var roadsFiftyPercentStructs = tower.room.find(FIND_STRUCTURES, {
             filter: (structure) => (
                 (
@@ -88,10 +104,10 @@ var roleTower = {
                 tower.repair(closestTarget);
             }
         } else if(hitsBased) {
-            damagedStructures.sort((a, b) => a.hits - b.hits);
-            mostDamagedStructure = damagedStructures[0]
+            hitsBasedStructures.sort((a, b) => a.hits - b.hits);
+            mostDamagedStructure = hitsBasedStructures[0]
 
-            for (var t of damagedStructures) {
+            for (var t of hitsBasedStructures) {
                 new RoomVisual().text(t.hits, t.pos, { align: 'right', font: 0.2 });
             }
             // damagedStructures.forEach((e, i) => (new RoomVisual().text(e.hits + " Order: " + i, e.pos, {align: 'left'}))); 
