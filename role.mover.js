@@ -11,8 +11,16 @@ global.roleMover = {
         }
 
         // Lost creeps return home
-        if (!creep.room.controller.my) {
-            creep.moveTo(Game.spawns['Spawn1'])
+        if (creep.room.name != creep.memory.baseRoomName) {
+            const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
+            if (route.length > 0) {
+                creep.say('Headin oot');
+                const exit = creep.pos.findClosestByRange(route[0].exit);
+                creep.moveTo(exit, { visualizePathStyle: { stroke: '#ffffff' } });
+            }
+            else {
+                creep.say('No route found');
+            }
             return;
         }
 
