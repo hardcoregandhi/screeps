@@ -61,14 +61,39 @@ global.roleUpgrader = {
             }
         }
         else {
-            var sources = creep.room.find(FIND_SOURCES);
-            if (creep.store.getFreeCapacity() > 0) {
-                if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
-                    if (moveToTarget(creep, sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }, false) == ERR_NO_PATH) {
-                        creep.memory.currentSource++;
+            var closeSources = creep.room.find(FIND_SOURCES, { filter: (s) => { return creep.room.controller.pos.inRangeTo(s, 10) == true }});
+            if (closeSources.length > 0) {
+                if (creep.store.getFreeCapacity() > 0) {
+                    if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
+                        if (moveToTarget(creep, sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }, false) == ERR_NO_PATH) {
+                            creep.memory.currentSource++;
+                        }
                     }
                 }
             }
+            else {
+                var targets = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_STORAGE &&
+                        structure.store[RESOURCE_ENERGY] > 0);
+                    }
+                });
+                if (targets.length) {
+                    if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
+                        moveToTarget(creep, targets[0], true)
+                    }
+                }
+                else {
+                    if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
+                        if (moveToTarget(creep, sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }, false) == ERR_NO_PATH) {
+                            creep.memory.currentSource++;
+                        }
+                    }
+                }
+                
+            }
+
+        
         }
     }
 };
