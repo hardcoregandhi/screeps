@@ -45,6 +45,24 @@ var roleTower = {
                 )
             )
         });
+
+        var customStructureSpecificPercentLimits = tower.room.find(FIND_STRUCTURES, {
+            filter: (structure) => (
+                (
+                    (
+                        (
+                            structure.structureType == STRUCTURE_ROAD &&
+                            Math.round((structure.hits / structure.hitsMax) * 100 < 50)
+                        ) 
+                        ||
+                        (
+                            structure.structureType == STRUCTURE_RAMPART &&
+                            Math.round((structure.hits / structure.hitsMax) * 100 < 0.5)
+                        ) 
+                    )
+                )
+            )
+        });
         
         var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         if (closestHostile) {
@@ -53,7 +71,7 @@ var roleTower = {
         }
         var closestCreep = tower.pos.findClosestByRange(FIND_CREEPS, {
                 filter: (creep) => (
-                    Math.round((creep.hits / creep.hitsMax) * 100)
+                    Math.round((creep.hits / creep.hitsMax) * 100 < 99)
                     )
             }
         )
@@ -66,8 +84,9 @@ var roleTower = {
             rangeBased = false
             percentageBased = false
             hitsBased = false
-            
-            roadsFiftyPercent = true
+            roadsFiftyPercent = false
+
+            customStructureSpecificPercent = true
         }
         else if (highlyDamagedStructFound) {
             rangeBased = false
@@ -132,6 +151,21 @@ var roleTower = {
 
 
             for (var t of roadsFiftyPercentStructs) {
+                new RoomVisual().text(t.hits, t.pos, { align: 'right', font: 0.2 });
+            }
+            // damagedStructures.forEach((e, i) => (new RoomVisual().text(e.hits + " Order: " + i, e.pos, {align: 'left'}))); 
+
+            if (closestTarget) {
+                tower.room.visual.circle(closestTarget.pos, { stroke: 'green', radius: 0.5, lineStyle: 'dashed', fill: 'transparent' });
+                tower.repair(closestTarget);
+                return
+            }
+        } else if (customStructureSpecificPercent) {
+            customStructureSpecificPercentLimits.sort((a, b) => a.hits - b.hits);
+            closestTarget = tower.pos.findClosestByRange(customStructureSpecificPercentLimits)
+
+
+            for (var t of customStructureSpecificPercentLimits) {
                 new RoomVisual().text(t.hits, t.pos, { align: 'right', font: 0.2 });
             }
             // damagedStructures.forEach((e, i) => (new RoomVisual().text(e.hits + " Order: " + i, e.pos, {align: 'left'}))); 
