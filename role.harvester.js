@@ -64,7 +64,13 @@ global.roleHarvester = {
                         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 }
             });
-
+            var towers = creep.room.find(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return structure.structureType == STRUCTURE_TOWER
+                                && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                        }
+                    });
+            focusHealing = false
             if (targets.length > 0) {
                 var target
                 //Priority is
@@ -83,7 +89,7 @@ global.roleHarvester = {
                     });
                     target = targets[0]
                 }
-                else if (focusHealing || creep.room.find(FIND_STRUCTURES, { filter: (structure) => structure.structureType == STRUCTURE_ROAD && (Math.round((structure.hits / structure.hitsMax) * 100 < 50)) }).length > 0) {
+                else if (focusHealing || (towers.length && creep.room.find(FIND_STRUCTURES, { filter: (structure) => structure.structureType == STRUCTURE_ROAD && (Math.round((structure.hits / structure.hitsMax) * 100 < 50)) }).length > 0)) {
                     targets = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
                             return structure.structureType == STRUCTURE_TOWER
