@@ -19,6 +19,7 @@ function getBodyCost(bodyParts) {
 focusHealing = false
 
 spawnCreep = function (_role, customBodyParts = null, customMemory = null) {
+    var ret = -1;
 
     if (customBodyParts) {
         // console.log("customActivated")
@@ -54,6 +55,8 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null) {
         // console.log("customDeactivated")
         _role.BodyParts = oldBodyParts
     }
+    
+    return ret
 }
 
 var spawn = Game.spawns['Spawn1']
