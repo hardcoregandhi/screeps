@@ -7,7 +7,7 @@ global.roleBuilder = {
     roleMemory: { memory: {} },
     /** @param {Creep} creep **/
     run: function (creep) {
-        if (!creep.memory.currentSource) {
+        if (!creep.memory.currentSource == null) {
             creep.memory.currentSource = 0;
         }
         // Lost creeps return home
@@ -31,6 +31,10 @@ global.roleBuilder = {
                     return
                 }
             })
+        }
+        var sources = creep.room.find(FIND_SOURCES);
+        if (creep.memory.currentSource > sources.length - 1) {
+            creep.memory.currentSource = 0
         }
 
 
@@ -114,9 +118,6 @@ global.roleBuilder = {
                     if (creep.moveTo(sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }) == ERR_NO_PATH) {
                         // if (moveToTarget(creep, sources[creep.memory.currentSource], false) == ERR_NO_PATH) {
                         creep.memory.currentSource++;
-                        if (creep.memory.currentSource > sources.length - 1) {
-                            creep.memory.currentSource = 0
-                        }
                     }
                 }
             }
