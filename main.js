@@ -107,6 +107,21 @@ module.exports.loop = function () {
     var movers = _.filter(Game.creeps, (creep) => creep.memory.role == 'mover');
     var constructionSites = [];
     _.forEach(Game.rooms, room => { constructionSites.push({roomName: room.name, numberOfSites: room.find(FIND_CONSTRUCTION_SITES).length}) } )
+    
+    global.creepRoomMap = new Map();
+    _.forEach(Game.rooms, r => { _.forEach(Game.creeps, c => {
+        key = r.name+c.memory.role
+        if(c.memory.baseRoomName == r.name) {
+            if (creepRoomMap.get(key)) {
+                creepRoomMap.set(key, creepRoomMap.get(key) + 1)
+            }
+            else {
+                creepRoomMap.set(key, 1)
+            }
+        }
+        creepRoomMap.set(key, 0)
+        
+    } ) } )
         
     global.totalExcessEnergy = _.sum(
         spawn.room.find(FIND_STRUCTURES, {
@@ -136,44 +151,57 @@ module.exports.loop = function () {
             c.memory.role = 'DIE'
         }
     }
-
-    if (Memory.createClaimer) {
-        if (spawnCreep(roleClaimer) == 0) {
-            Memory.createClaimer = false;
+    
+    for (var room in Game.rooms) {
+        r = Game.rooms[room]
+        if (Memory.createClaimer) {
+            if (spawnCreep(roleClaimer, null, { memory: {baseRoomName: r.name }}) == 0) {
+                Memory.createClaimer = false;
+            }
         }
-    }
-    else if (harvesters.length < 1) {
-        BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
-        spawnCreep(roleHarvester, BaseBodyParts);
-    }
-    else if (movers.length < 1) {
-        spawnCreep(roleMover);
-    }
-    else if (harvesters.length < 2) {
-        spawnCreep(roleHarvester);
-    }
-    else if (upgraders.length < 2) {
-        spawnCreep(roleUpgrader);
-    }
-    else if (builders.length < constructionSites[0].numberOfSites &&
-        builders.length < 6) {
-        spawnCreep(roleBuilder, null, { memory: {baseRoomName: constructionSites[0].roomName }});
-    }
-    else if (builders.length < constructionSites[1].numberOfSites &&
-        builders.length < 6) {
-        spawnCreep(roleBuilder, null, { memory: {baseRoomName: constructionSites[1].roomName }});
-    }
-    else if (movers.length < 2) {
-        spawnCreep(roleMover);
-    }
-    else if (upgraders.length < 10) {
-        spawnCreep(roleUpgrader);
-    }
-    else if (upgraders.length < 15) {
-        spawnCreep(roleUpgrader, null, { memory: {baseRoomName: "W15S21" }},);
-    }
-    else if (constructionSites == 0 && upgraders.length < 20) {
-        spawnCreep(roleUpgrader, null, { memory: {baseRoomName: "W15S21" }},);
+        else if (creepRoomMap.get(r.name+"harvester") < 1) {
+            BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
+            spawnCreep(roleHarvester, null, { memory: {baseRoomName: r.name }});
+            break
+        }
+        else if (creepRoomMap.get(r.name+"mover") < 1) {
+            spawnCreep(roleMover, null, { memory: {baseRoomName: r.name }});
+            break
+        }
+        else if (creepRoomMap.get(r.name+"harvester") < 2) {
+            spawnCreep(roleHarvester, null, { memory: {baseRoomName: r.name }});
+            break
+        }
+        else if (creepRoomMap.get(r.name+"upgrader") < 2) {
+            spawnCreep(roleUpgrader, null, { memory: {baseRoomName: r.name }});
+            break
+        }
+        else if (creepRoomMap.get(r.name+"builder") < constructionSites[0].numberOfSites &&
+            builders.length < 6) {
+            spawnCreep(roleBuilder, null, { memory: {baseRoomName: constructionSites[0].roomName }});
+            break
+        }
+        else if (creepRoomMap.get(r.name+"builder") < constructionSites[1].numberOfSites &&
+            builders.length < 6) {
+            spawnCreep(roleBuilder, null, { memory: {baseRoomName: constructionSites[1].roomName }});
+            break
+        }
+        else if (creepRoomMap.get(r.name+"mover") < 2) {
+            spawnCreep(roleMover, null, { memory: {baseRoomName: r.name }});
+            break
+        }
+        else if (creepRoomMap.get(r.name+"upgrader") < 10) {
+            spawnCreep(roleUpgrader, null, { memory: {baseRoomName: r.name }});
+            break
+        }
+        else if (creepRoomMap.get(r.name+"upgrader") < 15) {
+            spawnCreep(roleUpgrader, null, { memory: {baseRoomName: r.name }});
+            break
+        }
+        else if (constructionSites == 0 && creepRoomMap.get(r.name+"upgrader") < 20) {
+            spawnCreep(roleUpgrader, null, { memory: {baseRoomName: r.name }});
+            break
+        }
     }
 
 
