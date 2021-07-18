@@ -96,7 +96,7 @@ global.roleHarvester = {
                 }
                 else {
                     // If we have Movers, just use the storage
-                    if (_.filter(Game.creeps, (creep) => creep.memory.role == 'mover').length > 0) {
+                    if (_.filter(Game.creeps, (creep_itr) => creep_itr.memory.role == 'mover' && (creep_itr.memory.baseRoomName == creep.memory.baseRoomName)).length > 0) {
                         targets = creep.room.find(FIND_STRUCTURES, {
                             filter: (structure) => {
                                 return structure.structureType == STRUCTURE_STORAGE
