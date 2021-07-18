@@ -54,22 +54,9 @@ global.roleUpgrader = {
                 }
             }
             else if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                if (creep.room.name == "W16S21") {
-                    NO_SWAMP = false
-                }
-                else
-                    NO_SWAMP = true
-
-                if (NO_SWAMP) {
-                    creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#ffffff' } });
-                    // console.log(target)
-                }
-                else {
-                    moveToTarget(creep, creep.room.controller.pos, false)
-                    if (creep.store[RESOURCE_ENERGY] == 0) {
-                        creep.memory.upgrading = false;
-                    }
-
+                moveToTarget(creep, creep.room.controller.pos, true)
+                if (creep.store[RESOURCE_ENERGY] == 0) {
+                    creep.memory.upgrading = false;
                 }
             }
         }
