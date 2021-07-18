@@ -51,6 +51,16 @@ var roleTower = {
             tower.attack(closestHostile);
             return
         }
+        var closestCreep = tower.pos.findClosestByRange(FIND_CREEPS, {
+                filter: (creep) => (
+                    Math.round((creep.hits / creep.hitsMax) * 100)
+                    )
+            }
+        )
+        if (closestCreep) {
+            tower.heal(closestCreep);
+            return
+        }
         
         if (1){
             rangeBased = false
@@ -131,16 +141,6 @@ var roleTower = {
                 tower.repair(closestTarget);
                 return
             }
-        }
-        
-        var closestCreep = tower.pos.findClosestByRange(FIND_CREEPS, {
-                filter: (creep) => (
-                    Math.round((creep.hits / creep.hitsMax) * 100 < 50)
-                    )
-            }
-        )
-        if (closestCreep) {
-            tower.heal(closestCreep);
         }
     }
 };
