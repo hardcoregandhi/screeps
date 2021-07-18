@@ -79,11 +79,11 @@ global.roleBuilder = {
             }
             else {
                 if (totalExcessEnergy < 200) {
-                    console.log("Defauling to Harvester")
+                    // console.log("Defauling to Harvester")
                     roleHarvester.run(creep)
                 }
                 else {
-                    console.log("Defauling to upgrader")
+                    // console.log("Defauling to upgrader")
                     roleUpgrader.run(creep)
                 }
             }
