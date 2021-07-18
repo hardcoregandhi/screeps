@@ -178,7 +178,7 @@ module.exports.loop = function () {
 
 
 
-    if (spawn.spawning) {
+    if (spawn.spawning == true) {
         var spawningCreep = Game.creeps[spawn.spawning.name];
         spawn.room.visual.text(
             '🛠️' + spawningCreep.name,
