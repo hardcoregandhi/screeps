@@ -65,6 +65,18 @@ module.exports.loop = function () {
         }
     });
 
+    _.forEach(Game.rooms, room => {
+        var towers = room.find(FIND_STRUCTURES, {
+        filter: (structure) => {
+            return (structure.structureType == STRUCTURE_TOWER);
+            }
+        })
+
+        for (var t of towers) {
+            roleTower.run(t);
+        }
+    })
+    
     for (var t of towers) {
         roleTower.run(t);
     }
