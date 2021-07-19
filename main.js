@@ -180,7 +180,7 @@ module.exports.loop = function () {
             spawnCreep(roleMover, null, { memory: {baseRoomName: r.name }});
             break
         }
-        else if (creepRoomMap.get(r.name+"harvester") < 2) {
+        else if (creepRoomMap.get(r.name+"harvester") < 3) {
             spawnCreep(roleHarvester, null, { memory: {baseRoomName: r.name }});
             break
         }
