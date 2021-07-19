@@ -58,7 +58,12 @@ var roleTower = {
                         (
                             structure.structureType == STRUCTURE_RAMPART &&
                             Math.round((structure.hits / structure.hitsMax) * 100 < 0.5)
-                        ) 
+                        )
+                        ||
+                        (
+                            structure.structureType == STRUCTURE_WALL &&
+                            Math.round((structure.hits / structure.hitsMax) * 100 < 0.01)
+                        )
                     )
                 )
             )
