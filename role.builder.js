@@ -78,7 +78,7 @@ global.roleBuilder = {
                 }
             }
             else {
-                if (totalExcessEnergy < 200) {
+                if (creepRoomMap.get(creep.room.name+"eenergy") < 200) {
                     // console.log("Defauling to Harvester")
                     roleHarvester.run(creep)
                 }

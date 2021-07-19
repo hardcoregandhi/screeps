@@ -47,8 +47,8 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null) {
         }
     }
     else {
-        new RoomVisual().text('Next Spawn: ' + _.capitalize(_role.name), 1, 33, { align: 'left' });
-        new RoomVisual().text('Cost: ' + getBodyCost(_role.BodyParts), 1, 34, { align: 'left' });
+        new RoomVisual().text('Next Spawn: ' + _.capitalize(_role.name), 1, 23, { align: 'left', font: 0.5 });
+        new RoomVisual().text('Cost: ' + getBodyCost(_role.BodyParts), 1, 23.5, { align: 'left', font: 0.5 });
     }
 
     if (customBodyParts) {
@@ -105,8 +105,7 @@ module.exports.loop = function () {
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
     var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
     var movers = _.filter(Game.creeps, (creep) => creep.memory.role == 'mover');
-    var constructionSites = [];
-    _.forEach(Game.rooms, room => { constructionSites.push({roomName: room.name, numberOfSites: room.find(FIND_CONSTRUCTION_SITES).length}) } )
+
     
     global.creepRoomMap = new Map();
     _.forEach(Game.rooms, r => { _.forEach(Game.creeps, c => {
@@ -119,28 +118,41 @@ module.exports.loop = function () {
                 creepRoomMap.set(key, 1)
             }
         }
-        creepRoomMap.set(key, 0)
+        else {
+            if (!creepRoomMap.get(key)) {
+                creepRoomMap.set(key, 0)
+            }
+        }
+        
+        creepRoomMap.set(r.name+"csites", r.find(FIND_CONSTRUCTION_SITES).length)
         
     } ) } )
         
-    global.totalExcessEnergy = _.sum(
-        spawn.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return (structure.structureType == STRUCTURE_STORAGE);
+    _.forEach(Game.rooms, r => {
+            stores = r.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType == STRUCTURE_STORAGE);
+                }
+            })
+            if(stores.length > 0) {
+                creepRoomMap.set(r.name+"eenergy", stores[0].store[RESOURCE_ENERGY])
             }
-        }), s => s.store[RESOURCE_ENERGY]
-    )
+    })
 
-    // Creep info
-    new RoomVisual().text('⚡️ ExcessEnergy: ' + totalExcessEnergy, 1, 25, { align: 'left' });
-    new RoomVisual().text('⚡️ Energy: ' + Game.spawns['Spawn1'].room.energyAvailable, 1, 26, { align: 'left' });
-    new RoomVisual().text('⛏️ Harvesters: ' + harvesters.length, 1, 27, { align: 'left' });
-    new RoomVisual().text('⛏️ Movers: ' + movers.length, 1, 28, { align: 'left' });
-    new RoomVisual().text('👷 Builders: ' + builders.length, 1, 29, { align: 'left' });
-    new RoomVisual().text('🚧 Construction sites: ' + constructionSites[0].roomName + ' ' + constructionSites[0].numberOfSites, 1, 30, { align: 'left' });
-    new RoomVisual().text('🚧 Construction sites: ' + constructionSites[1].roomName + ' ' + constructionSites[1].numberOfSites, 1, 31, { align: 'left' });
-    _.forEach(constructionSites, cs => { cs.numberOfSites } )
-    new RoomVisual().text('🔺Upgraders: ' + upgraders.length, 1, 32, { align: 'left' });
+    roomOffset = 0
+    for (var room in Game.rooms) {
+        r = Game.rooms[room]
+        // Creep info
+        new RoomVisual().text(r.name, 1, 24.5+roomOffset, { align: 'left', font: 0.5 });
+        new RoomVisual().text('⚡️ ExcessEnergy: ' + creepRoomMap.get(r.name+"eenergy"), 1, 25+roomOffset, { align: 'left', font: 0.5 });
+        new RoomVisual().text('⚡️ Energy      : ' + r.energyAvailable, 1, 25.5+roomOffset, { align: 'left', font: 0.5 });
+        new RoomVisual().text('⛏️ Harvesters  : ' + creepRoomMap.get(r.name+"harvester"), 1, 26+roomOffset, { align: 'left', font: 0.5 });
+        new RoomVisual().text('⛏️ Movers      : ' + creepRoomMap.get(r.name+"mover"), 1, 26.5+roomOffset, { align: 'left', font: 0.5 });
+        new RoomVisual().text('👷 Builders    : ' + creepRoomMap.get(r.name+"builder"), 1, 27+roomOffset, { align: 'left', font: 0.5 });
+        new RoomVisual().text('🚧 C sites     : ' + creepRoomMap.get(r.name+"csites"), 1, 27.5+roomOffset, { align: 'left', font: 0.5 });
+        new RoomVisual().text('🔺Upgraders    : ' + creepRoomMap.get(r.name+"upgrader"), 1, 28+roomOffset, { align: 'left', font: 0.5 });
+        roomOffset += 5
+    }
 
 
      
@@ -176,14 +188,8 @@ module.exports.loop = function () {
             spawnCreep(roleUpgrader, null, { memory: {baseRoomName: r.name }});
             break
         }
-        else if (creepRoomMap.get(r.name+"builder") < constructionSites[0].numberOfSites &&
-            builders.length < 6) {
-            spawnCreep(roleBuilder, null, { memory: {baseRoomName: constructionSites[0].roomName }});
-            break
-        }
-        else if (creepRoomMap.get(r.name+"builder") < constructionSites[1].numberOfSites &&
-            builders.length < 6) {
-            spawnCreep(roleBuilder, null, { memory: {baseRoomName: constructionSites[1].roomName }});
+        else if (creepRoomMap.get(r.name+"builder") < creepRoomMap.get(r.name+"csites")) {
+            spawnCreep(roleBuilder, null, { memory: {baseRoomName: r.name }});
             break
         }
         else if (creepRoomMap.get(r.name+"mover") < 2) {
