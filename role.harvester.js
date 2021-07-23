@@ -2,7 +2,7 @@ global.roleHarvester = {
     name: 'harvester',
     roleMemory: { memory: {} },
 
-    BodyParts: [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE],
+    BodyParts: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep, focusHealing) {
@@ -80,7 +80,7 @@ global.roleHarvester = {
                     3. healing
                     4. speed
                 */
-                if (creep.ticksToLive < 200) {
+                if (creep.ticksToLive < 300) {
                     creep.memory.healing = true
                     targets = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
