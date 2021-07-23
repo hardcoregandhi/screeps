@@ -1,3 +1,10 @@
+
+function log(str) {
+    if (1)
+    console.log(str)
+}
+
+
 global.roleMover = {
     name: 'mover',
     roleMemory: { memory: {} },
@@ -27,7 +34,7 @@ global.roleMover = {
         // Bad hack to split the upgraders and the harvesters
         creep.memory.currentSource = 0
 
-        if (creep.memory.moving && creep.store[RESOURCE_ENERGY] == 0) {
+        if (creep.memory.moving && creep.store.getUsedCapacity() == 0) {
             creep.memory.moving = false;
             creep.say('🔄 harvest');
         }
@@ -35,8 +42,10 @@ global.roleMover = {
             creep.memory.moving = true;
             creep.say('dropping');
         }
-
+        
         if (creep.ticksToLive < 200 && creep.memory.moving) {
+            
+            creep.say('healing');
             creep.memory.healing = true
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
@@ -49,6 +58,7 @@ global.roleMover = {
             }
             return
         }
+
         if (!creep.memory.moving) {
             // creep.say("hello")
             var targets = creep.room.find(FIND_STRUCTURES, {
@@ -56,20 +66,29 @@ global.roleMover = {
                     return (structure.structureType == STRUCTURE_STORAGE);
                 }
             });
-            if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
-                // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffaa00' } })
+            if(targets.length) {
+                creep.say('m2storage');
+                if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
+                    // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
+                    creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffaa00' } })
+                }
             }
+            else
+                creep.say("lost")
         }
         else {
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_EXTENSION ||
-                        structure.structureType == STRUCTURE_TOWER) &&
-                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                    return (
+                            structure.structureType == STRUCTURE_EXTENSION ||
+                            (structure.structureType == STRUCTURE_TOWER && Math.round((structure.store[RESOURCE_ENERGY] / structure.store.getCapacity([RESOURCE_ENERGY])) * 100) < 50 )
+                            ) &&
+                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 }
             });
-            if (!targets) {
+            creep.say('m2extTower');
+            if (!targets.length) {
+                creep.say('m2spawn');
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_SPAWN) &&
@@ -77,12 +96,19 @@ global.roleMover = {
                     }
                 });
             }
+            if (!targets.length) {
+                creep.say('m2Tower');
+                targets = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+                    }
+                });
+            }
             target = creep.pos.findClosestByPath(targets)
-
-            if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
-                // console.log(creep.transfer(target, RESOURCE_ENERGY))
-
-                creep.moveTo(target, { visualizePathStyle: { stroke: '#ffaa00' } })
+            for(const resourceType in creep.store) {
+                if (creep.transfer(target, resourceType) != OK) {
+                    creep.moveTo(target, { visualizePathStyle: { stroke: '#ffaa00' } })
+                }
             }
         }
     }
