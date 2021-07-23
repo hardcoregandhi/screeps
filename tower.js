@@ -62,7 +62,7 @@ var roleTower = {
                         ||
                         (
                             structure.structureType == STRUCTURE_WALL &&
-                            Math.round((structure.hits / structure.hitsMax) * 100 < 0.01)
+                            Math.round((structure.hits / structure.hitsMax) * 100 < 0.02)
                         )
                     )
                 )
