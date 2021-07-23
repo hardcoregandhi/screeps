@@ -54,7 +54,7 @@ global.roleBuilder = {
             //         creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
             //     }
             // }
-            if (creep.ticksToLive < 150) {
+            if (creep.ticksToLive < 250) {
                 creep.memory.healing = true
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
@@ -90,7 +90,7 @@ global.roleBuilder = {
         }
         else {
             if(Game.flags.DISMANTLE) {
-                var dismantle = Game.flags.DISMANTLE.pos.lookFor(LOOK_CONSTRUCTION_SITES)[0]
+                var dismantle = Game.flags.DISMANTLE.pos.lookFor(LOOK_STRUCTURES)[0]
                 if (dismantle) {
                     if (creep.dismantle(dismantle) != OK) {
                         console.log(creep.dismantle(dismantle))
@@ -101,18 +101,18 @@ global.roleBuilder = {
             }
                 
             
-            
-            var targets = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_STORAGE && structure.store[RESOURCE_ENERGY] > 200);
+            if (creepRoomMap.get(creep.room.name+"mover") > 0) {
+                var targets = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_STORAGE);
+                    }
+                });
+                if (targets.length) {
+                    if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
+                        creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffaa00' } })
+                    }
                 }
-            });
-            if (targets.length) {
-                if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
-                    creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffaa00' } })
-                }
-            }
-            else {
+            } else {
                 var sources = creep.room.find(FIND_SOURCES);
                 if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
                     if (creep.moveTo(sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }) == ERR_NO_PATH) {
