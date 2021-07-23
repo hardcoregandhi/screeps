@@ -237,7 +237,10 @@ module.exports.loop = function () {
             roleClaimer.run(creep);
         }
         if (creep.memory.role == 'mover') {
-            if (creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES)) {
+            var droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, { filter: (r) => r.amount >= 150 })
+            if (droppedResource != null) {
+                creep.room.visual.circle(droppedResource.pos, {color: 'red', radius: 0.5, lineStyle: 'dashed'});
+                // console.log(droppedResource.pos)
                 roleScavenger.run(creep)
                 continue
             }
