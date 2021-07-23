@@ -216,9 +216,8 @@ module.exports.loop = function () {
 
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
-        var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if (closestHostile) {
-            roleDefence.run(creep)
+        if (creep.memory.role == 'traveller') {
+            roleTraveller.run(creep);
             continue
         }
         if (creep.memory.role == 'upgrader' && harvesters.length < 1) {
