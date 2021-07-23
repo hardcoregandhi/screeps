@@ -61,7 +61,7 @@ global.roleUpgrader = {
             }
         }
         else {
-            var closeSources = creep.room.find(FIND_SOURCES, { filter: (s) => { return creep.room.controller.pos.inRangeTo(s, 10) == true }});
+            var closeSources = creep.room.find(FIND_SOURCES, { filter: (s) => { return creep.room.controller.pos.inRangeTo(s, 15) == true }});
             if (closeSources.length > 0) {
                 if (creep.store.getFreeCapacity() > 0) {
                     if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
