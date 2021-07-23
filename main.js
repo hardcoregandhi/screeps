@@ -18,6 +18,8 @@ function getBodyCost(bodyParts) {
 }
 
 focusHealing = false
+global.myRooms = ["W16S21", "W15S21"]
+
 
 spawnCreep = function (_role, customBodyParts = null, customMemory = null) {
     var ret = -1;
@@ -143,6 +145,9 @@ module.exports.loop = function () {
     roomOffset = 0
     for (var room in Game.rooms) {
         r = Game.rooms[room]
+        // if (!myRooms.includes(r.name)) {
+        //     continue
+        // }
         // Creep info
         new RoomVisual().text(r.name, 1, 24.5+roomOffset, { align: 'left', font: 0.5 });
         new RoomVisual().text('🔋  ExcessEnergy: ' + creepRoomMap.get(r.name+"eenergy"), 1, 25+roomOffset, { align: 'left', font: 0.5 });
@@ -167,6 +172,9 @@ module.exports.loop = function () {
     
     for (var room in Game.rooms) {
         r = Game.rooms[room]
+        if (!myRooms.includes(r.name)) {
+            continue
+        }
         if (Memory.createClaimer) {
             if (spawnCreep(roleClaimer, null, { memory: {baseRoomName: r.name }}) == 0) {
                 Memory.createClaimer = false;
@@ -264,10 +272,15 @@ module.exports.loop = function () {
         }
     }
 
-    // THIS IS ALL USING THE LAST CREEP IN GAME.CREEPS, AND IS THEREFORE NOT RIGHT
     // Auto roads
     for (var room in Game.rooms) {
         room = Game.rooms[room]
+        if (!myRooms.includes(r.name)) {
+            continue
+        }
+        if (!room.controller) {
+            continue
+        }
         if (room.controller.my) {
             var sources = room.find(FIND_SOURCES);
             for (var s in sources) {
