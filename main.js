@@ -289,7 +289,7 @@ module.exports.loop = function () {
             var sources = room.find(FIND_SOURCES);
             for (var s in sources) {
                 // Sources to controller
-                for (var pathStep of sources[s].pos.findPathTo(room.controller.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
+                for (var pathStep of sources[s].pos.findPathTo(room.controller.pos, { "ignoreCreeps": true, "ignoreRoads": true, "swampCost": 1  })) {
                     room.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
                     if (/*new Room.Terrain(room.name).get(pathStep.x, pathStep.y) == TERRAIN_MASK_SWAMP &&*/
                             room.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0) {
@@ -303,7 +303,7 @@ module.exports.loop = function () {
                             return (structure.structureType == STRUCTURE_SPAWN);
                         }
                     });
-                for (var pathStep of sources[s].pos.findPathTo(room_spawner, { "ignoreCreeps": true, "ignoreRoads": true })) {
+                for (var pathStep of sources[s].pos.findPathTo(room_spawner, { "ignoreCreeps": true, "ignoreRoads": true, "swampCost": 1  })) {
                     // room.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
                     if (new Room.Terrain(room.name).get(pathStep.x, pathStep.y) == TERRAIN_MASK_SWAMP &&
                         room.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0
@@ -330,7 +330,7 @@ module.exports.loop = function () {
                     });
                 // Source to towers
                 for (var t of room_towers) {
-                    for (var pathStep of sources[s].pos.findPathTo(t.pos, { "ignoreCreeps": true, "ignoreRoads": true })) {
+                    for (var pathStep of sources[s].pos.findPathTo(t.pos, { "ignoreCreeps": true, "ignoreRoads": true, "swampCost": 1 })) {
                         if (new Room.Terrain(room.name).get(pathStep.x, pathStep.y) != TERRAIN_MASK_SWAMP &&
                             room.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0) {
                             // room.visual.circle(pathStep, {color: 'green', lineStyle: 'dashed'});
