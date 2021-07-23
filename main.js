@@ -188,7 +188,8 @@ module.exports.loop = function () {
             spawnCreep(roleUpgrader, null, { memory: {baseRoomName: r.name }});
             break
         }
-        else if (creepRoomMap.get(r.name+"builder") < creepRoomMap.get(r.name+"csites")) {
+        else if (creepRoomMap.get(r.name+"builder") < creepRoomMap.get(r.name+"csites") / 2 &&
+                 creepRoomMap.get(r.name+"builder") < 6) {
             spawnCreep(roleBuilder, null, { memory: {baseRoomName: r.name }});
             break
         }
@@ -196,7 +197,7 @@ module.exports.loop = function () {
             spawnCreep(roleMover, null, { memory: {baseRoomName: r.name }});
             break
         }
-        else if (creepRoomMap.get(r.name+"upgrader") < 10) {
+        else if (creepRoomMap.get(r.name+"upgrader") < 6 && creepRoomMap.get(r.name+"csites") < 1) {
             spawnCreep(roleUpgrader, null, { memory: {baseRoomName: r.name }});
             break
         }
