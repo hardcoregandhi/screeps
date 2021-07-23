@@ -144,10 +144,10 @@ module.exports.loop = function () {
         r = Game.rooms[room]
         // Creep info
         new RoomVisual().text(r.name, 1, 24.5+roomOffset, { align: 'left', font: 0.5 });
-        new RoomVisual().text('⚡️ ExcessEnergy: ' + creepRoomMap.get(r.name+"eenergy"), 1, 25+roomOffset, { align: 'left', font: 0.5 });
+        new RoomVisual().text('🔋  ExcessEnergy: ' + creepRoomMap.get(r.name+"eenergy"), 1, 25+roomOffset, { align: 'left', font: 0.5 });
         new RoomVisual().text('⚡️ Energy      : ' + r.energyAvailable, 1, 25.5+roomOffset, { align: 'left', font: 0.5 });
         new RoomVisual().text('⛏️ Harvesters  : ' + creepRoomMap.get(r.name+"harvester"), 1, 26+roomOffset, { align: 'left', font: 0.5 });
-        new RoomVisual().text('⛏️ Movers      : ' + creepRoomMap.get(r.name+"mover"), 1, 26.5+roomOffset, { align: 'left', font: 0.5 });
+        new RoomVisual().text('🚚 Movers      : ' + creepRoomMap.get(r.name+"mover"), 1, 26.5+roomOffset, { align: 'left', font: 0.5 });
         new RoomVisual().text('👷 Builders    : ' + creepRoomMap.get(r.name+"builder"), 1, 27+roomOffset, { align: 'left', font: 0.5 });
         new RoomVisual().text('🚧 C sites     : ' + creepRoomMap.get(r.name+"csites"), 1, 27.5+roomOffset, { align: 'left', font: 0.5 });
         new RoomVisual().text('🔺Upgraders    : ' + creepRoomMap.get(r.name+"upgrader"), 1, 28+roomOffset, { align: 'left', font: 0.5 });
