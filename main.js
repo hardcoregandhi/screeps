@@ -6,6 +6,7 @@ var roleClaimer = require('role.claimer');
 var roleMover = require('role.mover');
 var roleDefence = require('role.defense');
 var roleScavenger = require('role.scavenger');
+var roleTraveller = require('role.traveller');
 
 function getRandomInt(min = 100, max = 999) {
     min = Math.ceil(min);
