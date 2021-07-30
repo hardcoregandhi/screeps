@@ -6,11 +6,6 @@ global.roleDefence = {
         }
 
         var sources = creep.room.find(FIND_SOURCES);
-        // Lost creeps return home
-        if (!creep.room.controller.my) {
-            creep.moveTo(creep.memory.baseRoomName)
-            return;
-        }
 
         // Bad hack to split the upgraders and the harvesters
         // creep.memory.currentSource = 0
