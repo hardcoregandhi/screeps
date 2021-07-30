@@ -20,7 +20,7 @@ global.roleBuilder = {
             if (route.length > 0) {
                 creep.say('Headin oot');
                 const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit, { visualizePathStyle: { stroke: '#ffffff' } });
+                moveToTarget(creep, exit, true);
             }
             else {
                 creep.say('No route found');
@@ -29,13 +29,26 @@ global.roleBuilder = {
         }
         var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
         if(targets.length == 0){
-            _.forEach(Game.rooms, room => {
-                if(room.find(FIND_CONSTRUCTION_SITES).length) {
-                    creep.memory.baseRoomName = room.name
-                    return
-                }
-            })
+            if (creep.body.filter(x => x.type==MOVE).length > 5) {
+                _.forEach(Game.rooms, room => {
+                    if(room.find(FIND_CONSTRUCTION_SITES).length) {
+                        creep.memory.baseRoomName = room.name
+                        return
+                    }
+                })
+            }
+            if (creepRoomMap.get(creep.room.name+"eenergy") == undefined || creepRoomMap.get(creep.room.name+"eenergy") < 200) {
+                // console.log("Defauling to Harvester")
+                roleHarvester.run(creep)
+                return
+            }
+            else {
+                // console.log("Defauling to upgrader")
+                roleUpgrader.run(creep)
+                return
+            }
         }
+                
         var sources = creep.room.find(FIND_SOURCES);
         if (creep.memory.currentSource > sources.length - 1) {
             creep.memory.currentSource = 0
@@ -79,16 +92,6 @@ global.roleBuilder = {
                 if (creep.build(closest) == ERR_NOT_IN_RANGE) {
                     // moveToTarget(creep, closest, false)
                     creep.moveTo(closest, { visualizePathStyle: { stroke: '#ffffff' } });
-                }
-            }
-            else {
-                if (creepRoomMap.get(creep.room.name+"eenergy") < 200) {
-                    // console.log("Defauling to Harvester")
-                    roleHarvester.run(creep)
-                }
-                else {
-                    // console.log("Defauling to upgrader")
-                    roleUpgrader.run(creep)
                 }
             }
         }
