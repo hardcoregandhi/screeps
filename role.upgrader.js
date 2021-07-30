@@ -3,7 +3,11 @@ global.roleUpgrader = {
     name: 'upgrader',
     roleMemory: { memory: {} },
     // memory: { baseRoomName: "W15S21" },
-    BodyParts: [WORK, CARRY, WORK, CARRY, WORK, CARRY, WORK, MOVE, MOVE, MOVE],
+    BodyParts: [
+        WORK, WORK, WORK, WORK, WORK,
+        WORK, WORK, WORK, WORK, WORK,
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        MOVE, MOVE, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep) {

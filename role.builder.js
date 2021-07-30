@@ -3,7 +3,11 @@ require('movement')
 
 global.roleBuilder = {
     name: 'builder',
-    BodyParts: [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+    BodyParts: [
+        WORK, WORK, WORK, WORK, WORK,
+        WORK, WORK, WORK, WORK, WORK,
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        MOVE, MOVE, MOVE, MOVE, MOVE],
     roleMemory: { memory: {} },
     /** @param {Creep} creep **/
     run: function (creep) {

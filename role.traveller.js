@@ -1,7 +1,14 @@
 global.roleTraveller = {
     name: 'traveller',
     roleMemory: { memory: {  } },
-    BodyParts: [ATTACK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
+    BodyParts: [
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        MOVE, MOVE, MOVE, MOVE, MOVE,
+        MOVE, MOVE, MOVE, MOVE, MOVE,
+        MOVE, MOVE, MOVE, MOVE, MOVE,
+    ],
 
     run: function (creep) {
         
