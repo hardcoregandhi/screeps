@@ -1,6 +1,6 @@
 
 function log(str) {
-    if (1)
+    if (0)
     console.log(str)
 }
 
@@ -29,6 +29,23 @@ global.roleMover = {
                 creep.say('No route found');
             }
             return;
+        }
+        
+        // If creep is holding non-energy, deposit it first
+        var storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType == STRUCTURE_STORAGE) &&
+                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                }
+            });
+        for(const resourceType in creep.store) {
+            if (resourceType != RESOURCE_ENERGY) {
+                if (creep.transfer(storage, resourceType) != OK) {
+                    // console.log(creep.transfer(storage, resourceType) )
+                    creep.moveTo(storage, { visualizePathStyle: { stroke: '#ffaa00' } })
+                    return
+                }
+            }
         }
 
         // Bad hack to split the upgraders and the harvesters
@@ -63,18 +80,27 @@ global.roleMover = {
             // creep.say("hello")
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_STORAGE);
+                    return (structure.structureType == STRUCTURE_STORAGE ||
+                            structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
                 }
             });
             if(targets.length) {
-                creep.say('m2storage');
+                // creep.say('m2storage');
+                for(const resourceType in creep.store) {
+                    if (resourceType != RESOURCE_ENERGY) {
+                        if (creep.transfer(targets[0], resourceType) != OK) {
+                            creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffaa00' } })
+                            return
+                        }
+                    }
+                }
                 if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
                     // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                    creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffaa00' } })
+                    creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffaa00' }, maxRooms: 1 })
                 }
             }
             else
-                creep.say("lost")
+                creep.say("no eenergy")
         }
         else {
             var targets = creep.room.find(FIND_STRUCTURES, {
@@ -86,9 +112,9 @@ global.roleMover = {
                             structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 }
             });
-            creep.say('m2extTower');
+            // creep.say('m2extTower');
             if (!targets.length) {
-                creep.say('m2spawn');
+                // creep.say('m2spawn');
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_SPAWN) &&
@@ -97,10 +123,18 @@ global.roleMover = {
                 });
             }
             if (!targets.length) {
-                creep.say('m2Tower');
+                // creep.say('m2Tower');
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
+                    }
+                });
+            }
+            if (!targets.length) {
+                creep.say('no targets');
+                targets = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_TOWER);
                     }
                 });
             }
