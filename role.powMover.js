@@ -32,16 +32,12 @@ global.rolePowMover.run = function (creep) {
     });
     var power_spawns_pow = creep.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
-            return (
-                structure.structureType == STRUCTURE_POWER_SPAWN && structure.store.getUsedCapacity(RESOURCE_POWER) < 20
-            );
+            return structure.structureType == STRUCTURE_POWER_SPAWN && structure.store.getUsedCapacity(RESOURCE_POWER) < 20;
         },
     });
     var power_spawns_en = creep.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
-            return (
-                structure.structureType == STRUCTURE_POWER_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-            );
+            return structure.structureType == STRUCTURE_POWER_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
         },
     });
 
@@ -96,9 +92,7 @@ global.rolePowMover.run = function (creep) {
         creep.memory.healing = true;
         var targets = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
-                return (
-                    structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                );
+                return structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
             },
         });
         if (creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {

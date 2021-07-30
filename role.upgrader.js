@@ -8,26 +8,7 @@ global.roleUpgrader = {
     name: "upgrader",
     roleMemory: { memory: {} },
     // memory: { baseRoomName: "W15S21" },
-    BodyParts: [
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        MOVE,
-        MOVE,
-        MOVE,
-    ],
+    BodyParts: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -88,12 +69,7 @@ global.roleUpgrader = {
         } else {
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (
-                        (structure.structureType == STRUCTURE_STORAGE ||
-                            structure.structureType == STRUCTURE_CONTAINER) &&
-                        structure.store[RESOURCE_ENERGY] > 0 &&
-                        structure.room.name != "W16S21"
-                    );
+                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY] > 0 && structure.room.name != "W16S21";
                 },
             });
             if (targets.length) {

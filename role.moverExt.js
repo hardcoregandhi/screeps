@@ -5,28 +5,7 @@ function log(str) {
 global.roleMoverExt = {
     name: "moverExt",
     roleMemory: { memory: {} },
-    BodyParts: [
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-    ],
+    BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -91,11 +70,7 @@ global.roleMoverExt = {
         } else {
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (
-                        (structure.structureType == STRUCTURE_STORAGE ||
-                            structure.structureType == STRUCTURE_CONTAINER) &&
-                        structure.store.getUsedCapacity() > 0
-                    );
+                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
                 },
             });
             if (targets.length) {

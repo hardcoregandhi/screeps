@@ -36,10 +36,7 @@ global.roleScavenger = {
             creep.say("emptyin");
             storage = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (
-                        structure.structureType == STRUCTURE_STORAGE &&
-                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                    );
+                    return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 },
             });
             for (const resourceType in creep.store) {

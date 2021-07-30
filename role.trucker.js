@@ -5,42 +5,7 @@ function log(str) {
 global.roleTrucker = {
     name: "trucker",
     roleMemory: { memory: {} },
-    BodyParts: [
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-    ],
+    BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -85,10 +50,7 @@ global.roleTrucker = {
             creep.memory.healing = true;
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (
-                        structure.structureType == STRUCTURE_SPAWN &&
-                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                    );
+                    return structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 },
             });
             if (creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -102,10 +64,7 @@ global.roleTrucker = {
         if (!creep.memory.returning) {
             var target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (
-                        structure.structureType == STRUCTURE_STORAGE &&
-                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                    );
+                    return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 },
             });
             if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
@@ -116,10 +75,7 @@ global.roleTrucker = {
         } else {
             var target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (
-                        structure.structureType == STRUCTURE_STORAGE &&
-                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                    );
+                    return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 },
             });
             if (creep.withdraw(target, RESOURCE_ENERGY) != OK) {

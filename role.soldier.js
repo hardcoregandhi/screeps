@@ -45,8 +45,7 @@ global.roleSoldier = {
         // creep.say('🏳️');
         targetRoom = "W15S23";
 
-        var closestHostile =
-            creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) || creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
+        var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) || creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
         // console.log(closestHostile)
         if (closestHostile) {
             creep.room.visual.circle(closestHostile.pos, {

@@ -3,28 +3,7 @@ require("movement");
 
 global.roleBuilder = {
     name: "builder",
-    BodyParts: [
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        WORK,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        CARRY,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-    ],
+    BodyParts: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
     roleMemory: { memory: {} },
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -53,10 +32,7 @@ global.roleBuilder = {
                     }
                 });
             }
-            if (
-                creepRoomMap.get(creep.room.name + "eenergy") == undefined ||
-                creepRoomMap.get(creep.room.name + "eenergy") < 200
-            ) {
+            if (creepRoomMap.get(creep.room.name + "eenergy") == undefined || creepRoomMap.get(creep.room.name + "eenergy") < 200) {
                 // console.log("Defauling to Harvester")
                 roleHarvester.run(creep);
                 return;
@@ -132,11 +108,7 @@ global.roleBuilder = {
             if (creepRoomMap.get(creep.room.name + "mover") > 0) {
                 var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (
-                            (structure.structureType == STRUCTURE_STORAGE ||
-                                structure.structureType == STRUCTURE_CONTAINER) &&
-                            structure.store.getUsedCapacity() > 0
-                        );
+                        return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
                     },
                 });
                 if (creepRoomMap.get(creep.room.name + "eenergy") < 800) {

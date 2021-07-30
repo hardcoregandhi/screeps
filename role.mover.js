@@ -32,9 +32,7 @@ global.roleMover = {
         // If creep is holding non-energy, deposit it first
         var storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
             filter: (structure) => {
-                return (
-                    structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                );
+                return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
             },
         });
         for (const resourceType in creep.store) {
@@ -66,10 +64,7 @@ global.roleMover = {
             creep.memory.healing = true;
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (
-                        structure.structureType == STRUCTURE_SPAWN &&
-                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                    );
+                    return structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 },
             });
             if (creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -84,11 +79,7 @@ global.roleMover = {
             // creep.say("hello")
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (
-                        (structure.structureType == STRUCTURE_STORAGE ||
-                            structure.structureType == STRUCTURE_CONTAINER) &&
-                        structure.store.getUsedCapacity() > 0
-                    );
+                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
                 },
             });
             if (targets.length) {
@@ -115,13 +106,7 @@ global.roleMover = {
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (
-                        (structure.structureType == STRUCTURE_EXTENSION ||
-                            (structure.structureType == STRUCTURE_TOWER &&
-                                Math.round(
-                                    (structure.store[RESOURCE_ENERGY] /
-                                        structure.store.getCapacity([RESOURCE_ENERGY])) *
-                                        100
-                                ) < 50)) &&
+                        (structure.structureType == STRUCTURE_EXTENSION || (structure.structureType == STRUCTURE_TOWER && Math.round((structure.store[RESOURCE_ENERGY] / structure.store.getCapacity([RESOURCE_ENERGY])) * 100) < 50)) &&
                         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                     );
                 },
@@ -131,10 +116,7 @@ global.roleMover = {
                 // creep.say('m2spawn');
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (
-                            structure.structureType == STRUCTURE_SPAWN &&
-                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                        );
+                        return structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     },
                 });
             }
@@ -142,10 +124,7 @@ global.roleMover = {
                 // creep.say('m2Tower');
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (
-                            structure.structureType == STRUCTURE_TOWER &&
-                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                        );
+                        return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     },
                 });
             }

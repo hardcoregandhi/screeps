@@ -14,6 +14,10 @@ var roleSoldier = require("role.soldier");
 var rolePowHarvester = require("role.powHarvester");
 var rolePowMover = require("role.powMover");
 
+// require("manage.spawns");
+// require("manage.structs");
+// require("manage.creeps");
+
 function getRandomInt(min = 100, max = 999) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -89,12 +93,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
         }
     } else {
         // console.log(`Funds not available: ${cost}`)
-        new RoomVisual().text(
-            "Next " + spawn.room.name + ": " + _.capitalize(_role.name) + " Cost: " + cost,
-            1,
-            (nextSpawnOffset += 1) + 0,
-            { align: "left", font: 0.5 }
-        );
+        new RoomVisual().text("Next " + spawn.room.name + ": " + _.capitalize(_role.name) + " Cost: " + cost, 1, (nextSpawnOffset += 1) + 0, { align: "left", font: 0.5 });
     }
 
     if (customBodyParts) {
@@ -198,60 +197,15 @@ module.exports.loop = function () {
         // }
         // Creep info
         new RoomVisual().text(r.name, 1, listOffset + roomOffset + 0.5, { align: "left", font: 0.5 });
-        new RoomVisual().text(
-            "🔋  ExcessEnergy: " + creepRoomMap.get(r.name + "eenergy"),
-            1,
-            listOffset + roomOffset + 1,
-            { align: "left", font: 0.5 }
-        );
-        new RoomVisual().text(
-            "⚡️ Energy      : " + r.energyAvailable + "/" + r.energyCapacityAvailable,
-            1,
-            listOffset + roomOffset + 1.5,
-            { align: "left", font: 0.5 }
-        );
-        new RoomVisual().text(
-            "⛏️ Harvesters  : " + creepRoomMap.get(r.name + "harvester"),
-            1,
-            listOffset + roomOffset + 2,
-            { align: "left", font: 0.5 }
-        );
-        new RoomVisual().text(
-            "🚚 Movers      : " + creepRoomMap.get(r.name + "mover"),
-            1,
-            listOffset + roomOffset + 2.5,
-            { align: "left", font: 0.5 }
-        );
-        new RoomVisual().text(
-            "👷 Builders    : " + creepRoomMap.get(r.name + "builder"),
-            1,
-            listOffset + roomOffset + 3,
-            { align: "left", font: 0.5 }
-        );
-        new RoomVisual().text(
-            "🚧 C sites     : " + creepRoomMap.get(r.name + "csites"),
-            1,
-            listOffset + roomOffset + 3.5,
-            { align: "left", font: 0.5 }
-        );
-        new RoomVisual().text(
-            "🔺Upgraders    : " + creepRoomMap.get(r.name + "upgrader"),
-            1,
-            listOffset + roomOffset + 4,
-            { align: "left", font: 0.5 }
-        );
-        new RoomVisual().text(
-            "HarvestExt    : " + creepRoomMap.get(r.name + "harvesterExt"),
-            1,
-            listOffset + roomOffset + 4.5,
-            { align: "left", font: 0.5 }
-        );
-        new RoomVisual().text(
-            "MoverExt    : " + creepRoomMap.get(r.name + "moverExt"),
-            1,
-            listOffset + roomOffset + 5,
-            { align: "left", font: 0.5 }
-        );
+        new RoomVisual().text("🔋  ExcessEnergy: " + creepRoomMap.get(r.name + "eenergy"), 1, listOffset + roomOffset + 1, { align: "left", font: 0.5 });
+        new RoomVisual().text("⚡️ Energy      : " + r.energyAvailable + "/" + r.energyCapacityAvailable, 1, listOffset + roomOffset + 1.5, { align: "left", font: 0.5 });
+        new RoomVisual().text("⛏️ Harvesters  : " + creepRoomMap.get(r.name + "harvester"), 1, listOffset + roomOffset + 2, { align: "left", font: 0.5 });
+        new RoomVisual().text("🚚 Movers      : " + creepRoomMap.get(r.name + "mover"), 1, listOffset + roomOffset + 2.5, { align: "left", font: 0.5 });
+        new RoomVisual().text("👷 Builders    : " + creepRoomMap.get(r.name + "builder"), 1, listOffset + roomOffset + 3, { align: "left", font: 0.5 });
+        new RoomVisual().text("🚧 C sites     : " + creepRoomMap.get(r.name + "csites"), 1, listOffset + roomOffset + 3.5, { align: "left", font: 0.5 });
+        new RoomVisual().text("🔺Upgraders    : " + creepRoomMap.get(r.name + "upgrader"), 1, listOffset + roomOffset + 4, { align: "left", font: 0.5 });
+        new RoomVisual().text("HarvestExt    : " + creepRoomMap.get(r.name + "harvesterExt"), 1, listOffset + roomOffset + 4.5, { align: "left", font: 0.5 });
+        new RoomVisual().text("MoverExt    : " + creepRoomMap.get(r.name + "moverExt"), 1, listOffset + roomOffset + 5, { align: "left", font: 0.5 });
         roomOffset += 5;
     }
 
@@ -280,10 +234,7 @@ module.exports.loop = function () {
         } else if (creepRoomMap.get(r.name + "upgrader") < 1) {
             spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } else if (
-            creepRoomMap.get(r.name + "builder") < creepRoomMap.get(r.name + "csites") / 2 &&
-            creepRoomMap.get(r.name + "builder") < 3
-        ) {
+        } else if (creepRoomMap.get(r.name + "builder") < creepRoomMap.get(r.name + "csites") / 2 && creepRoomMap.get(r.name + "builder") < 3) {
             spawnCreep(roleBuilder, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "mover") < 2) {
@@ -473,10 +424,7 @@ module.exports.loop = function () {
                         swampCost: 20,
                     })) {
                         // r.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
-                        if (
-                            new Room.Terrain(r.name).get(pathStep2.x, pathStep2.y) == TERRAIN_MASK_SWAMP &&
-                            r.lookForAt(LOOK_STRUCTURES, pathStep2.x, pathStep2.y).length == 0
-                        ) {
+                        if (new Room.Terrain(r.name).get(pathStep2.x, pathStep2.y) == TERRAIN_MASK_SWAMP && r.lookForAt(LOOK_STRUCTURES, pathStep2.x, pathStep2.y).length == 0) {
                             r.visual.circle(pathStep2, {
                                 fill: "green",
                                 radius: 0.55,
@@ -512,10 +460,7 @@ module.exports.loop = function () {
                             fill: "red",
                             lineStyle: "dashed",
                         });
-                        if (
-                            new Room.Terrain(r.name).get(pathStep.x, pathStep.y) != TERRAIN_MASK_SWAMP &&
-                            r.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0
-                        ) {
+                        if (new Room.Terrain(r.name).get(pathStep.x, pathStep.y) != TERRAIN_MASK_SWAMP && r.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0) {
                             r.visual.circle(pathStep, {
                                 color: "green",
                                 lineStyle: "dashed",

@@ -5,20 +5,14 @@ var roleTower = {
 
         var highlyDamagedStructFound = tower.room.find(FIND_STRUCTURES, {
             filter: (structure) =>
-                (structure.structureType == STRUCTURE_ROAD &&
-                    Math.round((structure.hits / structure.hitsMax) * 100 < 1)) ||
-                (structure.structureType == STRUCTURE_WALL &&
-                    Math.round((structure.hits / structure.hitsMax) * 100 < 0.01)),
+                (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 1)) || (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.01)),
         });
 
         var customStructureSpecificPercentLimits = tower.room.find(FIND_STRUCTURES, {
             filter: (structure) =>
-                (structure.structureType == STRUCTURE_ROAD &&
-                    Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
-                (structure.structureType == STRUCTURE_RAMPART &&
-                    Math.round((structure.hits / structure.hitsMax) * 100 < 0.6)) ||
-                (structure.structureType == STRUCTURE_WALL &&
-                    Math.round((structure.hits / structure.hitsMax) * 100 < 0.02)),
+                (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
+                (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.6)) ||
+                (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.02)),
         });
 
         var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
