@@ -61,29 +61,28 @@ global.roleUpgrader = {
             }
         }
         else {
-            var closeSources = creep.room.find(FIND_SOURCES, { filter: (s) => { return creep.room.controller.pos.inRangeTo(s, 15) == true }});
-            if (closeSources.length > 0) {
-                if (creep.store.getFreeCapacity() > 0) {
-                    if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
-                        if (moveToTarget(creep, sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }, false) == ERR_NO_PATH) {
-                            creep.memory.currentSource++;
-                        }
+            var targets = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (
+                        (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) &&
+                        structure.store[RESOURCE_ENERGY] > 0 &&
+                        (structure.room.name != "W16S21")
+                        )
+                    ;
+                }
+            });
+            if (targets.length) {
+                if (creepRoomMap.get(creep.room.name + "eenergy") < 800 && creep.room.energyAvailable < 800) {
+                    moveToTarget(creep, creep.room.controller.pos, false)
+                    return
+                }
+                else {
+                    if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
+                        moveToTarget(creep, targets[0].pos, false)
                     }
                 }
             }
             else {
-                var targets = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_STORAGE &&
-                        structure.store[RESOURCE_ENERGY] > 0);
-                    }
-                });
-                if (targets.length) {
-                    if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
-                        moveToTarget(creep, targets[0], true)
-                    }
-                }
-                else {
                 var closeSources = creep.room.find(FIND_SOURCES, { filter: (s) => { return creep.room.controller.pos.inRangeTo(s, 15) == true }});
                 if (closeSources.length > 0) {
                     if (creep.store.getFreeCapacity() > 0) {

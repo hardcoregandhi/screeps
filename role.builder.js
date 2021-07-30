@@ -104,9 +104,14 @@ global.roleBuilder = {
             if (creepRoomMap.get(creep.room.name+"mover") > 0) {
                 var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_STORAGE);
+                        return (structure.structureType == STRUCTURE_STORAGE ||
+                            structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
                     }
                 });
+                if (creepRoomMap.get(creep.room.name + "eenergy") < 800) {
+                    moveToTarget(creep, creep.room.controller.pos, false)
+                    return
+                }
                 if (targets.length) {
                     if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
                         creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffaa00' } })
