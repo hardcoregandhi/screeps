@@ -84,16 +84,17 @@ global.roleUpgrader = {
                     }
                 }
                 else {
-                    if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
-                        if (moveToTarget(creep, sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }, false) == ERR_NO_PATH) {
-                            creep.memory.currentSource++;
+                var closeSources = creep.room.find(FIND_SOURCES, { filter: (s) => { return creep.room.controller.pos.inRangeTo(s, 15) == true }});
+                if (closeSources.length > 0) {
+                    if (creep.store.getFreeCapacity() > 0) {
+                        if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
+                            if (moveToTarget(creep, sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } }, false) == ERR_NO_PATH) {
+                                creep.memory.currentSource++;
+                            }
                         }
                     }
                 }
-                
             }
-
-        
         }
     }
 };
