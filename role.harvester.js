@@ -1,3 +1,9 @@
+function log(creep, str) {
+    // if (creep.name == "Harvester_393")
+    if (0)
+        console.log(str)
+}
+
 global.roleHarvester = {
     name: 'harvester',
     roleMemory: { memory: {} },
@@ -9,6 +15,9 @@ global.roleHarvester = {
         var sources = creep.room.find(FIND_SOURCES);
         if (!creep.memory.currentSource) {
             creep.memory.currentSource = 0;
+        }
+        if(creep.memory.mining == undefined) {
+            creep.memory.mining = true
         }
 
         // Lost creeps return home
@@ -28,7 +37,7 @@ global.roleHarvester = {
         // Bad hack to split the upgraders and the harvesters
         // creep.memory.currentSource = 0
 
-        if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
+        if (creep.memory.mining && (creep.store.getFreeCapacity() == 0)) {
             creep.memory.mining = false;
             creep.say('🔄 dropping');
         }
@@ -38,9 +47,7 @@ global.roleHarvester = {
         }
 
 
-
         if (creep.memory.mining) {
-
             if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
                 let ret = creep.moveTo(sources[creep.memory.currentSource], { visualizePathStyle: { stroke: '#ffaa00' } })
                 // if(ret != OK) {
@@ -72,7 +79,7 @@ global.roleHarvester = {
                     });
             focusHealing = false
             if (targets.length > 0) {
-                var target
+                var target = null
                 //Priority is
                 /* 
                     1. itself
@@ -80,7 +87,8 @@ global.roleHarvester = {
                     3. healing
                     4. speed
                 */
-                if (creep.ticksToLive < 300) {
+                if (creep.ticksToLive < 500) {
+                    log(creep, "healing")
                     creep.memory.healing = true
                     targets = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
@@ -88,58 +96,63 @@ global.roleHarvester = {
                         }
                     });
                     target = targets[0]
-                }
-                else if (focusHealing || (towers.length && creep.room.find(FIND_STRUCTURES, { filter: (structure) => structure.structureType == STRUCTURE_ROAD && (Math.round((structure.hits / structure.hitsMax) * 100 < 50)) }).length > 0)) {
-                    targets = creep.room.find(FIND_STRUCTURES, {
-                        filter: (structure) => {
-                            return structure.structureType == STRUCTURE_TOWER
-                                && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                        }
-                    });
-                    target = creep.pos.findClosestByPath(targets)
-                    // console.log(targets)
-
+                    moveToTarget(creep, target.pos, true)
+                    creep.transfer(target, RESOURCE_ENERGY)
+                    return
+                    
                 }
                 else {
                     // If we have Movers, just use the storage
-                    if (_.filter(Game.creeps, (creep_itr) => creep_itr.memory.role == 'mover' && (creep_itr.memory.baseRoomName == creep.memory.baseRoomName)).length > 0) {
+                    if (creepRoomMap.get(creep.room.name+"mover") != undefined && creepRoomMap.get(creep.room.name+"mover") > 0) {
+                        log(creep, "movers found")
                         targets = creep.room.find(FIND_STRUCTURES, {
                             filter: (structure) => {
                                 return structure.structureType == STRUCTURE_STORAGE
                                     && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                             }
                         });
+                        if(!targets.length) {
+                            log(creep, "no storage found")
+                            targets = creep.room.find(FIND_STRUCTURES, {
+                                filter: (structure) => {
+                                    return (structure.structureType == STRUCTURE_CONTAINER ||
+                                        structure.structureType == STRUCTURE_SPAWN)
+                                        && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                                }
+                            });
+                            
+                            if(!targets.length) {
+                                log(creep, "no container found")
+                            }
+                            else
+                            target = targets[0]
+                            moveToTarget(creep, target.pos, true)
+                            return
+
+                        }
                     }
                     else {
+                        log(creep, "no movers found")
                         targets = creep.room.find(FIND_STRUCTURES, {
                             filter: (structure) => {
                                 return (structure.structureType == STRUCTURE_EXTENSION ||
-                                    structure.structureType == STRUCTURE_SPAWN)
+                                    structure.structureType == STRUCTURE_SPAWN ||
+                                    structure.structureType == STRUCTURE_CONTAINER)
                                     && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                             }
                         });
+                        if(!targets.length) {
+                            log(creep, "no exts, spawn, or container found")
+                            targets = towers
+                        }
                         // console.log(targets)
                     }
                     target = creep.pos.findClosestByPath(targets)
+                    log(creep, `target: ${target}`)
                 }
 
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    if (NO_SWAMP = false) {
-                        creep.moveTo(target, { visualizePathStyle: { stroke: '#ffffff' } });
-                        // console.log(target)
-                    }
-                    else {
-                        const path = creep.room.findPath(creep.pos, target.pos);
-                        roomPos = new RoomPosition(path[0].x, path[0].y, creep.room.name)
-                        isSwamp = new Room.Terrain(creep.room.name).get(path[0].x, path[0].y) == TERRAIN_MASK_SWAMP
-                        isPath = roomPos.lookFor(LOOK_STRUCTURES).length != 0
-                        if (
-                            !isSwamp ||
-                            (isSwamp && isPath)
-                        ) {
-                            creep.moveTo(path[0].x, path[0].y, { visualizePathStyle: { stroke: '#ffffff' } });
-                        }
-                    }
+                    moveToTarget(creep, target.pos, true)
                 }
             }
         }
