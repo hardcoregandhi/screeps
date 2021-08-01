@@ -84,7 +84,7 @@ global.roleUpgrader = {
             } else {
                 var closeSources = creep.room.find(FIND_SOURCES, {
                     filter: (s) => {
-                        return creep.room.controller.pos.inRangeTo(s, 15) == true;
+                        return creep.room.controller.pos.inRangeTo(s, 9) == true;
                     },
                 });
                 if (closeSources.length > 0) {
