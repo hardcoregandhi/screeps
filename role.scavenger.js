@@ -43,6 +43,7 @@ global.roleScavenger = {
                 if (creep.transfer(storage, resourceType) != OK) {
                     creep.moveTo(storage, {
                         visualizePathStyle: { stroke: "#ffaa00" },
+                        maxRooms: 1,
                     });
                     return;
                 }
@@ -59,6 +60,7 @@ global.roleScavenger = {
                 if (creep.pickup(droppedResource) != 0) {
                     creep.moveTo(droppedResource, {
                         visualizePathStyle: { stroke: "#ffffff" },
+                        maxRooms: 1,
                     });
                 }
             } else if (tombstoneResource) {
@@ -67,6 +69,7 @@ global.roleScavenger = {
                     if (creep.withdraw(tombstoneResource, resourceType) != 0) {
                         creep.moveTo(tombstoneResource, {
                             visualizePathStyle: { stroke: "#ffffff" },
+                            maxRooms: 1,
                         });
                     }
                 }
