@@ -20,6 +20,42 @@ global.runStructs = function() {
         for (var p of pspawns) {
             p.processPower();
         }
+        
+        var links = room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType == STRUCTURE_LINK;
+            },
+        });
+        var storage = null
+        var storages = room.find(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return structure.structureType == STRUCTURE_STORAGE;
+                        },
+                    });
+        if(storages.length){
+            storage = storages[0]
+            if(Memory.rooms.room == undefined) {
+                Memory.rooms[room.name] = {}
+            }
+            Memory.rooms[room.name].storage = storage.id
+        }
+        if(links.length == 2 && storage != null) {
+            var l_from = storage.pos.findClosestByRange(links)
+            var l_to = links.filter(l => l != l_from)[0]
+            if(Memory.rooms.room == undefined) {
+                Memory.rooms[room.name] = {}
+            }
+            
+            Memory.rooms[room.name].l_from = l_from.id
+            Memory.rooms[room.name].l_to = l_to.id
+            Memory.rooms[room.name].storage = storage.id
+
+            if (l_from && l_from.store.getUsedCapacity([RESOURCE_ENERGY]) == 800) {
+                if(l_to.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
+                    console.log(`Sending energy: ${room.name} Return:` + l_from.transferEnergy(l_to, 800))
+                }
+            }
+        }
     });
 
     // Renew

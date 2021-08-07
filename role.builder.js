@@ -129,7 +129,21 @@ global.roleBuilder = {
                         return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
                     },
                 });
-                if (creepRoomMap.get(creep.room.name + "eenergy") < 800) {
+                if (creepRoomMap.get(creep.room.name + "eenergy") === undefined || creepRoomMap.get(creep.room.name + "eenergy") < 800) {
+                    log(creep, 10)
+                    try {
+                        var l_to = Game.getObjectById(Memory.rooms[creep.room.name].l_to);
+                        console.log(l_to)
+                        if (l_to && l_to.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                            if(creep.withdraw(l_to, RESOURCE_ENERGY) != OK){
+                                moveToTarget(creep, l_to)
+                            }
+                        }
+                    } catch(error) {
+                        console.log(error)
+                        console.trace();
+                    }
+
                     moveToTarget(creep, creep.room.controller.pos, false);
                     return;
                 }

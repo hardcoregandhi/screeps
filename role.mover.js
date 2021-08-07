@@ -135,7 +135,27 @@ global.roleMover = {
                 });
             }
             if (!targets.length) {
+                targets = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (
+                            (
+                                (structure.structureType == STRUCTURE_LINK && storage.pos.inRangeTo(structure, 2))
+                            ) &&
+                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                        );
+                    },
+                });
+            }
+            if (!targets.length) {
                 creep.say("no targets");
+                try {
+                    var storage = Game.getObjectById(Memory.rooms[creep.room.name].storage);
+                    moveToTarget(creep, storage)
+                    return
+                } catch(error) {
+                    console.log(error)
+                    console.trace();
+                }
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return structure.structureType == STRUCTURE_TOWER;

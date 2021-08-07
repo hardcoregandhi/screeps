@@ -88,6 +88,27 @@ global.roleUpgrader = {
                     return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY] > 0 && structure.room.name != "W16S21";
                 },
             });
+            var links = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType == STRUCTURE_LINK;
+                },
+            });
+            if(links.length == 2) {
+                try {
+                    var l_to = Game.getObjectById(Memory.rooms[creep.room.name].l_to);
+                    if (l_to && l_to.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                        creep.say("h2link")
+                        if(creep.withdraw(l_to, RESOURCE_ENERGY) != OK){
+                            moveToTarget(creep, l_to)
+                        }
+                    }
+                    moveToTarget(creep, l_to)
+                    return
+                } catch(error) {
+                    console.log(error)
+                    console.trace();
+                }
+            }
             if (targets.length) {
                 if (creepRoomMap.get(creep.room.name + "eenergy") < 800 && creep.room.energyAvailable < 800) {
                     moveToTarget(creep, creep.room.controller.pos, false);
