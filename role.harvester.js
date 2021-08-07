@@ -51,9 +51,17 @@ global.roleHarvester = {
             creep.memory.mining = true;
             creep.say("⛏️ mining");
         }
+        
+        if (creep.ticksToLive < 300) {
+            creep.say("healing");
+            creep.memory.healing = true;
+            creep.drop(RESOURCE_ENERGY)
+            returnToHeal(creep, creep.memory.baseRoomName)
+            return
+        }
 
         if (creep.memory.mining) {
-            if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
+            pickupNearby(creep)
                 let ret = creep.moveTo(sources[creep.memory.currentSource], {
                     visualizePathStyle: { stroke: "#ffaa00" },
                 });

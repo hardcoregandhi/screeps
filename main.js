@@ -18,6 +18,7 @@ require("manage.spawns");
 require("manage.structs");
 require("manage.creeps");
 require("manage.roads");
+require("role.common");
 
 function getRandomInt(min = 100, max = 999) {
     min = Math.ceil(min);
@@ -105,10 +106,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
     return ret;
 };
 
-var spawn = Game.spawns["Spawn1"];
-
 module.exports.loop = function () {
-    runStructs()
 
     for (var i in Memory.creeps) {
         if (!Game.creeps[i]) {
@@ -194,7 +192,9 @@ module.exports.loop = function () {
     runSpawns();
 
     runCreeps();
+    
+    runStructs()
 
-    runRoads();
+    // runRoads();
     
 };

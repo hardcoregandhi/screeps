@@ -34,6 +34,12 @@ global.roleHarvesterExt = {
             return;
         }
 
+        if (creep.ticksToLive < 300) {
+            creep.say("healing");
+            creep.memory.healing = true;
+            returnToHeal(creep, creep.memory.baseRoomName)
+            return
+        }
         if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
             creep.memory.mining = false;
             creep.memory.fakeBaseRoomName = creep.memory.baseRoomName;
@@ -68,6 +74,7 @@ global.roleHarvesterExt = {
         }
 
         if (creep.memory.mining) {
+            pickupNearby(creep)
             var targetSource = creep.pos.findClosestByRange(creep.room.find(FIND_SOURCES));
             if (creep.harvest(targetSource) != OK) {
                 // console.log(creep.harvest(targetSource))

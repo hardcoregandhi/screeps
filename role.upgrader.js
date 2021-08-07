@@ -49,6 +49,12 @@ global.roleUpgrader = {
             creep.memory.upgrading = true;
             creep.say("⚡ upgrade");
         }
+        if (creep.ticksToLive < 300) {
+            creep.say("healing");
+            creep.memory.healing = true;
+            returnToHeal(creep, creep.memory.baseRoomName)
+            return
+        }
 
         if (creep.memory.upgrading) {
             if (creep.ticksToLive < 300) {
@@ -65,10 +71,15 @@ global.roleUpgrader = {
                         visualizePathStyle: { stroke: "#ffaa00" },
                     });
                 }
-            } else if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                moveToTarget(creep, creep.room.controller.pos, false);
-                if (creep.store[RESOURCE_ENERGY] == 0) {
-                    creep.memory.upgrading = false;
+            } else {
+                healRoads(creep)
+                if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                
+                    moveToTarget(creep, creep.room.controller.pos, false);
+                    creep.moveTo(creep.room.controller.pos)
+                    if (creep.store[RESOURCE_ENERGY] == 0) {
+                        creep.memory.upgrading = false;
+                    }
                 }
             }
         } else {

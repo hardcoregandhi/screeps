@@ -1,5 +1,7 @@
 var roleHarvester = require("role.harvester");
 require("movement");
+require("role.common");
+
 
 global.roleBuilder = {
     name: "builder",
@@ -62,6 +64,13 @@ global.roleBuilder = {
             creep.memory.building = true;
             creep.say("🚧 build");
         }
+        
+        if (creep.ticksToLive < 300) {
+            creep.say("healing");
+            creep.memory.healing = true;
+            returnToHeal(creep, creep.memory.baseRoomName)
+            return
+        }
 
         if (creep.memory.building) {
             // var targets = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
@@ -86,6 +95,9 @@ global.roleBuilder = {
                     return;
                 }
             }
+            
+            healRoads(creep)
+            
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if (targets.length) {
                 var closest = creep.pos.findClosestByPath(targets);
