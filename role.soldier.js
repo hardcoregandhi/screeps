@@ -3,41 +3,13 @@ global.roleSoldier = {
     roleMemory: { memory: {} },
     // prettier-ignore
     BodyParts: [
-        ATTACK,
-        ATTACK,
-        ATTACK,
-        ATTACK,
-        ATTACK,
-        ATTACK,
-        ATTACK,
-        ATTACK,
-        ATTACK,
-        ATTACK,
-        TOUGH,
-        TOUGH,
-        TOUGH,
-        TOUGH,
-        TOUGH,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
-        MOVE,
+        ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,
+        ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,
+        TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,
+        MOVE,MOVE,MOVE,MOVE,MOVE,
+        MOVE,MOVE,MOVE,MOVE,MOVE,
+        MOVE,MOVE,MOVE,MOVE,MOVE,
+        MOVE,MOVE,MOVE,MOVE,MOVE,
         HEAL,
     ],
 
@@ -54,12 +26,12 @@ global.roleSoldier = {
                 radius: 1,
             });
             if (creep.attack(closestHostile) != OK) {
-                creep.moveTo(closestHostile, { maxRooms: 1});
+                creep.moveTo(closestHostile, { maxRooms: 1 });
             }
             return;
         }
-        if (creep.hits < 500) creep.heal(creep)
-        
+        if (creep.hits < 500) creep.heal(creep);
+
         // if (creep.ticksToLive < 500) {
         //     if (creep.room.name != creep.memory.baseRoomName) {
         //         const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
@@ -81,7 +53,7 @@ global.roleSoldier = {
             }
         } else {
             // creep.moveTo(creep.room.controller);
-            creep.attack(creep.room.controller)
+            creep.attack(creep.room.controller);
         }
     },
 };

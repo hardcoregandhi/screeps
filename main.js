@@ -107,7 +107,6 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
 };
 
 module.exports.loop = function () {
-
     // Cleanup
     for (var i in Memory.creeps) {
         if (!Game.creeps[i]) {
@@ -193,9 +192,8 @@ module.exports.loop = function () {
     runSpawns();
 
     runCreeps();
-    
-    runStructs()
+
+    runStructs();
 
     // runRoads();
-    
 };

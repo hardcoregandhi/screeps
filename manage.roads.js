@@ -1,4 +1,4 @@
-global.runRoads = function() {
+global.runRoads = function () {
     // Auto roads
     for (var room in Game.rooms) {
         r = Game.rooms[room];
@@ -98,5 +98,4 @@ global.runRoads = function() {
             }
         }
     }
-}
-
+};

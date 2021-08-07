@@ -35,12 +35,12 @@ global.roleMoverExt = {
             creep.memory.fakeBaseRoomName = creep.memory.baseRoomName;
             creep.say("m2storage");
         }
-        
+
         if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
-            returnToHeal(creep, creep.memory.baseRoomName)
-            return
+            returnToHeal(creep, creep.memory.baseRoomName);
+            return;
         }
 
         if (creep.room.name != creep.memory.fakeBaseRoomName) {

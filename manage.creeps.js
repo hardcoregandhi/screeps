@@ -14,8 +14,7 @@ var roleSoldier = require("role.soldier");
 var rolePowHarvester = require("role.powHarvester");
 var rolePowMover = require("role.powMover");
 
-
-global.runCreeps = function() {
+global.runCreeps = function () {
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
         try {
@@ -23,7 +22,7 @@ global.runCreeps = function() {
             if (creep.pos.y == 49) creep.move(1);
             if (creep.pos.x == 0) creep.move(3);
             if (creep.pos.y == 0) creep.move(5);
-    
+
             if (creep.memory.role == "traveller") {
                 roleTraveller.run(creep);
                 continue;
@@ -104,9 +103,7 @@ global.runCreeps = function() {
                 }
             }
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
     }
-}
-
-
+};

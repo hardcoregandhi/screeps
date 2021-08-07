@@ -1,6 +1,7 @@
 global.roleClaimer = {
     name: "claimer",
     roleMemory: { memory: {} },
+    // prettier-ignore
     BodyParts: [
         CLAIM, CLAIM,
         MOVE, MOVE, MOVE, MOVE, MOVE

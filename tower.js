@@ -5,8 +5,7 @@ var roleTower = {
 
         var highlyDamagedStructFound = tower.room.find(FIND_STRUCTURES, {
             filter: (structure) =>
-                (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 5)) ||
-                (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.01)),
+                (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 5)) || (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.01)),
         });
 
         var customStructureSpecificPercentLimits = tower.room.find(FIND_STRUCTURES, {

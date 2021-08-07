@@ -3,9 +3,7 @@ require("movement");
 require("role.common");
 
 function log(creep, str) {
-    if(1)
-        if (creep.name == "Upgrader_887")
-            console.log(str);
+    if (1) if (creep.name == "Upgrader_887") console.log(str);
 }
 
 global.roleBuilder = {
@@ -69,16 +67,16 @@ global.roleBuilder = {
             creep.memory.building = true;
             creep.say("🚧 build");
         }
-        
+
         if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
-            returnToHeal(creep, creep.memory.baseRoomName)
-            return
+            returnToHeal(creep, creep.memory.baseRoomName);
+            return;
         }
 
         if (creep.memory.building) {
-            log(creep, 5)
+            log(creep, 5);
             // var targets = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
             // if (targets.length > 0) {
             //     if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
@@ -101,9 +99,9 @@ global.roleBuilder = {
                     return;
                 }
             }
-            
-            healRoads(creep)
-            
+
+            healRoads(creep);
+
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if (targets.length) {
                 var closest = creep.pos.findClosestByPath(targets);
@@ -116,7 +114,7 @@ global.roleBuilder = {
                 }
             }
         } else {
-            log(creep, 8)
+            log(creep, 8);
             if (Game.flags.DISMANTLE) {
                 var dismantle = Game.flags.DISMANTLE.pos.lookFor(LOOK_STRUCTURES)[0];
                 if (dismantle) {
@@ -131,24 +129,24 @@ global.roleBuilder = {
             }
 
             if (creepRoomMap.get(creep.room.name + "mover") > 0) {
-                log(creep, 81)
+                log(creep, 81);
                 var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
                     },
                 });
                 if (creepRoomMap.get(creep.room.name + "eenergy") === undefined || creepRoomMap.get(creep.room.name + "eenergy") < 800) {
-                    log(creep, 10)
+                    log(creep, 10);
                     try {
                         var l_to = Game.getObjectById(Memory.rooms[creep.room.name].l_to);
-                        console.log(l_to)
+                        console.log(l_to);
                         if (l_to && l_to.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-                            if(creep.withdraw(l_to, RESOURCE_ENERGY) != OK){
-                                moveToTarget(creep, l_to)
+                            if (creep.withdraw(l_to, RESOURCE_ENERGY) != OK) {
+                                moveToTarget(creep, l_to);
                             }
                         }
-                    } catch(error) {
-                        console.log(error)
+                    } catch (error) {
+                        console.log(error);
                         console.trace();
                     }
 
@@ -168,32 +166,24 @@ global.roleBuilder = {
                         return creep.pos.inRangeTo(s, 15) == true;
                     },
                 });
-                if (creepRoomMap.get(creep.room.name+"harvester") == 0) {
+                if (creepRoomMap.get(creep.room.name + "harvester") == 0) {
                     closeSources = creep.room.find(FIND_SOURCES, {
                         filter: (s) => {
                             return creep.room.controller.pos.inRangeTo(s, 20) == true;
                         },
                     });
                 }
-                log(creep, 9)
+                log(creep, 9);
                 if (closeSources.length > 0) {
                     if (creep.store.getFreeCapacity() > 0) {
                         if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
-                            if (
-                                moveToTarget(
-                                    creep,
-                                    sources[creep.memory.currentSource],
-                                    true
-                                ) == ERR_NO_PATH
-                            ) {
+                            if (moveToTarget(creep, sources[creep.memory.currentSource], true) == ERR_NO_PATH) {
                                 creep.memory.currentSource++;
                             }
                         }
                     }
-                }
-                else{
+                } else {
                     moveToTarget(creep, creep.room.controller.pos, false);
-                    
                 }
             }
         }

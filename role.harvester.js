@@ -1,7 +1,5 @@
 function log(creep, str) {
-    if(0)
-        if (creep.name == "Harvester_777")
-            console.log(str);
+    if (0) if (creep.name == "Harvester_777") console.log(str);
 }
 
 global.roleHarvester = {
@@ -52,17 +50,17 @@ global.roleHarvester = {
             creep.memory.mining = true;
             creep.say("⛏️ mining");
         }
-        
+
         if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
-            creep.drop(RESOURCE_ENERGY)
-            returnToHeal(creep, creep.memory.baseRoomName)
-            return
+            creep.drop(RESOURCE_ENERGY);
+            returnToHeal(creep, creep.memory.baseRoomName);
+            return;
         }
 
         if (creep.memory.mining) {
-            pickupNearby(creep)
+            pickupNearby(creep);
             if (creep.harvest(sources[creep.memory.currentSource]) != OK) {
                 let ret = creep.moveTo(sources[creep.memory.currentSource], {
                     visualizePathStyle: { stroke: "#ffaa00" },
@@ -114,17 +112,17 @@ global.roleHarvester = {
                     creep.transfer(target, RESOURCE_ENERGY);
                     return;
                 } else {
-                    healRoads(creep)
-                    
+                    healRoads(creep);
+
                     var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
                     // console.log(closestHostile)
                     if (closestHostile) {
-                        if(creep.transfer(towers[0]) != OK){
-                            creep.moveTo(towers[0])
+                        if (creep.transfer(towers[0]) != OK) {
+                            creep.moveTo(towers[0]);
                         }
-                        return
+                        return;
                     }
-                    
+
                     // If we have Movers, just use the storage
                     if (creepRoomMap.get(creep.room.name + "mover") != undefined && creepRoomMap.get(creep.room.name + "mover") > 0) {
                         log(creep, "movers found");
@@ -153,7 +151,10 @@ global.roleHarvester = {
                         log(creep, "no movers found");
                         targets = creep.room.find(FIND_STRUCTURES, {
                             filter: (structure) => {
-                                return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                                return (
+                                    (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
+                                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                                );
                             },
                         });
                         if (!targets.length) {
@@ -171,7 +172,7 @@ global.roleHarvester = {
                 }
             } else {
                 // creep.say("what now")
-                roleUpgrader.run(creep)
+                roleUpgrader.run(creep);
             }
         }
     },

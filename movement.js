@@ -1,5 +1,5 @@
 global.moveToTarget = function (creep, target, canUseSwamp = true) {
-    canUseSwamp = true
+    canUseSwamp = true;
     if (canUseSwamp) {
         creep.moveTo(target, {
             visualizePathStyle: { stroke: "#ffffff" },
@@ -38,7 +38,8 @@ global.moveToRoom = function (creep, targetRoom) {
     // Use `findRoute` to calculate a high-level plan for this path,
     // prioritizing highways and owned rooms
     let allowedRooms = { [from]: true };
-    Game.map.findRoute(from, to, {
+    Game.map
+        .findRoute(from, to, {
             routeCallback(roomName) {
                 let parsed = /^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName);
                 let isHighway = parsed[1] % 10 === 0 || parsed[2] % 10 === 0;

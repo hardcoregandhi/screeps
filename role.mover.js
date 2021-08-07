@@ -34,19 +34,18 @@ global.roleMover = {
             }
             return;
         }
-        
-        if(Game.flags.AVOID1 != undefined){
-            if(creep.room.name == Game.flags.AVOID1.room.name) {
-                if(creep.pos.isEqualTo(Game.flags.AVOID1.pos)){
-                    if (creep.memory.previousPos != undefined){
-                        if (creep.pos.x == creep.memory.previousPos.x &&
-                            creep.pos.y == creep.memory.previousPos.y){
-                            creep.move(3)
-                            return
+
+        if (Game.flags.AVOID1 != undefined) {
+            if (creep.room.name == Game.flags.AVOID1.room.name) {
+                if (creep.pos.isEqualTo(Game.flags.AVOID1.pos)) {
+                    if (creep.memory.previousPos != undefined) {
+                        if (creep.pos.x == creep.memory.previousPos.x && creep.pos.y == creep.memory.previousPos.y) {
+                            creep.move(3);
+                            return;
                         }
                     }
                 }
-                creep.memory.previousPos = creep.pos
+                creep.memory.previousPos = creep.pos;
             }
         }
 
@@ -131,18 +130,15 @@ global.roleMover = {
             var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
             // console.log(closestHostile)
             if (closestHostile) {
-                if(creep.transfer(towers[0]) != OK){
-                    moveToTarget(creep, towers[0])
+                if (creep.transfer(towers[0]) != OK) {
+                    moveToTarget(creep, towers[0]);
                 }
-                return
+                return;
             }
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (
-                        (
-                            (structure.structureType == STRUCTURE_TOWER && Math.round((structure.store[RESOURCE_ENERGY] / structure.store.getCapacity([RESOURCE_ENERGY])) * 100) < 70) ||
-                            structure.structureType == STRUCTURE_EXTENSION
-                        ) &&
+                        ((structure.structureType == STRUCTURE_TOWER && Math.round((structure.store[RESOURCE_ENERGY] / structure.store.getCapacity([RESOURCE_ENERGY])) * 100) < 70) || structure.structureType == STRUCTURE_EXTENSION) &&
                         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                     );
                 },
@@ -167,12 +163,7 @@ global.roleMover = {
             if (!targets.length) {
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (
-                            (
-                                (structure.structureType == STRUCTURE_LINK && storage.pos.inRangeTo(structure, 2))
-                            ) &&
-                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                        );
+                        return structure.structureType == STRUCTURE_LINK && storage.pos.inRangeTo(structure, 2) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     },
                 });
             }
@@ -180,10 +171,10 @@ global.roleMover = {
                 creep.say("no targets");
                 try {
                     var storage = Game.getObjectById(Memory.rooms[creep.room.name].storage);
-                    moveToTarget(creep, storage)
-                    return
-                } catch(error) {
-                    console.log(error)
+                    moveToTarget(creep, storage);
+                    return;
+                } catch (error) {
+                    console.log(error);
                     console.trace();
                 }
                 targets = creep.room.find(FIND_STRUCTURES, {

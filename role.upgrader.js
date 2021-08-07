@@ -1,9 +1,7 @@
 require("movement");
 
 function log(creep, str) {
-    if (0)
-        if (creep.name === "Upgrader_758")
-            console.log(str);
+    if (0) if (creep.name === "Upgrader_758") console.log(str);
 }
 
 global.roleUpgrader = {
@@ -19,7 +17,7 @@ global.roleUpgrader = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        log(creep, "run")
+        log(creep, "run");
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
@@ -45,7 +43,7 @@ global.roleUpgrader = {
         }
 
         if (creep.memory.upgrading == undefined) {
-            creep.memory.upgrading = false
+            creep.memory.upgrading = false;
         }
 
         if (creep.memory.upgrading && creep.store[RESOURCE_ENERGY] == 0) {
@@ -56,22 +54,22 @@ global.roleUpgrader = {
             creep.memory.upgrading = true;
             creep.say("⚡ upgrade");
         }
-        log(creep, 1)
-        
+        log(creep, 1);
+
         if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
-            returnToHeal(creep, creep.memory.baseRoomName)
-            return
+            returnToHeal(creep, creep.memory.baseRoomName);
+            return;
         }
 
         if (creep.memory.upgrading) {
-            log(creep, 2)
+            log(creep, 2);
             var spawns = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.structureType == STRUCTURE_SPAWN;
-                    },
-                });
+                filter: (structure) => {
+                    return structure.structureType == STRUCTURE_SPAWN;
+                },
+            });
             if (creep.ticksToLive < 300 && spawns.length) {
                 creep.memory.healing = true;
                 targets = creep.room.find(FIND_STRUCTURES, {
@@ -85,11 +83,10 @@ global.roleUpgrader = {
                     moveToTarget(creep, target, false);
                 }
             } else {
-                healRoads(creep)
+                healRoads(creep);
                 if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                
                     moveToTarget(creep, creep.room.controller.pos, false);
-                    creep.moveTo(creep.room.controller.pos)
+                    creep.moveTo(creep.room.controller.pos);
                     if (creep.store[RESOURCE_ENERGY] == 0) {
                         creep.memory.upgrading = false;
                     }
@@ -106,19 +103,19 @@ global.roleUpgrader = {
                     return structure.structureType == STRUCTURE_LINK;
                 },
             });
-            if(links.length == 2) {
+            if (links.length == 2) {
                 try {
                     var l_to = Game.getObjectById(Memory.rooms[creep.room.name].l_to);
                     if (l_to && l_to.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-                        creep.say("h2link")
-                        if(creep.withdraw(l_to, RESOURCE_ENERGY) != OK){
-                            moveToTarget(creep, l_to)
+                        creep.say("h2link");
+                        if (creep.withdraw(l_to, RESOURCE_ENERGY) != OK) {
+                            moveToTarget(creep, l_to);
                         }
                     }
-                    moveToTarget(creep, l_to)
-                    return
-                } catch(error) {
-                    console.log(error)
+                    moveToTarget(creep, l_to);
+                    return;
+                } catch (error) {
+                    console.log(error);
                     console.trace();
                 }
             }
@@ -137,7 +134,7 @@ global.roleUpgrader = {
                         return creep.room.controller.pos.inRangeTo(s, 9) == true && s.energy > 0;
                     },
                 });
-                if (creepRoomMap.get(creep.room.name+"mover") == 0) {
+                if (creepRoomMap.get(creep.room.name + "mover") == 0) {
                     closeSources = creep.room.find(FIND_SOURCES, {
                         filter: (s) => {
                             return creep.room.controller.pos.inRangeTo(s, 20) == true;
@@ -163,12 +160,10 @@ global.roleUpgrader = {
                             }
                         }
                     }
-                }
-                else {
-                    log(creep, 666)
+                } else {
+                    log(creep, 666);
 
                     moveToTarget(creep, creep.room.controller.pos, false);
-
                 }
             }
         }

@@ -14,7 +14,7 @@ var roleSoldier = require("role.soldier");
 var rolePowHarvester = require("role.powHarvester");
 var rolePowMover = require("role.powMover");
 
-global.runSpawns = function() {
+global.runSpawns = function () {
     global.nextSpawnOffset = 1;
 
     // if (creepRoomMap.get("W17S19" + "builder") < 5){
@@ -27,10 +27,10 @@ global.runSpawns = function() {
             continue;
         }
         var storage = r.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.structureType == STRUCTURE_STORAGE;
-                    },
-                });
+            filter: (structure) => {
+                return structure.structureType == STRUCTURE_STORAGE;
+            },
+        });
         // if (r.find(STRUCTURE_SPAWN).length === 0 && creepRoomMap.get(r.name + "builder") < 5){
         //     // No spawn? Builders to create it, which will then default to upgraders to maintain the room after
         //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name } }, "W16S21");
@@ -96,4 +96,4 @@ global.runSpawns = function() {
     //         opacity: 0.8,
     //     });
     // }
-}
+};
