@@ -1,6 +1,7 @@
 global.rolePowHarvester = {
     name: "powHarvester",
     roleMemory: { memory: {} },
+    // prettier-ignore
     BodyParts: [ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
 
     /** @param {Creep} creep **/

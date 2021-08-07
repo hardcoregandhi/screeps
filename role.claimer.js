@@ -1,7 +1,10 @@
 global.roleClaimer = {
     name: "claimer",
     roleMemory: { memory: {} },
-    BodyParts: [CLAIM, MOVE, MOVE, MOVE, MOVE, MOVE],
+    BodyParts: [
+        CLAIM, CLAIM,
+        MOVE, MOVE, MOVE, MOVE, MOVE
+        ],
 
     // 1 - UP
     // 3 - RIGHT

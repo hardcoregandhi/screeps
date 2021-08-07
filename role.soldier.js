@@ -1,6 +1,7 @@
 global.roleSoldier = {
     name: "soldier",
     roleMemory: { memory: {} },
+    // prettier-ignore
     BodyParts: [
         ATTACK,
         ATTACK,

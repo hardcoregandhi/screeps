@@ -1,6 +1,7 @@
 global.roleTraveller = {
     name: "traveller",
     roleMemory: { memory: {} },
+    // prettier-ignore
     BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
 
     run: function (creep) {

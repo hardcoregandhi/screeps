@@ -6,8 +6,14 @@ function log(creep, str) {
 global.roleHarvester = {
     name: "harvester",
     roleMemory: { memory: {} },
-
-    BodyParts: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE],
+    // prettier-ignore
+    BodyParts: [
+        WORK, WORK, WORK, WORK, WORK,
+        WORK, WORK, WORK, WORK, WORK,
+        WORK, WORK, WORK, WORK, WORK,
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        MOVE, MOVE, MOVE, MOVE, MOVE,
+        ],
 
     /** @param {Creep} creep **/
     run: function (creep, focusHealing) {

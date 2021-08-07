@@ -9,7 +9,14 @@ global.roleHarvesterExt = {
     name: "harvesterExt",
     roleMemory: { memory: { targetRoomName: null } },
 
-    BodyParts: [WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+    // prettier-ignore
+    BodyParts: [
+        WORK, WORK, WORK, WORK, WORK,
+        WORK, WORK, WORK, WORK, WORK,
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        MOVE, MOVE, MOVE, MOVE, MOVE,
+        MOVE, MOVE, MOVE, MOVE, MOVE
+        ],
 
     /** @param {Creep} creep **/
     run: function (creep) {

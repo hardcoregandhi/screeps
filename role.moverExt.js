@@ -5,7 +5,13 @@ function log(str) {
 global.roleMoverExt = {
     name: "moverExt",
     roleMemory: { memory: {} },
-    BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+    // prettier-ignore
+    BodyParts: [
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        MOVE, MOVE, MOVE, MOVE, MOVE,
+        MOVE, MOVE, MOVE, MOVE, MOVE
+        ],
 
     /** @param {Creep} creep **/
     run: function (creep) {
