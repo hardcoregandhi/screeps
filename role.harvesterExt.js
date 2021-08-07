@@ -7,7 +7,7 @@ var roleHarvester = require("role.harvester");
 
 global.roleHarvesterExt = {
     name: "harvesterExt",
-    roleMemory: { memory: { targetRoomName: null } },
+    roleMemory: { memory: { targetRoomName: "W17S21" } },
 
     // prettier-ignore
     BodyParts: [
@@ -20,18 +20,17 @@ global.roleHarvesterExt = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        if (creep.memory.healing === true) {
-            var targets = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_SPAWN;
-                },
-            });
-            if (creep.transfer(targets[0], RESOURCE_ENERGY) != OK) {
-                creep.moveTo(targets[0], {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                });
+        // TODO a creep should not spawn other creeps
+        if(creep.memory.targetRoomName != undefined && Game.rooms[creep.memory.targetRoomName] != undefined) {
+            if ((Game.rooms[creep.memory.targetRoomName].controller.reservation == undefined || Game.rooms[creep.memory.targetRoomName].controller.reservation.ticksToEnd < 1000)
+                && creepRoomMap.get(creep.memory.targetRoomName+ "claimer") != 1){
+                    //TODO FIX THIS
+                    console.log(1)
+                console.log(spawnCreep(roleClaimer, null, {memory:{baseRoomName:"W17S21"}}, "W16S21"))
             }
-            return;
+        }
+        if (creep.ticksToLive > 1400) {
+            creep.memory.healing = false
         }
 
         if (creep.ticksToLive < 300) {
@@ -42,18 +41,11 @@ global.roleHarvesterExt = {
         }
         if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
             creep.memory.mining = false;
-            creep.memory.fakeBaseRoomName = creep.memory.baseRoomName;
             creep.say("🔄 dropping");
         }
         if (!creep.memory.mining && creep.store.getUsedCapacity() == 0) {
-            if (creep.ticksToLive < 400) {
-                creep.say("healing");
-                creep.memory.healing = true;
-                return;
-            }
             creep.memory.healing = false;
             creep.memory.mining = true;
-            creep.memory.fakeBaseRoomName = creep.memory.targetRoomName;
             creep.say("⛏️ mining");
         }
 
@@ -82,15 +74,29 @@ global.roleHarvesterExt = {
             }
             return;
         } else {
+            //Build any nearby container or road
+            csites = creep.room.find(FIND_CONSTRUCTION_SITES, {
+                filter: (site) => {
+                    return creep.pos.inRangeTo(site, 3);
+                },
+            });
+            if (csites.length){
+                if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
+                    moveToTarget(creep, csites[0], true)
+                }
+                return
+            }
             targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 },
             });
             if (!targets.length) {
                 log(creep, "no exts, spawn, or container found");
             } else {
                 target = creep.pos.findClosestByPath(targets);
+                if(target.hitsMax - target.hits > 100)
+                    creep.repair(target)
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     moveToTarget(creep, target.pos, true);
                 }

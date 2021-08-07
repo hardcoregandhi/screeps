@@ -61,24 +61,18 @@ global.roleMoverExt = {
         }
 
         if (!creep.memory.banking) {
-            var targetCreep = creep.pos.findClosestByRange(
-                creep.room.find(FIND_MY_CREEPS, {
-                    filter: (creep) => {
-                        return creep.memory.role == "harvesterExt" && creep.store.getUsedCapacity != 0;
-                    },
-                })
-            );
-            if (targetCreep != null) {
-                if (creep.pos.x == 49) creep.move(7);
-                if (creep.pos.y == 49) creep.move(1);
-                if (creep.pos.x == 0) creep.move(3);
-                if (creep.pos.y == 0) creep.move(5);
-                creep.moveTo(targetCreep.pos, {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                    maxRooms: 0,
-                    ignoreRoads: true,
-                    ignoreCreeps: true,
-                });
+            var targets = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
+                },
+            });
+            if (targets.length) {
+                var target = creep.pos.findClosestByRange(targets);
+                if (creep.withdraw(target, RESOURCE_ENERGY) != OK) {
+                    creep.moveTo(target, {
+                        visualizePathStyle: { stroke: "#ffaa00" },
+                    });
+                }
             }
         } else {
             var targets = creep.room.find(FIND_STRUCTURES, {
