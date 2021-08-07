@@ -110,7 +110,7 @@ global.roleUpgrader = {
                 }
             }
             if (targets.length) {
-                if (creepRoomMap.get(creep.room.name + "eenergy") < 800 && creep.room.energyAvailable < 800) {
+                if (creepRoomMap.get(creep.room.name + "eenergy") < 2000 || creep.room.energyAvailable < 1000) {
                     moveToTarget(creep, creep.room.controller.pos, false);
                     return;
                 } else {
