@@ -60,9 +60,7 @@ global.roleMover = {
             if (resourceType != RESOURCE_ENERGY) {
                 if (creep.transfer(storage, resourceType) != OK) {
                     // console.log(creep.transfer(storage, resourceType) )
-                    creep.moveTo(storage, {
-                        visualizePathStyle: { stroke: "#ffaa00" },
-                    });
+                    moveToTarget(creep, storage, true);
                     return;
                 }
             }
@@ -110,6 +108,7 @@ global.roleMover = {
                         if (creep.transfer(targets[0], resourceType) != OK) {
                             creep.moveTo(targets[0], {
                                 visualizePathStyle: { stroke: "#ffaa00" },
+                                maxRooms: 1,
                             });
                             return;
                         }
@@ -124,10 +123,26 @@ global.roleMover = {
                 }
             } else creep.say("no eenergy");
         } else {
+            var towers = creep.room.find(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                },
+            });
+            var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+            // console.log(closestHostile)
+            if (closestHostile) {
+                if(creep.transfer(towers[0]) != OK){
+                    moveToTarget(creep, towers[0])
+                }
+                return
+            }
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (
-                        (structure.structureType == STRUCTURE_EXTENSION || (structure.structureType == STRUCTURE_TOWER && Math.round((structure.store[RESOURCE_ENERGY] / structure.store.getCapacity([RESOURCE_ENERGY])) * 100) < 50)) &&
+                        (
+                            (structure.structureType == STRUCTURE_TOWER && Math.round((structure.store[RESOURCE_ENERGY] / structure.store.getCapacity([RESOURCE_ENERGY])) * 100) < 70) ||
+                            structure.structureType == STRUCTURE_EXTENSION
+                        ) &&
                         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                     );
                 },
@@ -173,16 +188,14 @@ global.roleMover = {
                 }
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return structure.structureType == STRUCTURE_TOWER;
+                        return structure.structureType == STRUCTURE_CONTROLLER;
                     },
                 });
             }
             target = creep.pos.findClosestByPath(targets);
             for (const resourceType in creep.store) {
                 if (creep.transfer(target, resourceType) != OK) {
-                    creep.moveTo(target, {
-                        visualizePathStyle: { stroke: "#ffaa00" },
-                    });
+                    moveToTarget(creep, target, true);
                 }
             }
         }
