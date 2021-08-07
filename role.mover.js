@@ -34,6 +34,21 @@ global.roleMover = {
             }
             return;
         }
+        
+        if(Game.flags.AVOID1 != undefined){
+            if(creep.room.name == Game.flags.AVOID1.room.name) {
+                if(creep.pos.isEqualTo(Game.flags.AVOID1.pos)){
+                    if (creep.memory.previousPos != undefined){
+                        if (creep.pos.x == creep.memory.previousPos.x &&
+                            creep.pos.y == creep.memory.previousPos.y){
+                            creep.move(3)
+                            return
+                        }
+                    }
+                }
+                creep.memory.previousPos = creep.pos
+            }
+        }
 
         // If creep is holding non-energy, deposit it first
         var storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
