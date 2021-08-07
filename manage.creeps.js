@@ -33,10 +33,10 @@ global.runCreeps = function() {
             //     roleDefence.run(creep)
             //     continue
             // }
-            if (creep.memory.role == "upgrader" && harvesters.length < 1) {
-                roleHarvester.run(creep);
-                continue;
-            }
+            // if (creep.memory.role == "upgrader" && creepRoomMap.get(creep.room.name + "harvester") < 1) {
+            //     roleHarvester.run(creep);
+            //     continue;
+            // }
             if (creep.memory.role == "harvester") {
                 roleHarvester.run(creep, focusHealing);
             }
@@ -103,7 +103,9 @@ global.runCreeps = function() {
                     creep.moveTo(spawn.pos);
                 }
             }
-        } catch (e) {}
+        } catch (e) {
+            console.log(e)
+        }
     }
 }
 
