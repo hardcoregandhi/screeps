@@ -1,7 +1,9 @@
 require("movement");
 
 function log(creep, str) {
-    if (creep.room.name == "W19S21") console.log(str);
+    if (0)
+        if (creep.name === "Upgrader_758")
+            console.log(str);
 }
 
 global.roleUpgrader = {
@@ -17,6 +19,7 @@ global.roleUpgrader = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        log(creep, "run")
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
@@ -41,6 +44,10 @@ global.roleUpgrader = {
             creep.memory.currentSource = 1;
         }
 
+        if (creep.memory.upgrading == undefined) {
+            creep.memory.upgrading = false
+        }
+
         if (creep.memory.upgrading && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.upgrading = false;
             creep.say("🔄 harvest");
@@ -49,6 +56,8 @@ global.roleUpgrader = {
             creep.memory.upgrading = true;
             creep.say("⚡ upgrade");
         }
+        log(creep, 1)
+        
         if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
@@ -57,7 +66,13 @@ global.roleUpgrader = {
         }
 
         if (creep.memory.upgrading) {
-            if (creep.ticksToLive < 300) {
+            log(creep, 2)
+            var spawns = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType == STRUCTURE_SPAWN;
+                    },
+                });
+            if (creep.ticksToLive < 300 && spawns.length) {
                 creep.memory.healing = true;
                 targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
@@ -67,9 +82,7 @@ global.roleUpgrader = {
                 target = targets[0];
 
                 if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
-                    moveToTarget(creep, target, {
-                        visualizePathStyle: { stroke: "#ffaa00" },
-                    });
+                    moveToTarget(creep, target, false);
                 }
             } else {
                 healRoads(creep)
@@ -121,9 +134,16 @@ global.roleUpgrader = {
             } else {
                 var closeSources = creep.room.find(FIND_SOURCES, {
                     filter: (s) => {
-                        return creep.room.controller.pos.inRangeTo(s, 9) == true;
+                        return creep.room.controller.pos.inRangeTo(s, 9) == true && s.energy > 0;
                     },
                 });
+                if (creepRoomMap.get(creep.room.name+"mover") == 0) {
+                    closeSources = creep.room.find(FIND_SOURCES, {
+                        filter: (s) => {
+                            return creep.room.controller.pos.inRangeTo(s, 20) == true;
+                        },
+                    });
+                }
                 if (closeSources.length > 0) {
                     if (creep.store.getFreeCapacity() > 0) {
                         if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
@@ -143,6 +163,12 @@ global.roleUpgrader = {
                             }
                         }
                     }
+                }
+                else {
+                    log(creep, 666)
+
+                    moveToTarget(creep, creep.room.controller.pos, false);
+
                 }
             }
         }

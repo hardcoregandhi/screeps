@@ -2,6 +2,11 @@ var roleHarvester = require("role.harvester");
 require("movement");
 require("role.common");
 
+function log(creep, str) {
+    if(1)
+        if (creep.name == "Upgrader_887")
+            console.log(str);
+}
 
 global.roleBuilder = {
     name: "builder",
@@ -73,6 +78,7 @@ global.roleBuilder = {
         }
 
         if (creep.memory.building) {
+            log(creep, 5)
             // var targets = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
             // if (targets.length > 0) {
             //     if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
@@ -110,6 +116,7 @@ global.roleBuilder = {
                 }
             }
         } else {
+            log(creep, 8)
             if (Game.flags.DISMANTLE) {
                 var dismantle = Game.flags.DISMANTLE.pos.lookFor(LOOK_STRUCTURES)[0];
                 if (dismantle) {
@@ -124,6 +131,7 @@ global.roleBuilder = {
             }
 
             if (creepRoomMap.get(creep.room.name + "mover") > 0) {
+                log(creep, 81)
                 var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
@@ -160,6 +168,7 @@ global.roleBuilder = {
                         return creep.pos.inRangeTo(s, 15) == true;
                     },
                 });
+                log(creep, 9)
                 if (closeSources.length > 0) {
                     if (creep.store.getFreeCapacity() > 0) {
                         if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {

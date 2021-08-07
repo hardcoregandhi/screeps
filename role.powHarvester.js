@@ -29,7 +29,9 @@ global.rolePowHarvester = {
                 console.log(powerBanks[0].hits / (Memory.prevPowerBankHealth - powerBanks[0].hits));
                 Memory.prevPowerBankHealth = powerBanks[0].hits;
             }
-        } catch {}
+        } catch (e) {
+            console.trace();
+        }
         if (powerBanks.length) {
             if (creep.attack(powerBanks[0]) != OK) {
                 ret = creep.moveTo(powerBanks[0], {

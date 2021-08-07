@@ -1,6 +1,7 @@
 function log(creep, str) {
-    // if (creep.name == "Harvester_393")
-    if (0) console.log(str);
+    if(0)
+        if (creep.name == "Harvester_777")
+            console.log(str);
 }
 
 global.roleHarvester = {

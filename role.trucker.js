@@ -5,6 +5,7 @@ function log(str) {
 global.roleTrucker = {
     name: "trucker",
     roleMemory: { memory: {} },
+    // prettier-ignore
     BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
 
     /** @param {Creep} creep **/
