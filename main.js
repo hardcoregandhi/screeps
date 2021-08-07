@@ -36,7 +36,7 @@ removeAllSites = function (roomName) {
 };
 
 focusHealing = false;
-global.myRooms = ["W16S21", "W15S21", "W19S21"];
+global.myRooms = ["W16S21", "W15S21", "W19S21", "W17S19"];
 
 spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
     var ret = -1;
@@ -108,12 +108,14 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
 
 module.exports.loop = function () {
 
+    // Cleanup
     for (var i in Memory.creeps) {
         if (!Game.creeps[i]) {
             delete Memory.creeps[i];
         }
     }
 
+    // Event logging
     _.forEach(Game.rooms, (room) => {
         let eventLog = room.getEventLog();
         let attackEvents = _.filter(eventLog, { event: EVENT_ATTACK });
@@ -125,17 +127,14 @@ module.exports.loop = function () {
         });
     });
 
-    var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == "harvester");
-    var builders = _.filter(Game.creeps, (creep) => creep.memory.role == "builder");
-    var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == "upgrader");
-    var movers = _.filter(Game.creeps, (creep) => creep.memory.role == "mover");
-
+    // Active Creep Tracking
     global.creepRoomMap = new Map();
     _.forEach(Game.rooms, (r) => {
         creepRoomMap.set(r.name + "builder", 0);
         creepRoomMap.set(r.name + "mover", 0);
         creepRoomMap.set(r.name + "upgrader", 0);
         creepRoomMap.set(r.name + "harvester", 0);
+        creepRoomMap.set(r.name + "claimer", 0);
     });
 
     _.forEach(Game.rooms, (r) => {
@@ -156,6 +155,7 @@ module.exports.loop = function () {
         });
     });
 
+    // Active Energy Tracking
     _.forEach(Game.rooms, (r) => {
         stores = r.find(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -168,6 +168,7 @@ module.exports.loop = function () {
         });
     });
 
+    // Logging
     roomOffset = 0;
     listOffset = 5;
     for (var room in Game.rooms) {
