@@ -33,6 +33,7 @@ global.roleBuilder = {
             } else {
                 creep.say("No route found");
             }
+            // moveToRoom(creep, creep.memory.baseRoomName)
             return;
         }
         var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
@@ -55,7 +56,6 @@ global.roleBuilder = {
                 return;
             }
         }
-
         var sources = creep.room.find(FIND_SOURCES);
         if (creep.memory.currentSource > sources.length - 1) {
             creep.memory.currentSource = 0;
@@ -168,6 +168,13 @@ global.roleBuilder = {
                         return creep.pos.inRangeTo(s, 15) == true;
                     },
                 });
+                if (creepRoomMap.get(creep.room.name+"harvester") == 0) {
+                    closeSources = creep.room.find(FIND_SOURCES, {
+                        filter: (s) => {
+                            return creep.room.controller.pos.inRangeTo(s, 20) == true;
+                        },
+                    });
+                }
                 log(creep, 9)
                 if (closeSources.length > 0) {
                     if (creep.store.getFreeCapacity() > 0) {
@@ -176,18 +183,17 @@ global.roleBuilder = {
                                 moveToTarget(
                                     creep,
                                     sources[creep.memory.currentSource],
-                                    {
-                                        visualizePathStyle: {
-                                            stroke: "#ffaa00",
-                                        },
-                                    },
-                                    false
+                                    true
                                 ) == ERR_NO_PATH
                             ) {
                                 creep.memory.currentSource++;
                             }
                         }
                     }
+                }
+                else{
+                    moveToTarget(creep, creep.room.controller.pos, false);
+                    
                 }
             }
         }
