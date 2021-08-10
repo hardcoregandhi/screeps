@@ -11,7 +11,7 @@ var roleTower = {
         var customStructureSpecificPercentLimits = tower.room.find(FIND_STRUCTURES, {
             filter: (structure) =>
                 (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
-                (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.6)) ||
+                (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.04)) ||
                 (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.02)),
         });
 
