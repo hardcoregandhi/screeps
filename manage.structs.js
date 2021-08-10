@@ -34,7 +34,7 @@ global.runStructs = function () {
         });
         if (storages.length) {
             storage = storages[0];
-            if (Memory.rooms.room == undefined) {
+            if (Memory.rooms[room.name] == undefined) {
                 Memory.rooms[room.name] = {};
             }
             Memory.rooms[room.name].storage = storage.id;
@@ -42,7 +42,7 @@ global.runStructs = function () {
         if (links.length == 2 && storage != null) {
             var l_from = storage.pos.findClosestByRange(links);
             var l_to = links.filter((l) => l != l_from)[0];
-            if (Memory.rooms.room == undefined) {
+            if (Memory.rooms[room.name] == undefined) {
                 Memory.rooms[room.name] = {};
             }
 
