@@ -111,15 +111,16 @@ global.roleUpgrader = {
                         if (creep.withdraw(l_to, RESOURCE_ENERGY) != OK) {
                             moveToTarget(creep, l_to);
                         }
+                        moveToTarget(creep, l_to);
+                        return;
                     }
-                    moveToTarget(creep, l_to);
-                    return;
+
                 } catch (error) {
                     console.log(error);
                     console.trace();
                 }
             }
-            if (targets.length) {
+            if (targets.length && links.length != 2) {
                 if (creepRoomMap.get(creep.room.name + "eenergy") < 2000 || creep.room.energyAvailable < 1000) {
                     moveToTarget(creep, creep.room.controller.pos, false);
                     return;
