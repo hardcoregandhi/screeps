@@ -196,9 +196,9 @@ module.exports.loop = function () {
     listOffset = 5;
     for (var room in Game.rooms) {
         r = Game.rooms[room];
-        // if (!myRooms.includes(r.name)) {
-        //     continue
-        // }
+        if (!myRooms.includes(r.name)) {
+            continue
+        }
         // Creep info
         new RoomVisual().text(r.name, 1, listOffset + roomOffset + 0.5, { align: "left", font: 0.5 });
         new RoomVisual().text("🔋  ExcessEnergy: " + creepRoomMap.get(r.name + "eenergy"), 1, listOffset + roomOffset + 1, { align: "left", font: 0.5 });
