@@ -15,10 +15,9 @@ global.roleClaimer = {
     /** @param {Creep} creep **/
     run: function (creep) {
         creep.say("🏳️");
-        targetRoom = "W17S21";
 
-        if (creep.room.name != targetRoom) {
-            const route = Game.map.findRoute(creep.room, targetRoom, {
+        if (creep.room.name != creep.memory.baseRoomName) {
+            const route = Game.map.findRoute(creep.room.name, creep.memory.baseRoomName, {
                 maxRooms: 1,
             });
             if (route.length > 0) {
