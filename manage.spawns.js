@@ -57,7 +57,7 @@ global.runSpawns = function () {
         } else if (creepRoomMap.get(r.name + "harvester") < 2) {
             spawnCreep(roleHarvester, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } else if (creepRoomMap.get(r.name + "builder") < creepRoomMap.get(r.name + "csites") / 2 && creepRoomMap.get(r.name + "builder") < 3) {
+        } else if (creepRoomMap.get(r.name + "builder") < creepRoomMap.get(r.name + "csites") / 2 && creepRoomMap.get(r.name + "builder") < 2) {
             spawnCreep(roleBuilder, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "mover") < 2) {
