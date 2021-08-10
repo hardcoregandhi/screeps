@@ -79,19 +79,10 @@ global.roleMover = {
             creep.say("dropping");
         }
 
-        if (creep.ticksToLive < 200 && creep.memory.moving) {
+        if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
-            var targets = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                },
-            });
-            if (creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(targets[0], {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                });
-            }
+            returnToHeal(creep, creep.memory.baseRoomName);
             return;
         }
 
