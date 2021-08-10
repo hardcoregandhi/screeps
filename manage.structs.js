@@ -50,7 +50,7 @@ global.runStructs = function () {
             Memory.rooms[room.name].l_to = l_to.id;
             Memory.rooms[room.name].storage = storage.id;
 
-            if (l_from && l_from.store.getUsedCapacity([RESOURCE_ENERGY]) == 800) {
+            if (l_from && l_from.store.getUsedCapacity([RESOURCE_ENERGY]) == 800 && creepRoomMap.get(room.name + "eenergy") > 2000) {
                 if (l_to.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
                     console.log(`Sending energy: ${room.name} Return:` + l_from.transferEnergy(l_to, 800));
                 }
