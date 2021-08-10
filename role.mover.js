@@ -154,13 +154,20 @@ global.roleMover = {
                 });
             }
             if (!targets.length) {
-                targets = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.structureType == STRUCTURE_LINK && storage.pos.inRangeTo(structure, 2) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                    },
-                });
+                try{
+                    // console.log(Memory.rooms[creep.room.name].l_from)
+                    var l_from = Game.getObjectById(Memory.rooms[creep.room.name].l_from);
+                    if (l_from != undefined && l_from.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                        // console.log("pushing l_from")
+                        targets = [l_from]
+                    }
+                } catch(e) {
+                    console.log("error")
+                }
+
             }
             if (!targets.length) {
+                // No targets found, return to the storage
                 creep.say("no targets");
                 try {
                     var storage = Game.getObjectById(Memory.rooms[creep.room.name].storage);
