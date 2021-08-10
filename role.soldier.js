@@ -16,7 +16,8 @@ global.roleSoldier = {
     /** @param {Creep} creep **/
     run: function (creep) {
         // creep.say('🏳️');
-        targetRoom = "W15S21";
+        if(creep.memory.targetRoomName == undefined)
+            creep.memory.targetRoomName = "W17S21";
 
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) || creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
         // console.log(closestHostile)
@@ -43,8 +44,8 @@ global.roleSoldier = {
         //     }
         // }
 
-        if (creep.room.name != targetRoom) {
-            const route = Game.map.findRoute(creep.room, targetRoom, {
+        if (creep.room.name != creep.memory.targetRoomName) {
+            const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName, {
                 maxRooms: 1,
             });
             if (route.length > 0) {
