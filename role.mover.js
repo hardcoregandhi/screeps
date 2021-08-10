@@ -48,6 +48,8 @@ global.roleMover = {
                 creep.memory.previousPos = creep.pos;
             }
         }
+        
+        pickupNearby(creep);
 
         // If creep is holding non-energy, deposit it first
         var storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
