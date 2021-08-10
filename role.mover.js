@@ -48,7 +48,7 @@ global.roleMover = {
                 creep.memory.previousPos = creep.pos;
             }
         }
-        
+
         pickupNearby(creep);
 
         // If creep is holding non-energy, deposit it first
@@ -100,7 +100,7 @@ global.roleMover = {
                         if (creep.transfer(targets[0], resourceType) != OK) {
                             creep.moveTo(targets[0], {
                                 visualizePathStyle: { stroke: "#ffaa00" },
-                                maxRooms: 1,
+                                maxRooms: 0,
                             });
                             return;
                         }
@@ -110,7 +110,7 @@ global.roleMover = {
                     // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
                     creep.moveTo(targets[0], {
                         visualizePathStyle: { stroke: "#ffaa00" },
-                        maxRooms: 1,
+                        maxRooms: 0,
                     });
                 }
             } else creep.say("no eenergy");
@@ -154,17 +154,16 @@ global.roleMover = {
                 });
             }
             if (!targets.length) {
-                try{
+                try {
                     // console.log(Memory.rooms[creep.room.name].l_from)
                     var l_from = Game.getObjectById(Memory.rooms[creep.room.name].l_from);
                     if (l_from != undefined && l_from.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                         // console.log("pushing l_from")
-                        targets = [l_from]
+                        targets = [l_from];
                     }
-                } catch(e) {
-                    console.log("error")
+                } catch (e) {
+                    console.log("error");
                 }
-
             }
             if (!targets.length) {
                 // No targets found, return to the storage

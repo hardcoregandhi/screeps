@@ -61,7 +61,7 @@ global.roleHarvester = {
 
         if (creep.memory.mining) {
             pickupNearby(creep);
-            
+
             if (creep.harvest(sources[creep.memory.currentSource]) != OK) {
                 let ret = creep.moveTo(sources[creep.memory.currentSource], {
                     visualizePathStyle: { stroke: "#ffaa00" },

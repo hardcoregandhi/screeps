@@ -165,29 +165,28 @@ module.exports.loop = function () {
         _.forEach(stores, (s) => {
             creepRoomMap.set(r.name + "eenergy", (total += s.store[RESOURCE_ENERGY]));
         });
-        
+
         sources = r.find(FIND_SOURCES);
         if (Memory.rooms[r.name] == undefined) {
-                Memory.rooms[r.name] = {};
+            Memory.rooms[r.name] = {};
         }
-        Memory.rooms[r.name].sources = sources
+        Memory.rooms[r.name].sources = sources;
         _.forEach(sources, (s, i) => {
-            Memory.rooms[r.name].sources[i] = {}
-            Memory.rooms[r.name].sources[i].id = s.id
-            if(Memory.rooms[r.name].sources[i].targettedBy == undefined){
-                Memory.rooms[r.name].sources[i].targettedBy = []
+            Memory.rooms[r.name].sources[i] = {};
+            Memory.rooms[r.name].sources[i].id = s.id;
+            if (Memory.rooms[r.name].sources[i].targettedBy == undefined) {
+                Memory.rooms[r.name].sources[i].targettedBy = [];
             }
-            
+
             // console.log(s)
-            Memory.rooms[r.name].sources[i].targettedBy = 0
+            Memory.rooms[r.name].sources[i].targettedBy = 0;
             _.forEach(Game.creeps, (c) => {
-                if(c.memory.role == 'harvester' && c.memory.baseRoomName == r.name){
-                    if(i == c.memory.currentSource){
-                        Memory.rooms[r.name].sources[i].targettedBy += 1
+                if (c.memory.role == "harvester" && c.memory.baseRoomName == r.name) {
+                    if (i == c.memory.currentSource) {
+                        Memory.rooms[r.name].sources[i].targettedBy += 1;
                     }
-                        
                 }
-            })
+            });
         });
     });
 
@@ -197,7 +196,7 @@ module.exports.loop = function () {
     for (var room in Game.rooms) {
         r = Game.rooms[room];
         if (!myRooms.includes(r.name)) {
-            continue
+            continue;
         }
         // Creep info
         new RoomVisual().text(r.name, 1, listOffset + roomOffset + 0.5, { align: "left", font: 0.5 });

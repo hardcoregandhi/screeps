@@ -3,7 +3,7 @@ require("movement");
 require("role.common");
 
 function log(creep, str) {
-    if (1) if (creep.name == "Upgrader_887") console.log(str);
+    if (0) if (creep.name == "Builder_568") console.log(str);
 }
 
 global.roleBuilder = {

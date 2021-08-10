@@ -25,40 +25,37 @@ global.roleHarvesterExt = {
                 return creep.pos.inRangeTo(site, 3);
             },
         });
-        
-        
+
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         if (closestHostile) {
-            if(creepRoomMap.get(creep.memory.baseRoomName + "soldier") == undefined || creepRoomMap.get(creep.memory.baseRoomName + "soldier") < 1) {
-                spawnCreep(roleSoldier, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName)
+            if (creepRoomMap.get(creep.memory.baseRoomName + "soldier") == undefined || creepRoomMap.get(creep.memory.baseRoomName + "soldier") < 1) {
+                spawnCreep(roleSoldier, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
             }
-            creep.memory.fleeing = 20
+            creep.memory.fleeing = 20;
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
             if (route.length > 0) {
                 creep.say("Headin oot");
                 const exit = creep.pos.findClosestByRange(route[0].exit);
                 moveToTarget(creep, exit, true);
-                return
+                return;
             }
         }
-        if(creep.memory.fleeing > 0) {
-            creep.memory.fleeing -=1;
+        if (creep.memory.fleeing > 0) {
+            creep.memory.fleeing -= 1;
             moveToTarget(creep, creep.room.controller, true);
-            return
+            return;
         }
 
-        
         // TODO a creep should not spawn other creeps
         if (creep.memory.targetRoomName != undefined && Game.rooms[creep.memory.targetRoomName] != undefined) {
             if ((Game.rooms[creep.memory.targetRoomName].controller.reservation == undefined || Game.rooms[creep.memory.targetRoomName].controller.reservation.ticksToEnd < 1000) && creepRoomMap.get(creep.memory.targetRoomName + "claimer") < 1) {
                 //TODO FIX THIS
-                spawnCreep(roleClaimer, null, { memory: { baseRoomName: creep.memory.targetRoomName, } }, creep.memory.baseRoomName);
-            } else if(csites.length == 1 && (creepRoomMap.get(creep.memory.baseRoomName + "moverExt") == undefined || creepRoomMap.get(creep.memory.baseRoomName + "moverExt") < 2)) {
-                spawnCreep(roleMoverExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName)
+                spawnCreep(roleClaimer, null, { memory: { baseRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
+            } else if (csites.length == 1 && (creepRoomMap.get(creep.memory.baseRoomName + "moverExt") == undefined || creepRoomMap.get(creep.memory.baseRoomName + "moverExt") < 2)) {
+                spawnCreep(roleMoverExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
             }
         }
-            
-        
+
         if (creep.ticksToLive > 1400) {
             creep.memory.healing = false;
         }
@@ -96,9 +93,9 @@ global.roleHarvesterExt = {
         }
 
         if (creep.memory.mining) {
-            if(Game.flags.pickerupper.pos.inRangeTo(creep, 5)){
-                creep.moveTo(Game.flags.midway.pos)
-                return
+            if (Game.flags.pickerupper.pos.inRangeTo(creep, 5)) {
+                creep.moveTo(Game.flags.midway.pos);
+                return;
             }
             pickupNearby(creep);
             var targetSource = creep.pos.findClosestByRange(creep.room.find(FIND_SOURCES));
@@ -126,8 +123,7 @@ global.roleHarvesterExt = {
                 target = creep.pos.findClosestByPath(targets);
                 if (target.hitsMax - target.hits > 10000) {
                     creep.repair(target);
-                }
-                else if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                } else if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     moveToTarget(creep, target.pos, true);
                 }
             }

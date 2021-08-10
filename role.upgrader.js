@@ -62,7 +62,7 @@ global.roleUpgrader = {
             returnToHeal(creep, creep.memory.baseRoomName);
             return;
         }
-        
+
         pickupNearby(creep);
 
         if (creep.memory.upgrading) {
@@ -116,7 +116,6 @@ global.roleUpgrader = {
                         moveToTarget(creep, l_to);
                         return;
                     }
-
                 } catch (error) {
                     console.log(error);
                     console.trace();
