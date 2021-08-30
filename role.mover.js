@@ -1,5 +1,5 @@
-function log(str) {
-    if (0) console.log(str);
+function log(creep, str) {
+    if (creep.name == "Mover_201") if (0) console.log(str);
 }
 
 global.roleMover = {
@@ -7,10 +7,16 @@ global.roleMover = {
     roleMemory: { memory: {} },
     // prettier-ignore
     BodyParts: [
+        WORK,
         CARRY, CARRY, CARRY, CARRY, CARRY,
         CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE,
         MOVE, MOVE, MOVE, MOVE, MOVE,
+        ],
+    baseBodyParts: [WORK],
+    bodyLoop: [
+        CARRY,
+        MOVE,
         ],
 
     /** @param {Creep} creep **/
@@ -79,10 +85,7 @@ global.roleMover = {
             creep.say("dropping");
         }
 
-        if (creep.ticksToLive < 300) {
-            creep.say("healing");
-            creep.memory.healing = true;
-            returnToHeal(creep, creep.memory.baseRoomName);
+        if (returnToHeal(creep, creep.memory.baseRoomName)){
             return;
         }
 
@@ -153,18 +156,22 @@ global.roleMover = {
                     },
                 });
             }
-            if (!targets.length) {
-                try {
-                    // console.log(Memory.rooms[creep.room.name].l_from)
-                    var l_from = Game.getObjectById(Memory.rooms[creep.room.name].l_from);
-                    if (l_from != undefined && l_from.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                        // console.log("pushing l_from")
-                        targets = [l_from];
-                    }
-                } catch (e) {
-                    console.log("error");
+
+            try {
+                log(creep, Memory.rooms[creep.room.name])
+                log(creep, Memory.rooms[creep.room.name].l_from)
+                var l_from = Game.getObjectById(Memory.rooms[creep.room.name].l_from);
+                if (l_from != undefined && l_from.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    log(creep, "pushing l_from")
+                    log(creep, targets.length)
+                    log(creep, l_from)
+                    targets.push(l_from);
+                    log(creep, targets.length)
                 }
+            } catch (e) {
+                console.log("error");
             }
+            
             if (!targets.length) {
                 // No targets found, return to the storage
                 creep.say("no targets");

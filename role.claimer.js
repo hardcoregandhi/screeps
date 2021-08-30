@@ -16,22 +16,20 @@ global.roleClaimer = {
     run: function (creep) {
         creep.say("🏳️");
 
-        if (creep.room.name != creep.memory.baseRoomName) {
+        if (Game.rooms[creep.memory.baseRoomName] == undefined) {
             const route = Game.map.findRoute(creep.room.name, creep.memory.baseRoomName, {
-                maxRooms: 1,
+                maxRooms: 16,
             });
             if (route.length > 0) {
                 const exit = creep.pos.findClosestByRange(route[0].exit);
                 creep.moveTo(exit);
             }
         } else {
-            if (creep.claimController(creep.room.controller) != OK) {
-                // console.log(creep.claimController(creep.room.controller));
-                if (creep.reserveController(creep.room.controller) != OK) {
-                    creep.moveTo(creep.room.controller, {
-                        visualizePathStyle: { stroke: "#ffffff" },
-                    });
-                }
+            if(creep.name == "Claimer_443")
+                creep.claimController(Game.rooms[creep.memory.baseRoomName].controller)
+            // console.log(creep.claimController(creep.room.controller));
+            if (creep.reserveController(Game.rooms[creep.memory.baseRoomName].controller) != OK) {
+                moveToMultiRoomTarget(creep, Game.rooms[creep.memory.baseRoomName].controller, true);
             }
         }
     },

@@ -31,6 +31,14 @@ global.runSpawns = function () {
                 return structure.structureType == STRUCTURE_STORAGE;
             },
         });
+        if(r.name == "W16S22") {
+            var hostiles = r.find(FIND_HOSTILE_CREEPS);
+            if (hostiles.length) {
+                spawnCreep(roleSoldier, [ATTACK, ATTACK, MOVE, MOVE, MOVE], null, r.name)
+                continue
+            }
+        }
+        
         // if (r.find(STRUCTURE_SPAWN).length === 0 && creepRoomMap.get(r.name + "builder") < 5){
         //     // No spawn? Builders to create it, which will then default to upgraders to maintain the room after
         //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name } }, "W16S21");
@@ -63,7 +71,11 @@ global.runSpawns = function () {
         } else if (creepRoomMap.get(r.name + "mover") < 2) {
             spawnCreep(roleMover, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 3 && creepRoomMap.get(r.name + "csites") < 1) {
+        } else if (
+            creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 3 && 
+            creepRoomMap.get(r.name + "csites") < 1 &&
+            r.controller.level < 8
+            ) {
             spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         }
@@ -85,6 +97,7 @@ global.runSpawns = function () {
         // }
         nextSpawnOffset += 1;
     }
+
     // if (!Game.rooms["W17S21"].controller.my) {
     // spawnCreep(roleClaimer);
     // }

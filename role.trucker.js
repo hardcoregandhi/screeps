@@ -7,6 +7,8 @@ global.roleTrucker = {
     roleMemory: { memory: {} },
     // prettier-ignore
     BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+    baseBodyParts: [],
+    bodyLoop: [CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep) {

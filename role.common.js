@@ -6,6 +6,10 @@
  * var mod = require('role.common');
  * mod.thing == 'a thing'; // true
  */
+ 
+ function log(creep, msg) {
+     if(1) if(creep.name == "MoverExt_250") console.log(msg)
+ }
 
 global.healRoads = function (creep) {
     // Heal Roads
@@ -15,14 +19,18 @@ global.healRoads = function (creep) {
         },
     });
     if (towers.length == 0) {
+        log(creep, "no towers")
         const damagedStructs = creep.room.find(FIND_STRUCTURES, {
-            filter: (object) => object.hits < object.hitsMax / 2 && creep.pos.inRangeTo(object, 1),
+            filter: (object) => {
+                return object.structureType == STRUCTURE_ROAD && object.hits < object.hitsMax / 2 && creep.pos.inRangeTo(object, 1)
+            }
         });
         damagedStructs.sort((a, b) => a.hits - b.hits);
         if (damagedStructs.length > 0) {
-            if (creep.repair(damagedStructs[0]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(damagedStructs[0]);
-            }
+            log(creep, "damaged tower found")
+            log(creep, creep.repair(damagedStructs[0]))
+
+            return creep.repair(damagedStructs[0])
         }
     }
     //END Heal Roads
@@ -33,16 +41,28 @@ global.pickupNearby = function (creep) {
     const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
         filter: (object) => object.resourceType == RESOURCE_ENERGY && creep.pos.inRangeTo(object, 1),
     });
+    var tombstoneResource = creep.room.find(FIND_TOMBSTONES, {
+        filter: (object) => creep.pos.inRangeTo(object, 1),
+    });
+    var ruinResource = creep.room.find(FIND_RUINS, {
+        filter: (object) => creep.pos.inRangeTo(object, 1),
+    });
     if (droppedEnergy.length > 0) {
         // console.log(creep.name + " picking up Nearby")
         creep.pickup(droppedEnergy[0]);
     }
+    if (tombstoneResource.length > 0) {
+        creep.withdraw(tombstoneResource[0], RESOURCE_ENERGY)
+    }
+    if (ruinResource.length > 0) {
+        creep.withdraw(ruinResource[0], RESOURCE_ENERGY)
+    }
 };
 
 global.returnToHeal = function (creep, room) {
-    if (creep.ticksToLive > 1400) {
+    if (creep.ticksToLive >= 1400) {
         creep.memory.healing = false;
-        return;
+        return true;
     }
 
     if (creep.memory.healing === true) {
@@ -56,18 +76,21 @@ global.returnToHeal = function (creep, room) {
                 creep.say("No route found");
             }
             // moveToRoom(creep, creep.memory.baseRoomName)
-            return;
+            return true;
         }
         var targets = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType == STRUCTURE_SPAWN;
             },
         });
+        if(targets.length == 0 || (creep.room.energyAvailable < 50 && creep.store.getUsedCapacity(RESOURCE_ENERGY) < 50)) {
+            return false
+        }
         if (creep.transfer(targets[0], RESOURCE_ENERGY) != OK) {
             creep.moveTo(targets[0], {
                 visualizePathStyle: { stroke: "#ffaa00" },
             });
         }
-        return;
+        return true;
     }
 };

@@ -35,11 +35,12 @@ global.moveToTarget = function (creep, target, canUseSwamp = true) {
 global.moveToMultiRoomTarget = function (creep, target, canUseSwamp = true) {
     canUseSwamp = true;
     if (canUseSwamp) {
-        creep.moveTo(target, {
+        ret = creep.moveTo(target, {
             visualizePathStyle: { stroke: "#ffffff" },
             maxOps: 100000,
             maxRooms: 16,
         });
+        // console.log(target)
     } else {
         const path = creep.room.findPath(creep.pos, target, {
             ignoreCreeps: false,

@@ -6,7 +6,7 @@ global.roleTraveller = {
 
     run: function (creep) {
         creep.say("🏳️");
-        targetRoom = "W20S20";
+        targetRoom = "W19S20";
 
         if (creep.memory.returning && creep.store.getUsedCapacity() == 0) {
             creep.memory.returning = false;

@@ -1,5 +1,5 @@
 function log(creep, str) {
-    if (0) if (creep.name == "MoverExt_502") console.log(str);
+    if (0) if (creep.name == "MoverExt_814") console.log(str);
 }
 
 global.roleMoverExt = {
@@ -7,14 +7,19 @@ global.roleMoverExt = {
     roleMemory: { memory: {} },
     // prettier-ignore
     BodyParts: [
+        WORK,
         CARRY, CARRY, CARRY, CARRY, CARRY,
         CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE,
-        MOVE, MOVE, MOVE, MOVE, MOVE
+        MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
+    baseBodyParts: [WORK],
+    bodyLoop: [MOVE, CARRY,],
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        if(healRoads(creep) == OK)
+            return
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         if (closestHostile) {
             creep.memory.fleeing = 20;
@@ -57,51 +62,62 @@ global.roleMoverExt = {
             returnToHeal(creep, creep.memory.baseRoomName);
             return;
         }
+        
+        if(creep.memory.targetSource == undefined)
+            console.log(creep.name, creep.pos)
 
-        if (creep.room.name != creep.memory.fakeBaseRoomName) {
-            log(creep, "out of room");
-            const route = Game.map.findRoute(creep.room, creep.memory.fakeBaseRoomName);
-            if (route.length > 0) {
-                creep.say("Headin oot");
-                const exit = creep.pos.findClosestByRange(route[0].exit);
-                moveToTarget(creep, exit, true);
-            } else {
-                creep.say("No route found");
-            }
-            return;
-        }
+        // if (creep.room.name != creep.memory.fakeBaseRoomName) {
+        //     log(creep, "out of room");
+        //     const route = Game.map.findRoute(creep.room, creep.memory.fakeBaseRoomName);
+        //     if (route.length > 0) {
+        //         creep.say("Headin oot");
+        //         const exit = creep.pos.findClosestByRange(route[0].exit);
+        //         moveToTarget(creep, exit, true);
+        //     } else {
+        //         creep.say("No route found");
+        //     }
+        //     return;
+        // }
 
         log(creep, "in room");
 
         if (!creep.memory.banking) {
             log(creep, "collectin");
-            if (Game.flags.pickerupper.pos.inRangeTo(creep, 5)) {
-                creep.moveTo(Game.flags.midway.pos);
-                return;
-            }
+            log(creep, creep.memory.targetSource)
 
-            var targets = creep.room.find(FIND_STRUCTURES, {
+            var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
+                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && 
+                        structure.pos.inRangeTo(Game.getObjectById(creep.memory.targetSource).pos, 2);
                 },
             });
-            if (targets.length) {
-                var target = creep.pos.findClosestByRange(targets);
-                if (creep.withdraw(target, RESOURCE_ENERGY) != OK) {
-                    moveToTarget(creep, target);
+            // console.log(Game.getObjectById(creep.memory.targetSource))
+
+            if (containers.length) {
+                log(creep, "containers found")
+                // var nearbySources = Game.rooms[creep.memory.targetRoomName].find(FIND_SOURCES, {
+                //     filter: (s) => {
+                //         return s.pos.inRangeTo(containers[0], 2)
+                //     },
+                // })
+                // creep.memory.targetSource = nearbySources[0].id
+                if (creep.withdraw(containers[0], RESOURCE_ENERGY) != OK) {
+                    if(!creep.pos.inRangeTo(containers[0], 1))
+                        moveToTarget(creep, containers[0]);
                 }
             }
         } else {
             log(creep, "banking");
-            var targets = creep.room.find(FIND_STRUCTURES, {
+            var storages = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
+                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER);
                 },
             });
-            if (targets.length) {
-                var target = creep.pos.findClosestByRange(targets);
-                if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
-                    moveToTarget(creep, target);
+            log(creep, storages)
+            if (storages.length) {
+                if (creep.transfer(storages[0], RESOURCE_ENERGY) != OK) {
+                    // console.log(1)
+                    moveToMultiRoomTarget(creep, storages[0]);
                 }
             } else creep.say("no eenergy");
         }

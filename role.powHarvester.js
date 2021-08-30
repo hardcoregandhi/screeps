@@ -3,21 +3,22 @@ global.rolePowHarvester = {
     roleMemory: { memory: {} },
     // prettier-ignore
     BodyParts: [ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
-
+    baseBodyParts: [],
+    bodyLoop: [ATTACK, MOVE,],
     /** @param {Creep} creep **/
     run: function (creep) {
         // creep.say('🏳️');
-        targetRoom = "W20S20";
+        targetRoom = "W18S20";
 
-        var enemies = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3);
-        if (enemies.length) {
-            if (creep.attack(enemies[0]) != OK) {
-                ret = creep.moveTo(enemies[0], {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                });
-            }
-            return;
-        }
+        // var enemies = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3);
+        // if (enemies.length) {
+        //     if (creep.attack(enemies[0]) != OK) {
+        //         ret = creep.moveTo(enemies[0], {
+        //             visualizePathStyle: { stroke: "#ffaa00" },
+        //         });
+        //     }
+        //     return;
+        // }
 
         var powerBanks = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -30,7 +31,7 @@ global.rolePowHarvester = {
                 Memory.prevPowerBankHealth = powerBanks[0].hits;
             }
         } catch (e) {
-            console.trace();
+            console.log(e)
         }
         if (powerBanks.length) {
             if (creep.attack(powerBanks[0]) != OK) {

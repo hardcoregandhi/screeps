@@ -54,14 +54,15 @@ global.roleHarvester = {
         if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
-            creep.drop(RESOURCE_ENERGY);
-            returnToHeal(creep, creep.memory.baseRoomName);
-            return;
+            // creep.drop(RESOURCE_ENERGY);
+            if (returnToHeal(creep, creep.memory.baseRoomName))
+                return;
         }
 
         if (creep.memory.mining) {
             pickupNearby(creep);
-
+            
+            creep.memory.targetSource = sources[creep.memory.currentSource].id
             if (creep.harvest(sources[creep.memory.currentSource]) != OK) {
                 let ret = creep.moveTo(sources[creep.memory.currentSource], {
                     visualizePathStyle: { stroke: "#ffaa00" },
@@ -80,7 +81,7 @@ global.roleHarvester = {
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (
-                        (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_STORAGE) &&
+                        (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_TOWER || structure.structureType == STRUCTURE_STORAGE) &&
                         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                     );
                 },
@@ -100,80 +101,74 @@ global.roleHarvester = {
                     3. healing
                     4. speed
                 */
-                if (creep.ticksToLive < 300) {
-                    log(creep, "healing");
-                    creep.memory.healing = true;
+
+                healRoads(creep);
+
+                var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                // console.log(closestHostile)
+                if (closestHostile) {
+                    if (creep.transfer(towers[0], RESOURCE_ENERGY) != OK) {
+                        creep.moveTo(towers[0]);
+                    }
+                    return;
+                }
+
+                // If we have Movers, just use the storage
+                if (creepRoomMap.get(creep.room.name + "mover") != undefined && creepRoomMap.get(creep.room.name + "mover") > 0) {
+                    log(creep, "movers found");
                     targets = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
-                            return structure.structureType == STRUCTURE_SPAWN;
+                            return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                         },
                     });
-                    target = targets[0];
-                    moveToTarget(creep, target.pos, true);
-                    creep.transfer(target, RESOURCE_ENERGY);
-                    return;
-                } else {
-                    healRoads(creep);
+                    if (!targets.length) {
+                        log(creep, "no storage found");
+                        targets = creep.room.find(FIND_STRUCTURES, {
+                            filter: (structure) => {
+                                return (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                            },
+                        });
 
-                    var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                    // console.log(closestHostile)
-                    if (closestHostile) {
-                        if (creep.transfer(towers[0], RESOURCE_ENERGY) != OK) {
-                            creep.moveTo(towers[0]);
+                        if (!targets.length) {
+                            log(creep, "no container found");
+                        } else target = creep.pos.findClosestByPath(targets);
+                        if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                            moveToTarget(creep, target.pos, true);
                         }
                         return;
                     }
-
-                    // If we have Movers, just use the storage
-                    if (creepRoomMap.get(creep.room.name + "mover") != undefined && creepRoomMap.get(creep.room.name + "mover") > 0) {
-                        log(creep, "movers found");
-                        targets = creep.room.find(FIND_STRUCTURES, {
-                            filter: (structure) => {
-                                return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                            },
-                        });
-                        if (!targets.length) {
-                            log(creep, "no storage found");
-                            targets = creep.room.find(FIND_STRUCTURES, {
-                                filter: (structure) => {
-                                    return (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                                },
-                            });
-
-                            if (!targets.length) {
-                                log(creep, "no container found");
-                            } else target = targets[0];
-                            if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                                moveToTarget(creep, target.pos, true);
-                            }
-                            return;
-                        }
-                    } else {
-                        log(creep, "no movers found");
-                        targets = creep.room.find(FIND_STRUCTURES, {
-                            filter: (structure) => {
-                                return (
-                                    (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
-                                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                                );
-                            },
-                        });
-                        if (!targets.length) {
-                            log(creep, "no exts, spawn, or container found");
-                            targets = towers;
-                        }
-                        // console.log(targets)
+                } else {
+                    log(creep, "no movers found");
+                    targets = creep.room.find(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return (
+                                (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
+                                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                            );
+                        },
+                    });
+                    if (!targets.length) {
+                        log(creep, "no exts, spawn, or container found");
+                        targets = towers;
                     }
-                    target = creep.pos.findClosestByPath(targets);
-                    log(creep, `target: ${target}`);
+                    // console.log(targets)
                 }
+                target = creep.pos.findClosestByPath(targets);
+                log(creep, `target: ${target}`);
+                
 
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     moveToTarget(creep, target.pos, false);
                 }
             } else {
-                // creep.say("what now")
-                roleUpgrader.run(creep);
+                var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+                if (targets.length) {
+                    roleBuilder.run(creep);
+                    return;
+                } else {
+                    roleUpgrader.run(creep);
+                    return;
+                }
             }
         }
     },

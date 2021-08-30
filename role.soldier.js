@@ -5,13 +5,16 @@ global.roleSoldier = {
     BodyParts: [
         ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,
         ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,
-        TOUGH,TOUGH,TOUGH,TOUGH,TOUGH,
+        ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,
+        ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,
         MOVE,MOVE,MOVE,MOVE,MOVE,
         MOVE,MOVE,MOVE,MOVE,MOVE,
         MOVE,MOVE,MOVE,MOVE,MOVE,
         MOVE,MOVE,MOVE,MOVE,MOVE,
         HEAL,
     ],
+    baseBodyParts: [],
+    bodyLoop: [ATTACK, MOVE,],
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -52,8 +55,9 @@ global.roleSoldier = {
                 creep.moveTo(exit);
             }
         } else {
-            // creep.moveTo(creep.room.controller);
-            creep.attack(creep.room.controller);
+            if (creep.attack(creep.room.controller) != OK) {
+                creep.moveTo(creep.room.controller, { maxRooms: 1 });
+            }
         }
     },
 };
