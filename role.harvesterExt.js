@@ -78,10 +78,13 @@ global.roleHarvesterExt = {
         log(creep, 2)
 
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if (closestHostile) {
+        var closestStructure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
+
+        if (closestHostile || closestStructure) {
             if (creepRoomMap.get(creep.memory.baseRoomName + "soldier") == undefined || creepRoomMap.get(creep.memory.baseRoomName + "soldier") < 1) {
-                spawnCreep(roleSoldier, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
+                spawnCreep(roleSoldier, "auto", { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
             }
+            if (closestStructure) return;
             creep.memory.fleeing = 20;
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
             if (route.length > 0) {
