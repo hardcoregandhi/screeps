@@ -170,12 +170,19 @@ global.roleBuilder = {
                     moveToTarget(creep, creep.room.controller.pos, false);
                     return;
                 }
-                if (targets.length) {
-                    if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
-                        creep.moveTo(targets[0], {
+                mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
+                if (mainStorage == undefined) {
+                    log(creep, "mainStorage could not be found");
+                } else {
+                    log(creep, "using mainStorage");
+                    if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
+                        // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
+                        creep.moveTo(mainStorage, {
                             visualizePathStyle: { stroke: "#ffaa00" },
+                            maxRooms: 0,
                         });
                     }
+                    return;
                 }
             } else {
                 var containers = creep.room.find(FIND_STRUCTURES, {
