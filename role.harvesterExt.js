@@ -18,7 +18,7 @@ global.roleHarvesterExt = {
         MOVE, MOVE, MOVE, MOVE, MOVE
         ],
     baseBodyParts: [],
-    bodyLoop: [WORK, WORK, CARRY, MOVE, MOVE,],
+    bodyLoop: [WORK, WORK, CARRY, MOVE, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep) {

@@ -15,6 +15,8 @@ global.roleBuilder = {
         CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE
         ],
+    baseBodyParts: [],
+    bodyLoop: [WORK, CARRY, MOVE],
     roleMemory: { memory: {} },
     /** @param {Creep} creep **/
     run: function (creep) {

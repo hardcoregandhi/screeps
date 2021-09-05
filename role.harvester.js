@@ -13,7 +13,8 @@ global.roleHarvester = {
         CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
-
+    baseBodyParts: [],
+    bodyLoop: [WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
     run: function (creep, focusHealing) {
         var sources = creep.room.find(FIND_SOURCES);

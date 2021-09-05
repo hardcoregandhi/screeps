@@ -14,7 +14,8 @@ global.roleUpgrader = {
         CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
-
+    baseBodyParts: [WORK, CARRY, CARRY, MOVE, MOVE],
+    bodyLoop: [WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
     run: function (creep) {
         log(creep, "run");

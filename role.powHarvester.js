@@ -4,7 +4,7 @@ global.rolePowHarvester = {
     // prettier-ignore
     BodyParts: [ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
     baseBodyParts: [],
-    bodyLoop: [ATTACK, MOVE,],
+    bodyLoop: [ATTACK, MOVE],
     /** @param {Creep} creep **/
     run: function (creep) {
         // creep.say('🏳️');

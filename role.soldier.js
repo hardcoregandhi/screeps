@@ -13,8 +13,8 @@ global.roleSoldier = {
         MOVE,MOVE,MOVE,MOVE,MOVE,
         HEAL,
     ],
-    baseBodyParts: [],
-    bodyLoop: [ATTACK, MOVE,],
+    baseBodyParts: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH],
+    bodyLoop: [ATTACK, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep) {

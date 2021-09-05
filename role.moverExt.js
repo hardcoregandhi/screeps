@@ -14,7 +14,7 @@ global.roleMoverExt = {
         MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
     baseBodyParts: [WORK],
-    bodyLoop: [MOVE, CARRY,],
+    bodyLoop: [MOVE, CARRY],
 
     /** @param {Creep} creep **/
     run: function (creep) {
