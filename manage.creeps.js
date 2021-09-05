@@ -13,6 +13,8 @@ var roleTrucker = require("role.trucker");
 var roleSoldier = require("role.soldier");
 var rolePowHarvester = require("role.powHarvester");
 var rolePowMover = require("role.powMover");
+var roleDoctor = require("role.doctor");
+var roleInvader = require("role.invader");
 
 global.runCreeps = function () {
     for (var name in Game.creeps) {
@@ -70,6 +72,12 @@ global.runCreeps = function () {
             }
             if (creep.memory.role == "powMover") {
                 rolePowMover.run(creep);
+            }
+            if (creep.memory.role == "doctor") {
+                roleDoctor.run(creep);
+            }
+            if (creep.memory.role == "invader") {
+                roleInvader.run(creep);
             }
             if (creep.memory.role == "mover") {
                 var droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
