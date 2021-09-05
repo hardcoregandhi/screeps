@@ -1,20 +1,4 @@
-var roleHarvester = require("role.harvester");
-var roleHarvesterExt = require("role.harvesterExt");
-var roleUpgrader = require("role.upgrader");
-var roleBuilder = require("role.builder");
-var roleBuilder = require("role.builderExt");
-var roleTower = require("tower");
-var roleClaimer = require("role.claimer");
-var roleMover = require("role.mover");
-var roleMoverExt = require("role.moverExt");
-var roleDefence = require("role.defense");
-var roleScavenger = require("role.scavenger");
-var roleTraveller = require("role.traveller");
-var roleTrucker = require("role.trucker");
-var roleSoldier = require("role.soldier");
-var rolePowHarvester = require("role.powHarvester");
-var rolePowMover = require("role.powMover");
-
+require("manage.baseBuilding");
 require("manage.spawns");
 require("manage.structs");
 require("manage.creeps");
@@ -337,5 +321,5 @@ module.exports.loop = function () {
     runRenew();
 
 
-    // runRoads();
+        runBaseBuilder();
 };
