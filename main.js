@@ -5,6 +5,9 @@ require("manage.creeps");
 require("manage.renew");
 require("manage.roads");
 require("role.common");
+require("global.logging");
+
+PathFinder.use(true);
 
 function getRandomInt(min = 100, max = 999) {
     min = Math.ceil(min);
@@ -12,6 +15,7 @@ function getRandomInt(min = 100, max = 999) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 getBodyCost = function (bodyParts) {
+    console.log(bodyParts)
     return _.sum(bodyParts, (b) => BODYPART_COST[b]);
 };
 removeAllSites = function (roomName) {
@@ -22,7 +26,7 @@ removeAllSites = function (roomName) {
 };
 
 focusHealing = false;
-global.myRooms = ["W16S21", "W15S21", "W19S21", "W17S19", "W16S22", "W14S23"];
+global.myRooms = ["W6S1"];
 
 displaySpawnFailMessage = function (_roomName, _roleName, _cost, _reason) {
     new RoomVisual().text(`${_reason} Next ` + _roomName + ": " + _.capitalize(_roleName) + " Cost: " + _cost, 1, listOffset + inc(), { align: "left", font: 0.5 });
@@ -185,81 +189,81 @@ const profiler = require("screeps-profiler");
 profiler.enable();
 module.exports.loop = function () {
     profiler.wrap(function () {
-    // Cleanup
-    for (var i in Memory.creeps) {
-        if (!Game.creeps[i]) {
-            delete Memory.creeps[i];
+        // Cleanup
+        for (var i in Memory.creeps) {
+            if (!Game.creeps[i]) {
+                delete Memory.creeps[i];
+            }
         }
-    }
 
-    // Event logging
-    _.forEach(Game.rooms, (room) => {
-        let eventLog = room.getEventLog();
-        let attackEvents = _.filter(eventLog, { event: EVENT_ATTACK });
-        attackEvents.forEach((event) => {
-            let target = Game.getObjectById(event.data.targetId);
-            if (target && target.my) {
-                console.log(event);
-            }
+        // Event logging
+        // _.forEach(Game.rooms, (room) => {
+        //     let eventLog = room.getEventLog();
+        //     let attackEvents = _.filter(eventLog, { event: EVENT_ATTACK });
+        //     attackEvents.forEach((event) => {
+        //         let target = Game.getObjectById(event.data.targetId);
+        //         if (target && target.my) {
+        //             console.log(event);
+        //         }
+        //     });
+        // });
+
+        // Active Creep Tracking
+        global.creepRoomMap = new Map();
+        _.forEach(Game.rooms, (r) => {
+            creepRoomMap.set(r.name + "builder", 0);
+            creepRoomMap.set(r.name + "mover", 0);
+            creepRoomMap.set(r.name + "upgrader", 0);
+            creepRoomMap.set(r.name + "harvester", 0);
+            creepRoomMap.set(r.name + "claimer", 0);
+            creepRoomMap.set(r.name + "harvesterExt", 0);
+            creepRoomMap.set(r.name + "moverExt", 0);
         });
-    });
 
-    // Active Creep Tracking
-    global.creepRoomMap = new Map();
-    _.forEach(Game.rooms, (r) => {
-        creepRoomMap.set(r.name + "builder", 0);
-        creepRoomMap.set(r.name + "mover", 0);
-        creepRoomMap.set(r.name + "upgrader", 0);
-        creepRoomMap.set(r.name + "harvester", 0);
-        creepRoomMap.set(r.name + "claimer", 0);
-        creepRoomMap.set(r.name + "harvesterExt", 0);
-        creepRoomMap.set(r.name + "moverExt", 0);
-    });
+        _.forEach(Game.rooms, (r) => {
+            _.forEach(Game.creeps, (c) => {
+                key = r.name + c.memory.role;
+                if (c.memory.baseRoomName == r.name) {
+                    if (creepRoomMap.get(key)) {
+                        creepRoomMap.set(key, creepRoomMap.get(key) + 1);
+                    } else {
+                        creepRoomMap.set(key, 1);
+                    }
+                } else {
+                    if (creepRoomMap.get(key) == undefined) {
+                        creepRoomMap.set(key, 0);
+                    }
+                }
 
-    _.forEach(Game.rooms, (r) => {
-        _.forEach(Game.creeps, (c) => {
-            key = r.name + c.memory.role;
-            if (c.memory.baseRoomName == r.name) {
-                if (creepRoomMap.get(key)) {
-                    creepRoomMap.set(key, creepRoomMap.get(key) + 1);
+                key = r.name + c.memory.role + "Target";
+                if (c.memory.targetRoomName == r.name) {
+                    if (creepRoomMap.get(key)) {
+                        creepRoomMap.set(key, creepRoomMap.get(key) + 1);
+                    } else {
+                        creepRoomMap.set(key, 1);
+                    }
                 } else {
-                    creepRoomMap.set(key, 1);
+                    if (creepRoomMap.get(key) == undefined) {
+                        creepRoomMap.set(key, 0);
+                    }
                 }
-            } else {
-                if (creepRoomMap.get(key) == undefined) {
-                    creepRoomMap.set(key, 0);
-                }
-            }
-            
-            key = r.name + c.memory.role+"Target";
-            if (c.memory.targetRoomName == r.name) {
-                if (creepRoomMap.get(key)) {
-                    creepRoomMap.set(key, creepRoomMap.get(key) + 1);
+
+                key = r.name + c.memory.role + "Target" + c.memory.targetSource;
+                if (c.memory.targetRoomName == r.name) {
+                    if (creepRoomMap.get(key)) {
+                        creepRoomMap.set(key, creepRoomMap.get(key) + 1);
+                    } else {
+                        creepRoomMap.set(key, 1);
+                    }
                 } else {
-                    creepRoomMap.set(key, 1);
+                    if (creepRoomMap.get(key) == undefined) {
+                        creepRoomMap.set(key, 0);
+                    }
                 }
-            } else {
-                if (creepRoomMap.get(key) == undefined) {
-                    creepRoomMap.set(key, 0);
-                }
-            }
-            
-            key = r.name + c.memory.role+"Target"+c.memory.targetSource;
-            if (c.memory.targetRoomName == r.name) {
-                if (creepRoomMap.get(key)) {
-                    creepRoomMap.set(key, creepRoomMap.get(key) + 1);
-                } else {
-                    creepRoomMap.set(key, 1);
-                }
-            } else {
-                if (creepRoomMap.get(key) == undefined) {
-                    creepRoomMap.set(key, 0);
-                }
-            }
-            
-            creepRoomMap.set(r.name + "csites", r.find(FIND_CONSTRUCTION_SITES).length);
+
+                creepRoomMap.set(r.name + "csites", r.find(FIND_CONSTRUCTION_SITES).length);
+            });
         });
-    });
 
         // Active Energy Tracking
         _.forEach(Game.rooms, (r) => {
@@ -368,35 +372,36 @@ module.exports.loop = function () {
             return textOffset;
         }
 
-    for (var room in Game.rooms) {
-        r = Game.rooms[room];
-        if (!myRooms.includes(r.name)) {
-            continue;
+        for (var room in Game.rooms) {
+            r = Game.rooms[room];
+            if (!myRooms.includes(r.name)) {
+                continue;
+            }
+            // Creep info
+            new RoomVisual().text(r.name, 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("🔋  ExcessEnergy: " + creepRoomMap.get(r.name + "eenergy"), 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("⚡️ Energy      : " + r.energyAvailable + "/" + r.energyCapacityAvailable, 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("⛏️ Harvesters  : " + creepRoomMap.get(r.name + "harvester"), 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("🚚 Movers      : " + creepRoomMap.get(r.name + "mover"), 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("👷 Builders    : " + creepRoomMap.get(r.name + "builder"), 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("🚧 C sites     : " + creepRoomMap.get(r.name + "csites"), 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("🔺Upgraders    : " + creepRoomMap.get(r.name + "upgrader"), 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("HarvestExt    : " + creepRoomMap.get(r.name + "harvesterExt"), 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("MoverExt    : " + creepRoomMap.get(r.name + "moverExt"), 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("HarvestExtTarget    : " + creepRoomMap.get(r.name + "harvesterExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text("MoverExtTarget    : " + creepRoomMap.get(r.name + "moverExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
+            textOffset;
         }
-        // Creep info
-        new RoomVisual().text(r.name, 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("🔋  ExcessEnergy: " + creepRoomMap.get(r.name + "eenergy"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("⚡️ Energy      : " + r.energyAvailable + "/" + r.energyCapacityAvailable, 1, listOffset + inc(), { align: "left" ,font:fontSize});
-        new RoomVisual().text("⛏️ Harvesters  : " + creepRoomMap.get(r.name + "harvester"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("🚚 Movers      : " + creepRoomMap.get(r.name + "mover"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("👷 Builders    : " + creepRoomMap.get(r.name + "builder"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("🚧 C sites     : " + creepRoomMap.get(r.name + "csites"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("🔺Upgraders    : " + creepRoomMap.get(r.name + "upgrader"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("HarvestExt    : " + creepRoomMap.get(r.name + "harvesterExt"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("MoverExt    : " + creepRoomMap.get(r.name + "moverExt"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("HarvestExtTarget    : " + creepRoomMap.get(r.name + "harvesterExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("MoverExtTarget    : " + creepRoomMap.get(r.name + "moverExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        textOffset
-    }
 
-    runStructs();
+        runStructs();
 
-    runSpawns();
+        runSpawns();
 
-    runCreeps();
-    
-    runRenew();
+        runCreeps();
 
+        runRenew();
+
+        runRoads();
 
         runBaseBuilder();
     });
