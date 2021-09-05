@@ -147,12 +147,7 @@ global.roleBuilder = {
 
             if (creepRoomMap.get(creep.room.name + "mover") > 1 || creepRoomMap.get(creep.room.name + "eenergy") > 10000) {
                 log(creep, 81);
-                var targets = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
-                    },
-                });
-                if (creepRoomMap.get(creep.room.name + "eenergy") === undefined || creepRoomMap.get(creep.room.name + "eenergy") < 1500) {
+                if ((creepRoomMap.get(creep.room.name + "eenergy") === undefined && creep.room.energyAvailable < creep.room.energyCapacityAvailable / 2) || creepRoomMap.get(creep.room.name + "eenergy") < 1500) {
                     log(creep, 10);
                     try {
                         var l_to = Game.getObjectById(Memory.rooms[creep.room.name].l_to);
