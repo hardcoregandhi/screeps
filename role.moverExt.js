@@ -18,10 +18,9 @@ global.roleMoverExt = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        if(healRoads(creep) == OK)
-            return
+        if (healRoads(creep) == OK) return;
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if (closestHostile) {
+        if (closestHostile && towers.length) {
             creep.memory.fleeing = 20;
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
             if (route.length > 0) {
@@ -62,9 +61,8 @@ global.roleMoverExt = {
             returnToHeal(creep, creep.memory.baseRoomName);
             return;
         }
-        
-        if(creep.memory.targetSource == undefined)
-            console.log(creep.name, creep.pos)
+
+        if (creep.memory.targetSource == undefined) console.log(creep.name, creep.pos);
 
         // if (creep.room.name != creep.memory.fakeBaseRoomName) {
         //     log(creep, "out of room");
@@ -83,18 +81,17 @@ global.roleMoverExt = {
 
         if (!creep.memory.banking) {
             log(creep, "collectin");
-            log(creep, creep.memory.targetSource)
+            log(creep, creep.memory.targetSource);
 
             var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && 
-                        structure.pos.inRangeTo(Game.getObjectById(creep.memory.targetSource).pos, 2);
+                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.pos.inRangeTo(Game.getObjectById(creep.memory.targetSource).pos, 2);
                 },
             });
             // console.log(Game.getObjectById(creep.memory.targetSource))
 
             if (containers.length) {
-                log(creep, "containers found")
+                log(creep, "containers found");
                 // var nearbySources = Game.rooms[creep.memory.targetRoomName].find(FIND_SOURCES, {
                 //     filter: (s) => {
                 //         return s.pos.inRangeTo(containers[0], 2)
@@ -102,18 +99,28 @@ global.roleMoverExt = {
                 // })
                 // creep.memory.targetSource = nearbySources[0].id
                 if (creep.withdraw(containers[0], RESOURCE_ENERGY) != OK) {
-                    if(!creep.pos.inRangeTo(containers[0], 1))
-                        moveToTarget(creep, containers[0]);
+                    if (!creep.pos.inRangeTo(containers[0], 1)) moveToTarget(creep, containers[0]);
                 }
             }
         } else {
             log(creep, "banking");
+            mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
+            if(mainStorage != undefined){
+                if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
+                    moveToMultiRoomTarget(creep, mainStorage);
+                }
+                return
+            }
+            
+            
+            
+            
             var storages = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER);
+                    return structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER;
                 },
             });
-            log(creep, storages)
+            log(creep, storages);
             if (storages.length) {
                 if (creep.transfer(storages[0], RESOURCE_ENERGY) != OK) {
                     // console.log(1)
