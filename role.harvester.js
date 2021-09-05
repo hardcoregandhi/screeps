@@ -114,7 +114,7 @@ global.roleHarvester = {
 
                 var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
                 // console.log(closestHostile)
-                if (closestHostile) {
+                if (closestHostile && towers.length) {
                     if (creep.transfer(towers[0], RESOURCE_ENERGY) != OK) {
                         creep.moveTo(towers[0]);
                     }
