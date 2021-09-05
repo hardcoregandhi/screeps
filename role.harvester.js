@@ -122,8 +122,28 @@ global.roleHarvester = {
                 }
 
                 // If we have Movers, just use the storage
-                if (creepRoomMap.get(creep.room.name + "mover") != undefined && creepRoomMap.get(creep.room.name + "mover") > 0) {
+                if (creepRoomMap.get(creep.memory.baseRoomName + "mover") != undefined && creepRoomMap.get(creep.memory.baseRoomName + "mover") > 0) {
                     log(creep, "movers found");
+
+                    if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.currentSource].container) {
+                        target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.currentSource].container.id);
+                        log(creep, "local ccont found");
+                        log(creep, target);
+
+                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.currentSource].container.targettedBy < 1 && Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined) {
+                            spawnCreep(roleHarvSup, "auto", { memory: { targetContainer: target.id } });
+                        }
+
+                        if (target != null && target.hits < 200000 && target.structureType == STRUCTURE_CONTAINER) {
+                            if (creep.repair(target) != OK) {
+                                moveToMultiRoomTarget(creep, target.pos);
+                            }
+                        } else if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
+                            moveToMultiRoomTarget(creep, target.pos);
+                        }
+                        return;
+                    }
+
                     targets = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
                             return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
