@@ -53,30 +53,28 @@ global.runStructs = function () {
             if (l_from && l_from.store.getUsedCapacity([RESOURCE_ENERGY]) == 800 && creepRoomMap.get(room.name + "eenergy") > 2000) {
                 if (l_to.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
                     // console.log(`Sending energy: ${room.name} Return:` + l_from.transferEnergy(l_to, 800));
-                    l_from.transferEnergy(l_to, 800)
+                    l_from.transferEnergy(l_to, 800);
                 }
             }
         }
-        
-        
+
         var observers = room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return structure.structureType == STRUCTURE_OBSERVER;
             },
         });
-        
-        
+
         for (var o of observers) {
             // set target rooms and iterator
-            targetPowerRooms = ["W13S21", "W14S21", "W15S21", "W16S21", "W17S21", "W18S21", "W19S21", ]
-            if(Memory.rooms[room.name].targetPowerRooms == undefined) {
-                Memory.rooms[room.name].targetPowerRooms = targetPowerRooms
-                Memory.rooms[room.name].targetPowerRoom = 0
+            targetPowerRooms = ["W13S21", "W14S21", "W15S21", "W16S21", "W17S21", "W18S21", "W19S21"];
+            if (Memory.rooms[room.name].targetPowerRooms == undefined) {
+                Memory.rooms[room.name].targetPowerRooms = targetPowerRooms;
+                Memory.rooms[room.name].targetPowerRoom = 0;
             }
-            
-            observerTarget = Memory.rooms[room.name].targetPowerRooms[Memory.rooms[room.name].targetPowerRoom]
-            o.observeRoom(observerTarget)
-            console.log(Game.rooms[observerTarget])
+
+            observerTarget = Memory.rooms[room.name].targetPowerRooms[Memory.rooms[room.name].targetPowerRoom];
+            o.observeRoom(observerTarget);
+            console.log(Game.rooms[observerTarget]);
             // the room will be available on the next tick after observeRoom runs
             if (Game.rooms[observerTarget] != undefined) {
                 var powerBanks = room.find(FIND_STRUCTURES, {
@@ -85,13 +83,30 @@ global.runStructs = function () {
                     },
                 });
                 if (powerBanks.length) {
-                    
                 } else {
-                    console.log("no power found, iterating observer")
-                    Memory.rooms[room.name].targetPowerRoom = Memory.rooms[room.name].targetPowerRooms.length == Memory.rooms[room.name].targetPowerRoom ? 0 : Memory.rooms[room.name].targetPowerRoom + 1
+                    console.log("no power found, iterating observer");
+                    Memory.rooms[room.name].targetPowerRoom = Memory.rooms[room.name].targetPowerRooms.length == Memory.rooms[room.name].targetPowerRoom ? 0 : Memory.rooms[room.name].targetPowerRoom + 1;
                 }
             }
-            
+        }
+
+        // var ramparts = room.find(FIND_STRUCTURES, {
+        //     filter: (structure) => {
+        //         return structure.structureType == STRUCTURE_RAMPART;
+        //     },
+        // });
+        // for (var r of ramparts) {
+        //     r.setPublic(false)
+        // }
+
+        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS, {
+            filter: (c) => {
+                return c.body.find((part) => part.type == ATTACK || part.type == RANGED_ATTACK) == true;
+            },
+        });
+        if (hostileCreeps.length > 2) {
+            room.controller.activateSafeMode();
+            Game.notify("2 attackers in " + room.name + ". Activated Safe Mode.");
         }
     });
 };
