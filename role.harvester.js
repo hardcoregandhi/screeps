@@ -85,6 +85,7 @@ global.roleHarvester = {
                 }
             }
         } else {
+            healRoads(creep);
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (
