@@ -29,8 +29,8 @@ global.runRoads = function () {
                         /*new Room.Terrain(room.name).get(pathStep.x, pathStep.y) == TERRAIN_MASK_SWAMP &&*/
                         r.lookForAt(LOOK_STRUCTURES, pathStep.x, pathStep.y).length == 0
                     ) {
-                        // room.visual.circle(pathStep, {color: 'green', lineStyle: 'dashed'});
-                        r.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
+                        r.visual.circle(pathStep, { color: "green", lineStyle: "dashed" });
+                        // r.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
                     }
                 }
                 // Sources to spawns
@@ -49,8 +49,8 @@ global.runRoads = function () {
                         ignoreRoads: false,
                         swampCost: 20,
                     })) {
-                        // r.visual.circle(pathStep, {color: 'red', lineStyle: 'dashed'});
-                        if (new Room.Terrain(r.name).get(pathStep2.x, pathStep2.y) == TERRAIN_MASK_SWAMP && r.lookForAt(LOOK_STRUCTURES, pathStep2.x, pathStep2.y).length == 0) {
+                        r.visual.circle(pathStep, { color: "red", lineStyle: "dashed" });
+                        if (/*new Room.Terrain(r.name).get(pathStep2.x, pathStep2.y) == TERRAIN_MASK_SWAMP &&*/ r.lookForAt(LOOK_STRUCTURES, pathStep2.x, pathStep2.y).length == 0) {
                             r.visual.circle(pathStep2, {
                                 fill: "green",
                                 radius: 0.55,
@@ -65,7 +65,7 @@ global.runRoads = function () {
                         var surr = new RoomPosition(i, j, r.name);
                         if (new Room.Terrain(r.name).get(surr.x, surr.y) == TERRAIN_MASK_SWAMP) {
                             r.visual.circle(surr, { fill: "green" });
-                            r.createConstructionSite(surr.x, surr.y, STRUCTURE_ROAD);
+                            // r.createConstructionSite(surr.x, surr.y, STRUCTURE_ROAD);
                         }
                     }
                 }

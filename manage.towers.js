@@ -1,13 +1,13 @@
-var towerRangeImpactFactor = function(distance) {
-  if(distance <= TOWER_OPTIMAL_RANGE) {
-   return 1
-  }
-  if(distance >= TOWER_FALLOFF_RANGE) {
-    return 1 - TOWER_FALLOFF
-  }
-  var towerFalloffPerTile = TOWER_FALLOFF / (TOWER_FALLOFF_RANGE - TOWER_OPTIMAL_RANGE)
-  return 1 - (distance - TOWER_OPTIMAL_RANGE) * towerFalloffPerTile
-}
+var towerRangeImpactFactor = function (distance) {
+    if (distance <= TOWER_OPTIMAL_RANGE) {
+        return 1;
+    }
+    if (distance >= TOWER_FALLOFF_RANGE) {
+        return 1 - TOWER_FALLOFF;
+    }
+    var towerFalloffPerTile = TOWER_FALLOFF / (TOWER_FALLOFF_RANGE - TOWER_OPTIMAL_RANGE);
+    return 1 - (distance - TOWER_OPTIMAL_RANGE) * towerFalloffPerTile;
+};
 
 global.runTowers = function (room) {
     var towers = room.find(FIND_STRUCTURES, {
@@ -15,12 +15,11 @@ global.runTowers = function (room) {
             return structure.structureType == STRUCTURE_TOWER;
         },
     });
-    
+
     percentageBased = true;
 
     var highlyDamagedStructFound = tower.room.find(FIND_STRUCTURES, {
-        filter: (structure) =>
-            (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 5)) || (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.01)),
+        filter: (structure) => (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 5)) || (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.01)),
     });
 
     var customStructureSpecificPercentLimits = tower.room.find(FIND_STRUCTURES, {
@@ -35,28 +34,21 @@ global.runTowers = function (room) {
     var healer = null;
     var healerCount = null;
     const reducer = (accumulator, currentBodyPart) => {
-        if(currentBodyPart.type == HEAL && currentBodyPart.hits > 0) accumulator+=1
-        if(currentBodyPart.type == HEAL && currentBodyPart.hits > 0 && currentBodyPart.boost != undefined) accumulator+=1
-        
-    }
+        if (currentBodyPart.type == HEAL && currentBodyPart.hits > 0) accumulator += 1;
+        if (currentBodyPart.type == HEAL && currentBodyPart.hits > 0 && currentBodyPart.boost != undefined) accumulator += 1;
+    };
     for (var h of allHostiles) {
         healparts = bparts.reduce(reducer);
-        if(healerCount < healparts)
+        if (healerCount < healparts) {
             healer = h;
             healerCount = healparts;
         }
     }
 
     if (healer) {
-        
-        for(var t of towers)
-            damage += TOWER_POWER_ATTACK * towerRangeImpactFactor(t.getRangeTo(healer))
-            
-        if (damage > healerCount * 12)
-            for(var t of towers)
-                t.attack(healer)
+        for (var t of towers) damage += TOWER_POWER_ATTACK * towerRangeImpactFactor(t.getRangeTo(healer));
 
-            
+        if (damage > healerCount * 12) for (var t of towers) t.attack(healer);
     }
 
     if (closestHostile) {
@@ -116,6 +108,4 @@ global.runTowers = function (room) {
             return;
         }
     }
-
-
 };

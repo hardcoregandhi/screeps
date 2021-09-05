@@ -23,15 +23,15 @@ global.roleBuilder = {
         if (!creep.memory.currentSource == null) {
             creep.memory.currentSource = 0;
         }
-        
+
         if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
-            if(returnToHeal(creep, creep.memory.baseRoomName)) return;
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
-            moveToMultiRoomTarget(creep, new RoomPosition(25,25,creep.memory.baseRoomName));
+            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
         var customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES, {
@@ -39,24 +39,24 @@ global.roleBuilder = {
                 (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
                 (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
                 (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.04)) ||
-                (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.02)),
+                (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.001)),
         });
-        customStructureSpecificPercentLimits.sort((a, b) => (a.hits / a.hitsMax) * 100 > (b.hits / b.hitsMax) * 100 )
-        _.forEach(customStructureSpecificPercentLimits, a => {
+        customStructureSpecificPercentLimits.sort((a, b) => (a.hits / a.hitsMax) * 100 > (b.hits / b.hitsMax) * 100);
+        _.forEach(customStructureSpecificPercentLimits, (a) => {
             creep.room.visual.circle(a.pos, {
-                    stroke: "red",
-                    radius: 0.5,
-                    lineStyle: "dashed",
-                    fill: "transparent",
-                });
-        })
+                stroke: "red",
+                radius: 0.5,
+                lineStyle: "dashed",
+                fill: "transparent",
+            });
+        });
         // creep.room.visual.circle(customStructureSpecificPercentLimits[0].pos, {
         //             stroke: "blue",
         //             radius: 0.2,
         //             lineStyle: "dashed",
         //             fill: "transparent",
         //         });
-        
+
         var sources = creep.room.find(FIND_SOURCES);
         if (creep.memory.currentSource > sources.length - 1) {
             creep.memory.currentSource = 0;
@@ -74,10 +74,10 @@ global.roleBuilder = {
         if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
-            if (returnToHeal(creep, creep.memory.baseRoomName)){
+            if (returnToHeal(creep, creep.memory.baseRoomName)) {
                 return;
             } else {
-                creep.say("dying/nospawn")
+                creep.say("dying/nospawn");
             }
         }
 
@@ -124,8 +124,8 @@ global.roleBuilder = {
                 }
             }
             if (customStructureSpecificPercentLimits.length) {
-                if(creep.repair(customStructureSpecificPercentLimits[0]) != OK) {
-                    moveToTarget(creep, customStructureSpecificPercentLimits[0])
+                if (creep.repair(customStructureSpecificPercentLimits[0]) != OK) {
+                    moveToTarget(creep, customStructureSpecificPercentLimits[0]);
                 }
             }
         } else {
@@ -142,8 +142,6 @@ global.roleBuilder = {
                     return;
                 }
             }
-            
-            
 
             if (creepRoomMap.get(creep.room.name + "mover") > 1 || creepRoomMap.get(creep.room.name + "eenergy") > 10000) {
                 log(creep, 81);
@@ -155,7 +153,7 @@ global.roleBuilder = {
                             if (creep.withdraw(l_to, RESOURCE_ENERGY) != OK) {
                                 moveToTarget(creep, l_to);
                             }
-                            return
+                            return;
                         }
                     } catch (error) {
                         // console.log(error);
@@ -182,16 +180,16 @@ global.roleBuilder = {
             } else {
                 var containers = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
+                        return structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > creep.store.getFreeCapacity();
                     },
                 });
-                log(creep, containers)
-                if(containers.length) {
-                    container = creep.pos.findClosestByPath(containers)
-                    if(creep.withdraw(container, RESOURCE_ENERGY) != OK) {
-                        moveToMultiRoomTarget(creep, container)
+                log(creep, containers);
+                if (containers.length) {
+                    container = creep.pos.findClosestByPath(containers);
+                    if (creep.withdraw(container, RESOURCE_ENERGY) != OK) {
+                        moveToMultiRoomTarget(creep, container);
                     }
-                    return
+                    return;
                 }
                 var closeSources = creep.room.find(FIND_SOURCES, {
                     filter: (s) => {
@@ -199,7 +197,7 @@ global.roleBuilder = {
                     },
                 });
                 if (creepRoomMap.get(creep.room.name + "mover") == 0) {
-                    closeSources = creep.room.find(FIND_SOURCES,{
+                    closeSources = creep.room.find(FIND_SOURCES, {
                         filter: (s) => {
                             return s.energy != 0;
                         },
@@ -210,7 +208,7 @@ global.roleBuilder = {
                     if (creep.store.getFreeCapacity() > 0) {
                         if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
                             if (moveToTarget(creep, sources[creep.memory.currentSource], true) == ERR_NO_PATH) {
-                                creep.say("no path")
+                                creep.say("no path");
                                 creep.memory.currentSource++;
                             }
                         }

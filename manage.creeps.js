@@ -24,7 +24,7 @@ global.runCreeps = function () {
             if (creep.pos.y == 49) creep.move(1);
             if (creep.pos.x == 0) creep.move(3);
             if (creep.pos.y == 0) creep.move(5);
-            
+
             pickupNearby(creep);
 
             if (creep.memory.role == "traveller") {
@@ -120,7 +120,7 @@ global.runCreeps = function () {
             }
         } catch (e) {
             console.log(e);
-            console.log(creep, " failed to run")
+            console.log(creep, " failed to run");
         }
     }
 };

@@ -87,9 +87,9 @@ global.roleUpgrader = {
                 }
             } else {
                 healRoads(creep);
-                if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                if (creep.upgradeController(creep.room.controller) != OK) {
                     moveToTarget(creep, creep.room.controller.pos, false);
-                    creep.moveTo(creep.room.controller.pos);
+                    // creep.moveTo(creep.room.controller.pos);
                     if (creep.store[RESOURCE_ENERGY] == 0) {
                         creep.memory.upgrading = false;
                     }

@@ -6,10 +6,8 @@ global.roleClaimer = {
         CLAIM, CLAIM,
         MOVE, MOVE, MOVE, MOVE, MOVE
         ],
-    baseBodyParts: [
-        CLAIM, CLAIM,
-        ],
-    bodyLoop: [MOVE,MOVE,MOVE,MOVE,MOVE,CLAIM],
+    baseBodyParts: [CLAIM, CLAIM],
+    bodyLoop: [MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM],
     // 1 - UP
     // 3 - RIGHT
     // 5 - DOWN
@@ -28,8 +26,9 @@ global.roleClaimer = {
                 creep.moveTo(exit);
             }
         } else {
-            if(creep.name == "Claimer_443")
-                creep.claimController(Game.rooms[creep.memory.baseRoomName].controller)
+            if (creep.name == "Claimer_443") {
+                creep.claimController(Game.rooms[creep.memory.baseRoomName].controller);
+            }
             // console.log(creep.claimController(creep.room.controller));
             if (creep.reserveController(Game.rooms[creep.memory.baseRoomName].controller) != OK) {
                 moveToMultiRoomTarget(creep, Game.rooms[creep.memory.baseRoomName].controller, true);

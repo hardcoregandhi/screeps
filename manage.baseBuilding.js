@@ -90,14 +90,13 @@ global.runBaseBuilder = function () {
             Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage++;
             if (Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage > baseData[r.controller.level].stages.length) {
                 Memory.rooms[roomName].building[currentRoomBuildingLevel].isComplete = true;
-                Memory.rooms[roomName].currentRoomBuildingLevel++
+                Memory.rooms[roomName].currentRoomBuildingLevel++;
             }
         }
     }
 };
 
-global.baseRawData =
-`
+global.baseRawData = `
 {
     "2": {
         "stages": [
@@ -169,7 +168,7 @@ global.baseRawData =
     "7": {},
     "8": {}
 }
-`
+`;
 
 global.baseData = JSON.parse(baseRawData);
-Memory.buildingPlan = baseData
+Memory.buildingPlan = baseData;

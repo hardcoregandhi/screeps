@@ -1,4 +1,5 @@
 var roleHarvester = require("role.harvester");
+var roleHarvSup = require("role.harvesterSup");
 var roleHarvesterExt = require("role.harvesterExt");
 var roleUpgrader = require("role.upgrader");
 var roleBuilder = require("role.builder");
@@ -17,10 +18,6 @@ var rolePowMover = require("role.powMover");
 global.runSpawns = function () {
     global.nextSpawnOffset = 1;
 
-    // if (creepRoomMap.get("W17S19" + "builder") < 5){
-    //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: "W17S19" } }, "W16S21");
-    // }
-
     for (var room in Game.rooms) {
         r = Game.rooms[room];
         if (!myRooms.includes(r.name)) {
@@ -31,14 +28,14 @@ global.runSpawns = function () {
                 return structure.structureType == STRUCTURE_STORAGE;
             },
         });
-        if(r.name == "W16S22") {
+        if (r.name == "W16S22") {
             var hostiles = r.find(FIND_HOSTILE_CREEPS);
             if (hostiles.length) {
-                spawnCreep(roleSoldier, [ATTACK, ATTACK, MOVE, MOVE, MOVE], null, r.name)
-                continue
+                spawnCreep(roleSoldier, [ATTACK, ATTACK, MOVE, MOVE, MOVE], null, r.name);
+                continue;
             }
         }
-        
+
         // if (r.find(STRUCTURE_SPAWN).length === 0 && creepRoomMap.get(r.name + "builder") < 5){
         //     // No spawn? Builders to create it, which will then default to upgraders to maintain the room after
         //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name } }, "W16S21");

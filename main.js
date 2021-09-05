@@ -15,7 +15,7 @@ function getRandomInt(min = 100, max = 999) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 getBodyCost = function (bodyParts) {
-    console.log(bodyParts)
+    // console.log(bodyParts)
     return _.sum(bodyParts, (b) => BODYPART_COST[b]);
 };
 removeAllSites = function (roomName) {
@@ -36,7 +36,7 @@ generateBodyParts = function (_spawnRoom, _role = null) {
     room = Game.rooms[_spawnRoom];
     energyAvailable = room.energyAvailable;
     bodyParts = [];
-    console.log(bodyParts)
+    // console.log(bodyParts)
 
     if (_role.bodyLoop == null) {
         bodyLoop = [WORK, CARRY, MOVE];
@@ -47,14 +47,14 @@ generateBodyParts = function (_spawnRoom, _role = null) {
     bodyIter = 0;
     // console.log(room)
     // console.log(energyAvailable)
-    console.log(bodyParts)
-    console.log(getBodyCost(bodyParts))
-    console.log(energyAvailable)
-    console.log(bodyParts.length)
+    // console.log(bodyParts)
+    // console.log(getBodyCost(bodyParts))
+    // console.log(energyAvailable)
+    // console.log(bodyParts.length)
 
     while (getBodyCost(bodyParts) < energyAvailable && bodyParts.length < 50) {
         bodyParts.push(bodyLoop[bodyIter++]);
-        console.log(bodyParts)
+        console.log(bodyParts);
         if (bodyIter >= bodyLoop.length) bodyIter = 0;
     }
     // console.log(bodyParts)
@@ -285,8 +285,8 @@ module.exports.loop = function () {
             _.forEach(stores, (s) => {
                 creepRoomMap.set(r.name + "eenergy", (total += s.store[RESOURCE_ENERGY]));
             });
-            
-            if (Memory.rooms[r.name] == undefined) Memory.rooms[r.name] = {}
+
+            if (Memory.rooms[r.name] == undefined) Memory.rooms[r.name] = {};
 
             if (Memory.rooms[r.name] != undefined) delete Memory.rooms[r.name].sources;
 
@@ -367,10 +367,10 @@ module.exports.loop = function () {
         global.listOffset = 1;
         fontSize = 0.3;
         global.textOffset = 0;
-        global.inc = function() {
+        global.inc = function () {
             textOffset += fontSize;
             return textOffset;
-        }
+        };
 
         for (var room in Game.rooms) {
             r = Game.rooms[room];

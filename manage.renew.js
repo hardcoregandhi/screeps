@@ -29,9 +29,8 @@ global.runRenew = function () {
                         // early escape for
                         return false;
                     }
-                }
-                else {
-                    c.memory.healing = false
+                } else {
+                    c.memory.healing = false;
                 }
             }
         });

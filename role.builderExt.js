@@ -27,7 +27,7 @@ global.roleBuilderExt = {
             creep.memory.building = false;
             creep.say("🔄 harvest");
         }
-        if (creep.memory.building == undefined || !creep.memory.building && creep.store.getFreeCapacity() == 0) {
+        if (creep.memory.building == undefined || (!creep.memory.building && creep.store.getFreeCapacity() == 0)) {
             creep.memory.building = true;
             creep.say("🚧 build");
         }
@@ -35,20 +35,20 @@ global.roleBuilderExt = {
         if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
-            if (returnToHeal(creep, creep.memory.baseRoomName)){
+            if (returnToHeal(creep, creep.memory.baseRoomName)) {
                 creep.memory.building = false;
                 return;
             } else {
-                creep.say("dying/nospawn")
+                creep.say("dying/nospawn");
             }
         }
-        
+
         if (creep.memory.targetRoomName == undefined) {
             log(creep, 2);
-            creep.say("awaiting target")
+            creep.say("awaiting target");
             log(creep, "awaiting target");
-            creep.memory.targetRoomName = undefined
-            return
+            creep.memory.targetRoomName = undefined;
+            return;
         }
 
         if (creep.memory.building) {
@@ -65,54 +65,50 @@ global.roleBuilderExt = {
 
             var targets = Game.rooms[creep.memory.targetRoomName].find(FIND_CONSTRUCTION_SITES);
             if (targets.length) {
-                log(creep, targets)
+                log(creep, targets);
                 var closest = creep.pos.findClosestByPath(targets);
-                if(closest == null) {
+                if (closest == null) {
                     // not in the correct room so can't figure out closest
-                    moveToMultiRoomTarget(creep, targets[0], false)
+                    moveToMultiRoomTarget(creep, targets[0], false);
                 }
                 if (creep.build(closest) != OK) {
-                    moveToMultiRoomTarget(creep, closest, false)
+                    moveToMultiRoomTarget(creep, closest, false);
                     // creep.moveTo(closest, {
                     //     visualizePathStyle: { stroke: "#ffffff" },
                     // });
                 }
-            }
-            else{
-                creep.say("no targets")
-                roleBuilder.run(creep)
+            } else {
+                creep.say("no targets");
+                roleBuilder.run(creep);
             }
         } else {
-            log(creep, 7)
+            log(creep, 7);
             var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_CONTAINER) && 
-                    structure.store[RESOURCE_ENERGY] > 500
+                    return structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 500;
                 },
             });
-            
 
             if (containers.length) {
-                log(creep, 71)
-                var closest = creep.pos.findClosestByPath(containers)
-                if(closest==null) {
+                log(creep, 71);
+                var closest = creep.pos.findClosestByPath(containers);
+                if (closest == null) {
                     // not in room cant look for closest yet
-                    closest = containers[0]
+                    closest = containers[0];
                 }
                 if (creep.withdraw(closest, RESOURCE_ENERGY) != OK) {
                     moveToMultiRoomTarget(creep, closest);
                 }
-                return
+                return;
             }
-            
-            
+
             log(creep, 8);
             var targets = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
                 },
             });
-            
+
             if (targets.length) {
                 if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
                     moveToMultiRoomTarget(creep, targets[0], {
@@ -120,7 +116,7 @@ global.roleBuilderExt = {
                     });
                 }
             } else {
-                creep.say("oopsiewoopsie")
+                creep.say("oopsiewoopsie");
             }
         }
     },

@@ -19,7 +19,29 @@ global.roleSoldier = {
     /** @param {Creep} creep **/
     run: function (creep) {
         // creep.say('🏳️');
-        if (creep.memory.targetRoomName == undefined) creep.memory.targetRoomName = "W17S21";
+        if (creep.memory.targetRoomName == undefined) creep.memory.targetRoomName = "W9S3";
+
+        creep.memory.return = true;
+
+        var enemyTowers = [];
+        if (creep.pos.roomName == creep.memory.targetRoomName) {
+            enemyTowers = creep.room.find(FIND_HOSTILE_STRUCTURES, {
+                filter: (s) => {
+                    return s.structureType == STRUCTURE_TOWER;
+                },
+            });
+        }
+        if (creep.hits < 300 && enemyTowers.length == 0) {
+            // flee to safety
+            creep.say("healing");
+            creep.memory.healing = true;
+            returnToHeal(creep, creep.memory.baseRoomName);
+            return;
+        }
+        if (creep.memory.return) {
+            creep.moveTo(Game.flags.holding.pos);
+            return;
+        }
 
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) || creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
         // console.log(closestHostile)
@@ -55,6 +77,11 @@ global.roleSoldier = {
                 creep.moveTo(exit);
             }
         } else {
+            if (creep.room.controller.safeMode != undefined && enemyTowers.length == 0) {
+                source = creep.pos.findClosestByPath(FIND_SOURCES);
+                if (source) creep.moveTo(source);
+                return;
+            }
             if (creep.attack(creep.room.controller) != OK) {
                 creep.moveTo(creep.room.controller, { maxRooms: 1 });
             }

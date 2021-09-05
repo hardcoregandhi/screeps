@@ -105,16 +105,13 @@ global.roleMoverExt = {
         } else {
             log(creep, "banking");
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
-            if(mainStorage != undefined){
+            if (mainStorage != undefined) {
                 if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
                     moveToMultiRoomTarget(creep, mainStorage);
                 }
-                return
+                return;
             }
-            
-            
-            
-            
+
             var storages = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER;
