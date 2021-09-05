@@ -19,6 +19,7 @@ global.roleBuilderExt = {
         ],
     baseBodyParts: [],
     bodyLoop: [WORK, CARRY, MOVE],
+    roleMemory: { memory: { building: false, targetRoomName: null, targetSource: null } },
     /** @param {Creep} creep **/
     run: function (creep) {
         log(creep, 0);
