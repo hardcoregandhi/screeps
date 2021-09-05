@@ -48,7 +48,7 @@ global.runSpawns = function () {
             if (spawnCreep(roleClaimer, null, { memory: { baseRoomName: r.name } }, r.name) == 0) {
                 Memory.createClaimer = false;
             }
-        } else if (creepRoomMap.get(r.name + "harvester") < 1) {
+        } else if (creepRoomMap.get(r.name + "harvester") < Memory.rooms[r.name].sources.length) {
             BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
             spawnCreep(roleHarvester, BaseBodyParts, null, r.name);
             continue;
@@ -57,26 +57,22 @@ global.runSpawns = function () {
             spawnCreep(roleMover, BaseBodyParts, null, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "harvester") < 2) {
-            spawnCreep(roleHarvester, null, { memory: { baseRoomName: r.name } }, r.name);
+            spawnCreep(roleHarvester, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "upgrader") < 1) {
-            spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
+            spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "harvester") < 2) {
-            spawnCreep(roleHarvester, null, { memory: { baseRoomName: r.name } }, r.name);
+            spawnCreep(roleHarvester, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "builder") < creepRoomMap.get(r.name + "csites") / 2 && creepRoomMap.get(r.name + "builder") < 2) {
-            spawnCreep(roleBuilder, null, { memory: { baseRoomName: r.name } }, r.name);
+            spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "mover") < 2) {
-            spawnCreep(roleMover, null, { memory: { baseRoomName: r.name } }, r.name);
+            spawnCreep(roleMover, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } else if (
-            creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 3 && 
-            creepRoomMap.get(r.name + "csites") < 1 &&
-            r.controller.level < 8
-            ) {
-            spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
+        } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 3 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8) {
+            spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         }
         // if (creepRoomMap.get(r.name+"upgrader") > 2) {
