@@ -244,6 +244,9 @@ module.exports.loop = function () {
 
     // Active Energy Tracking
     _.forEach(Game.rooms, (r) => {
+            if (Memory.rooms == undefined) {
+                Memory.rooms = {};
+            }
         // console.log(r.name)
         stores = r.find(FIND_STRUCTURES, {
             filter: (structure) => {
