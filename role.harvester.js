@@ -19,7 +19,13 @@ global.roleHarvester = {
     run: function (creep, focusHealing) {
         var sources = creep.room.find(FIND_SOURCES);
         if (!creep.memory.currentSource) {
-            creep.memory.currentSource = 0;
+            var lowestSource;
+            for (var i in Memory.rooms[creep.memory.baseRoomName].sources) {
+                if (creep.memory.currentSource == undefined || Memory.rooms[creep.memory.baseRoomName].sources[i].targettedBy < lowestSource) {
+                    lowestSource = Memory.rooms[creep.memory.baseRoomName].sources[i].targettedBy;
+                    creep.memory.currentSource = i;
+                }
+            }
         }
         if (creep.memory.mining == undefined) {
             creep.memory.mining = true;
