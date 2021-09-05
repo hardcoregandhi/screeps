@@ -58,6 +58,9 @@ global.runCreeps = function () {
             if (creep.memory.role == "harvesterExt") {
                 roleHarvesterExt.run(creep);
             }
+            if (creep.memory.role == "harvSup") {
+                roleHarvSup.run(creep);
+            }
             if (creep.memory.role == "moverExt") {
                 roleMoverExt.run(creep);
             }
