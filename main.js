@@ -158,7 +158,14 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
     return ret;
 };
 
+// Any modules that you use that modify the game's prototypes should be require'd
+// before you require the profiler.
+const profiler = require("screeps-profiler");
+
+// This line monkey patches the global prototypes.
+profiler.enable();
 module.exports.loop = function () {
+    profiler.wrap(function () {
     // Cleanup
     for (var i in Memory.creeps) {
         if (!Game.creeps[i]) {
@@ -322,4 +329,5 @@ module.exports.loop = function () {
 
 
         runBaseBuilder();
+    });
 };
