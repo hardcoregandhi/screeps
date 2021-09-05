@@ -257,8 +257,11 @@ module.exports.loop = function () {
         _.forEach(stores, (s) => {
             creepRoomMap.set(r.name + "eenergy", (total += s.store[RESOURCE_ENERGY]));
         });
+            if (Memory.rooms[r.name] == undefined) Memory.rooms[r.name] = {}
 
-        delete Memory.rooms[r.name]
+            if (Memory.rooms[r.name] != undefined) delete Memory.rooms[r.name].sources;
+
+            Memory.rooms[r.name].sources = {};
 
         sources = r.find(FIND_SOURCES);
         if (Memory.rooms[r.name] == undefined) {
