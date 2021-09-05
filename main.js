@@ -24,55 +24,68 @@ removeAllSites = function (roomName) {
 focusHealing = false;
 global.myRooms = ["W16S21", "W15S21", "W19S21", "W17S19", "W16S22", "W14S23"];
 
-generateBodyParts = function (_spawnRoom, _role = null){
-    room = Game.rooms[_spawnRoom];
-    energyAvailable = room.energyAvailable
-    bodyParts = []
-    if(_role.bodyLoop == null) {
-        bodyLoop = [WORK,CARRY,MOVE]
-    } else {
-        bodyParts = _role.baseBodyParts
-        bodyLoop = _role.bodyLoop
-    }
-    bodyIter = 0
-    console.log(room)
-    console.log(energyAvailable)
+displaySpawnFailMessage = function (_roomName, _roleName, _cost, _reason) {
+    new RoomVisual().text(`${_reason} Next ` + _roomName + ": " + _.capitalize(_roleName) + " Cost: " + _cost, 1, listOffset + inc(), { align: "left", font: 0.5 });
+};
 
-    while (getBodyCost(bodyParts) < energyAvailable &&
-            bodyParts.length < 50) {
-        
-        bodyParts.push(bodyLoop[bodyIter++])
-        if(bodyIter >= bodyLoop.length) bodyIter = 0
+generateBodyParts = function (_spawnRoom, _role = null) {
+    room = Game.rooms[_spawnRoom];
+    energyAvailable = room.energyAvailable;
+    bodyParts = [];
+    console.log(bodyParts)
+
+    if (_role.bodyLoop == null) {
+        bodyLoop = [WORK, CARRY, MOVE];
+    } else {
+        bodyParts = _.cloneDeep(_role.baseBodyParts);
+        bodyLoop = _role.bodyLoop;
     }
-    bodyParts.pop()
+    bodyIter = 0;
+    // console.log(room)
+    // console.log(energyAvailable)
+    console.log(bodyParts)
     console.log(getBodyCost(bodyParts))
-    return bodyParts
-}
+    console.log(energyAvailable)
+    console.log(bodyParts.length)
+
+    while (getBodyCost(bodyParts) < energyAvailable && bodyParts.length < 50) {
+        bodyParts.push(bodyLoop[bodyIter++]);
+        console.log(bodyParts)
+        if (bodyIter >= bodyLoop.length) bodyIter = 0;
+    }
+    // console.log(bodyParts)
+    bodyParts.pop();
+    // console.log(bodyParts)
+    // console.log(getBodyCost(bodyParts))
+    return bodyParts;
+};
 
 cloneCreep = function (sourceCreepName, room = null) {
-    sourceCreep = Game.creeps[sourceCreepName]
-    if(sourceCreep === null) return -1
-    spawnRoom = room != null ? Game.rooms[room] : Game.rooms[sourceCreep.memory.baseRoomName]
-    if(spawnRoom === null) return -1
+    sourceCreep = Game.creeps[sourceCreepName];
+    if (sourceCreep === null) return -1;
+    spawnRoom = room != null ? Game.rooms[room] : Game.rooms[sourceCreep.memory.baseRoomName];
+    if (spawnRoom === null) return -1;
     try {
-    roomSpawner = spawnRoom.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return structure.structureType == STRUCTURE_SPAWN;
-        },
-    })[0];
+        roomSpawner = spawnRoom.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return structure.structureType == STRUCTURE_SPAWN;
+            },
+        })[0];
     } catch (e) {
-        return -1
+        return -1;
     }
     var newName = _.capitalize(sourceCreep.memory.role) + "_" + getRandomInt();
     console.log("Cloning new " + newName + " from " + sourceCreepName);
-    console.log(sourceCreep.body)
-    console.log(newName)
-    memoryClone = Object.assign({}, sourceCreep.memory)
-    console.log(memoryClone)
-    return roomSpawner.spawnCreep(sourceCreep.body.map(a => a.type), newName, memoryClone)
-    
-    
-}
+    console.log(sourceCreep.body);
+    console.log(newName);
+    memoryClone = Object.assign({}, sourceCreep.memory);
+    console.log(memoryClone);
+    return roomSpawner.spawnCreep(
+        sourceCreep.body.map((a) => a.type),
+        newName,
+        memoryClone
+    );
+};
 
 spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
     var ret = -1;
@@ -98,27 +111,33 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
         spawn = "Spawn1";
         spawn = Game.spawns[spawn];
     }
-    
+
     if (customBodyParts) {
-        console.log(customBodyParts)
+        // console.log(customBodyParts)
         // console.log("customActivated")
-        if(customBodyParts == "auto") {
-            customBodyParts = generateBodyParts(_spawnRoom, _role)
+        if (customBodyParts == "auto") {
+            customBodyParts = generateBodyParts(spawn.room.name, _role);
+            if (!customBodyParts.find((e) => e == MOVE)) {
+                // console.log("error: no MOVE part found.");
+                displaySpawnFailMessage(spawn.room.name, _role.name, getBodyCost(customBodyParts), "[NoMove]");
+                return [];
+            }
         }
-        console.log(customBodyParts)
-        console.log(customBodyParts.length)
+        // console.log(customBodyParts)
+        // console.log(customBodyParts.length)
         oldBodyParts = _role.BodyParts;
         _role.BodyParts = customBodyParts;
     }
 
     cost = getBodyCost(_role.BodyParts);
-    
+
     myCreeps = spawn.room.find(FIND_MY_CREEPS, {
-        filter: (c) => spawn.pos.inRangeTo(c, 1) && c.ticksToLive < 155 //150 is the highest spawn time for a 50 part creep
-    })
-    
+        filter: (c) => spawn.pos.inRangeTo(c, 1) && c.ticksToLive < 155, //150 is the highest spawn time for a 50 part creep
+    });
+
     if (myCreeps.length) {
-        return -1
+        displaySpawnFailMessage(spawn.room.name, _role.name, cost, "[Healing]");
+        return -1;
     }
     // console.log("energy available", spawn.room.energyAvailable)
     // console.log("cost", cost)
@@ -147,7 +166,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
         }
     } else {
         // console.log(`Funds not available: ${cost}`)
-        new RoomVisual().text("Next " + spawn.room.name + ": " + _.capitalize(_role.name) + " Cost: " + cost, 1, (nextSpawnOffset += 1) + 0, { align: "left", font: 0.5 });
+        displaySpawnFailMessage(spawn.room.name, _role.name, cost, "[Funds]");
     }
 
     if (customBodyParts) {
@@ -294,15 +313,15 @@ module.exports.loop = function () {
         });
     });
 
-    // Logging
-    roomOffset = 0;
-    listOffset = 1;
-    fontSize = 0.3;
-    textOffset = 0
-    function inc(){
-        textOffset+=fontSize;
-        return textOffset;
-    }
+        // Logging
+        roomOffset = 0;
+        global.listOffset = 1;
+        fontSize = 0.3;
+        global.textOffset = 0;
+        global.inc = function() {
+            textOffset += fontSize;
+            return textOffset;
+        }
 
     for (var room in Game.rooms) {
         r = Game.rooms[room];
