@@ -101,11 +101,8 @@ global.roleHarvesterExt = {
         if (creep.memory.targetRoomName != undefined && Game.rooms[creep.memory.targetRoomName] != undefined) {
             if ((Game.rooms[creep.memory.targetRoomName].controller.reservation == undefined || Game.rooms[creep.memory.targetRoomName].controller.reservation.ticksToEnd < 1000) && creepRoomMap.get(creep.memory.targetRoomName + "claimer") < 1) {
                 //TODO FIX THIS
-                spawnCreep(roleClaimer, null, { memory: { baseRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
-            } else if (containersNearToSource.length > 0 && creep.memory.targetSource != undefined &&
-                    (creepRoomMap.get(creep.memory.targetRoomName + "moverExtTarget" + creep.memory.targetSource) == undefined || creepRoomMap.get(creep.memory.targetRoomName + "moverExtTarget" + creep.memory.targetSource) < 2)
-                ) {
-                spawnCreep(roleMoverExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource} }, creep.memory.baseRoomName);
+                spawnCreep(roleClaimer, "auto", { memory: { baseRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
+                spawnCreep(roleMoverExt, "auto", { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource } }, creep.memory.baseRoomName);
             }
         }
 
