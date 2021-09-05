@@ -160,8 +160,10 @@ global.roleHarvester = {
                         if (!targets.length) {
                             log(creep, "no container found");
                         } else target = creep.pos.findClosestByPath(targets);
-                        if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            moveToTarget(creep, target.pos, true);
+                        if (target != null && target.hits < 200000 && target.structureType == STRUCTURE_CONTAINER) {
+                            creep.repair(target);
+                        } else if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                            moveToMultiRoomTarget(creep, target.pos);
                         }
                         return;
                     }
