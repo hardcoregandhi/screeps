@@ -1,3 +1,7 @@
+function log(creep, str) {
+    if (creep.name == "Mover_872") if (0) console.log(str);
+}
+
 global.roleScavenger = {
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -39,12 +43,30 @@ global.roleScavenger = {
                     return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 },
             });
-            for (const resourceType in creep.store) {
-                if (creep.transfer(storage, resourceType) != OK) {
-                    creep.moveTo(storage, {
-                        visualizePathStyle: { stroke: "#ffaa00" },
-                        maxRooms: 1,
-                    });
+            if (storage) {
+                for (const resourceType in creep.store) {
+                    if (creep.transfer(storage, resourceType) != OK) {
+                        creep.moveTo(storage, {
+                            visualizePathStyle: { stroke: "#ffaa00" },
+                            maxRooms: 1,
+                        });
+                        return;
+                    }
+                }
+            } else {
+                //no storage, just grab energy
+                mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
+                if (mainStorage == undefined) {
+                    log(creep, "mainStorage could not be found");
+                } else {
+                    log(creep, "using mainStorage");
+                    if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
+                        // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
+                        creep.moveTo(mainStorage, {
+                            visualizePathStyle: { stroke: "#ffaa00" },
+                            maxRooms: 0,
+                        });
+                    }
                     return;
                 }
             }

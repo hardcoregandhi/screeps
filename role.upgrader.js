@@ -14,7 +14,8 @@ global.roleUpgrader = {
         CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
-
+    baseBodyParts: [WORK, CARRY, CARRY, MOVE, MOVE],
+    bodyLoop: [WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
     run: function (creep) {
         log(creep, "run");
@@ -59,8 +60,8 @@ global.roleUpgrader = {
         if (creep.ticksToLive < 300) {
             creep.say("healing");
             creep.memory.healing = true;
-            returnToHeal(creep, creep.memory.baseRoomName);
-            return;
+            // creep.drop(RESOURCE_ENERGY);
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
         pickupNearby(creep);
@@ -86,9 +87,9 @@ global.roleUpgrader = {
                 }
             } else {
                 healRoads(creep);
-                if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                if (creep.upgradeController(creep.room.controller) != OK) {
                     moveToTarget(creep, creep.room.controller.pos, false);
-                    creep.moveTo(creep.room.controller.pos);
+                    // creep.moveTo(creep.room.controller.pos);
                     if (creep.store[RESOURCE_ENERGY] == 0) {
                         creep.memory.upgrading = false;
                     }
@@ -97,7 +98,7 @@ global.roleUpgrader = {
         } else {
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY] > 0 && structure.room.name != "W16S21";
+                    return structure.structureType == STRUCTURE_STORAGE && structure.store[RESOURCE_ENERGY] > 0 && structure.room.name != "W16S21";
                 },
             });
             var links = creep.room.find(FIND_STRUCTURES, {
@@ -122,7 +123,7 @@ global.roleUpgrader = {
                 }
             }
             if (targets.length && links.length != 2) {
-                if (creepRoomMap.get(creep.room.name + "eenergy") < 2000 || creep.room.energyAvailable < 1000) {
+                if (creepRoomMap.get(creep.room.name + "eenergy") < 2000 || creep.room.energyAvailable < creep.room.energyCapacityAvailable - 400) {
                     moveToTarget(creep, creep.room.controller.pos, false);
                     return;
                 } else {
@@ -131,17 +132,31 @@ global.roleUpgrader = {
                     }
                 }
             } else {
+                mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
+                if (mainStorage == undefined) {
+                    log(creep, "mainStorage could not be found");
+                } else {
+                    if (mainStorage.store.getUsedCapacity() < mainStorage.store.getCapacity() / 2) {
+                        moveToTarget(creep, creep.room.controller.pos, false);
+                        return;
+                    }
+                    log(creep, "using mainStorage");
+                    if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
+                        // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
+                        creep.moveTo(mainStorage, {
+                            visualizePathStyle: { stroke: "#ffaa00" },
+                            maxRooms: 0,
+                        });
+                    }
+                    return;
+                }
                 var closeSources = creep.room.find(FIND_SOURCES, {
                     filter: (s) => {
                         return creep.room.controller.pos.inRangeTo(s, 9) == true && s.energy > 0;
                     },
                 });
                 if (creepRoomMap.get(creep.room.name + "mover") == 0) {
-                    closeSources = creep.room.find(FIND_SOURCES, {
-                        filter: (s) => {
-                            return creep.room.controller.pos.inRangeTo(s, 20) == true;
-                        },
-                    });
+                    closeSources = creep.room.find(FIND_SOURCES);
                 }
                 if (closeSources.length > 0) {
                     if (creep.store.getFreeCapacity() > 0) {
@@ -164,6 +179,7 @@ global.roleUpgrader = {
                     }
                 } else {
                     log(creep, 666);
+                    if (creep.store.getUsedCapacity() != 0) creep.memory.upgrading = true;
 
                     moveToTarget(creep, creep.room.controller.pos, false);
                 }

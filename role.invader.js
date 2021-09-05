@@ -1,19 +1,8 @@
-global.roleSoldier = {
-    name: "soldier",
+global.roleInvader = {
+    name: "invader",
     roleMemory: { memory: {} },
     // prettier-ignore
-    BodyParts: [
-        ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,
-        ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,
-        ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,
-        ATTACK,ATTACK,ATTACK,ATTACK,ATTACK,
-        MOVE,MOVE,MOVE,MOVE,MOVE,
-        MOVE,MOVE,MOVE,MOVE,MOVE,
-        MOVE,MOVE,MOVE,MOVE,MOVE,
-        MOVE,MOVE,MOVE,MOVE,MOVE,
-        HEAL,
-    ],
-    baseBodyParts: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH],
+    baseBodyParts: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH,],
     bodyLoop: [ATTACK, MOVE],
 
     /** @param {Creep} creep **/
@@ -43,19 +32,7 @@ global.roleSoldier = {
             return;
         }
 
-        var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) || creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
-        // console.log(closestHostile)
-        if (closestHostile) {
-            creep.room.visual.circle(closestHostile.pos, {
-                color: "red",
-                radius: 1,
-            });
-            if (creep.attack(closestHostile) != OK) {
-                creep.moveTo(closestHostile, { maxRooms: 1 });
-            }
-            return;
-        }
-        if (creep.hits < 500) creep.heal(creep);
+        // if (creep.hits < 500) creep.heal(creep); need to check for heal part before using this
 
         // if (creep.ticksToLive < 500) {
         //     if (creep.room.name != creep.memory.baseRoomName) {
@@ -82,6 +59,32 @@ global.roleSoldier = {
                 if (source) creep.moveTo(source);
                 return;
             }
+
+            var c_sites = creep.room.find(FIND_HOSTILE_CONSTRUCTION_SITES, {
+                filter: (s) => {
+                    return s.structureType == STRUCTURE_TOWER;
+                },
+            });
+            if (c_sites.length) {
+                close_c_site = creep.pos.findClosestByRange(c_sites);
+                if (creep.attack(close_c_site) != OK) {
+                    moveToTarget(creep, close_c_site);
+                }
+            }
+
+            var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS); // || creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
+            // console.log(closestHostile)
+            if (closestHostile) {
+                creep.room.visual.circle(closestHostile.pos, {
+                    color: "red",
+                    radius: 1,
+                });
+                if (creep.attack(closestHostile) != OK) {
+                    creep.moveTo(closestHostile, { maxRooms: 1 });
+                }
+                return;
+            }
+
             if (creep.attack(creep.room.controller) != OK) {
                 creep.moveTo(creep.room.controller, { maxRooms: 1 });
             }
@@ -89,4 +92,4 @@ global.roleSoldier = {
     },
 };
 
-module.exports = roleSoldier;
+module.exports = roleInvader;

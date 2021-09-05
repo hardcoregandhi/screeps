@@ -13,6 +13,8 @@ var roleTrucker = require("role.trucker");
 var roleSoldier = require("role.soldier");
 var rolePowHarvester = require("role.powHarvester");
 var rolePowMover = require("role.powMover");
+var roleDoctor = require("role.doctor");
+var roleInvader = require("role.invader");
 
 global.runCreeps = function () {
     for (var name in Game.creeps) {
@@ -22,6 +24,8 @@ global.runCreeps = function () {
             if (creep.pos.y == 49) creep.move(1);
             if (creep.pos.x == 0) creep.move(3);
             if (creep.pos.y == 0) creep.move(5);
+
+            pickupNearby(creep);
 
             if (creep.memory.role == "traveller") {
                 roleTraveller.run(creep);
@@ -45,11 +49,17 @@ global.runCreeps = function () {
             if (creep.memory.role == "builder") {
                 roleBuilder.run(creep);
             }
+            if (creep.memory.role == "builderExt") {
+                roleBuilderExt.run(creep);
+            }
             if (creep.memory.role == "claimer") {
                 roleClaimer.run(creep);
             }
             if (creep.memory.role == "harvesterExt") {
                 roleHarvesterExt.run(creep);
+            }
+            if (creep.memory.role == "harvSup") {
+                roleHarvSup.run(creep);
             }
             if (creep.memory.role == "moverExt") {
                 roleMoverExt.run(creep);
@@ -65,6 +75,12 @@ global.runCreeps = function () {
             }
             if (creep.memory.role == "powMover") {
                 rolePowMover.run(creep);
+            }
+            if (creep.memory.role == "doctor") {
+                roleDoctor.run(creep);
+            }
+            if (creep.memory.role == "invader") {
+                roleInvader.run(creep);
             }
             if (creep.memory.role == "mover") {
                 var droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
@@ -104,6 +120,7 @@ global.runCreeps = function () {
             }
         } catch (e) {
             console.log(e);
+            console.log(creep, " failed to run");
         }
     }
 };
