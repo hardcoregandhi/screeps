@@ -163,12 +163,12 @@ global.roleHarvesterExt = {
             if (!containers.length) {
                 // console.log(666)
                 log(creep, "no exts, spawn, or container found");
-                creep.say("makin con")
-                if(Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(creep.pos, 2))
-                    creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER)
-                else
-                    moveToMultiRoomTarget(creep, target.pos)
-                
+                creep.say("makin con");
+                if (Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(creep.pos, 2)) {
+                    creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER);
+                } else {
+                    moveToMultiRoomTarget(creep, Game.getObjectById(creep.memory.targetSource).pos);
+                }
             } else {
                 target = creep.pos.findClosestByPath(containers);
                 if (target != null && target.hits < 200000) {
