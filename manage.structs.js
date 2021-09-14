@@ -11,6 +11,10 @@ global.runStructs = function () {
         for (var t of towers) {
             roleTower.run(t);
         }
+        
+        if(towers.length == 0) {
+            if(room.controller != undefined && room.controller.my && room.controller.safeModeAvailable) room.controller.activateSafeMode();
+        }
 
         var pspawns = room.find(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -99,13 +103,10 @@ global.runStructs = function () {
         //     r.setPublic(false)
         // }
 
-        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS, {
-            filter: (c) => {
-                return c.body.find((part) => part.type == ATTACK || part.type == RANGED_ATTACK) == true;
-            },
-        });
+        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS, {filter: (c) => {return c.body.find((part) => part.type == ATTACK)}})
         if (hostileCreeps.length > 2) {
-            room.controller.activateSafeMode();
+            if(room.controller.my && room.controller.safeModeAvailable)
+                room.controller.activateSafeMode();
             Game.notify("2 attackers in " + room.name + ". Activated Safe Mode.");
         }
     });

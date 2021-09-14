@@ -62,20 +62,15 @@ global.pickupNearby = function (creep) {
 global.returnToHeal = function (creep, room) {
     if (creep.ticksToLive >= 1400) {
         creep.memory.healing = false;
-        return true;
+        return false;
     }
+    if(Game.rooms[room].energyAvailable < 50) {
+        return false
+    } 
 
     if (creep.memory.healing === true) {
         if (creep.room.name != room) {
-            const route = Game.map.findRoute(creep.room, room);
-            if (route.length > 0) {
-                creep.say("Headin oot");
-                const exit = creep.pos.findClosestByRange(route[0].exit);
-                moveToTarget(creep, exit, true);
-            } else {
-                creep.say("No route found");
-            }
-            // moveToRoom(creep, creep.memory.baseRoomName)
+            moveToMultiRoomTarget(creep, Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id))
             return true;
         }
         var targets = creep.room.find(FIND_STRUCTURES, {
@@ -83,14 +78,19 @@ global.returnToHeal = function (creep, room) {
                 return structure.structureType == STRUCTURE_SPAWN;
             },
         });
-        if (targets.length == 0 || (creep.room.energyAvailable < 50 && creep.store.getUsedCapacity(RESOURCE_ENERGY) < 50)) {
-            return false;
+        // if (targets.length == 0 || (creep.room.energyAvailable < 100 && creep.store.getUsedCapacity(RESOURCE_ENERGY) < 50)) {
+        //     return false;
+        // }
+        
+        if (creep.pos.inRangeTo(targets[0], 1)) {
+            creep.transfer(targets[0], RESOURCE_ENERGY)
+            return true
         }
-        if (creep.transfer(targets[0], RESOURCE_ENERGY) != OK) {
-            creep.moveTo(targets[0], {
-                visualizePathStyle: { stroke: "#ffaa00" },
-            });
-        }
+        
+        creep.moveTo(targets[0], {
+            visualizePathStyle: { stroke: "#ffaa00" },
+        });
+        
         return true;
     }
 };

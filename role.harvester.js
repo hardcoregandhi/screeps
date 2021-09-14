@@ -1,31 +1,28 @@
 function log(creep, str) {
-    if (0) if (creep.name == "Harvester_736") console.log(str);
+    if (0) if (creep.name == "Upgrader_779") console.log(str);
 }
 
 global.roleHarvester = {
     name: "harvester",
     roleMemory: { memory: {} },
     // prettier-ignore
-    BodyParts: [
-        WORK, WORK, WORK, WORK, WORK,
-        WORK, WORK, WORK, WORK, WORK,
-        WORK, WORK, WORK, WORK, WORK,
-        CARRY, CARRY, CARRY, CARRY, CARRY,
-        MOVE, MOVE, MOVE, MOVE, MOVE,
-        ],
+    BodyParts: [WORK,WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE],
     baseBodyParts: [],
-    bodyLoop: [WORK, CARRY, MOVE],
+    bodyLoop: [WORK, WORK, WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
     run: function (creep, focusHealing) {
         var sources = creep.room.find(FIND_SOURCES);
-        if (!creep.memory.currentSource) {
-            var lowestSource;
-            for (var i in Memory.rooms[creep.memory.baseRoomName].sources) {
-                if (creep.memory.currentSource == undefined || Memory.rooms[creep.memory.baseRoomName].sources[i].targettedBy < lowestSource) {
-                    lowestSource = Memory.rooms[creep.memory.baseRoomName].sources[i].targettedBy;
-                    creep.memory.currentSource = i;
+        if (creep.memory.targetSource == undefined) {
+            var lowestSource = 99;
+            _.forEach(Memory.rooms[creep.memory.baseRoomName].sources, (s) => {
+                if(s.targettedBy >= s.miningSpots) {
+                    return
                 }
-            }
+                if (s.targettedBy < lowestSource) {
+                    lowestSource = s.targettedBy;
+                    creep.memory.targetSource = s.id;
+                }
+            })
         }
         if (creep.memory.mining == undefined) {
             creep.memory.mining = true;
@@ -33,6 +30,10 @@ global.roleHarvester = {
 
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
+            if(creep.memory.experimentalMovement != undefined) {
+                moveToRoom(creep, creep.memory.baseRoomName)
+                return
+            }
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
             if (route.length > 0) {
                 creep.say("Headin oot");
@@ -46,9 +47,6 @@ global.roleHarvester = {
             return;
         }
 
-        // Bad hack to split the upgraders and the harvesters
-        // creep.memory.currentSource = 0
-
         if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
             creep.memory.mining = false;
             creep.say("🔄 dropping");
@@ -58,32 +56,29 @@ global.roleHarvester = {
             creep.say("⛏️ mining");
         }
 
-        if (creep.ticksToLive < 300) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) &&
+            (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
-            // creep.drop(RESOURCE_ENERGY);
-            if (returnToHeal(creep, creep.memory.baseRoomName)) return;
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return
         }
 
         if (creep.memory.mining) {
             pickupNearby(creep);
 
-            creep.memory.targetSource = sources[creep.memory.currentSource].id;
-            if (creep.harvest(sources[creep.memory.currentSource]) != OK) {
-                let ret = creep.moveTo(sources[creep.memory.currentSource], {
+            targetSource = Game.getObjectById(creep.memory.targetSource);
+            if (creep.harvest(targetSource) != OK) {
+                creep.moveTo(targetSource, {
                     visualizePathStyle: { stroke: "#ffaa00" },
                 });
-                // if(ret != OK) {
-                //     console.log(ret)
-                // }
-                // if (ret == ERR_NO_PATH) {
-                //     creep.memory.currentSource++;
-                //     if (creep.memory.currentSource > sources.length - 1) {
-                //         creep.memory.currentSource = 0;
-                //     }
-                // }
             }
         } else {
+            if(creep.memory.focusBuilding) {
+                fallbackToOtherRoles(creep);
+                return
+            }
+            
+            
             healRoads(creep);
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
@@ -128,13 +123,13 @@ global.roleHarvester = {
                 if (creepRoomMap.get(creep.memory.baseRoomName + "mover") != undefined && creepRoomMap.get(creep.memory.baseRoomName + "mover") > 0) {
                     log(creep, "movers found");
 
-                    if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.currentSource].container) {
-                        target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.currentSource].container.id);
+                    if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container) {
+                        target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id);
                         log(creep, "local ccont found");
                         log(creep, target);
 
-                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.currentSource].container.targettedBy < 1 && Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined) {
-                            spawnCreep(roleHarvSup, "auto", { memory: { targetContainer: target.id } });
+                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy < 1 && Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined) {
+                            spawnCreep(roleHarvSup, null, { memory: { targetContainer: target.id } }, creep.memory.baseRoomName);
                         }
 
                         if (target != null && target.hits < 200000 && target.structureType == STRUCTURE_CONTAINER) {
@@ -193,17 +188,21 @@ global.roleHarvester = {
                     moveToTarget(creep, target.pos, false);
                 }
             } else {
-                var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-                if (targets.length) {
-                    roleBuilder.run(creep);
-                    return;
-                } else {
-                    roleUpgrader.run(creep);
-                    return;
-                }
+                fallbackToOtherRoles(creep)
             }
         }
     },
 };
+
+function fallbackToOtherRoles(creep) {
+    var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+    if (targets.length) {
+        roleBuilder.run(creep);
+        return;
+    } else {
+        roleUpgrader.run(creep);
+        return;
+    }
+}
 
 module.exports = roleHarvester;

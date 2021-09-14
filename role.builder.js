@@ -3,7 +3,7 @@ require("movement");
 require("role.common");
 
 function log(creep, str) {
-    if (0) if (creep.name == "BuilderExt_677") console.log(str);
+    if (0) if (creep.name == "Builder_812") console.log(str);
 }
 
 global.roleBuilder = {
@@ -24,7 +24,7 @@ global.roleBuilder = {
             creep.memory.currentSource = 0;
         }
 
-        if (creep.ticksToLive < 300) {
+        if (creep.ticksToLive < 300 || creep.memory.healing) {
             creep.say("healing");
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
@@ -36,9 +36,9 @@ global.roleBuilder = {
         }
         var customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) =>
-                (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
+                (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 40)) ||
                 (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
-                (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.04)) ||
+                (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.1)) ||
                 (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.001)),
         });
         customStructureSpecificPercentLimits.sort((a, b) => (a.hits / a.hitsMax) * 100 > (b.hits / b.hitsMax) * 100);
@@ -124,8 +124,9 @@ global.roleBuilder = {
                 }
             }
             if (customStructureSpecificPercentLimits.length) {
-                if (creep.repair(customStructureSpecificPercentLimits[0]) != OK) {
-                    moveToTarget(creep, customStructureSpecificPercentLimits[0]);
+                repairTarget = creep.pos.findClosestByPath(customStructureSpecificPercentLimits)
+                if (creep.repair(repairTarget) != OK) {
+                    moveToTarget(creep, repairTarget);
                 }
             }
         } else {
@@ -168,12 +169,17 @@ global.roleBuilder = {
                     log(creep, "mainStorage could not be found");
                 } else {
                     log(creep, "using mainStorage");
-                    if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
-                        // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                        creep.moveTo(mainStorage, {
-                            visualizePathStyle: { stroke: "#ffaa00" },
-                            maxRooms: 0,
-                        });
+                    if(mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity() * 0.01) {
+                        if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
+                            // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
+                            creep.moveTo(mainStorage, {
+                                visualizePathStyle: { stroke: "#ffaa00" },
+                                maxRooms: 0,
+                            });
+                        }
+                    } else {
+                        moveToTarget(creep, creep.room.controller.pos, false);
+                        return;
                     }
                     return;
                 }

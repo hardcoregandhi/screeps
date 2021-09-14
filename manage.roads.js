@@ -17,7 +17,7 @@ global.runRoads = function () {
                 // Sources to controller
                 for (var pathStep of s.pos.findPathTo(r.controller.pos, {
                     ignoreCreeps: true,
-                    ignoreRoads: true,
+                    ignoreRoads: false,
                     swampCost: 1,
                     range: 16,
                 })) {
@@ -33,6 +33,7 @@ global.runRoads = function () {
                         // r.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
                     }
                 }
+                
                 // Sources to spawns
                 room_spawner = r.find(FIND_STRUCTURES, {
                     filter: (structure) => {
@@ -59,6 +60,7 @@ global.runRoads = function () {
                         }
                     }
                 }
+                
                 // Source surroundings
                 for (var i = s.pos.x - 2; i <= s.pos.x + 2; i++) {
                     for (var j = s.pos.y - 2; j <= s.pos.y + 2; j++) {
@@ -69,13 +71,14 @@ global.runRoads = function () {
                         }
                     }
                 }
-                // Sources to spawns
+                
+                
+                // Sources to towers
                 room_towers = r.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return structure.structureType == STRUCTURE_TOWER;
                     },
                 });
-                // Source to towers
                 for (var t of room_towers) {
                     for (var pathStep of s.pos.findPathTo(t.pos, {
                         ignoreCreeps: true,

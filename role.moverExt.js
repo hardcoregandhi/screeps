@@ -1,5 +1,5 @@
 function log(creep, str) {
-    if (0) if (creep.name == "MoverExt_814") console.log(str);
+    if (0) if (creep.name == "MoverExt_706") console.log(str);
 }
 
 global.roleMoverExt = {
@@ -18,9 +18,10 @@ global.roleMoverExt = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        log(creep, "run()")
         if (healRoads(creep) == OK) return;
-        var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if (closestHostile && towers.length) {
+        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {filter: (c) => {return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)}})
+        if (hostileCreeps.length) {
             creep.memory.fleeing = 20;
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
             if (route.length > 0) {
@@ -30,6 +31,7 @@ global.roleMoverExt = {
                 return;
             }
         }
+        
         if (creep.memory.fleeing > 0) {
             creep.memory.fleeing -= 1;
             moveToTarget(creep, creep.room.controller, true);
@@ -55,14 +57,39 @@ global.roleMoverExt = {
             creep.say("m2storage");
         }
 
-        if (creep.ticksToLive < 300) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) &&
+            (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
-            returnToHeal(creep, creep.memory.baseRoomName);
-            return;
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return
+        }
+        
+        if (Game.rooms[creep.memory.targetRoomName] == undefined) {
+            if (creep.room.name != creep.memory.targetRoomName) {
+                log(creep, "wrong room");
+                const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName);
+                if (route.length > 0) {
+                    creep.say("Headin oot");
+                    const exit = creep.pos.findClosestByRange(route[0].exit);
+                    moveToMultiRoomTarget(creep, exit);
+                } else {
+                    creep.say("No route found");
+                    log(creep, "no route to target room");
+                }
+                return;
+            }
         }
 
-        if (creep.memory.targetSource == undefined) console.log(creep.name, creep.pos);
+        if (creep.memory.targetSource == undefined) {
+            console.log(creep.name, creep.pos);
+        } else {
+            if(creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" + creep.memory.targetSource) == undefined || 
+            creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" + creep.memory.targetSource) < 1 &&
+            creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" < 3)) {
+                spawnCreep(roleHarvesterExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource, noHeal: true } }, creep.memory.baseRoomName);
+                log(creep, `spawning Harvester`)
+            }
+        }
 
         // if (creep.room.name != creep.memory.fakeBaseRoomName) {
         //     log(creep, "out of room");
@@ -91,6 +118,7 @@ global.roleMoverExt = {
             // console.log(Game.getObjectById(creep.memory.targetSource))
 
             if (containers.length) {
+                creep.memory.targetContainer = containers[0].id
                 log(creep, "containers found");
                 // var nearbySources = Game.rooms[creep.memory.targetRoomName].find(FIND_SOURCES, {
                 //     filter: (s) => {
@@ -98,9 +126,21 @@ global.roleMoverExt = {
                 //     },
                 // })
                 // creep.memory.targetSource = nearbySources[0].id
+                
+                if(containers[0].store.getUsedCapacity() == 0) {
+                    // don't walk all the way to the container and block the harvester returning to the source
+                    if (!creep.pos.inRangeTo(containers[0], 3)) {
+                        moveToMultiRoomTarget(creep, containers[0]);
+                    }
+                    return
+                }
                 if (creep.withdraw(containers[0], RESOURCE_ENERGY) != OK) {
                     if (!creep.pos.inRangeTo(containers[0], 1)) moveToTarget(creep, containers[0]);
                 }
+            } else {
+                log(creep, `${creep.name} has no container`)
+                targetSource = Game.getObjectById(creep.memory.targetSource)
+                if (!creep.pos.inRangeTo(targetSource.pos, 1)) moveToTarget(creep, targetSource.pos);
             }
         } else {
             log(creep, "banking");
