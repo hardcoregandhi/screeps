@@ -8,6 +8,7 @@ global.roleClaimer = {
         ],
     baseBodyParts: [CLAIM, CLAIM],
     bodyLoop: [MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM],
+    bodyPartsMaxCount: 7,
     // 1 - UP
     // 3 - RIGHT
     // 5 - DOWN
@@ -18,17 +19,17 @@ global.roleClaimer = {
         creep.say("🏳️");
 
         if (Game.rooms[creep.memory.baseRoomName] == undefined) {
-            const route = Game.map.findRoute(creep.room.name, creep.memory.baseRoomName, {
-                maxRooms: 16,
-            });
-            if (route.length > 0) {
-                const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit);
-            }
+            // usePathfinder(creep, { pos: new RoomPosition(25,25,creep.memory.baseRoomName), range: 1 })
+            moveToRoom(creep, creep.memory.baseRoomName)
         } else {
-            if (creep.name == "Claimer_443") {
-                creep.claimController(Game.rooms[creep.memory.baseRoomName].controller);
+            if (creep.name == "Claimer_900") {
+                if(creep.claimController(Game.rooms[creep.memory.baseRoomName].controller) != OK) {
+                    moveToMultiRoomTarget(creep, Game.rooms[creep.memory.baseRoomName].controller, true);
+                }
             }
+            // if(!creep.room.controller.my) {
+            //     creep.attackController(creep.room.controller)
+            // }
             // console.log(creep.claimController(creep.room.controller));
             if (creep.reserveController(Game.rooms[creep.memory.baseRoomName].controller) != OK) {
                 moveToMultiRoomTarget(creep, Game.rooms[creep.memory.baseRoomName].controller, true);

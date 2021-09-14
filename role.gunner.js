@@ -1,5 +1,5 @@
-global.roleSoldier = {
-    name: "soldier",
+global.roleGunner = {
+    name: "gunner",
     roleMemory: { memory: {"return": false} },
     // prettier-ignore
     BodyParts: [
@@ -15,7 +15,7 @@ global.roleSoldier = {
     ],
     baseBodyParts: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ],
     subBodyParts: [HEAL,HEAL,],
-    bodyLoop: [ATTACK, MOVE],
+    bodyLoop: [RANGED_ATTACK, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -60,37 +60,15 @@ global.roleSoldier = {
                 cloneCreep(creep.name)
             }
             
-            var closestHostile = 
-                creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) || 
-                creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
-                    filter: (s) => {
-                        return s.structureType != STRUCTURE_CONTROLLER;
-                    },
-                });
+            var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) || creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
             // console.log(closestHostile)
             if (closestHostile) {
                 creep.room.visual.circle(closestHostile.pos, {
                     color: "red",
                     radius: 1,
                 });
-                if (creep.attack(closestHostile) != OK) {
+                if (creep.rangedAttack(closestHostile) != OK) {
                     creep.moveTo(closestHostile, { maxRooms: 1 });
-                }
-                return;
-            }
-            var closestSite = 
-                creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES, {
-                    filter: (s) => {
-                        return !s.my;
-                    },
-                });
-            if (closestSite) {
-                creep.room.visual.circle(closestSite.pos, {
-                    color: "red",
-                    radius: 1,
-                });
-                if (creep.attack(closestSite) != OK) {
-                    creep.moveTo(closestSite, { maxRooms: 1 });
                 }
                 return;
             }
@@ -135,4 +113,4 @@ global.roleSoldier = {
     },
 };
 
-module.exports = roleSoldier;
+module.exports = roleGunner;

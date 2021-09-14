@@ -10,7 +10,7 @@ global.roleInvader = {
         // creep.say('🏳️');
         if (creep.memory.targetRoomName == undefined) creep.memory.targetRoomName = "W9S3";
 
-        creep.memory.return = true;
+        // creep.memory.return = true;
 
         var enemyTowers = [];
         if (creep.pos.roomName == creep.memory.targetRoomName) {
@@ -24,8 +24,7 @@ global.roleInvader = {
             // flee to safety
             creep.say("healing");
             creep.memory.healing = true;
-            returnToHeal(creep, creep.memory.baseRoomName);
-            return;
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return
         }
         if (creep.memory.return) {
             creep.moveTo(Game.flags.holding.pos);

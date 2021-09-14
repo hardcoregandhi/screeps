@@ -10,9 +10,9 @@ global.roleUpgrader = {
     // memory: { baseRoomName: "W15S21" },
     // prettier-ignore
     BodyParts: [
-        WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-        CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY,
-        MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE,
+        WORK, WORK, WORK, WORK, WORK,
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
     baseBodyParts: [WORK, CARRY, CARRY, MOVE, MOVE],
     bodyLoop: [WORK, CARRY, MOVE],
@@ -57,7 +57,8 @@ global.roleUpgrader = {
         }
         log(creep, 1);
 
-        if (creep.ticksToLive < 300) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) &&
+            (creep.memory.noHeal != true || creep.memory.noHeal == undefined)) {
             creep.say("healing");
             creep.memory.healing = true;
             // creep.drop(RESOURCE_ENERGY);
@@ -68,43 +69,22 @@ global.roleUpgrader = {
 
         if (creep.memory.upgrading) {
             log(creep, 2);
-            var spawns = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_SPAWN;
-                },
-            });
-            if (creep.ticksToLive < 300 && spawns.length) {
-                creep.memory.healing = true;
-                targets = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.structureType == STRUCTURE_SPAWN;
-                    },
-                });
-                target = targets[0];
 
-                if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
-                    moveToTarget(creep, target, false);
-                }
-            } else {
-                healRoads(creep);
-                if (creep.upgradeController(creep.room.controller) != OK) {
-                    moveToTarget(creep, creep.room.controller.pos, false);
-                    // creep.moveTo(creep.room.controller.pos);
-                    if (creep.store[RESOURCE_ENERGY] == 0) {
-                        creep.memory.upgrading = false;
-                    }
+            healRoads(creep);
+            if (creep.upgradeController(creep.room.controller) != OK) {
+                moveToTarget(creep, creep.room.controller.pos, false);
+                // creep.moveTo(creep.room.controller.pos);
+                if (creep.store[RESOURCE_ENERGY] == 0) {
+                    creep.memory.upgrading = false;
                 }
             }
+    
         } else {
-            var targets = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_STORAGE && structure.store[RESOURCE_ENERGY] > 0 && structure.room.name != "W16S21";
-                },
-            });
+            var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
             var links = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return structure.structureType == STRUCTURE_LINK;
-                },
+                }, 
             });
             if (links.length == 2) {
                 try {
@@ -122,13 +102,16 @@ global.roleUpgrader = {
                     console.trace();
                 }
             }
-            if (targets.length && links.length != 2) {
-                if (creepRoomMap.get(creep.room.name + "eenergy") < 2000 || creep.room.energyAvailable < creep.room.energyCapacityAvailable - 400) {
+            if (mainStorage != undefined && links.length != 2) {
+                if (
+                    creepRoomMap.get(creep.room.name + "eenergy") < 2000 || creep.room.energyAvailable < creep.room.energyCapacityAvailable - 400 || 
+                    (mainStorage.structureType == STRUCTURE_CONTAINER && mainStorage.store.getUsedCapacity() < mainStorage.store.getCapacity() / 2)
+                ){
                     moveToTarget(creep, creep.room.controller.pos, false);
                     return;
                 } else {
-                    if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
-                        moveToTarget(creep, targets[0].pos, false);
+                    if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
+                        moveToTarget(creep, mainStorage.pos, false);
                     }
                 }
             } else {

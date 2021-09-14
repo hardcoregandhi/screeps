@@ -1,5 +1,5 @@
 function log(creep, str) {
-    if (creep.name == "Mover_872") if (0) console.log(str);
+    if (creep.name == "Mover_157") if (0) console.log(str);
 }
 
 global.roleMover = {
@@ -23,6 +23,10 @@ global.roleMover = {
 
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
+            if(creep.memory.experimentalMovement != undefined) {
+                moveToRoom(creep, creep.memory.baseRoomName)
+                return
+            }
             log(creep, 1);
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
             if (route.length > 0) {
@@ -84,8 +88,7 @@ global.roleMover = {
         if (creep.ticksToLive < 200) {
             creep.say("healing");
             creep.memory.healing = true;
-            returnToHeal(creep, creep.memory.baseRoomName);
-            return;
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return
         }
         log(creep, 5);
         if (!creep.memory.moving) {
@@ -94,6 +97,11 @@ global.roleMover = {
             if (mainStorage == undefined) {
                 log(creep, "mainStorage could not be found");
             } else {
+                if(storage && mainStorage && storage != mainStorage){
+                    // transitioning
+                    log(creep, "transitioning")
+                    creep.memory.transitioning = true
+                }
                 log(creep, "using mainStorage");
                 if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
                     // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
@@ -148,6 +156,28 @@ global.roleMover = {
                 }
                 return;
             }
+            
+            // transition from container to storage
+            mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
+            if(storage && mainStorage && mainStorage.structureType == STRUCTURE_CONTAINER){
+                log(creep, storage)
+                if (creep.transfer(storage, RESOURCE_ENERGY) != OK) {
+                    log(creep, creep.transfer(storage, RESOURCE_ENERGY) )
+                    log(creep, "dropping in storage")
+                    moveToTarget(creep, storage);
+                }
+                return
+            }
+            
+            if(mainStorage.structureType == STRUCTURE_CONTAINER) {
+                if(mainStorage.hits < mainStorage.hitsMax /2) {
+                    if(creep.repair(mainStorage) == OK) {
+                        return
+                    }
+                }
+            }
+            
+            
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (
@@ -196,7 +226,7 @@ global.roleMover = {
                 // No targets found, return to the storage
                 creep.say("no targets");
                 try {
-                    var storage = Game.getObjectById(Memory.rooms[creep.room.name].storage);
+                    var storage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
                     log(creep, 8);
                     moveToTarget(creep, storage);
                     return;
@@ -211,8 +241,21 @@ global.roleMover = {
                 });
             }
             target = creep.pos.findClosestByPath(targets);
+            
+            log(creep, "target")
+            log(creep, target)
+            if (target.structureType == STRUCTURE_SPAWN && Memory.rooms[creep.room.name].mainSpawn.refilling == true) {
+                _.remove(targets, target)
+                target = creep.pos.findClosestByPath(targets);
+            }
+            if(target == undefined || target == null) {
+                moveToTarget(creep, storage, true);
+                return
+            }
             for (const resourceType in creep.store) {
                 log(creep, 9);
+                if(target.structureType == STRUCTURE_SPAWN)
+                    Memory.rooms[creep.room.name].mainSpawn.refilling = true
                 if (creep.transfer(target, resourceType) != OK) {
                     moveToTarget(creep, target, true);
                 }

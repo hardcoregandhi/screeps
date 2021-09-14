@@ -6,6 +6,11 @@ global.roleHarvSup = {
     name: "harvSup",
     roleMemory: { memory: {} },
     // prettier-ignore
+    BodyParts: [
+        WORK,
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        MOVE, MOVE, MOVE, MOVE, MOVE,
+    ],
     baseBodyParts: [WORK],
     bodyLoop: [CARRY, MOVE],
 
@@ -17,28 +22,9 @@ global.roleHarvSup = {
         if (creep.memory.returning == undefined) {
             creep.memory.returning = true;
         }
+        
 
-        if (creep.memory.mainStorage == undefined) {
-            // find room spawn
-            spawn = creep.room.find(FIND_STRUCTURES, {
-                filter: (s) => {
-                    return s.structureType == STRUCTURE_SPAWN;
-                },
-            });
-            if (spawn.length == 0) {
-                creep.say("no spawn found!");
-                return -1;
-            }
-            spawn = spawn[0];
-            // find closest storage/container to spawn which is presumably main storage
-            var target = spawn.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_STORAGE || (structure.structureType == STRUCTURE_CONTAINER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
-                },
-            });
-            creep.memory.mainStorage = target.id;
-        }
-        mainStorage = Game.getObjectById(creep.memory.mainStorage);
+        mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
         if (mainStorage == undefined) {
             log(creep, "mainStorage could not be found");
         }
@@ -70,20 +56,20 @@ global.roleHarvSup = {
             return;
         }
 
-        if (creep.ticksToLive < 200) {
+        if ((creep.ticksToLive < 200 || creep.memory.healing) &&
+            (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
-            returnToHeal(creep, creep.memory.baseRoomName);
-            return;
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return
         }
 
         if (!creep.memory.returning) {
             healRoads(creep);
 
-            if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
-                creep.moveTo(mainStorage, {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                });
+            for (const resourceType in creep.store) {
+                if (creep.transfer(mainStorage, resourceType) != OK) {
+                    if (!creep.pos.isNearTo(mainStorage)) moveToTarget(creep, mainStorage);
+                }
             }
         } else {
             pickupNearby(creep);
@@ -100,12 +86,11 @@ global.roleHarvSup = {
             }
 
             target = Game.getObjectById(creep.memory.targetContainer);
-
-            if (creep.withdraw(target, RESOURCE_ENERGY) != OK) {
-                creep.moveTo(target, {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                    maxRooms: 1,
-                });
+            for (const resourceType in target.store) {
+                log(creep, 9);
+                if (creep.withdraw(target, resourceType) != OK) {
+                    if (!creep.pos.isNearTo(target)) moveToTarget(creep, target);
+                }
             }
         }
     },
