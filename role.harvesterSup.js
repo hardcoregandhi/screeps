@@ -1,5 +1,5 @@
-function log(str) {
-    if (0) console.log(str);
+function log(creep, str) {
+    if (0) if (creep.name = "MoverExt_577") console.log(str);
 }
 
 global.roleHarvSup = {
@@ -9,10 +9,14 @@ global.roleHarvSup = {
     BodyParts: [
         WORK,
         CARRY, CARRY, CARRY, CARRY, CARRY,
+        CARRY, CARRY, CARRY, CARRY, CARRY,
+        MOVE, MOVE, MOVE, MOVE, MOVE,
         MOVE, MOVE, MOVE, MOVE, MOVE,
     ],
     baseBodyParts: [WORK],
     bodyLoop: [CARRY, MOVE],
+    bodyPartsMaxCount: 21,
+
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -64,21 +68,23 @@ global.roleHarvSup = {
         }
 
         if (!creep.memory.returning) {
+            log(creep, "retrieving");
             healRoads(creep);
 
             for (const resourceType in creep.store) {
                 if (creep.transfer(mainStorage, resourceType) != OK) {
-                    if (!creep.pos.isNearTo(mainStorage)) moveToTarget(creep, mainStorage);
+                    moveToTarget(creep, mainStorage);
                 }
             }
         } else {
+            log(creep, "returning");
             pickupNearby(creep);
             if (creep.memory.targetContainer == undefined) {
-                var containers = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0 && structure != mainStorage;
-                    },
-                });
+                log(creep, "finding new container");
+
+                var containers = creep.room.find(FIND_STRUCTURES).filter(structure => 
+                        structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0 && structure != mainStorage
+                );
                 if (!containers.length) return -1;
 
                 containers.sort((a, b) => b.store.getUsedCapacity() - a.store.getUsedCapacity());
@@ -89,7 +95,7 @@ global.roleHarvSup = {
             for (const resourceType in target.store) {
                 log(creep, 9);
                 if (creep.withdraw(target, resourceType) != OK) {
-                    if (!creep.pos.isNearTo(target)) moveToTarget(creep, target);
+                    moveToTarget(creep, target);
                 }
             }
         }

@@ -1,58 +1,54 @@
 var roleTower = require("tower");
 
 global.runStructs = function () {
-    _.forEach(Game.rooms, (room) => {
-        var towers = room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_TOWER;
-            },
-        });
+    myRooms.forEach(r => {
+        room = Game.rooms[r]
 
-        for (var t of towers) {
-            roleTower.run(t);
+        allStructures = room.find(FIND_STRUCTURES);
+
+        stores = []
+        pspawns = []
+        containers = []
+        towers = []
+        links = []
+        observers = []
+        
+        for(structure of allStructures) {
+            switch(structure.structureType){
+                case(STRUCTURE_STORAGE):
+                    stores.push(structure)
+                    break;
+                case(STRUCTURE_CONTAINER):
+                    containers.push(structure)
+                    break;
+                case(STRUCTURE_SPAWN):
+                    spawns.push(structure)
+                    break;
+                case(STRUCTURE_TOWER):
+                    roleTower.run(structure);
+                    towers.push(structure)
+                    break;
+                case(STRUCTURE_POWER_SPAWN):
+                    pspawns.push(structure)
+                    p.processPower();
+                    break;
+                case(STRUCTURE_LINK):
+                    links.push(structure)
+                    break;                
+                case(STRUCTURE_OBSERVER):
+                    observers.push(structure)
+                    break;
+            }
         }
         
         if(towers.length == 0) {
             if(room.controller != undefined && room.controller.my && room.controller.safeModeAvailable) room.controller.activateSafeMode();
         }
 
-        var pspawns = room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_POWER_SPAWN;
-            },
-        });
-        for (var p of pspawns) {
-            p.processPower();
-        }
 
-        var links = room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_LINK;
-            },
-        });
-        var storage = null;
-        var storages = room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_STORAGE;
-            },
-        });
-        if (storages.length) {
-            storage = storages[0];
-            if (Memory.rooms[room.name] == undefined) {
-                Memory.rooms[room.name] = {};
-            }
-            Memory.rooms[room.name].storage = storage.id;
-        }
-        if (links.length == 2 && storage != null) {
-            var l_from = storage.pos.findClosestByRange(links);
-            var l_to = links.filter((l) => l != l_from)[0];
-            if (Memory.rooms[room.name] == undefined) {
-                Memory.rooms[room.name] = {};
-            }
-
-            Memory.rooms[room.name].l_from = l_from.id;
-            Memory.rooms[room.name].l_to = l_to.id;
-            Memory.rooms[room.name].storage = storage.id;
+        if (links.length == 2) {
+            var l_from = Memory.rooms[room.name].l_from.id;
+            var l_to = Memory.rooms[room.name].l_to.id;
 
             if (l_from && l_from.store.getUsedCapacity([RESOURCE_ENERGY]) == 800 && creepRoomMap.get(room.name + "eenergy") > 2000) {
                 if (l_to.store.getUsedCapacity([RESOURCE_ENERGY]) == 0) {
@@ -61,12 +57,6 @@ global.runStructs = function () {
                 }
             }
         }
-
-        var observers = room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_OBSERVER;
-            },
-        });
 
         for (var o of observers) {
             // set target rooms and iterator
@@ -81,12 +71,9 @@ global.runStructs = function () {
             console.log(Game.rooms[observerTarget]);
             // the room will be available on the next tick after observeRoom runs
             if (Game.rooms[observerTarget] != undefined) {
-                var powerBanks = room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.structureType == STRUCTURE_POWER_BANK;
-                    },
-                });
+                var powerBanks = room.find(FIND_STRUCTURES).filter(structure => structure.structureType == STRUCTURE_POWER_BANK);
                 if (powerBanks.length) {
+                    // TODO: do something with found power bank
                 } else {
                     console.log("no power found, iterating observer");
                     Memory.rooms[room.name].targetPowerRoom = Memory.rooms[room.name].targetPowerRooms.length == Memory.rooms[room.name].targetPowerRoom ? 0 : Memory.rooms[room.name].targetPowerRoom + 1;
@@ -103,11 +90,11 @@ global.runStructs = function () {
         //     r.setPublic(false)
         // }
 
-        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS, {filter: (c) => {return c.body.find((part) => part.type == ATTACK)}})
+        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS).filter(c => c.body.find((part) => part.type == ATTACK))
         if (hostileCreeps.length > 2) {
             if(room.controller.my && room.controller.safeModeAvailable)
                 room.controller.activateSafeMode();
-            Game.notify("2 attackers in " + room.name + ". Activated Safe Mode.");
+            Game.notify(">2 attackers in " + room.name + ". Activated Safe Mode.");
         }
     });
 };

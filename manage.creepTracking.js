@@ -52,8 +52,7 @@ creepTracking = function() {
                     creepRoomMap.set(key, 0);
                 }
             }
-
-            creepRoomMap.set(r.name + "csites", r.find(FIND_CONSTRUCTION_SITES).length);
         });
+        creepRoomMap.set(r.name + "csites", r.find(FIND_CONSTRUCTION_SITES).length);
     });
 }

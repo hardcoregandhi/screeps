@@ -26,17 +26,16 @@ global.roleSoldier = {
 
         var enemyTowers = [];
         if (creep.pos.roomName == creep.memory.targetRoomName) {
-            enemyTowers = creep.room.find(FIND_HOSTILE_STRUCTURES, {
-                filter: (s) => {
+            enemyTowers = creep.room.find(FIND_HOSTILE_STRUCTURES).filter(s => {
                     return s.structureType == STRUCTURE_TOWER;
-                },
             });
         }
         if (creep.hits < creep.hitsMax) {
             creep.heal(creep)
         }
         
-        if (creep.ticksToLive < 300 || creep.memory.healing) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) &&
+            (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return
@@ -55,7 +54,7 @@ global.roleSoldier = {
 
         if(creep.memory.passiveTravel == undefined || creep.memory.passiveTravel == false) {
             var allHostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS)
-            var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {filter: (c) => {return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)}})
+            var hostileCreeps = allHostileCreeps.filter(c => {return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)})
             if (hostileCreeps.length > 2 || allHostileCreeps.length > 4) {
                 cloneCreep(creep.name)
             }

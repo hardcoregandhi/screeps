@@ -25,21 +25,15 @@ global.rolePowMover.run = function (creep) {
         }
         return;
     }
-    var power_spawns = creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return structure.structureType == STRUCTURE_POWER_SPAWN;
-        },
-    });
-    var power_spawns_pow = creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return structure.structureType == STRUCTURE_POWER_SPAWN && structure.store.getUsedCapacity(RESOURCE_POWER) < 20;
-        },
-    });
-    var power_spawns_en = creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return structure.structureType == STRUCTURE_POWER_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-        },
-    });
+    var power_spawns = creep.room.find(FIND_STRUCTURES).filter(structure => 
+        structure.structureType == STRUCTURE_POWER_SPAWN
+    );
+    var power_spawns_pow = power_spawns.filter(structure => 
+            structure.structureType == STRUCTURE_POWER_SPAWN && structure.store.getUsedCapacity(RESOURCE_POWER) < 20
+    );
+    var power_spawns_en = power_spawns.filter(structure => 
+        structure.structureType == STRUCTURE_POWER_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+    );
 
     if (power_spawns_pow.length) {
         creep.memory.job = job.MOVING_POWER;
@@ -50,10 +44,8 @@ global.rolePowMover.run = function (creep) {
     }
 
     // If creep is holding non-energy, deposit it first
-    var storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-        },
+    var storage = creep.pos.findClosestByPath(FIND_STRUCTURES).filter(structure => {
+            return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
     });
     for (const resourceType in creep.store) {
         switch (creep.memory.job) {
@@ -90,10 +82,8 @@ global.rolePowMover.run = function (creep) {
     if (creep.ticksToLive < 200 && creep.memory.moving) {
         creep.say("healing");
         creep.memory.healing = true;
-        var targets = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-            },
+        var targets = creep.room.find(FIND_STRUCTURES).filter(structure => {
+                return structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
         });
         if (creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             moveToTarget(creep, targets[0], false);
@@ -103,10 +93,8 @@ global.rolePowMover.run = function (creep) {
 
     if (!creep.memory.moving) {
         // creep.say("hello")
-        var targets = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_STORAGE && structure.store.getUsedCapacity() > 0;
-            },
+        var targets = creep.room.find(FIND_STRUCTURES).filter(structure => {
+                return structure.structureType == STRUCTURE_STORAGE && structure.store.getUsedCapacity() > 0
         });
         if (targets.length) {
             creep.say("m2storage");

@@ -15,40 +15,6 @@ global.runBaseBuilder = function () {
 
         baseCenter = Memory.rooms[roomName].mainSpawn.pos;
 
-        // one time swap setup
-        for (var levelIter = 1; levelIter < 8; levelIter++) {
-            if (baseData[levelIter] == undefined || baseData[levelIter].stages == undefined) break;
-            for (var stage in baseData[levelIter].stages.length) {
-                for (var set in baseData[levelIter].stages[stage]) {
-                    switch (baseData[levelIter].stages[stage][set].buildingType) {
-                        case "STRUCTURE_EXTENSION":
-                            baseData[levelIter].stages[stage][set].buildingType = STRUCTURE_EXTENSION;
-                            break;
-                        case "STRUCTURE_ROAD":
-                            baseData[levelIter].stages[stage][set].buildingType = STRUCTURE_ROAD;
-                            break;
-                        case "STRUCTURE_CONTAINER":
-                            baseData[levelIter].stages[stage][set].buildingType = STRUCTURE_CONTAINER;
-                            break;
-                        case "STRUCTURE_TURRET":
-                            baseData[levelIter].stages[stage][set].buildingType = STRUCTURE_TOWER;
-                            break;
-                        case "STRUCTURE_RAMPART":
-                            baseData[levelIter].stages[stage][set].buildingType = STRUCTURE_RAMPART;
-                            break;
-                        case "STRUCTURE_ROAD":
-                            baseData[levelIter].stages[stage][set].buildingType = STRUCTURE_ROAD;
-                            break;
-                        case "STRUCTURE_LINK":
-                            baseData[levelIter].stages[stage][set].buildingType = STRUCTURE_LINK;
-                            break;
-                        default:
-                            log.error("error parsing base data");
-                    }
-                }
-            }
-        }
-
         if (baseData[currentRoomBuildingLevel] == undefined || baseData[currentRoomBuildingLevel].stages == undefined) continue;
 
         for (var s in baseData[currentRoomBuildingLevel].stages[currentStage]) {
@@ -283,7 +249,9 @@ global.baseRawData = `
                         { "x": 1, "y": 1 },
                         { "x": -1, "y": 1 },
                         { "x": 0, "y": 2 },
-                        { "x": -1, "y": 3 }
+                        { "x": -1, "y": 3 },
+                        { "x": -3, "y": 1 },
+                        { "x": -2, "y": 4 }
                     ]
                 }
             ],

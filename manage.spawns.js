@@ -1,27 +1,3 @@
-var roleHarvester = require("role.harvester");
-var roleHarvSup = require("role.harvesterSup");
-var roleHarvesterExt = require("role.harvesterExt");
-var roleUpgrader = require("role.upgrader");
-var roleBuilder = require("role.builder");
-var roleBuilderExt = require("role.builderExt");
-var roleTower = require("tower");
-var roleClaimer = require("role.claimer");
-var roleMover = require("role.mover");
-var roleMoverExt = require("role.moverExt");
-var roleDefence = require("role.defense");
-var roleScavenger = require("role.scavenger");
-var roleTraveller = require("role.traveller");
-var roleTrucker = require("role.trucker");
-var roleSoldier = require("role.soldier");
-var roleGunner = require("role.gunner");
-var roleSieger = require("role.sieger");
-var rolePowHarvester = require("role.powHarvester");
-var rolePowMover = require("role.powMover");
-var roleDoctor = require("role.doctor");
-var roleInvader = require("role.invader");
-var roleExplorer = require("role.explorer");
-var roleCleaner = require("role.cleaner");
-
 global.runSpawns = function () {
     global.nextSpawnOffset = 1;
 
@@ -30,19 +6,6 @@ global.runSpawns = function () {
         if (!myRooms.includes(r.name)) {
             continue;
         }
-        var storage = r.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_STORAGE;
-            },
-        });
-        if (r.name == "W16S22") {
-            var hostiles = r.find(FIND_HOSTILE_CREEPS);
-            if (hostiles.length) {
-                spawnCreep(roleSoldier, [ATTACK, ATTACK, MOVE, MOVE, MOVE], null, r.name);
-                continue;
-            }
-        }
-        
         // if((Memory.rooms[room].mainStorage == undefined && creepRoomMap.get(r.name + "harvester") < Memory.rooms[r.name].totalMiningSpots * 2) || r.controller.level <=2) {
         //     spawnCreep(roleHarvester, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name, experimentalMovement: true, focusBuilding: true } }, "W6S1");
         //     continue;
@@ -58,7 +21,7 @@ global.runSpawns = function () {
                 Memory.createClaimer = false;
             }
         } else if (creepRoomMap.get(r.name + "harvester") == undefined || creepRoomMap.get(r.name + "harvester") < _.size(Memory.rooms[r.name].sources)) {
-            if (r.energyAvailable <=300) {
+            if (r.energyAvailable <= 300) {
                 BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
                 spawnCreep(roleHarvester, BaseBodyParts, null, r.name);
             } else {
@@ -130,6 +93,7 @@ global.runSpawns = function () {
 };
 
 function spawnExternalHarvester(roomName) {
+    // console.log(roomName)
     if(Memory.rooms[roomName].externalSources != undefined && Memory.rooms[roomName].externalSources.length) {
         _.forEach(Memory.rooms[roomName].externalSources, (sourceId) => {
             // console.log(sourceId)

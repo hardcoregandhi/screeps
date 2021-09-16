@@ -92,10 +92,8 @@ global.roleHarvester = {
                     );
                 },
             });
-            var towers = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                },
+            var towers = creep.room.find(FIND_STRUCTURES).filter(structure => {
+                structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
             });
             focusHealing = false;
             if (targets.length > 0) {
@@ -125,11 +123,14 @@ global.roleHarvester = {
 
                     if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container) {
                         target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id);
+                        creep.memory.targetContainer = target.id
                         log(creep, "local ccont found");
                         log(creep, target);
 
                         if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy < 1 && Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined) {
                             spawnCreep(roleHarvSup, null, { memory: { targetContainer: target.id } }, creep.memory.baseRoomName);
+                            roleHarvSup.run(creep);
+                            return
                         }
 
                         if (target != null && target.hits < 200000 && target.structureType == STRUCTURE_CONTAINER) {
@@ -142,17 +143,13 @@ global.roleHarvester = {
                         return;
                     }
 
-                    targets = creep.room.find(FIND_STRUCTURES, {
-                        filter: (structure) => {
-                            return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                        },
+                    targets = creep.room.find(FIND_STRUCTURES).filter(structure => {
+                             structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                     });
                     if (!targets.length) {
                         log(creep, "no storage found");
-                        targets = creep.room.find(FIND_STRUCTURES, {
-                            filter: (structure) => {
-                                return (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                            },
+                        targets = creep.room.find(FIND_STRUCTURES).filter(structure => {
+                                (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                         });
 
                         if (!targets.length) {
@@ -167,13 +164,9 @@ global.roleHarvester = {
                     }
                 } else {
                     log(creep, "no movers found");
-                    targets = creep.room.find(FIND_STRUCTURES, {
-                        filter: (structure) => {
-                            return (
+                    targets = creep.room.find(FIND_STRUCTURES).filter(structure => {
                                 (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
                                 structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-                            );
-                        },
                     });
                     if (!targets.length) {
                         log(creep, "no exts, spawn, or container found");

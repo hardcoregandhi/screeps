@@ -37,10 +37,8 @@ global.roleHarvesterExt = {
         if ((creep.ticksToLive < 300 || creep.memory.healing) &&
             (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             if (creep.store.getUsedCapacity > 0) {
-                var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.structureType == STRUCTURE_CONTAINER && creep.pos.inRangeTo(structure.pos, 1);
-                    },
+                var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter(structure => {
+                        return structure.structureType == STRUCTURE_CONTAINER && creep.pos.inRangeTo(structure.pos, 1)
                 });
                 if (!containers.length) {
                     creep.transfer(target, RESOURCE_ENERGY);
@@ -74,17 +72,15 @@ global.roleHarvesterExt = {
                 return creep.pos.inRangeTo(site, 3) && site.structureType == STRUCTURE_CONTAINER;
             },
         });
-        var containersNearToSource = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_CONTAINER && Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(structure, 2);
-            },
+        var containersNearToSource = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter(structure => {
+                return structure.structureType == STRUCTURE_CONTAINER && Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(structure, 2)
         });
         log(creep, 2);
 
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         var closestStructure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
         
-        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {filter: (c) => {return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)}})
+        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter(c => {return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)})
         rangedCount = 0
         meleeCount = 0
         if (hostileCreeps.length) {
@@ -194,6 +190,7 @@ global.roleHarvesterExt = {
             }
             try {
                 var container = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id)
+                creep.memory.targetContainer = container.id
             } catch (e) {
             }
             if (container == undefined) {

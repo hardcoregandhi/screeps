@@ -35,28 +35,26 @@ global.runRoads = function () {
                 }
                 
                 // Sources to spawns
-                room_spawner = r.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.structureType == STRUCTURE_SPAWN;
-                    },
-                });
-                r.visual.circle(room_spawner[0].pos, {
-                    fill: "blue",
-                    radius: 0.55,
-                });
-                if (room_spawner.length) {
-                    for (var pathStep2 of s.pos.findPathTo(room_spawner[0].pos, {
-                        ignoreCreeps: true,
-                        ignoreRoads: false,
-                        swampCost: 20,
-                    })) {
-                        r.visual.circle(pathStep, { color: "red", lineStyle: "dashed" });
-                        if (/*new Room.Terrain(r.name).get(pathStep2.x, pathStep2.y) == TERRAIN_MASK_SWAMP &&*/ r.lookForAt(LOOK_STRUCTURES, pathStep2.x, pathStep2.y).length == 0) {
-                            r.visual.circle(pathStep2, {
-                                fill: "green",
-                                radius: 0.55,
-                            });
-                            // r.createConstructionSite(pathStep2.x, pathStep2.y, STRUCTURE_ROAD);
+                spawn = Game.getObjectById(r.memory.mainSpawn.id)
+                if (spawn != null) {
+                    r.visual.circle(spawn.pos, {
+                        fill: "blue",
+                        radius: 0.55,
+                    });
+                    if (room_spawner.length) {
+                        for (var pathStep2 of s.pos.findPathTo(spawn.pos, {
+                            ignoreCreeps: true,
+                            ignoreRoads: false,
+                            swampCost: 20,
+                        })) {
+                            r.visual.circle(pathStep, { color: "red", lineStyle: "dashed" });
+                            if (/*new Room.Terrain(r.name).get(pathStep2.x, pathStep2.y) == TERRAIN_MASK_SWAMP &&*/ r.lookForAt(LOOK_STRUCTURES, pathStep2.x, pathStep2.y).length == 0) {
+                                r.visual.circle(pathStep2, {
+                                    fill: "green",
+                                    radius: 0.55,
+                                });
+                                // r.createConstructionSite(pathStep2.x, pathStep2.y, STRUCTURE_ROAD);
+                            }
                         }
                     }
                 }
