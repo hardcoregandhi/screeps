@@ -79,7 +79,7 @@ global.roleBuilderExt = {
         } else {
             log(creep, 7);
             var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
-                structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 500;
+                return structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 500;
             });
 
             if (containers.length) {
@@ -97,7 +97,7 @@ global.roleBuilderExt = {
 
             log(creep, 8);
             var targets = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES).filter((structure) => {
-                (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
+                return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
             });
 
             if (targets.length) {

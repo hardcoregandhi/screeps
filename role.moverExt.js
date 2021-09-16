@@ -1,5 +1,5 @@
 function log(creep, str) {
-    if (0) if (creep.name == "MoverExt_706") console.log(str);
+    if (0) if (creep.name == "MoverExt_494") console.log(str);
 }
 
 global.roleMoverExt = {
@@ -113,8 +113,8 @@ global.roleMoverExt = {
             log(creep, "collectin");
             log(creep, creep.memory.targetSource);
 
-            var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
-                (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.pos.inRangeTo(Game.getObjectById(creep.memory.targetSource).pos, 2);
+            var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter(structure => {
+                return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.pos.inRangeTo(Game.getObjectById(creep.memory.targetSource).pos, 2)
             });
             // console.log(Game.getObjectById(creep.memory.targetSource))
 

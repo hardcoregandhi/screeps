@@ -19,7 +19,7 @@ global.healRoads = function (creep) {
     if (towers.length == 0) {
         log(creep, "no towers");
         const damagedStructs = creep.room.find(FIND_STRUCTURES).filter((object) => {
-            object.structureType == STRUCTURE_ROAD && object.hits < object.hitsMax / 2 && creep.pos.inRangeTo(object, 1);
+            return object.structureType == STRUCTURE_ROAD && object.hits < object.hitsMax / 2 && creep.pos.inRangeTo(object, 1);
         });
         damagedStructs.sort((a, b) => a.hits - b.hits);
         if (damagedStructs.length > 0) {

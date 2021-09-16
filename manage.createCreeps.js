@@ -137,7 +137,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
     cost = getBodyCost(_role.BodyParts);
 
     myCreeps = spawn.room.find(FIND_MY_CREEPS).filter((c) => {
-        spawn.pos.inRangeTo(c, 1) &&
+        return spawn.pos.inRangeTo(c, 1) &&
             c.ticksToLive < 155 && //150 is the highest spawn time for a 50 part creep
             c.memory.healing;
     });

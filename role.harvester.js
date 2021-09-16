@@ -91,7 +91,7 @@ global.roleHarvester = {
                 },
             });
             var towers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-                structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
             });
             focusHealing = false;
             if (targets.length > 0) {
@@ -142,12 +142,12 @@ global.roleHarvester = {
                     }
 
                     targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-                        structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                        return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     });
                     if (!targets.length) {
                         log(creep, "no storage found");
                         targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-                            (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                            return (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                         });
 
                         if (!targets.length) {
@@ -163,7 +163,7 @@ global.roleHarvester = {
                 } else {
                     log(creep, "no movers found");
                     targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-                        (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
+                        return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
                             structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     });
                     if (!targets.length) {
