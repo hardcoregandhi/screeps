@@ -1,10 +1,8 @@
 global.runCreeps = function () {
-
-
-    myRooms.forEach(r => {
-        Memory.rooms[r].scav = false
-        var droppedResource = Game.rooms[r].find(FIND_DROPPED_RESOURCES).filter(r => r.amount >= 150);
-        var tombstoneResource = Game.rooms[r].find(FIND_TOMBSTONES).filter(r => r.store.getUsedCapacity() >= 150);
+    myRooms.forEach((r) => {
+        Memory.rooms[r].scav = false;
+        var droppedResource = Game.rooms[r].find(FIND_DROPPED_RESOURCES).filter((r) => r.amount >= 150);
+        var tombstoneResource = Game.rooms[r].find(FIND_TOMBSTONES).filter((r) => r.store.getUsedCapacity() >= 150);
         if (droppedResource.length)
             Game.rooms[r].visual.circle(droppedResource[0].pos, {
                 color: "red",
@@ -17,12 +15,11 @@ global.runCreeps = function () {
                 radius: 0.5,
                 lineStyle: "dashed",
             });
-        if(droppedResource.length || tombstoneResource.length) {
-            Memory.rooms[r].scav = true
+        if (droppedResource.length || tombstoneResource.length) {
+            Memory.rooms[r].scav = true;
         }
-    })
+    });
 
-    
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
         // console.log(creep.name)
@@ -33,16 +30,16 @@ global.runCreeps = function () {
             if (creep.pos.y == 0) creep.move(5);
 
             pickupNearby(creep);
-            
+
             if (creep.memory.role == "DIE") {
-                spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id)
+                spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
                 creep.moveTo(spawn.pos);
                 if (spawn.recycleCreep(creep) != 0) {
                     creep.moveTo(spawn.pos);
                 }
-                continue
+                continue;
             }
-            
+
             // if(creep.name == "Soldier_748") {
             //     if(creep.memory.healing != true && Game.rooms[creep.memory.targetRoomName] == undefined) {
             //         // moveToRoom(creep, creep.memory.targetRoomName)
@@ -50,7 +47,7 @@ global.runCreeps = function () {
             //         const exit = creep.pos.findClosestByRange(roomPath[0].exit);
             //         if(creep.fatigue == 0) {
             //             creep.moveTo(exit);
-                        
+
             //             if(creep.memory._move != undefined) {
             //                 targetPos = new RoomPosition(creep.memory._move.dest.x, creep.memory._move.dest.y, creep.memory._move.dest.room)
             //                 if(targetPos.lookFor(LOOK_STRUCTURES).length != 0) {
@@ -60,17 +57,16 @@ global.runCreeps = function () {
             //             }
             //         }
             //         continue
-            //     }   
+            //     }
             // }
-            
-            if(creep.name == "Claimer_755") {
+
+            if (creep.name == "Claimer_755") {
                 if (creep.ticksToLive < 300 || creep.memory.healing) {
                     creep.say("healing");
                     creep.memory.healing = true;
                     if (returnToHeal(creep, creep.memory.baseRoomName)) return;
                 }
             }
-            
 
             if (creep.memory.role == "traveller") {
                 roleTraveller.run(creep);
@@ -114,7 +110,7 @@ global.runCreeps = function () {
             }
             if (creep.memory.role == "soldier") {
                 roleSoldier.run(creep);
-            }           
+            }
             if (creep.memory.role == "gunner") {
                 roleGunner.run(creep);
             }
@@ -143,16 +139,14 @@ global.runCreeps = function () {
                 roleHealer.run(creep);
             }
             if (creep.memory.role == "mover") {
-                spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id)
-                if(
-                    !(creep.room.energyAvailable < 100 && creep.pos.getRangeTo(spawn) > 10) &&
-                    Memory.rooms[creep.room.name].scav == true) {
+                spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
+                if (!(creep.room.energyAvailable < 100 && creep.pos.getRangeTo(spawn) > 10) && Memory.rooms[creep.room.name].scav == true) {
                     roleScavenger.run(creep);
                     // console.log(creep.name, "scav")
                 } else {
                     roleMover.run(creep);
                     // console.log(creep.name, "mover")
-}
+                }
             }
         } catch (e) {
             console.log(`${e}`);

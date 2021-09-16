@@ -20,9 +20,7 @@ global.rolePowHarvester = {
         //     return;
         // }
 
-        var powerBanks = creep.room.find(FIND_STRUCTURES).filter(structure => 
-                structure.structureType == STRUCTURE_POWER_BANK
-        );
+        var powerBanks = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
         try {
             if (Memory.prevPowerBankHealth != powerBanks[0].hits) {
                 console.log(powerBanks[0].hits / (Memory.prevPowerBankHealth - powerBanks[0].hits));

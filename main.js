@@ -41,7 +41,6 @@ PathFinder.use(true);
 focusHealing = false;
 global.myRooms = ["W6S1", "W3S2"];
 
-
 /*
 calls		time		avg	    	function
 9574		200.1		0.021		Room.find
@@ -125,44 +124,39 @@ profiler.enable();
 // Line to run profiling from: https://github.com/screepers/screeps-profiler
 // Game.profiler.profile(10)
 
-
 try {
-    runBaseBuilder = profiler.registerFN(runBaseBuilder, 'runBaseBuilder');
-    runRenew = profiler.registerFN(runRenew, 'renew');
-    runRoads = profiler.registerFN(runRoads, 'roads');
-    runStructs = profiler.registerFN(runStructs, 'structs');
-    runSpawns = profiler.registerFN(runSpawns, 'spawns');
-    creepTracking = profiler.registerFN(creepTracking, 'creepTracking');
-    roomTracking = profiler.registerFN(roomTracking, 'roomTracking');
-    
+    runBaseBuilder = profiler.registerFN(runBaseBuilder, "runBaseBuilder");
+    runRenew = profiler.registerFN(runRenew, "renew");
+    runRoads = profiler.registerFN(runRoads, "roads");
+    runStructs = profiler.registerFN(runStructs, "structs");
+    runSpawns = profiler.registerFN(runSpawns, "spawns");
+    creepTracking = profiler.registerFN(creepTracking, "creepTracking");
+    roomTracking = profiler.registerFN(roomTracking, "roomTracking");
 
-    
-    profiler.registerObject(roleHarvester, 'roleHarvester');
-    profiler.registerObject(roleHarvSup, 'roleHarvSup');
-    profiler.registerObject(roleHarvesterExt, 'roleHarvesterExt');
-    profiler.registerObject(roleUpgrader, 'roleUpgrader');
-    profiler.registerObject(roleBuilder, 'roleBuilder');
-    profiler.registerObject(roleBuilderExt, 'roleBuilderExt');
-    profiler.registerObject(roleClaimer, 'roleClaimer');
-    profiler.registerObject(roleMover, 'roleMover');
-    profiler.registerObject(roleMoverExt, 'roleMoverExt');
-    profiler.registerObject(roleDefence, 'roleDefence');
-    profiler.registerObject(roleScavenger, 'roleScavenger');
-    profiler.registerObject(roleTraveller, 'roleTraveller');
-    profiler.registerObject(roleTrucker, 'roleTrucker');
-    profiler.registerObject(roleSoldier, 'roleSoldier');
-    profiler.registerObject(roleGunner, 'roleGunner');
-    profiler.registerObject(roleSieger, 'roleSieger');
-    profiler.registerObject(rolePowHarvester, 'rolePowHarvester');
-    profiler.registerObject(rolePowMover, 'rolePowMover');
-    profiler.registerObject(roleDoctor, 'roleDoctor');
-    profiler.registerObject(roleExplorer, 'roleExplorer');
-    profiler.registerObject(roleCleaner, 'roleCleaner');
-
+    profiler.registerObject(roleHarvester, "roleHarvester");
+    profiler.registerObject(roleHarvSup, "roleHarvSup");
+    profiler.registerObject(roleHarvesterExt, "roleHarvesterExt");
+    profiler.registerObject(roleUpgrader, "roleUpgrader");
+    profiler.registerObject(roleBuilder, "roleBuilder");
+    profiler.registerObject(roleBuilderExt, "roleBuilderExt");
+    profiler.registerObject(roleClaimer, "roleClaimer");
+    profiler.registerObject(roleMover, "roleMover");
+    profiler.registerObject(roleMoverExt, "roleMoverExt");
+    profiler.registerObject(roleDefence, "roleDefence");
+    profiler.registerObject(roleScavenger, "roleScavenger");
+    profiler.registerObject(roleTraveller, "roleTraveller");
+    profiler.registerObject(roleTrucker, "roleTrucker");
+    profiler.registerObject(roleSoldier, "roleSoldier");
+    profiler.registerObject(roleGunner, "roleGunner");
+    profiler.registerObject(roleSieger, "roleSieger");
+    profiler.registerObject(rolePowHarvester, "rolePowHarvester");
+    profiler.registerObject(rolePowMover, "rolePowMover");
+    profiler.registerObject(roleDoctor, "roleDoctor");
+    profiler.registerObject(roleExplorer, "roleExplorer");
+    profiler.registerObject(roleCleaner, "roleCleaner");
 } catch (e) {
     console.log(`${e}`);
 }
-
 
 module.exports.loop = function () {
     profiler.wrap(function () {
@@ -186,7 +180,7 @@ module.exports.loop = function () {
         // });
 
         creepTracking();
-        
+
         roomTracking();
 
         runStructs();

@@ -15,17 +15,16 @@ global.roleHarvesterExt = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-
         if (creep.memory.targetSource == undefined) {
-            console.log(creep.name)
-            console.log(Memory.rooms[creep.memory.targetRoomName].sources)
+            console.log(creep.name);
+            console.log(Memory.rooms[creep.memory.targetRoomName].sources);
             var lowestSource = 99;
             _.forEach(Memory.rooms[creep.memory.targetRoomName].sources, (s) => {
                 if (s.targettedBy < lowestSource) {
                     lowestSource = s.targettedBy;
                     creep.memory.targetSource = s.id;
                 }
-            })
+            });
         }
 
         log(creep, 1);
@@ -34,11 +33,10 @@ global.roleHarvesterExt = {
             creep.memory.mining = true;
         }
 
-        if ((creep.ticksToLive < 300 || creep.memory.healing) &&
-            (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             if (creep.store.getUsedCapacity > 0) {
-                var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter(structure => {
-                        return structure.structureType == STRUCTURE_CONTAINER && creep.pos.inRangeTo(structure.pos, 1)
+                var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
+                    return structure.structureType == STRUCTURE_CONTAINER && creep.pos.inRangeTo(structure.pos, 1);
                 });
                 if (!containers.length) {
                     creep.transfer(target, RESOURCE_ENERGY);
@@ -46,7 +44,7 @@ global.roleHarvesterExt = {
             }
             creep.say("healing");
             creep.memory.healing = true;
-            if (returnToHeal(creep, creep.memory.baseRoomName)) return
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
         if (Game.rooms[creep.memory.targetRoomName] == undefined) {
@@ -72,31 +70,33 @@ global.roleHarvesterExt = {
                 return creep.pos.inRangeTo(site, 3) && site.structureType == STRUCTURE_CONTAINER;
             },
         });
-        var containersNearToSource = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter(structure => {
-                return structure.structureType == STRUCTURE_CONTAINER && Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(structure, 2)
+        var containersNearToSource = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
+            return structure.structureType == STRUCTURE_CONTAINER && Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(structure, 2);
         });
         log(creep, 2);
 
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         var closestStructure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
-        
-        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter(c => {return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)})
-        rangedCount = 0
-        meleeCount = 0
+
+        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter((c) => {
+            return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
+        });
+        rangedCount = 0;
+        meleeCount = 0;
         if (hostileCreeps.length) {
-            console.log(hostileCreeps)
-            _.forEach(hostileCreeps, (c) =>{
+            console.log(hostileCreeps);
+            _.forEach(hostileCreeps, (c) => {
                 _.forEach(c.body, (part) => {
-                    switch(part.type) {
-                        case(ATTACK):
+                    switch (part.type) {
+                        case ATTACK:
                             meleeCount++;
                             break;
-                        case(RANGED_ATTACK):
+                        case RANGED_ATTACK:
                             rangedCount++;
                             break;
                     }
-                })
-            })
+                });
+            });
         }
 
         if (hostileCreeps.length || closestStructure) {
@@ -121,10 +121,7 @@ global.roleHarvesterExt = {
             return;
         }
 
-        log(creep, (
-                creep.memory.noClaimSpawn != undefined &&
-                creep.memory.noClaimSpawn == false
-            ))
+        log(creep, creep.memory.noClaimSpawn != undefined && creep.memory.noClaimSpawn == false);
 
         // TODO a creep should not spawn other creeps
         if (creep.memory.targetRoomName != undefined && Game.rooms[creep.memory.targetRoomName] != undefined && creep.room.name == creep.memory.targetRoomName) {
@@ -147,27 +144,26 @@ global.roleHarvesterExt = {
         if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
             creep.memory.mining = false;
             creep.say("🔄 dropping");
-            log(creep, "switching to dropping")
+            log(creep, "switching to dropping");
         }
         if (!creep.memory.mining && creep.store.getUsedCapacity() == 0) {
             creep.memory.healing = false;
             creep.memory.mining = true;
-            creep.say("⛏️ mining"); 
-            log(creep, "switching to mining")
-
+            creep.say("⛏️ mining");
+            log(creep, "switching to mining");
         }
 
         if (creep.memory.fakeBaseRoomName == undefined) {
             creep.memory.fakeBaseRoomName = creep.memory.targetRoomName;
         }
         var targetSource = Game.getObjectById(creep.memory.targetSource);
-        if(targetSource == undefined) {
-            log.error("source not found")
+        if (targetSource == undefined) {
+            log.error("source not found");
         }
-        log(creep, targetSource)
+        log(creep, targetSource);
 
         if (creep.memory.mining) {
-            log(creep, "mining")
+            log(creep, "mining");
 
             pickupNearby(creep);
 
@@ -178,21 +174,20 @@ global.roleHarvesterExt = {
             }
             return;
         } else {
-            log(creep, "dropping")
+            log(creep, "dropping");
 
             //Build any nearby container or road
             if (csites.length) {
-                log(creep, "building")
+                log(creep, "building");
                 if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
                     moveToMultiRoomTarget(creep, csites[0]);
                 }
                 return;
             }
             try {
-                var container = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id)
-                creep.memory.targetContainer = container.id
-            } catch (e) {
-            }
+                var container = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id);
+                creep.memory.targetContainer = container.id;
+            } catch (e) {}
             if (container == undefined) {
                 // console.log(666)
                 log(creep, "no exts, spawn, or container found");
@@ -204,14 +199,13 @@ global.roleHarvesterExt = {
                 }
             } else {
                 if (container != null && container.hits < 200000) {
-                    log(creep, `healing ${container}`)
-                    if(creep.repair(container) != OK) {
+                    log(creep, `healing ${container}`);
+                    if (creep.repair(container) != OK) {
                         moveToMultiRoomTarget(creep, container);
                     }
                 } else if (creep.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     moveToMultiRoomTarget(creep, container);
-                    log(creep, `filling ${container}`)
-
+                    log(creep, `filling ${container}`);
                 }
             }
         }

@@ -5,7 +5,7 @@ global.runBaseBuilder = function () {
             log.error("Couldn't retrieve room to upgrade it");
             continue;
         }
-        if (r.controller.level == 1) continue
+        if (r.controller.level == 1) continue;
 
         var currentRoomBuildingLevel = Memory.rooms[roomName].currentRoomBuildingLevel;
         if (Memory.rooms[roomName].building[r.controller.level].isComplete == true) continue;
@@ -24,7 +24,7 @@ global.runBaseBuilder = function () {
                     var realY = baseCenter.y + offsetPos.y;
                     r.visual.circle(realX, realY, { color: "green", lineStyle: "dashed" });
                     const look = new RoomPosition(realX, realY, roomName).lookFor(LOOK_STRUCTURES);
-                    const isWall = new Room.Terrain(roomName).get(realX, realY) == TERRAIN_MASK_WALL
+                    const isWall = new Room.Terrain(roomName).get(realX, realY) == TERRAIN_MASK_WALL;
                     if (!isWall && !look.length) {
                         // console.log(r)
                         r.createConstructionSite(realX, realY, subStageBuildingTypeSet.buildingType);
@@ -41,17 +41,15 @@ global.runBaseBuilder = function () {
             if (Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage > baseData[r.controller.level].stages.length) {
                 // this will only be hit once on the pass that all building is completed
                 if (r.controller.level == 4) {
-                    buildControllerSurroundings(r)
+                    buildControllerSurroundings(r);
                 }
                 if (r.controller.level == 5) {
-                    buildControllerRampartSurroundings(r)
+                    buildControllerRampartSurroundings(r);
                 }
                 Memory.rooms[roomName].building[currentRoomBuildingLevel].isComplete = true;
                 Memory.rooms[roomName].currentRoomBuildingLevel++;
             }
         }
-        
-        
     }
 };
 
@@ -63,23 +61,23 @@ function buildControllerSurroundings(r) {
             // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
             if (
                 // any edges
-                i == r.controller.pos.x - 4 || i == r.controller.pos.x + 4 ||
-                j == r.controller.pos.y - 4 || j == r.controller.pos.y + 4 &&
-                (
+                i == r.controller.pos.x - 4 ||
+                i == r.controller.pos.x + 4 ||
+                j == r.controller.pos.y - 4 ||
+                (j == r.controller.pos.y + 4 &&
                     // but not the corners (diagonal movement)
-                    !(i == r.controller.pos.x - 4 && i == r.controller.pos.y - 4) ||
-                    !(i == r.controller.pos.x - 4 && i == r.controller.pos.y + 4) ||
-                    !(i == r.controller.pos.x + 4 && i == r.controller.pos.y - 4) ||
-                    !(i == r.controller.pos.x + 4 && i == r.controller.pos.y + 4)
-                )
+                    (!(i == r.controller.pos.x - 4 && i == r.controller.pos.y - 4) ||
+                        !(i == r.controller.pos.x - 4 && i == r.controller.pos.y + 4) ||
+                        !(i == r.controller.pos.x + 4 && i == r.controller.pos.y - 4) ||
+                        !(i == r.controller.pos.x + 4 && i == r.controller.pos.y + 4)))
             ) {
-                if (terrain.get(i,j) != TERRAIN_MASK_WALL) {
+                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
                     // r.visual.circle(i, j, { fill: "green", lineStyle: "dashed", radius: 0.55 });
                     r.createConstructionSite(i, j, "road");
                 }
             }
         }
-    } 
+    }
 }
 
 function buildControllerRampartSurroundings(r) {
@@ -90,16 +88,18 @@ function buildControllerRampartSurroundings(r) {
             // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
             if (
                 // any edges
-                i == r.controller.pos.x - 1 || i == r.controller.pos.x + 1 ||
-                j == r.controller.pos.y - 1 || j == r.controller.pos.y + 1
+                i == r.controller.pos.x - 1 ||
+                i == r.controller.pos.x + 1 ||
+                j == r.controller.pos.y - 1 ||
+                j == r.controller.pos.y + 1
             ) {
-                if (terrain.get(i,j) != TERRAIN_MASK_WALL) {
+                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
                     // r.visual.circle(i, j, { fill: "green", lineStyle: "dashed", radius: 0.55 });
                     r.createConstructionSite(i, j, "rampart");
                 }
             }
         }
-    } 
+    }
 }
 
 global.baseRawData = `

@@ -15,14 +15,14 @@ global.roleHarvester = {
         if (creep.memory.targetSource == undefined) {
             var lowestSource = 99;
             _.forEach(Memory.rooms[creep.memory.baseRoomName].sources, (s) => {
-                if(s.targettedBy >= s.miningSpots) {
-                    return
+                if (s.targettedBy >= s.miningSpots) {
+                    return;
                 }
                 if (s.targettedBy < lowestSource) {
                     lowestSource = s.targettedBy;
                     creep.memory.targetSource = s.id;
                 }
-            })
+            });
         }
         if (creep.memory.mining == undefined) {
             creep.memory.mining = true;
@@ -30,9 +30,9 @@ global.roleHarvester = {
 
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
-            if(creep.memory.experimentalMovement != undefined) {
-                moveToRoom(creep, creep.memory.baseRoomName)
-                return
+            if (creep.memory.experimentalMovement != undefined) {
+                moveToRoom(creep, creep.memory.baseRoomName);
+                return;
             }
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
             if (route.length > 0) {
@@ -56,11 +56,10 @@ global.roleHarvester = {
             creep.say("⛏️ mining");
         }
 
-        if ((creep.ticksToLive < 300 || creep.memory.healing) &&
-            (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
-            if (returnToHeal(creep, creep.memory.baseRoomName)) return
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
         if (creep.memory.mining) {
@@ -73,12 +72,11 @@ global.roleHarvester = {
                 });
             }
         } else {
-            if(creep.memory.focusBuilding) {
+            if (creep.memory.focusBuilding) {
                 fallbackToOtherRoles(creep);
-                return
+                return;
             }
-            
-            
+
             healRoads(creep);
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
@@ -92,8 +90,8 @@ global.roleHarvester = {
                     );
                 },
             });
-            var towers = creep.room.find(FIND_STRUCTURES).filter(structure => {
-                structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+            var towers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
+                structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
             });
             focusHealing = false;
             if (targets.length > 0) {
@@ -123,14 +121,14 @@ global.roleHarvester = {
 
                     if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container) {
                         target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id);
-                        creep.memory.targetContainer = target.id
+                        creep.memory.targetContainer = target.id;
                         log(creep, "local ccont found");
                         log(creep, target);
 
                         if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy < 1 && Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined) {
                             spawnCreep(roleHarvSup, null, { memory: { targetContainer: target.id } }, creep.memory.baseRoomName);
                             roleHarvSup.run(creep);
-                            return
+                            return;
                         }
 
                         if (target != null && target.hits < 200000 && target.structureType == STRUCTURE_CONTAINER) {
@@ -143,13 +141,13 @@ global.roleHarvester = {
                         return;
                     }
 
-                    targets = creep.room.find(FIND_STRUCTURES).filter(structure => {
-                             structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                    targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
+                        structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     });
                     if (!targets.length) {
                         log(creep, "no storage found");
-                        targets = creep.room.find(FIND_STRUCTURES).filter(structure => {
-                                (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                        targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
+                            (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_SPAWN) && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                         });
 
                         if (!targets.length) {
@@ -164,9 +162,9 @@ global.roleHarvester = {
                     }
                 } else {
                     log(creep, "no movers found");
-                    targets = creep.room.find(FIND_STRUCTURES).filter(structure => {
-                                (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
-                                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                    targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
+                        (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
+                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     });
                     if (!targets.length) {
                         log(creep, "no exts, spawn, or container found");
@@ -181,7 +179,7 @@ global.roleHarvester = {
                     moveToTarget(creep, target.pos, false);
                 }
             } else {
-                fallbackToOtherRoles(creep)
+                fallbackToOtherRoles(creep);
             }
         }
     },

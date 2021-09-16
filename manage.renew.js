@@ -7,33 +7,32 @@ global.runRenew = function () {
         lowestLocalTickCreep = null;
         soldierCreep = null;
         moverCreep = null;
-        localCreeps = []
-        for (var i = s.pos.x -1 ; i <= s.pos.x + 1; i++) {
-            for (var j = s.pos.y -1 ; j <= s.pos.y + 1; j++) {
+        localCreeps = [];
+        for (var i = s.pos.x - 1; i <= s.pos.x + 1; i++) {
+            for (var j = s.pos.y - 1; j <= s.pos.y + 1; j++) {
                 // console.log(`${i} ${j}`)
-                localCreep = s.room.lookForAt(LOOK_CREEPS, i, j)
+                localCreep = s.room.lookForAt(LOOK_CREEPS, i, j);
                 // console.log(localCreep)
-                if(s.room.lookForAt(LOOK_CREEPS, i, j).length == 0) {
-                    continue
+                if (s.room.lookForAt(LOOK_CREEPS, i, j).length == 0) {
+                    continue;
                 }
                 // console.log(localCreep)
                 // console.log(localCreep[0])
-                c = localCreep[0]
-                
-                if (!c.my) continue
+                c = localCreep[0];
+
+                if (!c.my) continue;
                 // console.log(c)
 
-                if (c.memory.healing == false) continue
-                
+                if (c.memory.healing == false) continue;
+
                 if (c.ticksToLive > 1400) {
-                    c.memory.healing = false
-                    continue
+                    c.memory.healing = false;
+                    continue;
                 }
 
                 // console.log(c)
-                localCreeps.push(c)
+                localCreeps.push(c);
                 // console.log(localCreeps)
-
 
                 if (c.ticksToLive > highestLocalTickCount) {
                     highestLocalTickCount = c.ticksToLive;
@@ -44,12 +43,11 @@ global.runRenew = function () {
                     lowestLocalTickCreep = c;
                 }
                 if (c.memory.role == "mover") {
-                    moverCreep = c
+                    moverCreep = c;
                 }
                 if (c.memory.role == "soldier") {
-                    soldierCreep = c
+                    soldierCreep = c;
                 }
-                
             }
         }
         // console.log(localCreeps)
@@ -60,37 +58,36 @@ global.runRenew = function () {
         // console.log(`lowestLocalTickCount: ${lowestLocalTickCount}`)
         // console.log(`soldierCreep: ${soldierCreep}`)
         // console.log(`moverCreep: ${moverCreep}`)
-        if(highestLocalTickCreep != undefined) {
+        if (highestLocalTickCreep != undefined) {
             if (localCreeps.length == 8 || s.spawning) {
                 // console.log("spawn surrounded")
                 if (highestLocalTickCreep.ticksToLive > 600) {
                     highestLocalTickCreep.memory.healing = false;
                 }
-                _.forEach(localCreeps, (c) => 
-                {
+                _.forEach(localCreeps, (c) => {
                     // console.log(c)
-                    c.move(Math.floor(Math.random() * 10))
+                    c.move(Math.floor(Math.random() * 10));
                 });
-                return
+                return;
             }
             // priority
             // 0 <50 tick left
             // 1 mover to keep everything else healing
             // 2 soldier to protect
             // 3 highest to remove traffic
-            var healTarget
-            if(lowestLocalTickCount < 50) {
-                healTarget = lowestLocalTickCreep
+            var healTarget;
+            if (lowestLocalTickCount < 50) {
+                healTarget = lowestLocalTickCreep;
             } else if (highestLocalTickCount > 1200) {
-                healTarget = highestLocalTickCreep
+                healTarget = highestLocalTickCreep;
             } else if (moverCreep != undefined) {
-                healTarget = moverCreep
+                healTarget = moverCreep;
             } else if (soldierCreep != undefined) {
-                healTarget = soldierCreep
+                healTarget = soldierCreep;
             } else if (highestLocalTickCreep) {
-                healTarget = highestLocalTickCreep
+                healTarget = highestLocalTickCreep;
             }
-            if(s.renewCreep(healTarget) == OK) {
+            if (s.renewCreep(healTarget) == OK) {
                 healTarget.cancelOrder("move");
             }
         }

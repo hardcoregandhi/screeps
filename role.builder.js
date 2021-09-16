@@ -34,13 +34,13 @@ global.roleBuilder = {
             moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
-        var customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES)
-            .filter(structure => {
-                (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 40)) ||
+        var customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES).filter((structure) => {
+            (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 40)) ||
                 (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
                 (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.1)) ||
-                (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.001))});
-                
+                (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.001));
+        });
+
         customStructureSpecificPercentLimits.sort((a, b) => (a.hits / a.hitsMax) * 100 > (b.hits / b.hitsMax) * 100);
         _.forEach(customStructureSpecificPercentLimits, (a) => {
             creep.room.visual.circle(a.pos, {
@@ -109,7 +109,7 @@ global.roleBuilder = {
                 }
             }
             if (customStructureSpecificPercentLimits.length) {
-                repairTarget = creep.pos.findClosestByPath(customStructureSpecificPercentLimits)
+                repairTarget = creep.pos.findClosestByPath(customStructureSpecificPercentLimits);
                 if (creep.repair(repairTarget) != OK) {
                     moveToTarget(creep, repairTarget);
                 }
@@ -154,7 +154,7 @@ global.roleBuilder = {
                     log(creep, "mainStorage could not be found");
                 } else {
                     log(creep, "using mainStorage");
-                    if(mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity() * 0.01) {
+                    if (mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity() * 0.01) {
                         if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
                             // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
                             creep.moveTo(mainStorage, {
@@ -169,10 +169,9 @@ global.roleBuilder = {
                     return;
                 }
             } else {
-                var containers = creep.room.find(FIND_STRUCTURES).filter(structure => {
-                        structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > 500
-                    }
-                );
+                var containers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
+                    structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > 500;
+                });
                 log(creep, containers);
                 if (containers.length) {
                     container = creep.pos.findClosestByPath(containers);
@@ -184,7 +183,7 @@ global.roleBuilder = {
                 var sources = creep.room.find(FIND_SOURCES);
                 log(creep, 9);
                 if (sources.length > 0) {
-                    target = creep.pos.findClosestByPath(sources)
+                    target = creep.pos.findClosestByPath(sources);
                     if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
                         if (moveToTarget(creep, target, true) == ERR_NO_PATH) {
                             creep.say("no path");

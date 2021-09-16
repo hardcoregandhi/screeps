@@ -1,48 +1,47 @@
-
-roomTracking = function() {
+roomTracking = function () {
     _.forEach(Game.rooms, (r) => {
         if (Memory.rooms == undefined) {
             Memory.rooms = {};
         }
         const terrain = r.getTerrain();
-        stores = []
-        spawns = []
-        pspawns = []
-        containers = []
-        towers = []
-        links = []
-        observers = []
-        
+        stores = [];
+        spawns = [];
+        pspawns = [];
+        containers = [];
+        towers = [];
+        links = [];
+        observers = [];
+
         allStructures = r.find(FIND_STRUCTURES);
-        
-        for(structure of allStructures) {
-            switch(structure.structureType){
-                case(STRUCTURE_STORAGE):
-                    stores.push(structure)
+
+        for (structure of allStructures) {
+            switch (structure.structureType) {
+                case STRUCTURE_STORAGE:
+                    stores.push(structure);
                     break;
-                case(STRUCTURE_CONTAINER):
-                    containers.push(structure)
+                case STRUCTURE_CONTAINER:
+                    containers.push(structure);
                     break;
-                case(STRUCTURE_SPAWN):
-                    spawns.push(structure)
+                case STRUCTURE_SPAWN:
+                    spawns.push(structure);
                     break;
-                case(STRUCTURE_TOWER):
-                    towers.push(structure)
+                case STRUCTURE_TOWER:
+                    towers.push(structure);
                     break;
-                case(STRUCTURE_POWER_SPAWN):
-                    pspawns.push(structure)
+                case STRUCTURE_POWER_SPAWN:
+                    pspawns.push(structure);
                     break;
-                case(STRUCTURE_LINK):
-                    links.push(structure)
-                    break;                
-                case(STRUCTURE_OBSERVER):
-                    observers.push(structure)
+                case STRUCTURE_LINK:
+                    links.push(structure);
+                    break;
+                case STRUCTURE_OBSERVER:
+                    observers.push(structure);
                     break;
             }
         }
 
         // console.log(r.name)
-        
+
         var total = 0;
         _.forEach(stores, (s) => {
             creepRoomMap.set(r.name + "eenergy", (total += s.store[RESOURCE_ENERGY]));
@@ -57,27 +56,27 @@ roomTracking = function() {
         // mainStorage
         // find room spawn
         if (spawns.length) {
-            Memory.rooms[r.name].spawns = {}
+            Memory.rooms[r.name].spawns = {};
             _.forEach(spawns, (s) => {
-                Memory.rooms[r.name].spawns[s.name] = {}
-                Memory.rooms[r.name].spawns[s.name].massHealing = false
+                Memory.rooms[r.name].spawns[s.name] = {};
+                Memory.rooms[r.name].spawns[s.name].massHealing = false;
 
-                surroundingCreeps = 0
-                for (var i = s.pos.x -1 ; i < s.pos.x + 1; i++) {
-                    for (var j = s.pos.y -1 ; j < s.pos.y + 1; j++) {
-                        localCreeps = s.room.lookForAt(LOOK_CREEPS, i, j).length
-                        if(localCreeps.length && localCreep[0].memory.healing) {
-                            surroundingCreeps++
+                surroundingCreeps = 0;
+                for (var i = s.pos.x - 1; i < s.pos.x + 1; i++) {
+                    for (var j = s.pos.y - 1; j < s.pos.y + 1; j++) {
+                        localCreeps = s.room.lookForAt(LOOK_CREEPS, i, j).length;
+                        if (localCreeps.length && localCreep[0].memory.healing) {
+                            surroundingCreeps++;
                         }
                     }
                 }
-                if(surroundingCreeps >= 3) {
-                    Memory.rooms[r.name].spawns[s.name].massHealing = true
+                if (surroundingCreeps >= 3) {
+                    Memory.rooms[r.name].spawns[s.name].massHealing = true;
                 } else {
-                    Memory.rooms[r.name].spawns[s.name].massHealing = false
+                    Memory.rooms[r.name].spawns[s.name].massHealing = false;
                 }
-            })
-            
+            });
+
             // base building setup and tracking
             if (Memory.rooms[r.name].mainSpawn.id == undefined) {
                 log.log(`setting up ${r.name}`);
@@ -93,12 +92,12 @@ roomTracking = function() {
                     Memory.rooms[r.name].building[i].isComplete = false;
                 }
             }
-            Memory.rooms[r.name].mainSpawn.refilling = false
-            
+            Memory.rooms[r.name].mainSpawn.refilling = false;
+
             if (Memory.rooms[r.name].mainSpawn.id != undefined) {
-                mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)
+                mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id);
                 // find closest storage/container to spawn which is presumably main storage
-                var targets = r.find(FIND_STRUCTURES).filter(structure => {
+                var targets = r.find(FIND_STRUCTURES).filter((structure) => {
                     structure.structureType == STRUCTURE_STORAGE || (structure.structureType == STRUCTURE_CONTAINER && mainSpawn.pos.inRangeTo(structure, 3));
                 });
                 if (targets.length == 1) {
@@ -106,15 +105,15 @@ roomTracking = function() {
                 } else if (targets.length == 2) {
                     _.forEach(targets, (t) => {
                         // if container, set it as main while we empty it and transition to storage, then destroy it
-                        if(t.structureType == STRUCTURE_CONTAINER) {
-                            if(t.store.getFreeCapacity() == t.store.getCapacity()) {
-                                t.destroy()
-                                return
+                        if (t.structureType == STRUCTURE_CONTAINER) {
+                            if (t.store.getFreeCapacity() == t.store.getCapacity()) {
+                                t.destroy();
+                                return;
                             }
                             Memory.rooms[r.name].mainStorage = t.id;
-                            return false
+                            return false;
                         }
-                    })
+                    });
                 }
             }
         }
@@ -129,30 +128,30 @@ roomTracking = function() {
             // console.log(i)
             // console.log(s.id)
             Memory.rooms[r.name].sources[s.id] = {};
-            Memory.rooms[r.name].sources[s.id].id = s.id
+            Memory.rooms[r.name].sources[s.id].id = s.id;
             if (Memory.rooms[r.name].sources[s.id].targettedBy == undefined) {
                 Memory.rooms[r.name].sources[s.id].targettedBy = 0;
             }
-            
+
             // get valid mining spots
-            Memory.rooms[r.name].totalMiningSpots = 0
-            if(Memory.rooms[r.name].sources[s.id].miningSpots == undefined) {
-                localMiningSpots = 0
-                totalMiningSpots = 0
-                for (var i = s.pos.x -1 ; i <= s.pos.x + 1; i++) {
-                    for (var j = s.pos.y -1 ; j <= s.pos.y + 1; j++) {
-                        if (terrain.get(i,j) != TERRAIN_MASK_WALL) {
-                            localMiningSpots++
+            Memory.rooms[r.name].totalMiningSpots = 0;
+            if (Memory.rooms[r.name].sources[s.id].miningSpots == undefined) {
+                localMiningSpots = 0;
+                totalMiningSpots = 0;
+                for (var i = s.pos.x - 1; i <= s.pos.x + 1; i++) {
+                    for (var j = s.pos.y - 1; j <= s.pos.y + 1; j++) {
+                        if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                            localMiningSpots++;
                         }
                     }
                 }
-                Memory.rooms[r.name].sources[s.id].miningSpots = localMiningSpots
-                Memory.rooms[r.name].totalMiningSpots += localMiningSpots
+                Memory.rooms[r.name].sources[s.id].miningSpots = localMiningSpots;
+                Memory.rooms[r.name].totalMiningSpots += localMiningSpots;
             }
-            
-            if(Memory.rooms[r.name].sources[s.id].container == undefined) {
-                for(container of containers) {
-                    if(container.pos.inRangeTo(s, 2)) {
+
+            if (Memory.rooms[r.name].sources[s.id].container == undefined) {
+                for (container of containers) {
+                    if (container.pos.inRangeTo(s, 2)) {
                         Memory.rooms[r.name].sources[s.id].container = {};
                         Memory.rooms[r.name].sources[s.id].container.id = container.id;
                         Memory.rooms[r.name].sources[s.id].container.targettedBy = 0;
@@ -186,12 +185,8 @@ roomTracking = function() {
             }
         });
 
-
         // links
-        if (links.length == 2 &&
-            Memory.rooms[room.name].l_from == undefined &&
-            Memory.rooms[room.name].l_to == undefined)
-        {
+        if (links.length == 2 && Memory.rooms[room.name].l_from == undefined && Memory.rooms[room.name].l_to == undefined) {
             var l_from = Game.getObjectById(Memory.rooms[room.name].mainStorage).pos.findClosestByRange(links);
             var l_to = links.filter((l) => l != l_from)[0];
 
@@ -230,4 +225,4 @@ roomTracking = function() {
         new RoomVisual().text("MoverExtTarget    : " + creepRoomMap.get(r.name + "moverExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
         textOffset;
     }
-}
+};

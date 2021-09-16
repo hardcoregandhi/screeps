@@ -1,5 +1,5 @@
 function log(creep, str) {
-    if (0) if (creep.name = "MoverExt_577") console.log(str);
+    if (0) if ((creep.name = "MoverExt_577")) console.log(str);
 }
 
 global.roleHarvSup = {
@@ -17,7 +17,6 @@ global.roleHarvSup = {
     bodyLoop: [CARRY, MOVE],
     bodyPartsMaxCount: 21,
 
-
     /** @param {Creep} creep **/
     run: function (creep) {
         if (creep.memory.fakeBaseRoomName == undefined) {
@@ -26,7 +25,6 @@ global.roleHarvSup = {
         if (creep.memory.returning == undefined) {
             creep.memory.returning = true;
         }
-        
 
         mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
         if (mainStorage == undefined) {
@@ -60,11 +58,10 @@ global.roleHarvSup = {
             return;
         }
 
-        if ((creep.ticksToLive < 200 || creep.memory.healing) &&
-            (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
+        if ((creep.ticksToLive < 200 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
-            if (returnToHeal(creep, creep.memory.baseRoomName)) return
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
         if (!creep.memory.returning) {
@@ -82,9 +79,7 @@ global.roleHarvSup = {
             if (creep.memory.targetContainer == undefined) {
                 log(creep, "finding new container");
 
-                var containers = creep.room.find(FIND_STRUCTURES).filter(structure => 
-                        structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0 && structure != mainStorage
-                );
+                var containers = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0 && structure != mainStorage);
                 if (!containers.length) return -1;
 
                 containers.sort((a, b) => b.store.getUsedCapacity() - a.store.getUsedCapacity());

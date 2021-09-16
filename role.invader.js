@@ -14,15 +14,15 @@ global.roleInvader = {
 
         var enemyTowers = [];
         if (creep.pos.roomName == creep.memory.targetRoomName) {
-            enemyTowers = creep.room.find(FIND_HOSTILE_STRUCTURES).filter(s => {
-                    return s.structureType == STRUCTURE_TOWER
+            enemyTowers = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((s) => {
+                return s.structureType == STRUCTURE_TOWER;
             });
         }
         if (creep.hits < 300 && enemyTowers.length == 0) {
             // flee to safety
             creep.say("healing");
             creep.memory.healing = true;
-            if (returnToHeal(creep, creep.memory.baseRoomName)) return
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
         if (creep.memory.return) {
             creep.moveTo(Game.flags.holding.pos);
@@ -57,8 +57,8 @@ global.roleInvader = {
                 return;
             }
 
-            var c_sites = creep.room.find(FIND_HOSTILE_CONSTRUCTION_SITES).filter(s => {
-                    return s.structureType == STRUCTURE_TOWER
+            var c_sites = creep.room.find(FIND_HOSTILE_CONSTRUCTION_SITES).filter((s) => {
+                return s.structureType == STRUCTURE_TOWER;
             });
             if (c_sites.length) {
                 close_c_site = creep.pos.findClosestByRange(c_sites);
