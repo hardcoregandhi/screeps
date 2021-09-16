@@ -98,7 +98,7 @@ roomTracking = function () {
                 mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id);
                 // find closest storage/container to spawn which is presumably main storage
                 var targets = r.find(FIND_STRUCTURES).filter((structure) => {
-                    structure.structureType == STRUCTURE_STORAGE || (structure.structureType == STRUCTURE_CONTAINER && mainSpawn.pos.inRangeTo(structure, 3));
+                    return structure.structureType == STRUCTURE_STORAGE || (structure.structureType == STRUCTURE_CONTAINER && mainSpawn.pos.inRangeTo(structure, 3));
                 });
                 if (targets.length == 1) {
                     Memory.rooms[r.name].mainStorage = targets[0].id;

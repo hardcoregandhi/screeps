@@ -35,7 +35,7 @@ global.roleBuilder = {
             return;
         }
         var customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-            (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 40)) ||
+            return (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 40)) ||
                 (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
                 (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.1)) ||
                 (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.001));
@@ -170,7 +170,7 @@ global.roleBuilder = {
                 }
             } else {
                 var containers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-                    structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > 500;
+                    return structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > 500;
                 });
                 log(creep, containers);
                 if (containers.length) {
