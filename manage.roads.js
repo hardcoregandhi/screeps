@@ -33,9 +33,9 @@ global.runRoads = function () {
                         // r.createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
                     }
                 }
-                
+
                 // Sources to spawns
-                spawn = Game.getObjectById(r.memory.mainSpawn.id)
+                spawn = Game.getObjectById(r.memory.mainSpawn.id);
                 if (spawn != null) {
                     r.visual.circle(spawn.pos, {
                         fill: "blue",
@@ -58,7 +58,7 @@ global.runRoads = function () {
                         }
                     }
                 }
-                
+
                 // Source surroundings
                 for (var i = s.pos.x - 2; i <= s.pos.x + 2; i++) {
                     for (var j = s.pos.y - 2; j <= s.pos.y + 2; j++) {
@@ -69,8 +69,7 @@ global.runRoads = function () {
                         }
                     }
                 }
-                
-                
+
                 // Sources to towers
                 room_towers = r.find(FIND_STRUCTURES, {
                     filter: (structure) => {

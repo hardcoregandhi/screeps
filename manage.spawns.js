@@ -29,7 +29,7 @@ global.runSpawns = function () {
             }
             continue;
         } else if (Memory.rooms[r.name].mainStorage == undefined) {
-            continue
+            continue;
         } else if (creepRoomMap.get(r.name + "mover") < 1) {
             BaseBodyParts = [CARRY, CARRY, CARRY, MOVE, MOVE];
             spawnCreep(roleMover, BaseBodyParts, null, r.name);
@@ -47,16 +47,16 @@ global.runSpawns = function () {
             spawnCreep(roleBuilder, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (r.controller.level < 3) {
-            continue
+            continue;
         } else if (spawnExternalHarvester(r.name)) {
-            continue
+            continue;
         } else if (creepRoomMap.get(r.name + "mover") < 2) {
             spawnCreep(roleMover, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 2 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8) {
             spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } 
+        }
         // else if (r.energyAvailable == r.energyCapacityAvailable) {
         //     spawnCreep(roleMover, "auto")
         // }
@@ -94,20 +94,20 @@ global.runSpawns = function () {
 
 function spawnExternalHarvester(roomName) {
     // console.log(roomName)
-    if(Memory.rooms[roomName].externalSources != undefined && Memory.rooms[roomName].externalSources.length) {
+    if (Memory.rooms[roomName].externalSources != undefined && Memory.rooms[roomName].externalSources.length) {
         _.forEach(Memory.rooms[roomName].externalSources, (sourceId) => {
             // console.log(sourceId)
-            source = Game.getObjectById(sourceId)
-            if(source == undefined || source == null) {
-                return
+            source = Game.getObjectById(sourceId);
+            if (source == undefined || source == null) {
+                return;
             }
             // console.log(creepRoomMap.get(source.room.name + "harvesterExtTarget" + source.id))
             if (creepRoomMap.get(source.room.name + "harvesterExtTarget" + source.id) == undefined || creepRoomMap.get(source.room.name + "harvesterExtTarget" + source.id) < 1) {
-                spawnCreep(roleHarvesterExt, null, {memory:{targetRoomName: source.room.name, targetSource: source.id, noHeal: true }}, roomName)
-                return true
+                spawnCreep(roleHarvesterExt, null, { memory: { targetRoomName: source.room.name, targetSource: source.id, noHeal: true } }, roomName);
+                return true;
             }
         });
     }
-    
+
     return false;
 }

@@ -1,5 +1,4 @@
-
-creepTracking = function() {
+creepTracking = function () {
     // Active Creep Tracking
     global.creepRoomMap = new Map();
     _.forEach(Game.rooms, (r) => {
@@ -55,4 +54,4 @@ creepTracking = function() {
         });
         creepRoomMap.set(r.name + "csites", r.find(FIND_CONSTRUCTION_SITES).length);
     });
-}
+};

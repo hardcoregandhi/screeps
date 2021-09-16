@@ -8,19 +8,16 @@ global.roleExplorer = {
     // prettier-ignore
     BodyParts: [MOVE],
     baseBodyParts: [MOVE],
-    bodyLoop: [TOUGH,],
-    
+    bodyLoop: [TOUGH],
+
     run: function (creep) {
-        
-        log(creep, "hello")
+        log(creep, "hello");
         creep.say("🏳️");
 
-
-        if ((creep.hits < creep.hitsMax * 0.1 || creep.ticksToLive < 300 || creep.memory.healing) &&
-            (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
+        if ((creep.hits < creep.hitsMax * 0.1 || creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
-            if (returnToHeal(creep, creep.memory.baseRoomName)) return
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
         if (creep.memory.targetRoomName != creep.room.name) {
@@ -30,9 +27,7 @@ global.roleExplorer = {
                 creep.moveTo(exit);
             }
         } else {
-
         }
-        
     },
 };
 

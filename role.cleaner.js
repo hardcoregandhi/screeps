@@ -4,16 +4,11 @@ function log(creep, str) {
 
 global.roleCleaner = {
     name: "cleaner",
-    memory: {memory:{}},
-    BodyParts: [
-        CARRY, CARRY, CARRY, CARRY, CARRY,
-        CARRY, CARRY, CARRY, CARRY, CARRY,
-        MOVE, MOVE, MOVE, MOVE, MOVE,
-        MOVE, MOVE, MOVE, MOVE, MOVE,
-        ],
+    memory: { memory: {} },
+    BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
     baseBodyParts: [],
     bodyLoop: [MOVE, CARRY],
-    
+
     /** @param {Creep} creep **/
     run: function (creep) {
         creep.say("cleanin");
@@ -34,8 +29,8 @@ global.roleCleaner = {
             creep.say("emptyin");
             //no storage, just grab energy
             if (creep.room.name != creep.memory.baseRoomName) {
-                moveToRoom(creep, creep.memory.baseRoomName)
-                return
+                moveToRoom(creep, creep.memory.baseRoomName);
+                return;
             }
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (mainStorage == undefined) {
@@ -70,7 +65,7 @@ global.roleCleaner = {
                 }
                 return;
             }
-        
+
             var droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
                 filter: (r) => r.amount >= 1,
             });
@@ -82,9 +77,9 @@ global.roleCleaner = {
                         maxRooms: 1,
                     });
                 }
-                return
+                return;
             }
-            
+
             var targetResource = creep.pos.findClosestByRange(FIND_RUINS, {
                 filter: (r) => r.store.getUsedCapacity() >= 1,
             });
@@ -105,8 +100,8 @@ global.roleCleaner = {
                 }
                 return;
             }
-            
-            creep.memory.role = "DIE"
+
+            creep.memory.role = "DIE";
         }
     },
 };

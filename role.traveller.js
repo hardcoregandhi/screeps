@@ -23,9 +23,7 @@ global.roleTraveller = {
                     moveToTarget(creep, exit, true);
                 }
             } else {
-                var sources = creep.room.find(FIND_STRUCTURES).filter(structure => 
-                    structure.structureType == STRUCTURE_POWER_BANK
-                );
+                var sources = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
                 if (sources.length) {
                     if (creep.attack(sources[0]) != OK) {
                         ret = creep.moveTo(sources[0], {
@@ -35,9 +33,7 @@ global.roleTraveller = {
                     return;
                 }
 
-                var power = creep.room.find(FIND_DROPPED_RESOURCES).filter(r =>
-                    r.resourceType == RESOURCE_POWER
-                );
+                var power = creep.room.find(FIND_DROPPED_RESOURCES).filter((r) => r.resourceType == RESOURCE_POWER);
                 if (power.length) {
                     if (creep.pickup(power[0]) != OK) {
                         ret = creep.moveTo(power[0], {
@@ -55,8 +51,8 @@ global.roleTraveller = {
                     creep.moveTo(exit);
                 }
             } else {
-                var targets = creep.room.find(FIND_STRUCTURES).filter(structure => {
-                        return structure.structureType == STRUCTURE_STORAGE
+                var targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
+                    return structure.structureType == STRUCTURE_STORAGE;
                 });
                 if (targets.length) {
                     creep.say("m2storage");

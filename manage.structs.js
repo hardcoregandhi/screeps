@@ -1,50 +1,49 @@
 var roleTower = require("tower");
 
 global.runStructs = function () {
-    myRooms.forEach(r => {
-        room = Game.rooms[r]
+    myRooms.forEach((r) => {
+        room = Game.rooms[r];
 
         allStructures = room.find(FIND_STRUCTURES);
 
-        stores = []
-        pspawns = []
-        containers = []
-        towers = []
-        links = []
-        observers = []
-        
-        for(structure of allStructures) {
-            switch(structure.structureType){
-                case(STRUCTURE_STORAGE):
-                    stores.push(structure)
+        stores = [];
+        pspawns = [];
+        containers = [];
+        towers = [];
+        links = [];
+        observers = [];
+
+        for (structure of allStructures) {
+            switch (structure.structureType) {
+                case STRUCTURE_STORAGE:
+                    stores.push(structure);
                     break;
-                case(STRUCTURE_CONTAINER):
-                    containers.push(structure)
+                case STRUCTURE_CONTAINER:
+                    containers.push(structure);
                     break;
-                case(STRUCTURE_SPAWN):
-                    spawns.push(structure)
+                case STRUCTURE_SPAWN:
+                    spawns.push(structure);
                     break;
-                case(STRUCTURE_TOWER):
+                case STRUCTURE_TOWER:
                     roleTower.run(structure);
-                    towers.push(structure)
+                    towers.push(structure);
                     break;
-                case(STRUCTURE_POWER_SPAWN):
-                    pspawns.push(structure)
+                case STRUCTURE_POWER_SPAWN:
+                    pspawns.push(structure);
                     p.processPower();
                     break;
-                case(STRUCTURE_LINK):
-                    links.push(structure)
-                    break;                
-                case(STRUCTURE_OBSERVER):
-                    observers.push(structure)
+                case STRUCTURE_LINK:
+                    links.push(structure);
+                    break;
+                case STRUCTURE_OBSERVER:
+                    observers.push(structure);
                     break;
             }
         }
-        
-        if(towers.length == 0) {
-            if(room.controller != undefined && room.controller.my && room.controller.safeModeAvailable) room.controller.activateSafeMode();
-        }
 
+        if (towers.length == 0) {
+            if (room.controller != undefined && room.controller.my && room.controller.safeModeAvailable) room.controller.activateSafeMode();
+        }
 
         if (links.length == 2) {
             var l_from = Memory.rooms[room.name].l_from.id;
@@ -71,7 +70,7 @@ global.runStructs = function () {
             console.log(Game.rooms[observerTarget]);
             // the room will be available on the next tick after observeRoom runs
             if (Game.rooms[observerTarget] != undefined) {
-                var powerBanks = room.find(FIND_STRUCTURES).filter(structure => structure.structureType == STRUCTURE_POWER_BANK);
+                var powerBanks = room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
                 if (powerBanks.length) {
                     // TODO: do something with found power bank
                 } else {
@@ -90,10 +89,9 @@ global.runStructs = function () {
         //     r.setPublic(false)
         // }
 
-        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS).filter(c => c.body.find((part) => part.type == ATTACK))
+        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS).filter((c) => c.body.find((part) => part.type == ATTACK));
         if (hostileCreeps.length > 2) {
-            if(room.controller.my && room.controller.safeModeAvailable)
-                room.controller.activateSafeMode();
+            if (room.controller.my && room.controller.safeModeAvailable) room.controller.activateSafeMode();
             Game.notify(">2 attackers in " + room.name + ". Activated Safe Mode.");
         }
     });
