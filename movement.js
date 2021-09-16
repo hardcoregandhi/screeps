@@ -289,6 +289,10 @@ global.moveToSoftestWall = function (creep, targetStructurePos) {
         
 
         // Invoke PathFinder, allowing access only to rooms from `findRoute`
+        let allowedRooms = { [from.roomName]: true };
+        
+        console.log(111)
+
         creep.memory.pathfinderPath = PathFinder.search(from, to, {
             // We need to set the defaults costs higher so that we
             // can set the road cost lower in `roomCallback`
@@ -303,6 +307,9 @@ global.moveToSoftestWall = function (creep, targetStructurePos) {
                 // you should be careful!
                 // console.log(roomName)
                 if (!room) return;
+                if (allowedRooms[roomName] === undefined) {
+                    return false;
+                }
                 let costs = new PathFinder.CostMatrix();
     
                 room.find(FIND_STRUCTURES).forEach(function (struct) {
@@ -315,7 +322,7 @@ global.moveToSoftestWall = function (creep, targetStructurePos) {
                     }
                 });
                 
-                console.log(JSON.serialize(costs))
+                console.log(costs.serialize())
 
                 return costs;
             },
@@ -327,40 +334,7 @@ global.moveToSoftestWall = function (creep, targetStructurePos) {
 
     if (creep.memory.pathfinderPath != undefined && creep.memory.pathfinderPath.path.length)
     {
-        if(creep.fatigue == 0) {
-            if(creep.memory.pathfinderPath.path[0].roomName != creep.room.name) {
-                // console.log(creep.room.name)
-                // console.log(creep.memory.pathfinderPath.path[0].roomName)
-                const route = Game.map.findRoute(creep.room, creep.memory.pathfinderPath.path[0].roomName);
-                if (route.length > 0) {
-                    // console.log(exit)
-                    // creep.move(route[0].exit, {
-                    //     visualizePathStyle: { stroke: "#ffffff" },
-                    // });
-                    return
-                } else {
-                    console.log("erroe")
-                }
-            }
-            if ((ret = creep.moveTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)) == OK) {
-                creep.room.visual.circle(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)
-                creep.memory.pathfinderPath.path.shift()
-                if((creep.memory.prevPos != undefined && creep.memory.prevPos == creep.pos) || !creep.pos.isNearTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)) {
-                    //red flag, reset
-                    creep.memory.pathfinderPath = undefined
-                }
-                creep.memory.prevPos = {}
-                creep.memory.prevPos.pos = creep.pos
-                creep.memory.prevPos.tick = Game.time
-            } else {
-                log.log(ret)
-                // log.log(creep.memory.pathfinderPath.path[0].toString())
-                // log.log(creep.memory.pathfinderPath.path[0].x)
-                // log.log(creep.memory.pathfinderPath.path[0].y)
-                // console.log("scrubbing path from "+ creep)
-                // creep.memory.pathfinderPath = undefined
-            }
-        }
+    
     }
 };
 

@@ -58,15 +58,8 @@ cloneCreep = function (sourceCreepName, room = null, force = null) {
     if (sourceCreep === null) return -1;
     spawnRoom = room != null ? Game.rooms[room] : Game.rooms[sourceCreep.memory.baseRoomName];
     if (spawnRoom === null) return -1;
-    try {
-        roomSpawner = spawnRoom.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_SPAWN;
-            },
-        })[0];
-    } catch (e) {
-        return -1;
-    }
+    roomSpawner = Game.getObjectById(room.memory.mainSpawn.id)
+    if(roomSpawner == null) return -1
     var newName = _.capitalize(sourceCreep.memory.role) + "_" + getRandomInt();
     console.log("Cloning new " + newName + " from " + sourceCreepName);
     // console.log(sourceCreep.body);
@@ -96,16 +89,11 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
             console.log(`Room ${_spawnRoom} not found`);
             return -1;
         }
-        roomSpawner = room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_SPAWN;
-            },
-        });
-        if (roomSpawner.length == 0) {
+        spawn = Game.getObjectById(room.memory.mainSpawn.id)
+        if (spawn == null) {
             console.log(`Spawn could not be found in ${_spawnRoom}`);
             return -1;
         }
-        spawn = roomSpawner[0];
         // console.log(`Found spawn ${spawn}`)
     } else {
         spawn = "Spawn1";
@@ -139,8 +127,10 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
 
     cost = getBodyCost(_role.BodyParts);
 
-    myCreeps = spawn.room.find(FIND_MY_CREEPS, {
-        filter: (c) => spawn.pos.inRangeTo(c, 1) && c.ticksToLive < 155 && c.memory.healing, //150 is the highest spawn time for a 50 part creep
+    myCreeps = spawn.room.find(FIND_MY_CREEPS).filter(c => {
+        spawn.pos.inRangeTo(c, 1) &&
+        c.ticksToLive < 155 && //150 is the highest spawn time for a 50 part creep
+        c.memory.healing
     });
 
     if (myCreeps.length) {

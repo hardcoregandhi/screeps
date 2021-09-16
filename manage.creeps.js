@@ -1,31 +1,31 @@
-var roleHarvester = require("role.harvester");
-var roleHarvSup = require("role.harvesterSup");
-var roleHarvesterExt = require("role.harvesterExt");
-var roleUpgrader = require("role.upgrader");
-var roleBuilder = require("role.builder");
-var roleBuilderExt = require("role.builderExt");
-var roleTower = require("tower");
-var roleClaimer = require("role.claimer");
-var roleMover = require("role.mover");
-var roleMoverExt = require("role.moverExt");
-var roleDefence = require("role.defense");
-var roleScavenger = require("role.scavenger");
-var roleTraveller = require("role.traveller");
-var roleTrucker = require("role.trucker");
-var roleSoldier = require("role.soldier");
-var roleGunner = require("role.gunner");
-var roleSieger = require("role.sieger");
-var rolePowHarvester = require("role.powHarvester");
-var rolePowMover = require("role.powMover");
-var roleDoctor = require("role.doctor");
-var roleInvader = require("role.invader");
-var roleExplorer = require("role.explorer");
-var roleCleaner = require("role.cleaner");
-
 global.runCreeps = function () {
+
+
+    myRooms.forEach(r => {
+        Memory.rooms[r].scav = false
+        var droppedResource = Game.rooms[r].find(FIND_DROPPED_RESOURCES).filter(r => r.amount >= 150);
+        var tombstoneResource = Game.rooms[r].find(FIND_TOMBSTONES).filter(r => r.store.getUsedCapacity() >= 150);
+        if (droppedResource.length)
+            Game.rooms[r].visual.circle(droppedResource[0].pos, {
+                color: "red",
+                radius: 0.5,
+                lineStyle: "dashed",
+            });
+        if (tombstoneResource.length)
+            Game.rooms[r].visual.circle(tombstoneResource[0].pos, {
+                color: "red",
+                radius: 0.5,
+                lineStyle: "dashed",
+            });
+        if(droppedResource.length || tombstoneResource.length) {
+            Memory.rooms[r].scav = true
+        }
+    })
+
     
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
+        // console.log(creep.name)
         try {
             if (creep.pos.x == 49) creep.move(7);
             if (creep.pos.y == 49) creep.move(1);
@@ -139,35 +139,20 @@ global.runCreeps = function () {
             if (creep.memory.role == "cleaner") {
                 roleCleaner.run(creep);
             }
+            if (creep.memory.role == "healer") {
+                roleHealer.run(creep);
+            }
             if (creep.memory.role == "mover") {
-                var droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
-                    filter: (r) => r.amount >= 150,
-                });
-                var tombstoneResource = creep.pos.findClosestByRange(FIND_TOMBSTONES, {
-                    filter: (r) => r.store.getUsedCapacity() >= 150,
-                });
-                if (droppedResource || tombstoneResource) {
-                    if (droppedResource)
-                        creep.room.visual.circle(droppedResource.pos, {
-                            color: "red",
-                            radius: 0.5,
-                            lineStyle: "dashed",
-                        });
-                    if (tombstoneResource)
-                        creep.room.visual.circle(tombstoneResource.pos, {
-                            color: "red",
-                            radius: 0.5,
-                            lineStyle: "dashed",
-                        });
-                    // console.log(droppedResource.pos)
+                spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id)
+                if(
+                    !(creep.room.energyAvailable < 100 && creep.pos.getRangeTo(spawn) > 10) &&
+                    Memory.rooms[creep.room.name].scav == true) {
                     roleScavenger.run(creep);
-                    continue;
-                }
-                // if (creepRoomMap.get(creep.memory.baseRoomName+"harvester") == 0) {
-                //     roleHarvester.run(creep)
-                //     continue
-                // }
-                roleMover.run(creep);
+                    // console.log(creep.name, "scav")
+                } else {
+                    roleMover.run(creep);
+                    // console.log(creep.name, "mover")
+}
             }
         } catch (e) {
             console.log(`${e}`);

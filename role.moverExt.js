@@ -15,12 +15,14 @@ global.roleMoverExt = {
         ],
     baseBodyParts: [WORK],
     bodyLoop: [MOVE, CARRY],
+    bodyPartsMaxCount: 21,
+
 
     /** @param {Creep} creep **/
     run: function (creep) {
         log(creep, "run()")
         if (healRoads(creep) == OK) return;
-        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {filter: (c) => {return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)}})
+        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter(c => c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK))
         if (hostileCreeps.length) {
             creep.memory.fleeing = 20;
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
@@ -83,11 +85,13 @@ global.roleMoverExt = {
         if (creep.memory.targetSource == undefined) {
             console.log(creep.name, creep.pos);
         } else {
-            if(creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" + creep.memory.targetSource) == undefined || 
-            creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" + creep.memory.targetSource) < 1 &&
-            creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" < 3)) {
-                spawnCreep(roleHarvesterExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource, noHeal: true } }, creep.memory.baseRoomName);
-                log(creep, `spawning Harvester`)
+            if(creep.memory.noSpawn == undefined || creep.memory.noSpawn == false) {
+                if(creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" + creep.memory.targetSource) == undefined || 
+                creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" + creep.memory.targetSource) < 1 &&
+                creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" < 3)) {
+                    spawnCreep(roleHarvesterExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource, noHeal: true } }, creep.memory.baseRoomName);
+                    log(creep, `spawning Harvester`)
+                }
             }
         }
 
@@ -110,10 +114,8 @@ global.roleMoverExt = {
             log(creep, "collectin");
             log(creep, creep.memory.targetSource);
 
-            var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.pos.inRangeTo(Game.getObjectById(creep.memory.targetSource).pos, 2);
-                },
+            var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter(structure => {
+                    (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.pos.inRangeTo(Game.getObjectById(creep.memory.targetSource).pos, 2)
             });
             // console.log(Game.getObjectById(creep.memory.targetSource))
 
@@ -152,11 +154,9 @@ global.roleMoverExt = {
                 return;
             }
 
-            var storages = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER;
-                },
-            });
+            var storages = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES).filter(structure => 
+                    structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER
+            );
             log(creep, storages);
             if (storages.length) {
                 if (creep.transfer(storages[0], RESOURCE_ENERGY) != OK) {

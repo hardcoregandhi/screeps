@@ -5,18 +5,44 @@ roomTracking = function() {
             Memory.rooms = {};
         }
         const terrain = r.getTerrain();
+        stores = []
+        spawns = []
+        pspawns = []
+        containers = []
+        towers = []
+        links = []
+        observers = []
+        
+        allStructures = r.find(FIND_STRUCTURES);
+        
+        for(structure of allStructures) {
+            switch(structure.structureType){
+                case(STRUCTURE_STORAGE):
+                    stores.push(structure)
+                    break;
+                case(STRUCTURE_CONTAINER):
+                    containers.push(structure)
+                    break;
+                case(STRUCTURE_SPAWN):
+                    spawns.push(structure)
+                    break;
+                case(STRUCTURE_TOWER):
+                    towers.push(structure)
+                    break;
+                case(STRUCTURE_POWER_SPAWN):
+                    pspawns.push(structure)
+                    break;
+                case(STRUCTURE_LINK):
+                    links.push(structure)
+                    break;                
+                case(STRUCTURE_OBSERVER):
+                    observers.push(structure)
+                    break;
+            }
+        }
 
         // console.log(r.name)
-        stores = r.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_STORAGE;
-            },
-        });
-        containers = r.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_CONTAINER;
-            },
-        });
+        
         var total = 0;
         _.forEach(stores, (s) => {
             creepRoomMap.set(r.name + "eenergy", (total += s.store[RESOURCE_ENERGY]));
@@ -27,16 +53,12 @@ roomTracking = function() {
         if (Memory.rooms[r.name] != undefined) delete Memory.rooms[r.name].sources;
 
         Memory.rooms[r.name].sources = {};
+
         // mainStorage
         // find room spawn
-        spawn = r.find(FIND_STRUCTURES, {
-            filter: (s) => {
-                return s.structureType == STRUCTURE_SPAWN && s.my;
-            },
-        });
-        if (spawn.length) {
+        if (spawns.length) {
             Memory.rooms[r.name].spawns = {}
-            _.forEach(spawn, (s) => {
+            _.forEach(spawns, (s) => {
                 Memory.rooms[r.name].spawns[s.name] = {}
                 Memory.rooms[r.name].spawns[s.name].massHealing = false
 
@@ -56,14 +78,10 @@ roomTracking = function() {
                 }
             })
             
-            
-            
-            spawn = spawn[0];
-            
-            
             // base building setup and tracking
             if (Memory.rooms[r.name].mainSpawn.id == undefined) {
                 log.log(`setting up ${r.name}`);
+                spawn = spawns[0];
                 Memory.rooms[r.name].mainSpawn = {};
                 Memory.rooms[r.name].mainSpawn.id = spawn.id;
                 Memory.rooms[r.name].mainSpawn.pos = spawn.pos;
@@ -77,27 +95,27 @@ roomTracking = function() {
             }
             Memory.rooms[r.name].mainSpawn.refilling = false
             
-            // find closest storage/container to spawn which is presumably main storage
-            var target = spawn.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_STORAGE || (structure.structureType == STRUCTURE_CONTAINER && spawn.pos.inRangeTo(structure, 3));
-                },
-            });
-            if (target.length == 1) {
-                Memory.rooms[r.name].mainStorage = target[0].id;
-            } else if (target.length == 2) {
-                _.forEach(target, (t) => {
-                    // if container, set it as main while we empty it and transition to storage, then destroy it
-
-                    if(t.structureType == STRUCTURE_CONTAINER) {
-                        if(t.store.getFreeCapacity() == t.store.getCapacity()) {
-                            t.destroy()
-                            return
+            if (Memory.rooms[r.name].mainSpawn.id != undefined) {
+                mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)
+                // find closest storage/container to spawn which is presumably main storage
+                var targets = r.find(FIND_STRUCTURES).filter(structure => {
+                    structure.structureType == STRUCTURE_STORAGE || (structure.structureType == STRUCTURE_CONTAINER && mainSpawn.pos.inRangeTo(structure, 3));
+                });
+                if (targets.length == 1) {
+                    Memory.rooms[r.name].mainStorage = targets[0].id;
+                } else if (targets.length == 2) {
+                    _.forEach(targets, (t) => {
+                        // if container, set it as main while we empty it and transition to storage, then destroy it
+                        if(t.structureType == STRUCTURE_CONTAINER) {
+                            if(t.store.getFreeCapacity() == t.store.getCapacity()) {
+                                t.destroy()
+                                return
+                            }
+                            Memory.rooms[r.name].mainStorage = t.id;
+                            return false
                         }
-                        Memory.rooms[r.name].mainStorage = t.id;
-                        return false
-                    }
-                })
+                    })
+                }
             }
         }
 
@@ -113,7 +131,7 @@ roomTracking = function() {
             Memory.rooms[r.name].sources[s.id] = {};
             Memory.rooms[r.name].sources[s.id].id = s.id
             if (Memory.rooms[r.name].sources[s.id].targettedBy == undefined) {
-                Memory.rooms[r.name].sources[s.id].targettedBy = [];
+                Memory.rooms[r.name].sources[s.id].targettedBy = 0;
             }
             
             // get valid mining spots
@@ -131,17 +149,15 @@ roomTracking = function() {
                 Memory.rooms[r.name].sources[s.id].miningSpots = localMiningSpots
                 Memory.rooms[r.name].totalMiningSpots += localMiningSpots
             }
-
-            // find local containers
-            var closeContainer = s.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return s.pos.inRangeTo(structure, 2) == true && structure.structureType == STRUCTURE_CONTAINER;
-                },
-            });
-            if (closeContainer.length) {
-                Memory.rooms[r.name].sources[s.id].container = {};
-                Memory.rooms[r.name].sources[s.id].container.id = closeContainer[0].id;
-                Memory.rooms[r.name].sources[s.id].container.targettedBy = 0;
+            
+            if(Memory.rooms[r.name].sources[s.id].container == undefined) {
+                for(container of containers) {
+                    if(container.pos.inRangeTo(s, 2)) {
+                        Memory.rooms[r.name].sources[s.id].container = {};
+                        Memory.rooms[r.name].sources[s.id].container.id = container.id;
+                        Memory.rooms[r.name].sources[s.id].container.targettedBy = 0;
+                    }
+                }
             }
 
             // console.log(s)
@@ -169,6 +185,19 @@ roomTracking = function() {
                 new RoomVisual().text(Memory.rooms[r.name].sources[s.id].container.targettedBy, cont.pos.x - 0.17, cont.pos.y + 0.2, { align: "left", font: 0.6 });
             }
         });
+
+
+        // links
+        if (links.length == 2 &&
+            Memory.rooms[room.name].l_from == undefined &&
+            Memory.rooms[room.name].l_to == undefined)
+        {
+            var l_from = Game.getObjectById(Memory.rooms[room.name].mainStorage).pos.findClosestByRange(links);
+            var l_to = links.filter((l) => l != l_from)[0];
+
+            Memory.rooms[room.name].l_from = l_from.id;
+            Memory.rooms[room.name].l_to = l_to.id;
+        }
     });
 
     // Logging

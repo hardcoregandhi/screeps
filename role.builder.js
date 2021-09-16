@@ -34,13 +34,13 @@ global.roleBuilder = {
             moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
-        var customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) =>
+        var customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES)
+            .filter(structure => {
                 (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 40)) ||
                 (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
                 (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.1)) ||
-                (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.001)),
-        });
+                (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.001))});
+                
         customStructureSpecificPercentLimits.sort((a, b) => (a.hits / a.hitsMax) * 100 > (b.hits / b.hitsMax) * 100);
         _.forEach(customStructureSpecificPercentLimits, (a) => {
             creep.room.visual.circle(a.pos, {
@@ -57,11 +57,6 @@ global.roleBuilder = {
         //             fill: "transparent",
         //         });
 
-        var sources = creep.room.find(FIND_SOURCES);
-        if (creep.memory.currentSource > sources.length - 1) {
-            creep.memory.currentSource = 0;
-        }
-
         if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.building = false;
             creep.say("🔄 harvest");
@@ -69,16 +64,6 @@ global.roleBuilder = {
         if (!creep.memory.building && creep.store.getFreeCapacity() == 0) {
             creep.memory.building = true;
             creep.say("🚧 build");
-        }
-
-        if (creep.ticksToLive < 300) {
-            creep.say("healing");
-            creep.memory.healing = true;
-            if (returnToHeal(creep, creep.memory.baseRoomName)) {
-                return;
-            } else {
-                creep.say("dying/nospawn");
-            }
         }
 
         if (creep.memory.building) {
@@ -144,7 +129,7 @@ global.roleBuilder = {
                 }
             }
 
-            if (creepRoomMap.get(creep.room.name + "mover") > 1 || creepRoomMap.get(creep.room.name + "eenergy") > 10000) {
+            if (creepRoomMap.get(creep.room.name + "mover") >= 1) {
                 log(creep, 81);
                 if ((creepRoomMap.get(creep.room.name + "eenergy") === undefined && creep.room.energyAvailable < creep.room.energyCapacityAvailable / 2) || creepRoomMap.get(creep.room.name + "eenergy") < 1500) {
                     log(creep, 10);
@@ -184,11 +169,10 @@ global.roleBuilder = {
                     return;
                 }
             } else {
-                var containers = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > creep.store.getFreeCapacity();
-                    },
-                });
+                var containers = creep.room.find(FIND_STRUCTURES).filter(structure => {
+                        structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > 500
+                    }
+                );
                 log(creep, containers);
                 if (containers.length) {
                     container = creep.pos.findClosestByPath(containers);
@@ -197,26 +181,13 @@ global.roleBuilder = {
                     }
                     return;
                 }
-                var closeSources = creep.room.find(FIND_SOURCES, {
-                    filter: (s) => {
-                        return creep.pos.inRangeTo(s, 15) == true;
-                    },
-                });
-                if (creepRoomMap.get(creep.room.name + "mover") == 0) {
-                    closeSources = creep.room.find(FIND_SOURCES, {
-                        filter: (s) => {
-                            return s.energy != 0;
-                        },
-                    });
-                }
+                var sources = creep.room.find(FIND_SOURCES);
                 log(creep, 9);
-                if (closeSources.length > 0) {
-                    if (creep.store.getFreeCapacity() > 0) {
-                        if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
-                            if (moveToTarget(creep, sources[creep.memory.currentSource], true) == ERR_NO_PATH) {
-                                creep.say("no path");
-                                creep.memory.currentSource++;
-                            }
+                if (sources.length > 0) {
+                    target = creep.pos.findClosestByPath(sources)
+                    if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
+                        if (moveToTarget(creep, target, true) == ERR_NO_PATH) {
+                            creep.say("no path");
                         }
                     }
                 } else {

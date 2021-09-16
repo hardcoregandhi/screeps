@@ -32,15 +32,10 @@ global.roleBuilderExt = {
             creep.say("🚧 build");
         }
 
-        if (creep.ticksToLive < 300) {
+        if (creep.ticksToLive < 300 || creep.memory.healing) {
             creep.say("healing");
             creep.memory.healing = true;
-            if (returnToHeal(creep, creep.memory.baseRoomName)) {
-                creep.memory.building = false;
-                return;
-            } else {
-                creep.say("dying/nospawn");
-            }
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return
         }
 
         if (creep.memory.targetRoomName == undefined) {
@@ -83,10 +78,8 @@ global.roleBuilderExt = {
             }
         } else {
             log(creep, 7);
-            var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 500;
-                },
+            var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter(structure => {
+                    structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 500
             });
 
             if (containers.length) {
@@ -103,10 +96,8 @@ global.roleBuilderExt = {
             }
 
             log(creep, 8);
-            var targets = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
-                },
+            var targets = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES).filter(structure => {
+                    (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0
             });
 
             if (targets.length) {

@@ -13,17 +13,13 @@ function log(creep, msg) {
 
 global.healRoads = function (creep) {
     // Heal Roads
-    var towers = creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return structure.structureType == STRUCTURE_TOWER;
-        },
+    var towers = creep.room.find(FIND_STRUCTURES).filter(structure => {
+            return structure.structureType == STRUCTURE_TOWER
     });
     if (towers.length == 0) {
         log(creep, "no towers");
-        const damagedStructs = creep.room.find(FIND_STRUCTURES, {
-            filter: (object) => {
-                return object.structureType == STRUCTURE_ROAD && object.hits < object.hitsMax / 2 && creep.pos.inRangeTo(object, 1);
-            },
+        const damagedStructs = creep.room.find(FIND_STRUCTURES).filter(object => {
+                object.structureType == STRUCTURE_ROAD && object.hits < object.hitsMax / 2 && creep.pos.inRangeTo(object, 1)
         });
         damagedStructs.sort((a, b) => a.hits - b.hits);
         if (damagedStructs.length > 0) {
@@ -38,15 +34,10 @@ global.healRoads = function (creep) {
 
 global.pickupNearby = function (creep) {
     // console.log("pickupNearby")
-    const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-        filter: (object) => object.resourceType == RESOURCE_ENERGY && creep.pos.inRangeTo(object, 1),
-    });
-    var tombstoneResource = creep.room.find(FIND_TOMBSTONES, {
-        filter: (object) => creep.pos.inRangeTo(object, 1),
-    });
-    var ruinResource = creep.room.find(FIND_RUINS, {
-        filter: (object) => creep.pos.inRangeTo(object, 1),
-    });
+    var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES).filter(r => r.amount >= 150);
+    var tombstoneResource = creep.room.find(FIND_TOMBSTONES).filter(r => r.store.getUsedCapacity() >= 150);
+    var ruinResource = creep.room.find(FIND_RUINS).filter(object => creep.pos.inRangeTo(object, 1));
+    
     if (droppedEnergy.length > 0) {
         // console.log(creep.name + " picking up Nearby")
         creep.pickup(droppedEnergy[0]);
@@ -60,6 +51,8 @@ global.pickupNearby = function (creep) {
 };
 
 global.returnToHeal = function (creep, room) {
+
+    
     if (creep.ticksToLive >= 1400) {
         creep.memory.healing = false;
         return false;
@@ -69,28 +62,21 @@ global.returnToHeal = function (creep, room) {
     } 
 
     if (creep.memory.healing === true) {
+        spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id)
         if (creep.room.name != room) {
-            moveToMultiRoomTarget(creep, Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id))
+            moveToMultiRoomTarget(creep, spawn)
             return true;
         }
-        var targets = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return structure.structureType == STRUCTURE_SPAWN;
-            },
-        });
+
         // if (targets.length == 0 || (creep.room.energyAvailable < 100 && creep.store.getUsedCapacity(RESOURCE_ENERGY) < 50)) {
         //     return false;
         // }
         
-        if (creep.pos.inRangeTo(targets[0], 1)) {
-            creep.transfer(targets[0], RESOURCE_ENERGY)
-            return true
+        if (creep.transfer(spawn, RESOURCE_ENERGY) != OK) {
+            creep.moveTo(spawn, {
+                visualizePathStyle: { stroke: "#ffaa00" },
+            });
         }
-        
-        creep.moveTo(targets[0], {
-            visualizePathStyle: { stroke: "#ffaa00" },
-        });
-        
         return true;
     }
 };

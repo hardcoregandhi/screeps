@@ -13,13 +13,12 @@ var roleTower = {
             wallHealPercent = 0.1;
         }
 
-        var customStructureSpecificPercentLimits = tower.room.find(FIND_STRUCTURES, {
-            filter: (structure) =>
+        var customStructureSpecificPercentLimits = tower.room.find(FIND_STRUCTURES).filter(structure =>
                 (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
                 (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
                 (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.1)) ||
                 (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent)),
-        });
+        );
 
         var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         var allHostiles = tower.room.find(FIND_HOSTILE_CREEPS);
@@ -39,13 +38,19 @@ var roleTower = {
             tower.attack(closestHostile);
             return;
         }
-        var closestCreep = tower.pos.findClosestByRange(FIND_CREEPS, {
+        var closestCreep = tower.pos.findClosestByRange(FIND_MY_CREEPS, {
             filter: (creep) => Math.round((creep.hits / creep.hitsMax) * 100 < 99),
         });
         if (closestCreep) {
             tower.heal(closestCreep);
             return;
         }
+        
+        // let the tower heal but don't reapir if the energy is short
+        if(creepRoomMap.get(tower.room.name + "eenergy") + tower.room.energyAvailable < 500) {
+            return
+        }
+        
 
         if (highlyDamagedStructFound.length) {
             highlyDamagedStructFound.sort((a, b) => a.hits - b.hits);
