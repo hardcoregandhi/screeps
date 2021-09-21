@@ -13,7 +13,7 @@ global.runSpawns = function () {
 
         // if (r.find(STRUCTURE_SPAWN).length === 0 && creepRoomMap.get(r.name + "builder") < 5){
         //     // No spawn? Builders to create it, which will then default to upgraders to maintain the room after
-        //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name } }, "W16S21");
+        //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name } }, "W6S1");
         //     continue
         // }
         if (Memory.createClaimer) {
@@ -35,25 +35,27 @@ global.runSpawns = function () {
             spawnCreep(roleMover, BaseBodyParts, null, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "harvester") < 2) {
-            spawnCreep(roleHarvester, null, { memory: { baseRoomName: r.name } }, r.name);
+            spawnCreep(roleHarvester, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "upgrader") < 1) {
-            spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
+            spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "harvester") < 2) {
             spawnCreep(roleHarvester, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "builder") < creepRoomMap.get(r.name + "csites") / 2 && creepRoomMap.get(r.name + "builder") < 2) {
-            spawnCreep(roleBuilder, null, { memory: { baseRoomName: r.name } }, r.name);
+            spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (r.controller.level < 3) {
             continue;
         } else if (spawnExternalHarvester(r.name)) {
             continue;
-        } else if (creepRoomMap.get(r.name + "mover") < 2) {
+        } else if (r.controller.level < 4) {
+            continue;
+        } else if (creepRoomMap.get(r.name + "mover") < 2 && r.energyCapacityAvailable > 1000) {
             spawnCreep(roleMover, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 2 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8) {
+        } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 1 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8) {
             spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         }

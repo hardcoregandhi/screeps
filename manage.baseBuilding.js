@@ -7,6 +7,8 @@ global.runBaseBuilder = function () {
         }
         if (r.controller.level == 1) continue;
 
+        if (Memory.rooms[roomName].mainSpawn == undefined) return;
+
         var currentRoomBuildingLevel = Memory.rooms[roomName].currentRoomBuildingLevel;
         if (Memory.rooms[roomName].building[r.controller.level].isComplete == true) continue;
 
@@ -24,6 +26,10 @@ global.runBaseBuilder = function () {
                     var realY = baseCenter.y + offsetPos.y;
                     r.visual.circle(realX, realY, { color: "green", lineStyle: "dashed" });
                     const look = new RoomPosition(realX, realY, roomName).lookFor(LOOK_STRUCTURES);
+                    if (look.length && look[0].structureType == STRUCTURE_ROAD && look[0].structureType != subStageBuildingTypeSet.buildingType) {
+                        look[0].destroy();
+                        look.pop();
+                    }
                     const isWall = new Room.Terrain(roomName).get(realX, realY) == TERRAIN_MASK_WALL;
                     if (!isWall && !look.length) {
                         // console.log(r)
@@ -45,6 +51,9 @@ global.runBaseBuilder = function () {
                 }
                 if (r.controller.level == 5) {
                     buildControllerRampartSurroundings(r);
+                }
+                if (r.controller.level == 6) {
+                    buildExtractor(r);
                 }
                 Memory.rooms[roomName].building[currentRoomBuildingLevel].isComplete = true;
                 Memory.rooms[roomName].currentRoomBuildingLevel++;
@@ -99,6 +108,23 @@ function buildControllerRampartSurroundings(r) {
                 }
             }
         }
+    }
+}
+
+function buildExtractor(r) {
+    deposits = r.find(FIND_DEPOSITS);
+    for (d of deposits) {
+        r.createConstructionSite(d.pos, "extractor");
+    }
+}
+
+function restartRoomBuildingLevel(roomName, level = 1) {
+    room = Game.rooms[roomName];
+    if (room == undefined) return;
+    room.memory.currentRoomBuildingLevel = level;
+    for (var i = level; i <= 8; i++) {
+        room.memory.building[i].currentStage = 0;
+        room.memory.building[i].isComplete = false;
     }
 }
 
@@ -199,7 +225,8 @@ global.baseRawData = `
                     "pos": [
                         { "x": -6, "y": -4 },
                         { "x": -5, "y": -3 },
-                        { "x": -4, "y": -2 }
+                        { "x": -4, "y": -2 },
+                        { "x": -4, "y": -6 }
                     ]
                 }
             ],
@@ -251,7 +278,10 @@ global.baseRawData = `
                         { "x": 0, "y": 2 },
                         { "x": -1, "y": 3 },
                         { "x": -3, "y": 1 },
-                        { "x": -2, "y": 4 }
+                        { "x": -2, "y": 4 },
+                        { "x": -3, "y": 1 },
+                        { "x": -4, "y": 2 },
+                        { "x": -5, "y": 3 }
                     ]
                 }
             ],
@@ -322,6 +352,21 @@ global.baseRawData = `
         "stages": [
             [
                 {
+                    "buildingType": "road",
+                    "pos": [
+                        { "x": -2, "y": 4 },
+                        { "x": -3, "y": 5 },
+                        { "x": -4, "y": 6 },
+                        { "x": -5, "y": 7 },
+                        { "x": -3, "y": 3 },
+                        { "x": -5, "y": 5 },
+                        { "x": -6, "y": 4 },
+                        { "x": -7, "y": 5 }
+                    ]
+                }
+            ],
+            [
+                {
                     "buildingType": "extension",
                     "pos": [
                         { "x": -3, "y": 2 },
@@ -343,12 +388,35 @@ global.baseRawData = `
                 {
                     "buildingType": "road",
                     "pos": [
-                        { "x": -2, "y": 4 },
-                        { "x": -3, "y": 5 },
-                        { "x": -4, "y": 6 },
-                        { "x": -5, "y": 7 },
-                        { "x": -3, "y": 3 },
-                        { "x": -5, "y": 5 }
+                        { "x": 3, "y": -1 },
+                        { "x": 4, "y": -2 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "road",
+                    "pos": [
+                        { "x": 3, "y": 1 },
+                        { "x": 4, "y": 2 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "terminal",
+                    "pos": [
+                        { "x": 3, "y": 0 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "lab",
+                    "pos": [
+                        { "x": 3, "y": 2 },
+                        { "x": 3, "y": 3 },
+                        { "x": 4, "y": 3 }
                     ]
                 }
             ]

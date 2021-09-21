@@ -1,5 +1,5 @@
 function log(creep, str) {
-    if (creep.name == "Mover_872") if (0) console.log(str);
+    if (creep.name == "Mover_651") if (1) console.log(str);
 }
 
 global.roleScavenger = {

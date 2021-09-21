@@ -22,7 +22,7 @@ global.roleClaimer = {
             // usePathfinder(creep, { pos: new RoomPosition(25,25,creep.memory.baseRoomName), range: 1 })
             moveToRoom(creep, creep.memory.baseRoomName);
         } else {
-            if (creep.name == "Claimer_900") {
+            if (creep.name == "Claimer_127") {
                 if (creep.claimController(Game.rooms[creep.memory.baseRoomName].controller) != OK) {
                     moveToMultiRoomTarget(creep, Game.rooms[creep.memory.baseRoomName].controller, true);
                 }

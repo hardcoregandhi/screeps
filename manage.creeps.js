@@ -21,6 +21,10 @@ global.runCreeps = function () {
     });
 
     for (var name in Game.creeps) {
+        if (Game.cpu.getUsed() > (Game.cpu.tickLimit / 10) * 9.9) {
+            console.log("CPU limit");
+            return;
+        }
         var creep = Game.creeps[name];
         // console.log(creep.name)
         try {
@@ -139,8 +143,7 @@ global.runCreeps = function () {
                 roleHealer.run(creep);
             }
             if (creep.memory.role == "mover") {
-                spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
-                if (!(creep.room.energyAvailable < 100 && creep.pos.getRangeTo(spawn) > 10) && Memory.rooms[creep.room.name].scav == true) {
+                if (creep.room.energyAvailable > 300 && Memory.rooms[creep.room.name].scav == true) {
                     roleScavenger.run(creep);
                     // console.log(creep.name, "scav")
                 } else {

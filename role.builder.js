@@ -34,22 +34,27 @@ global.roleBuilder = {
             moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
-        var customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-            return (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 40)) ||
-                (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
-                (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.1)) ||
-                (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.001));
-        });
-
-        customStructureSpecificPercentLimits.sort((a, b) => (a.hits / a.hitsMax) * 100 > (b.hits / b.hitsMax) * 100);
-        _.forEach(customStructureSpecificPercentLimits, (a) => {
-            creep.room.visual.circle(a.pos, {
-                stroke: "red",
-                radius: 0.5,
-                lineStyle: "dashed",
-                fill: "transparent",
+        var customStructureSpecificPercentLimits = [];
+        if (0) {
+            customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES).filter((structure) => {
+                return (
+                    (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 40)) ||
+                    (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
+                    (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.1)) ||
+                    (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < 0.001))
+                );
             });
-        });
+
+            customStructureSpecificPercentLimits.sort((a, b) => (a.hits / a.hitsMax) * 100 > (b.hits / b.hitsMax) * 100);
+            _.forEach(customStructureSpecificPercentLimits, (a) => {
+                creep.room.visual.circle(a.pos, {
+                    stroke: "red",
+                    radius: 0.5,
+                    lineStyle: "dashed",
+                    fill: "transparent",
+                });
+            });
+        }
         // creep.room.visual.circle(customStructureSpecificPercentLimits[0].pos, {
         //             stroke: "blue",
         //             radius: 0.2,

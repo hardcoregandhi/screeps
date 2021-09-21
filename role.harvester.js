@@ -1,5 +1,5 @@
 function log(creep, str) {
-    if (0) if (creep.name == "Upgrader_779") console.log(str);
+    if (0) if (creep.name == "Builder_183") console.log(str);
 }
 
 global.roleHarvester = {
@@ -119,14 +119,14 @@ global.roleHarvester = {
                 if (creepRoomMap.get(creep.memory.baseRoomName + "mover") != undefined && creepRoomMap.get(creep.memory.baseRoomName + "mover") > 0) {
                     log(creep, "movers found");
 
-                    if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container) {
+                    if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
                         target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id);
                         creep.memory.targetContainer = target.id;
                         log(creep, "local ccont found");
                         log(creep, target);
 
                         if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy < 1 && Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined) {
-                            spawnCreep(roleHarvSup, null, { memory: { targetContainer: target.id } }, creep.memory.baseRoomName);
+                            spawnCreep(roleHarvSup, "auto", { memory: { targetContainer: target.id } }, creep.memory.baseRoomName);
                             roleHarvSup.run(creep);
                             return;
                         }
@@ -140,6 +140,31 @@ global.roleHarvester = {
                         }
                         return;
                     }
+
+                    var csites = Game.rooms[creep.memory.baseRoomName].find(FIND_CONSTRUCTION_SITES).filter((site) => {
+                        return creep.pos.inRangeTo(site, 1);
+                    });
+                    if (csites.length) {
+                        log(creep, "building");
+                        if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
+                            moveToMultiRoomTarget(creep, csites[0]);
+                        }
+                        return;
+                    }
+
+                    mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
+                    if (mainStorage != undefined) {
+                        log(creep, "mainStorage found");
+                        if (mainStorage != null && mainStorage.hits < 200000 && mainStorage.structureType == STRUCTURE_CONTAINER) {
+                            if (creep.repair(mainStorage) == ERR_NOT_IN_RANGE) {
+                                moveToMultiRoomTarget(creep, mainStorage.pos);
+                            }
+                        } else if (creep.transfer(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                            moveToMultiRoomTarget(creep, mainStorage.pos);
+                        }
+                        return;
+                    }
+                    log(creep, "mainStorage not found");
 
                     targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
                         return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
@@ -163,8 +188,10 @@ global.roleHarvester = {
                 } else {
                     log(creep, "no movers found");
                     targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-                        return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
-                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                        return (
+                            (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
+                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                        );
                     });
                     if (!targets.length) {
                         log(creep, "no exts, spawn, or container found");

@@ -128,7 +128,7 @@ global.roleSoldier = {
             // }
             if (creep.attack(creep.room.controller) != OK) {
                 creep.heal(creep);
-                creep.moveTo(creep.room.controller, { maxRooms: 1 });
+                if (!creep.pos.inRangeTo(creep.room.controller, 2)) creep.moveTo(creep.room.controller, { maxRooms: 1 });
             }
         }
     },

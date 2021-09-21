@@ -49,6 +49,9 @@ generateBodyParts = function (_spawnRoom, _role = null) {
     _.pullAt(bodyParts, --insertIndex);
     // console.log(bodyParts)
     // console.log(getBodyCost(bodyParts))
+    if (bodyParts.length < 5) {
+        return [];
+    }
     return bodyParts;
 };
 
@@ -57,7 +60,7 @@ cloneCreep = function (sourceCreepName, room = null, force = null) {
     if (sourceCreep === null) return -1;
     spawnRoom = room != null ? Game.rooms[room] : Game.rooms[sourceCreep.memory.baseRoomName];
     if (spawnRoom === null) return -1;
-    roomSpawner = Game.getObjectById(room.memory.mainSpawn.id);
+    roomSpawner = Game.getObjectById(spawnRoom.memory.mainSpawn.id);
     if (roomSpawner == null) return -1;
     var newName = _.capitalize(sourceCreep.memory.role) + "_" + getRandomInt();
     console.log("Cloning new " + newName + " from " + sourceCreepName);
@@ -86,6 +89,38 @@ cloneCreep = function (sourceCreepName, room = null, force = null) {
             memoryClone,
             spawnRoom.name
         );
+    }
+};
+
+upgradeCreep = function (sourceCreepName, dryRun = null) {
+    sourceCreep = Game.creeps[sourceCreepName];
+    if (sourceCreep === null) return -1;
+    spawnRoom = Game.rooms[sourceCreep.memory.baseRoomName];
+    if (spawnRoom === null) return -1;
+    roomSpawner = Game.getObjectById(spawnRoom.memory.mainSpawn.id);
+    if (roomSpawner == null) return -1;
+    var newName = _.capitalize(sourceCreep.memory.role) + "_" + getRandomInt();
+    console.log("Upgrading" + newName + " from " + sourceCreepName);
+    // console.log(sourceCreep.body);
+    // console.log(sourceCreep.memory.role);
+    // console.log(newName);
+    memoryClone = Object.assign({}, { memory: sourceCreep.memory });
+
+    newBody = generateBodyParts(sourceCreep.memory.baseRoomName, "role" + _.capitalize(sourceCreep.memory.role));
+
+    if (newBody.length <= sourceCreep.body.length) {
+        console.log("no upgrade available");
+    }
+
+    // console.log(memoryClone.memory.role)
+    // console.log(JSON.stringify(memoryClone));
+    if (dryRun != null) {
+        roomSpawner.spawnCreep(newBody, newName, memoryClone);
+        sourceCreep.memory.role = "DIE";
+        return;
+    } else {
+        console.log(`old : ${sourceCreep.body.map((a) => a.type)}`);
+        console.log(`new : ${newBody}`);
     }
 };
 
@@ -137,9 +172,11 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
     cost = getBodyCost(_role.BodyParts);
 
     myCreeps = spawn.room.find(FIND_MY_CREEPS).filter((c) => {
-        return spawn.pos.inRangeTo(c, 1) &&
+        return (
+            spawn.pos.inRangeTo(c, 1) &&
             c.ticksToLive < 155 && //150 is the highest spawn time for a 50 part creep
-            c.memory.healing;
+            c.memory.healing
+        );
     });
 
     if (myCreeps.length) {
