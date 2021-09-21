@@ -39,7 +39,7 @@ var roleCleaner = require("role.cleaner");
 PathFinder.use(true);
 
 focusHealing = false;
-global.myRooms = ["W6S1", "W3S2"];
+global.myRooms = ["W6S1", "W3S2", "W6S2"];
 
 /*
 calls		time		avg	    	function
@@ -194,5 +194,7 @@ module.exports.loop = function () {
         // runRoads();
 
         runBaseBuilder();
+
+        // createRoadBetweenTargets(Game.getObjectById("5bbcaca99099fc012e635f5f"), Game.getObjectById("613a2d3b1c64906ca07f5676"))
     });
 };

@@ -13,15 +13,14 @@ var roleTower = {
             wallHealPercent = 0.1;
         }
 
-        var customStructureSpecificPercentLimits = tower.room
-            .find(FIND_STRUCTURES)
-            .filter(
-                structure => {
-                    return (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
-                    (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
-                    (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.1)) ||
-                    (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent))
-                });
+        var customStructureSpecificPercentLimits = tower.room.find(FIND_STRUCTURES).filter((structure) => {
+            return (
+                (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
+                (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
+                (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < 0.1)) ||
+                (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent))
+            );
+        });
 
         var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         var allHostiles = tower.room.find(FIND_HOSTILE_CREEPS);

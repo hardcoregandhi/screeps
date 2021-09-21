@@ -4,137 +4,170 @@ roomTracking = function () {
             Memory.rooms = {};
         }
         const terrain = r.getTerrain();
-        stores = [];
-        spawns = [];
-        pspawns = [];
-        containers = [];
-        towers = [];
-        links = [];
-        observers = [];
 
-        allStructures = r.find(FIND_STRUCTURES);
+        if (myRooms.includes(r.name)) {
+            console.log(`room ${r}`);
+            stores = [];
+            spawns = [];
+            pspawns = [];
+            containers = [];
+            towers = [];
+            links = [];
+            observers = [];
 
-        for (structure of allStructures) {
-            switch (structure.structureType) {
-                case STRUCTURE_STORAGE:
-                    stores.push(structure);
-                    break;
-                case STRUCTURE_CONTAINER:
-                    containers.push(structure);
-                    break;
-                case STRUCTURE_SPAWN:
-                    spawns.push(structure);
-                    break;
-                case STRUCTURE_TOWER:
-                    towers.push(structure);
-                    break;
-                case STRUCTURE_POWER_SPAWN:
-                    pspawns.push(structure);
-                    break;
-                case STRUCTURE_LINK:
-                    links.push(structure);
-                    break;
-                case STRUCTURE_OBSERVER:
-                    observers.push(structure);
-                    break;
+            startCpu = Game.cpu.getUsed();
+
+            allStructures = r.find(FIND_STRUCTURES);
+
+            for (structure of allStructures) {
+                switch (structure.structureType) {
+                    case STRUCTURE_STORAGE:
+                        stores.push(structure);
+                        break;
+                    case STRUCTURE_CONTAINER:
+                        containers.push(structure);
+                        break;
+                    case STRUCTURE_SPAWN:
+                        spawns.push(structure);
+                        break;
+                    case STRUCTURE_TOWER:
+                        towers.push(structure);
+                        break;
+                    case STRUCTURE_POWER_SPAWN:
+                        pspawns.push(structure);
+                        break;
+                    case STRUCTURE_LINK:
+                        links.push(structure);
+                        break;
+                    case STRUCTURE_OBSERVER:
+                        observers.push(structure);
+                        break;
+                }
             }
-        }
 
-        // console.log(r.name)
+            elapsed = Game.cpu.getUsed() - startCpu;
+            console.log("allStructures find has used " + elapsed + " CPU time");
+            startCpu = Game.cpu.getUsed();
 
-        var total = 0;
-        _.forEach(stores, (s) => {
-            creepRoomMap.set(r.name + "eenergy", (total += s.store[RESOURCE_ENERGY]));
-        });
+            // console.log(r.name)
 
-        if (Memory.rooms[r.name] == undefined) Memory.rooms[r.name] = {};
-
-        if (Memory.rooms[r.name] != undefined) delete Memory.rooms[r.name].sources;
-
-        Memory.rooms[r.name].sources = {};
-
-        // mainStorage
-        // find room spawn
-        if (spawns.length) {
-            Memory.rooms[r.name].spawns = {};
-            _.forEach(spawns, (s) => {
-                Memory.rooms[r.name].spawns[s.name] = {};
-                Memory.rooms[r.name].spawns[s.name].massHealing = false;
-
-                surroundingCreeps = 0;
-                for (var i = s.pos.x - 1; i < s.pos.x + 1; i++) {
-                    for (var j = s.pos.y - 1; j < s.pos.y + 1; j++) {
-                        localCreeps = s.room.lookForAt(LOOK_CREEPS, i, j).length;
-                        if (localCreeps.length && localCreep[0].memory.healing) {
-                            surroundingCreeps++;
-                        }
-                    }
-                }
-                if (surroundingCreeps >= 3) {
-                    Memory.rooms[r.name].spawns[s.name].massHealing = true;
-                } else {
-                    Memory.rooms[r.name].spawns[s.name].massHealing = false;
-                }
+            var total = 0;
+            _.forEach(stores, (s) => {
+                creepRoomMap.set(r.name + "eenergy", (total += s.store[RESOURCE_ENERGY]));
             });
 
-            // base building setup and tracking
-            if (Memory.rooms[r.name].mainSpawn.id == undefined) {
-                log.log(`setting up ${r.name}`);
-                spawn = spawns[0];
-                Memory.rooms[r.name].mainSpawn = {};
-                Memory.rooms[r.name].mainSpawn.id = spawn.id;
-                Memory.rooms[r.name].mainSpawn.pos = spawn.pos;
-                Memory.rooms[r.name].currentRoomBuildingLevel = r.controller.level;
-                Memory.rooms[r.name].building = [];
-                for (var i = 1; i <= 8; i++) {
-                    Memory.rooms[r.name].building[i] = {};
-                    Memory.rooms[r.name].building[i].currentStage = 0;
-                    Memory.rooms[r.name].building[i].isComplete = false;
-                }
-            }
-            Memory.rooms[r.name].mainSpawn.refilling = false;
+            elapsed = Game.cpu.getUsed() - startCpu;
+            console.log("eenergy calc has used " + elapsed + " CPU time");
+            startCpu = Game.cpu.getUsed();
 
-            if (Memory.rooms[r.name].mainSpawn.id != undefined) {
-                mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id);
-                // find closest storage/container to spawn which is presumably main storage
-                var targets = r.find(FIND_STRUCTURES).filter((structure) => {
-                    return structure.structureType == STRUCTURE_STORAGE || (structure.structureType == STRUCTURE_CONTAINER && mainSpawn.pos.inRangeTo(structure, 3));
-                });
-                if (targets.length == 1) {
-                    Memory.rooms[r.name].mainStorage = targets[0].id;
-                } else if (targets.length == 2) {
-                    _.forEach(targets, (t) => {
-                        // if container, set it as main while we empty it and transition to storage, then destroy it
-                        if (t.structureType == STRUCTURE_CONTAINER) {
-                            if (t.store.getFreeCapacity() == t.store.getCapacity()) {
-                                t.destroy();
-                                return;
+            if (Memory.rooms[r.name] == undefined) Memory.rooms[r.name] = {};
+
+            // if (Memory.rooms[r.name] != undefined) delete Memory.rooms[r.name].sources;
+
+            // mainStorage
+            // find room spawn
+            if (spawns.length) {
+                Memory.rooms[r.name].spawns = {};
+                _.forEach(spawns, (s) => {
+                    Memory.rooms[r.name].spawns[s.name] = {};
+                    Memory.rooms[r.name].spawns[s.name].massHealing = false;
+
+                    surroundingCreeps = 0;
+                    for (var i = s.pos.x - 1; i < s.pos.x + 1; i++) {
+                        for (var j = s.pos.y - 1; j < s.pos.y + 1; j++) {
+                            localCreeps = s.room.lookForAt(LOOK_CREEPS, i, j).length;
+                            if (localCreeps.length && localCreep[0].memory.healing) {
+                                surroundingCreeps++;
                             }
-                            Memory.rooms[r.name].mainStorage = t.id;
-                            return false;
                         }
-                    });
+                    }
+                    if (surroundingCreeps >= 3) {
+                        Memory.rooms[r.name].spawns[s.name].massHealing = true;
+                    }
+                });
+
+                elapsed = Game.cpu.getUsed() - startCpu;
+                console.log("surroundingCreeps has used " + elapsed + " CPU time");
+                startCpu = Game.cpu.getUsed();
+
+                // base building setup and tracking
+                if (Memory.rooms[r.name].mainSpawn == undefined || Memory.rooms[r.name].mainSpawn.id == undefined) {
+                    log.log(`setting up ${r.name}`);
+                    spawn = spawns[0];
+                    Memory.rooms[r.name].mainSpawn = {};
+                    Memory.rooms[r.name].mainSpawn.id = spawn.id;
+                    Memory.rooms[r.name].mainSpawn.pos = spawn.pos;
+                    Memory.rooms[r.name].currentRoomBuildingLevel = r.controller.level;
+                    Memory.rooms[r.name].building = [];
+                    for (var i = 1; i <= 8; i++) {
+                        Memory.rooms[r.name].building[i] = {};
+                        Memory.rooms[r.name].building[i].currentStage = 0;
+                        Memory.rooms[r.name].building[i].isComplete = false;
+                    }
                 }
+                Memory.rooms[r.name].mainSpawn.refilling = false;
+
+                elapsed = Game.cpu.getUsed() - startCpu;
+                console.log("buildingSetup has used " + elapsed + " CPU time");
+                startCpu = Game.cpu.getUsed();
+
+                if (Memory.rooms[r.name].mainSpawn.id != undefined) {
+                    mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id);
+                    // find closest storage/container to spawn which is presumably main storage
+                    var targets = r.find(FIND_STRUCTURES).filter((structure) => {
+                        return structure.structureType == STRUCTURE_STORAGE || (structure.structureType == STRUCTURE_CONTAINER && mainSpawn.pos.inRangeTo(structure, 3));
+                    });
+                    if (targets.length == 1) {
+                        Memory.rooms[r.name].mainStorage = targets[0].id;
+                    } else if (targets.length == 2) {
+                        _.forEach(targets, (t) => {
+                            // if container, set it as main while we empty it and transition to storage, then destroy it
+                            if (t.structureType == STRUCTURE_CONTAINER) {
+                                if (t.store.getFreeCapacity() == t.store.getCapacity()) {
+                                    t.destroy();
+                                    return;
+                                }
+                                Memory.rooms[r.name].mainStorage = t.id;
+                                return false;
+                            }
+                        });
+                    }
+                }
+
+                elapsed = Game.cpu.getUsed() - startCpu;
+                console.log("transitionCheck has used " + elapsed + " CPU time");
+                startCpu = Game.cpu.getUsed();
+            }
+
+            elapsed = Game.cpu.getUsed() - startCpu;
+            console.log("eenergy calc has used " + elapsed + " CPU time");
+            startCpu = Game.cpu.getUsed();
+
+            // source
+            sources = r.find(FIND_SOURCES);
+            if (Memory.rooms[r.name] == undefined) {
+                Memory.rooms[r.name] = {};
             }
         }
 
-        // source
-        sources = r.find(FIND_SOURCES);
-        if (Memory.rooms[r.name] == undefined) {
-            Memory.rooms[r.name] = {};
-        }
-        Memory.rooms[r.name].sources = {};
+        // Memory.rooms[r.name].sources = {};
         _.forEach(sources, (s, i) => {
+            startCpu = Game.cpu.getUsed();
+
             // console.log(i)
             // console.log(s.id)
-            Memory.rooms[r.name].sources[s.id] = {};
-            Memory.rooms[r.name].sources[s.id].id = s.id;
+            if (Memory.rooms[r.name].sources[s.id] == undefined) {
+                Memory.rooms[r.name].sources[s.id] = {};
+                Memory.rooms[r.name].sources[s.id].id = s.id;
+            }
+
             if (Memory.rooms[r.name].sources[s.id].targettedBy == undefined) {
                 Memory.rooms[r.name].sources[s.id].targettedBy = 0;
             }
+            Memory.rooms[r.name].sources[s.id].targettedBy = 0; // reset this
 
             // get valid mining spots
-            Memory.rooms[r.name].totalMiningSpots = 0;
+            // Memory.rooms[r.name].totalMiningSpots = 0;
             if (Memory.rooms[r.name].sources[s.id].miningSpots == undefined) {
                 localMiningSpots = 0;
                 totalMiningSpots = 0;
@@ -161,6 +194,10 @@ roomTracking = function () {
 
             // console.log(s)
             Memory.rooms[r.name].sources[s.id].targettedBy = 0;
+            if (Memory.rooms[r.name].sources[s.id].container) {
+                Memory.rooms[r.name].sources[s.id].container.targettedBy = 0;
+            }
+
             _.forEach(Game.creeps, (c) => {
                 if ((c.memory.role == "harvester" && c.memory.baseRoomName == r.name) || (c.memory.role == "harvesterExt" && c.memory.targetRoomName == r.name)) {
                     // console.log("s.id:", s.id)
@@ -173,6 +210,19 @@ roomTracking = function () {
                     if (Memory.rooms[r.name].sources[s.id].container != undefined) {
                         if (c.memory.targetContainer == Memory.rooms[r.name].sources[s.id].container.id) {
                             Memory.rooms[r.name].sources[s.id].container.targettedBy += 1;
+                        }
+                    }
+                }
+                if (myRooms.includes(r.name)) {
+                    if (r.memory.defenders == undefined) r.memory.defenders = {};
+                    if (r.memory.defenders.soldier == null) {
+                        if (c.memory.role == "soldier" && c.memory.baseRoomName == r.name) {
+                            r.memory.defenders.soldier = c.id;
+                        }
+                    }
+                    if (r.memory.defenders.gunner == null) {
+                        if (c.memory.role == "gunner" && c.memory.baseRoomName == r.name) {
+                            r.memory.defenders.gunner = c.id;
                         }
                     }
                 }
@@ -193,6 +243,10 @@ roomTracking = function () {
             Memory.rooms[room.name].l_from = l_from.id;
             Memory.rooms[room.name].l_to = l_to.id;
         }
+
+        elapsed = Game.cpu.getUsed() - startCpu;
+        console.log("source setup has used " + elapsed + " CPU time");
+        startCpu = Game.cpu.getUsed();
     });
 
     // Logging

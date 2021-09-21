@@ -1,7 +1,7 @@
 global.runRoads = function () {
     // Auto roads
     for (var room in Game.rooms) {
-        r = Game.rooms[room];
+        var r = Game.rooms[room];
         // console.log(r.name)
         if (!myRooms.includes(r.name)) {
             continue;
@@ -96,6 +96,42 @@ global.runRoads = function () {
                     }
                 }
             }
+        }
+    }
+};
+
+createRoadBetweenTargets = function (target1, target2, dryRun = true) {
+    for (var pathStep of PathFinder.search(target1.pos, target2.pos, {
+        plainCost: 2,
+        swampCost: 10,
+
+        roomCallback: function (roomName) {
+            let room = Game.rooms[roomName];
+            // In this example `room` will always exist, but since
+            // PathFinder supports searches which span multiple rooms
+            // you should be careful!
+            if (!room) return;
+            let costs = new PathFinder.CostMatrix();
+
+            room.find(FIND_STRUCTURES).forEach(function (struct) {
+                if (struct.structureType === STRUCTURE_ROAD) {
+                    // Favor roads over plain tiles
+                    costs.set(struct.pos.x, struct.pos.y, 1);
+                } else if (struct.structureType !== STRUCTURE_CONTAINER && (struct.structureType !== STRUCTURE_RAMPART || !struct.my)) {
+                    // Can't walk through non-walkable buildings
+                    costs.set(struct.pos.x, struct.pos.y, 0xff);
+                }
+            });
+
+            return costs;
+        },
+    }).path) {
+        Game.rooms[pathStep.roomName].visual.circle(pathStep, {
+            fill: "red",
+            lineStyle: "dashed",
+        });
+        if (!dryRun) {
+            Game.rooms[pathStep.roomName].createConstructionSite(pathStep.x, pathStep.y, STRUCTURE_ROAD);
         }
     }
 };

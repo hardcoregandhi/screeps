@@ -32,7 +32,7 @@ global.roleGunner = {
             creep.heal(creep);
         }
 
-        if (creep.ticksToLive < 300 || creep.memory.healing) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
@@ -103,7 +103,7 @@ global.roleGunner = {
             // }
             if (creep.attack(creep.room.controller) != OK) {
                 creep.heal(creep);
-                creep.moveTo(creep.room.controller, { maxRooms: 1 });
+                if (!creep.pos.inRangeTo(creep.room.controller, 2)) creep.moveTo(creep.room.controller, { maxRooms: 1 });
             }
         }
     },
