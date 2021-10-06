@@ -1,5 +1,5 @@
 function log(creep, str) {
-    if (0) if (creep.name == "Builder_183") console.log(str);
+    if (0) if (creep.name == "Harvester_686") console.log(str);
 }
 
 global.roleHarvester = {
@@ -27,6 +27,17 @@ global.roleHarvester = {
         if (creep.memory.mining == undefined) {
             creep.memory.mining = true;
         }
+        
+        if(creep.memory.scoopSize == undefined) {
+            scoopSize = 0;
+            _.forEach(creep.body, (b) => {
+                if(b.type == WORK) {
+                    scoopSize += 2;
+                }
+            })
+            // console.log(creep.name, scoopSize)
+            creep.memory.scoopSize = scoopSize;
+        }
 
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
@@ -47,7 +58,7 @@ global.roleHarvester = {
             return;
         }
 
-        if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
+        if (creep.memory.mining && creep.store.getFreeCapacity() < creep.memory.scoopSize) {
             creep.memory.mining = false;
             creep.say("🔄 dropping");
         }
@@ -118,6 +129,45 @@ global.roleHarvester = {
                 // If we have Movers, just use the storage
                 if (creepRoomMap.get(creep.memory.baseRoomName + "mover") != undefined && creepRoomMap.get(creep.memory.baseRoomName + "mover") > 0) {
                     log(creep, "movers found");
+                    
+                    if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined) {
+                        log(creep, "local link found");
+
+                        var link = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link);
+                        if (link == null) {
+                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link = undefined
+                        }
+                        if (creep.transfer(link, RESOURCE_ENERGY) != OK) {
+                            moveToMultiRoomTarget(creep, link.pos);
+                        }
+                        
+                        log(creep, link.store.getFreeCapacity(RESOURCE_ENERGY))
+                        
+                        if (link.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+                            // transmit
+                            log(creep, "transmitting")
+                            // try {
+                            //     link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller)
+                            //     if (link_controller.store.getFreeCapacity(RESOURCE_ENERGY) > 10) {
+                            //         link.transferEnergy(link_controller, link_controller.store.getFreeCapacity(RESOURCE_ENERGY))
+                            //         return
+                            //     }
+                            // } catch (e) {
+                            //     console.log(`${creep.name} failed to use ${link}, ${e}`)
+                            // }
+                            
+                            try {
+                                link_storage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_storage)
+                                if (link_storage.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                                    link.transferEnergy(link_storage, link_storage.store.getFreeCapacity(RESOURCE_ENERGY))
+                                    return
+                                }
+                            } catch (e) {
+                                console.log(`${creep.name} failed to use ${link}, ${e}`)
+                            }
+                        }
+                        return
+                    }
 
                     if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
                         target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id);

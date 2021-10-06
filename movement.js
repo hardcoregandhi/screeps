@@ -68,6 +68,42 @@ global.moveToMultiRoomTarget = function (creep, target, canUseSwamp = true) {
     }
 };
 
+global.moveToMultiRoomTargetIgnoreCreep = function (creep, target, canUseSwamp = true) {
+    canUseSwamp = true;
+    if (canUseSwamp) {
+        ret = creep.moveTo(target, {
+            visualizePathStyle: { stroke: "#ffffff" },
+            maxOps: 100000,
+            maxRooms: 16,
+            ignoreCreeps: true,
+        });
+        // console.log(target)
+    } else {
+        const path = creep.room.findPath(creep.pos, target, {
+            ignoreCreeps: false,
+            maxRooms: 16,
+        });
+        if (path.length) {
+            roomPos = new RoomPosition(path[0].x, path[0].y, creep.room.name);
+            isSwamp = new Room.Terrain(creep.room.name).get(path[0].x, path[0].y) == TERRAIN_MASK_SWAMP;
+            isPath = roomPos.lookFor(LOOK_STRUCTURES).length != 0;
+            for (var pathStep of path) {
+                if (!isSwamp || (isSwamp && isPath)) {
+                    creep.room.visual.circle(pathStep, { fill: "red" });
+                }
+            }
+            if (!isSwamp || (isSwamp && isPath)) {
+                return creep.moveTo(path[0].x, path[0].y, {
+                    visualizePathStyle: { stroke: "#ffffff" },
+                    maxRooms: 1,
+                });
+            }
+        } else {
+            return -1;
+        }
+    }
+};
+
 global.moveToRoomIgnoreStructures = function (creep, targetRoom) {
     if (creep.memory.pathfinderPath == undefined || creep.memory.pathfinderPath.length == 0) {
         let from = creep.pos;

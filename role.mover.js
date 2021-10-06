@@ -64,7 +64,7 @@ global.roleMover = {
         log(creep, 2);
         pickupNearby(creep);
 
-        if (creep.room.energyCapacityAvailable - creep.room.energyAvailable < 100) return;
+        if (creep.room.energyCapacityAvailable - creep.room.energyAvailable < 100 && Memory.rooms[creep.room.name].link_storage == undefined) return;
 
         // we still must check for storage incase the storage is new and mainStorage still == a container
         // that way we can transition between the two structures
@@ -191,21 +191,21 @@ global.roleMover = {
 
             // add a send link if it is available to the target array
             try {
-                if (creep.room.memory.l_from != undefined) {
+                if (creep.room.memory.link_storage != undefined && creepRoomMap.get(creep.room.name + "moverLink") == 0) {
                     log(creep, 7);
                     log(creep, Memory.rooms[creep.room.name]);
-                    log(creep, Memory.rooms[creep.room.name].l_from);
-                    var l_from = Game.getObjectById(Memory.rooms[creep.room.name].l_from);
-                    if (l_from != undefined && l_from.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                        log(creep, "pushing l_from");
+                    log(creep, Memory.rooms[creep.room.name].link_storage);
+                    var link_storage = Game.getObjectById(Memory.rooms[creep.room.name].link_storage);
+                    if (link_storage != undefined && link_storage.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                        log(creep, "pushing link_storage");
                         log(creep, targets.length);
-                        log(creep, l_from);
-                        targets.push(l_from);
+                        log(creep, link_storage);
+                        targets.push(link_storage);
                         log(creep, targets.length);
                     }
                 }
             } catch (e) {
-                console.log("error");
+                console.log(`${creep}: ${e}`); 
             }
 
             if (!targets.length) {
@@ -214,8 +214,8 @@ global.roleMover = {
                 try {
                     log(creep, 8);
                     creep.moveTo(mainStorage);
-                } catch (error) {
-                    console.log(error);
+                } catch (e) {
+                    console.log(`${creep}: ${e}`); 
                 }
                 return;
             }

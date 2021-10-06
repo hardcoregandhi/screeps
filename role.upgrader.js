@@ -1,7 +1,7 @@
 require("movement");
 
 function log(creep, str) {
-    if (0) if (creep.name === "Upgrader_758") console.log(str);
+    if (0) if (creep.name === "Upgrader_647") console.log(str);
 }
 
 global.roleUpgrader = {
@@ -33,7 +33,6 @@ global.roleUpgrader = {
             }
             return;
         }
-        var sources = creep.room.find(FIND_SOURCES);
 
         if (creep.memory.upgrading == undefined) {
             creep.memory.upgrading = false;
@@ -60,35 +59,37 @@ global.roleUpgrader = {
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
 
         if (creep.memory.upgrading) {
-            log(creep, 2);
+            log(creep, "upgrading");
 
             healRoads(creep);
             if (creep.upgradeController(creep.room.controller) != OK) {
                 moveToTarget(creep, creep.room.controller.pos, false);
             }
         } else {
-            var links = creep.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_LINK;
-                },
-            });
-            if (creep.room.memory.l_from != undefined && creep.room.memory.l_to != undefined) {
+            log(creep, "retrieving");
+
+            if (Memory.rooms[creep.memory.baseRoomName].link_storage != undefined && Memory.rooms[creep.memory.baseRoomName].link_controller != undefined) {
                 try {
-                    var l_to = Game.getObjectById(Memory.rooms[creep.room.name].l_to);
-                    if (l_to && l_to.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                    log(creep, "links")
+                    var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
+                    if (link_controller /*&& link_controller.store.getUsedCapacity(RESOURCE_ENERGY) > 0*/) {
                         creep.say("h2link");
-                        if (creep.withdraw(l_to, RESOURCE_ENERGY) != OK) {
-                            moveToTarget(creep, l_to);
+                        log(creep, "h2link")
+                        if (link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
+                            creep.memory.upgrading = true;
                         }
-                        moveToTarget(creep, l_to);
+                        else if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
+                            moveToTarget(creep, link_controller);
+                        }
+                        moveToTarget(creep, link_controller);
                         return;
                     }
-                } catch (error) {
-                    console.log(error);
-                    console.trace();
+                } catch (e) {
+                    console.log(`${creep}: ${e}`); 
                 }
             }
-            if (mainStorage != undefined && links.length != 2) {
+            if (mainStorage != undefined) {
+                log(creep, "mainStorage")
                 if (
                     (creepRoomMap.get(creep.room.name + "eenergy") < 2000 && creep.room.energyAvailable < creep.room.energyCapacityAvailable - 400) ||
                     (mainStorage.structureType == STRUCTURE_CONTAINER && mainStorage.store.getUsedCapacity() < mainStorage.store.getCapacity() / 2)

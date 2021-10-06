@@ -26,17 +26,23 @@ global.runBaseBuilder = function () {
                     var realY = baseCenter.y + offsetPos.y;
                     r.visual.circle(realX, realY, { color: "green", lineStyle: "dashed" });
                     const look = new RoomPosition(realX, realY, roomName).lookFor(LOOK_STRUCTURES);
-                    if (look.length && look[0].structureType == STRUCTURE_ROAD && look[0].structureType != subStageBuildingTypeSet.buildingType) {
-                        look[0].destroy();
-                        look.pop();
+                    if (look.length) {
+                        if (look[0].structureType == STRUCTURE_ROAD && look[0].structureType != subStageBuildingTypeSet.buildingType) {
+                            look[0].destroy();
+                            look.pop(); 
+                        }
+                        if (look[0].structureType == subStageBuildingTypeSet.buildingType) {
+                            return;
+                        }
                     }
                     const isWall = new Room.Terrain(roomName).get(realX, realY) == TERRAIN_MASK_WALL;
                     if (!isWall && !look.length) {
-                        // console.log(r)
-                        r.createConstructionSite(realX, realY, subStageBuildingTypeSet.buildingType);
-                        // log.log(r.createConstructionSite(realX, realY, subStageBuildingTypeSet.buildingType))
-                        // console.log("creting site " + subStageBuildingTypeSet.buildingType)
-                        stageComplete = false;
+                        var ret = r.createConstructionSite(realX, realY, subStageBuildingTypeSet.buildingType);
+                        if (ret == ERR_RCL_NOT_ENOUGH) {
+                            console.log("ERR_RCL_NOT_ENOUGH")
+                        } else {
+                            stageComplete = false;
+                        }
                     }
                 });
             });
@@ -118,7 +124,7 @@ function buildExtractor(r) {
     }
 }
 
-function restartRoomBuildingLevel(roomName, level = 1) {
+restartRoomBuildingLevel = function(roomName, level = 1) {
     room = Game.rooms[roomName];
     if (room == undefined) return;
     room.memory.currentRoomBuildingLevel = level;
@@ -422,7 +428,61 @@ global.baseRawData = `
             ]
         ]
     },
-    "7": {},
+    "7": {
+        "stages": [
+            [
+                {
+                    "buildingType": "extension",
+                    "pos": [
+                        { "x": -6, "y": 3 },
+                        { "x": -7, "y": 3 },
+                        { "x": -7, "y": 4 },
+                        { "x": 0, "y": -3 },
+                        { "x": 0, "y": -4 },
+                        { "x": -1, "y": -4 },
+                        { "x": -1, "y": -5 },
+                        { "x": -2, "y": -5 },
+                        { "x": -2, "y": -6 },
+                        { "x": -3, "y": -6 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "tower",
+                    "pos": [
+                        { "x": 0, "y": 3 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "lab",
+                    "pos": [
+                        { "x": 4, "y": 1 },
+                        { "x": 5, "y": 1 },
+                        { "x": 5, "y": 2 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "terminal",
+                    "pos": [
+                        { "x": 3, "y": 0 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "factory",
+                    "pos": [
+                        { "x": 2, "y": 2 }
+                    ]
+                }
+            ]
+        ]
+    },
     "8": {}
 }
 `;

@@ -88,6 +88,9 @@ var roleTower = {
             // damagedStructures.forEach((e, i) => (new RoomVisual().text(e.hits + " Order: " + i, e.pos, {align: 'left'})));
 
             if (closestTarget) {
+                if (Game.flags.DISMANTLE != undefined && Game.flags.DISMANTLE.pos.isEqualTo(closestTarget)) {
+                    return
+                }
                 tower.room.visual.circle(closestTarget.pos, {
                     stroke: "green",
                     radius: 0.5,

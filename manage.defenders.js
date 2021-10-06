@@ -1,22 +1,31 @@
 requestGunner = function (_baseRoomName, _targetRoomName) {
-    if (Game.rooms[_baseRoomName].memory.defenders.gunner == undefined) {
+    if (Memory.rooms[_baseRoomName].defenders.gunner == undefined) {
         spawnCreep(roleGunner, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName } }, _baseRoomName);
         return;
     }
-    gunner = Game.getObjectById(Game.rooms[_baseRoomName].memory.defenders.gunner);
+    gunner = Game.getObjectById(Memory.rooms[_baseRoomName].defenders.gunner);
+    if (gunner == null) {
+        spawnCreep(roleGunner, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName } }, _baseRoomName);
+    }
     requestDefender(_baseRoomName, _targetRoomName, gunner);
 };
 
-requestSoldier = function (baseRoomName, targetRoomName) {
-    if (Game.rooms[_baseRoomName].memory.defenders.soldier == undefined) {
+requestSoldier = function (_baseRoomName, _targetRoomName) {
+    if (Memory.rooms[_baseRoomName].defenders.soldier == undefined) {
         spawnCreep(roleSoldier, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName } }, _baseRoomName);
         return;
     }
-    soldier = Game.getObjectById(Game.rooms[_baseRoomName].memory.defenders.soldier);
+    soldier = Game.getObjectById(Memory.rooms[_baseRoomName].defenders.soldier);
+    if(soldier == null) {
+        spawnCreep(roleSoldier, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName } }, _baseRoomName);
+        return;
+    }
     requestDefender(_baseRoomName, _targetRoomName, soldier);
 };
 
-requestDefender = function (baseRoomName, targetRoomName, defender) {
+requestDefender = function (_baseRoomName, _targetRoomName, defender) {
+    console.log(`requestDefender b:${_baseRoomName} t:${_targetRoomName} d:${defender.name}`);
+
     if (Game.rooms[defender.memory.targetRoomName] == undefined) {
         console.log("defender targetRoom is not visible");
         return;

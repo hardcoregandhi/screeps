@@ -1,7 +1,10 @@
 require("manage.baseBuilding");
+require("manage.deadCreepCleanup");
+require("manage.defenders");
 require("manage.spawns");
 require("manage.createCreeps");
 require("manage.structs");
+require("manage.towers");
 require("manage.creeps");
 require("manage.renew");
 require("manage.roads");
@@ -21,6 +24,7 @@ var roleTower = require("tower");
 var roleClaimer = require("role.claimer");
 var roleMover = require("role.mover");
 var roleMoverExt = require("role.moverExt");
+var roleMoverLink = require("role.moverLink");
 var roleDefence = require("role.defense");
 var roleScavenger = require("role.scavenger");
 var roleTraveller = require("role.traveller");
@@ -40,78 +44,40 @@ PathFinder.use(true);
 
 focusHealing = false;
 global.myRooms = ["W6S1", "W3S2", "W6S2"];
-
+global.creepRoomMap = new Map();
+global.nextCreepRoomMapRefreshInterval = 60
+global.nextCreepRoomMapRefreshTime = Game.time + nextCreepRoomMapRefreshInterval
+global.refreshCreepTrackingNextTick = false
 /*
-calls		time		avg	    	function
-9574		200.1		0.021		Room.find
-33199		58.1		0.002		RoomPosition.inRangeTo
-1100		4.6	    	0.004		Room.lookForAt
-300	     	4.0	    	0.013		RoomPosition.findClosestByRange
-13	    	3.2	    	0.245		Spawn.renewCreep
-24	    	1.6	    	0.067		Creep.move
-175	    	0.9	    	0.005		Room.getTerrain
-4	    	0.5	    	0.115		Spawn.spawnCreep
-26	    	0.2	    	0.008		RoomPosition.getRangeTo
-13	    	0.1	    	0.006		RoomPosition.isNearTo
-13	    	0.0	    	0.003		Creep.cancelOrder
-Avg: 15.11	Total: 347.42	Ticks: 23
-
-
-calls		time		avg		function
-2005		42.3		0.021		Room.find
-6465		11.6		0.002		RoomPosition.inRangeTo
-220	    	0.7 		0.003		Room.lookForAt
-60		    0.7	    	0.012		RoomPosition.findClosestByRange
-35	    	0.2	    	0.005		Room.getTerrain
-Avg: 23.08	Total: 69.24	Ticks: 3
-
-
-calls		time		avg		function
-9574		200.1		0.021		Room.find
-33199		58.1		0.002		RoomPosition.inRangeTo
-1100		4.6 		0.004		Room.lookForAt
-300	    	4.0	    	0.013		RoomPosition.findClosestByRange
-13	    	3.2		    0.245		Spawn.renewCreep
-24	    	1.6 		0.067		Creep.move
-175	    	0.9 		0.005		Room.getTerrain
-4	    	0.5 		0.115		Spawn.spawnCreep
-26	    	0.2 		0.008		RoomPosition.getRangeTo
-13	    	0.1 		0.006		RoomPosition.isNearTo
-13  		0.0 		0.003		Creep.cancelOrder
-Avg: 15.11	Total: 347.42	Ticks: 23
-
-
-
-// after swapping find(filter:) for find().filter()
 calls		time		avg		    function
-96	    	96.7		1.007		roleMover.run
-237		    72.3		0.305		Creep.moveTo
-25		    63.4		2.536		roomTracking
-175		    50.3		0.287		roleMoverExt.run
-222		    43.9		0.198		Creep.move
-168		    40.6		0.242		RoomPosition.findClosestByPath
-7167	    39.6		0.006		Room.find
-25		    37.1		1.482		structs
-100		    33.4		0.334		roleHarvSup.run
-100		    32.3		0.323		roleHarvester.run
-152		    32.0		0.211		Creep.moveByPath
-175		    30.8		0.176		roleHarvesterExt.run
-25		    30.8		1.231		creepTracking
-75		    23.6		0.314		roleUpgrader.run
-96		    21.8		0.227		Creep.harvest
-50		    19.7		0.395		roleBuilder.run
-300		    18.4		0.061		Creep.transfer
-6305	   	16.0		0.003		RoomPosition.inRangeTo
-70		    15.0		0.215		Creep.upgradeController
-56		    10.4		0.186		roleClaimer.run
-69		    9.2	        0.134		RoomPosition.findPathTo
-69		    8.3	        0.121		Room.findPath
-744		    8.3	        0.011		RoomPosition.findClosestByRange
-1837	   	8.0	        0.004		RoomPosition.isNearTo
-56		    5.7	        0.102		Creep.reserveController
-25		    5.7	        0.227		renew
-Avg: 21.03	Total: 483.65	Ticks: 23
-
+2119		571.4		0.270		Creep.moveTo
+2127		407.4		0.192		Creep.move
+1547		317.2		0.205		Creep.moveByPath
+498		    266.1		0.534		roleMover.run
+579		    254.5		0.440		roleMoverExt.run
+577		    189.0		0.328		roleHarvester.run
+536		    172.2		0.321		roleHarvesterExt.run
+30149		142.8		0.005		Room.find
+415		    132.2		0.318		roleUpgrader.run
+83		    129.7		1.563		roomTracking
+805		    127.2		0.158		Creep.harvest
+83		    108.2		1.303		structs
+166		    83.2		0.501		roleGunner.run
+553		    78.3		0.142		RoomPosition.findPathTo
+553		    71.8		0.130		Room.findPath
+727		    71.6		0.098		Creep.transfer
+166		    70.7		0.426		roleSoldier.run
+3807		60.4		0.016		RoomPosition.findClosestByRange
+166		    56.3		0.339		roleBuilder.run
+166		    55.7		0.336		roleHarvSup.run
+82		    53.4		0.651		renew
+200		    42.5		0.213		Creep.heal
+839		    21.0		0.025		Creep.withdraw
+208		    19.6		0.094		Creep.repair
+82		    19.3		0.235		Spawn.renewCreep
+79		    18.7		0.237		Creep.upgradeController
+78		    18.4		0.236		roleClaimer.run
+Avg: 19.10	Total: 1872.12	Ticks: 98
 */
 
 // Any modules that you use that modify the game's prototypes should be require'd
@@ -161,11 +127,7 @@ try {
 module.exports.loop = function () {
     profiler.wrap(function () {
         // Cleanup
-        for (var i in Memory.creeps) {
-            if (!Game.creeps[i]) {
-                delete Memory.creeps[i];
-            }
-        }
+        deadCreepCleanup();
 
         // Event logging
         // _.forEach(Game.rooms, (room) => {
@@ -178,23 +140,74 @@ module.exports.loop = function () {
         //         }
         //     });
         // });
+        
+        // _.forEach(Game.rooms, (r) => {
+        //     _.forEach(Memory.rooms[r.name].sources, (s) => {
+        //         if(Game.getObjectById(s.id) == null) {
+        //             console.log("deleting ", s.id)
+        //             delete Memory.rooms[r.name].sources[s]
+        //         }
+        //         if(Game.getObjectById(s.id).room != r) {
+        //             console.log("wrong room ", s.id)
+        //             delete Memory.rooms[r.name].sources[s]
+        //         }
+        //     })
+            
+        // })
+        
+        if(creepRoomMap.size == 0 || Game.time >= nextCreepRoomMapRefreshTime || refreshCreepTrackingNextTick) {
+            console.log("Refreshing CreepRoomMap")
+            creepTracking();
+            resetSourceContainerTracking()
+            nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval
+        }
+        
+        try {
+            roomTracking();
+        } catch(e) {
+            console.log(`roomTracking() failed: ${e}`)
+        }
+        
+        try {
+            runStructs();
+        } catch(e) {
+            console.log(`runStructs() failed: ${e}`)
+            for(var b in e) { 
+              console.log(b); 
+            }
+        }       
 
-        creepTracking();
+        try {
+            runSpawns();
+        } catch(e) {
+            console.log(`runSpawns() failed: ${e}`)
+        }  
+        
+        try {
+            runCreeps();
+        } catch(e) {
+            console.log(`runCreeps() failed: ${e}`)
+        }  
 
-        roomTracking();
-
-        runStructs();
-
-        runSpawns();
-
-        runCreeps();
-
-        runRenew();
+        try {
+            runRenew();
+        } catch(e) {
+            console.log(`runRenew() failed: ${e}`)
+        }
+        
+        try {
+            runBaseBuilder();
+        } catch(e) {
+            console.log(`runBaseBuilder() failed: ${e}`)
+        }
 
         // runRoads();
 
-        runBaseBuilder();
+        
 
-        // createRoadBetweenTargets(Game.getObjectById("5bbcaca99099fc012e635f5f"), Game.getObjectById("613a2d3b1c64906ca07f5676"))
+        // createRoadBetweenTargets(Game.getObjectById("6147ee1a74690ff102592dd3"), Game.getObjectById("5bbcac7f9099fc012e635904"), false)
+        
+        // Memory.prevMemory = Object.assign({}, Memory)
+
     });
 };

@@ -27,6 +27,7 @@ global.roleExplorer = {
                 creep.moveTo(exit);
             }
         } else {
+            
         }
     },
 };

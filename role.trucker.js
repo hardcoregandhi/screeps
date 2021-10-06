@@ -4,16 +4,16 @@ function log(str) {
 
 global.roleTrucker = {
     name: "trucker",
-    roleMemory: { memory: {} },
+    roleMemory: { memory: { targetRoomName:null } },
     // prettier-ignore
     BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
     baseBodyParts: [],
     bodyLoop: [CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
+    bodyPartsMaxCount: 30,
+
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        creep.memory.targetRoomName = "W16S21";
-
         if (creep.memory.fakeBaseRoomName == undefined) {
             creep.memory.fakeBaseRoomName = creep.memory.baseRoomName;
         }
@@ -63,24 +63,17 @@ global.roleTrucker = {
         }
 
         if (!creep.memory.returning) {
-            var target = creep.pos.findClosestByPath(FIND_STRUCTURES).filter((structure) => {
-                return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-            });
-            if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
+            var target = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].mainStorage)
+            if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {
                     visualizePathStyle: { stroke: "#ffaa00" },
                 });
             }
         } else {
-            var target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                },
-            });
-            if (creep.withdraw(target, RESOURCE_ENERGY) != OK) {
+            var target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage)
+            if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {
                     visualizePathStyle: { stroke: "#ffaa00" },
-                    maxRooms: 1,
                 });
             }
         }
