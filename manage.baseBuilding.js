@@ -29,7 +29,7 @@ global.runBaseBuilder = function () {
                     if (look.length) {
                         if (look[0].structureType == STRUCTURE_ROAD && look[0].structureType != subStageBuildingTypeSet.buildingType) {
                             look[0].destroy();
-                            look.pop(); 
+                            look.pop();
                         }
                         if (look[0].structureType == subStageBuildingTypeSet.buildingType) {
                             return;
@@ -39,7 +39,7 @@ global.runBaseBuilder = function () {
                     if (!isWall && !look.length) {
                         var ret = r.createConstructionSite(realX, realY, subStageBuildingTypeSet.buildingType);
                         if (ret == ERR_RCL_NOT_ENOUGH) {
-                            console.log("ERR_RCL_NOT_ENOUGH")
+                            console.log("ERR_RCL_NOT_ENOUGH");
                         } else {
                             stageComplete = false;
                         }
@@ -124,7 +124,7 @@ function buildExtractor(r) {
     }
 }
 
-restartRoomBuildingLevel = function(roomName, level = 1) {
+restartRoomBuildingLevel = function (roomName, level = 1) {
     room = Game.rooms[roomName];
     if (room == undefined) return;
     room.memory.currentRoomBuildingLevel = level;
@@ -132,7 +132,7 @@ restartRoomBuildingLevel = function(roomName, level = 1) {
         room.memory.building[i].currentStage = 0;
         room.memory.building[i].isComplete = false;
     }
-}
+};
 
 global.baseRawData = `
 {

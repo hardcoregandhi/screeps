@@ -1,13 +1,13 @@
 var roleTower = require("tower");
 
 global.runStructs = function () {
-    console.log(Game.shard.name)
+    console.log(Game.shard.name);
     myRooms.forEach((r) => {
         room = Game.rooms[r];
-        
-        if(room == null) return
-        
-        console.log(room)
+
+        if (room == null) return;
+
+        console.log(room);
 
         // var allStructures = room.find(FIND_STRUCTURES);
 
@@ -45,20 +45,20 @@ global.runStructs = function () {
         //             break;
         //     }
         // }
-        
+
         // var towers = room.find(FIND_STRUCTURES).filter((s) => s.structureType == STRUCTURE_TOWER);
         // for (t of Memory.rooms[room.name].towers) {
         //     roleTower.run(Game.getObjectById(t));
         // }
-        
-        runTowers(room)
+
+        runTowers(room);
 
         if (Memory.rooms[room.name].link_storage && Memory.rooms[room.name].link_controller) {
             // console.log(`${room.name} has 2 links`)
             var link_storage = Game.getObjectById(Memory.rooms[room.name].link_storage);
             if (link_storage == null) {
-                Memory.rooms[room.name].link_storage == undefined
-                Memory.rooms[room.name].link_controller == undefined
+                Memory.rooms[room.name].link_storage == undefined;
+                Memory.rooms[room.name].link_controller == undefined;
             }
 
             // if (link_storage && link_storage.store.getUsedCapacity([RESOURCE_ENERGY]) == 800 && creepRoomMap.get(room.name + "eenergy") > 2000) {
@@ -74,7 +74,7 @@ global.runStructs = function () {
             // }
         }
         // else if(links.length > 2) {
-            
+
         // }
 
         if (Memory.rooms[room.name].observer != undefined) {
@@ -85,7 +85,7 @@ global.runStructs = function () {
                 Memory.rooms[room.name].targetPowerRoom = 0;
             }
 
-            o = Game.getObjectById(Memory.rooms[room.name].observer)
+            o = Game.getObjectById(Memory.rooms[room.name].observer);
             observerTarget = Memory.rooms[room.name].targetPowerRooms[Memory.rooms[room.name].targetPowerRoom];
             o.observeRoom(observerTarget);
             console.log(Game.rooms[observerTarget]);
@@ -120,6 +120,5 @@ global.runStructs = function () {
                 room.controller.activateSafeMode();
             }
         }
-
     });
 };

@@ -107,8 +107,8 @@ global.roleHarvesterExt = {
                 } else if (meleeCount < rangedCount || creepRoomMap.get(creep.memory.targetRoomName + "gunnerTarget") == undefined || creepRoomMap.get(creep.memory.targetRoomName + "gunnerTarget") < 1) {
                     requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName);
                 }
-            } catch(e) {
-                console.log(`${creep}: ${e}`); 
+            } catch (e) {
+                console.log(`${creep}: ${e}`);
             }
             if (closestStructure) return;
             creep.memory.fleeing = 20;
@@ -193,21 +193,21 @@ global.roleHarvesterExt = {
             }
             try {
                 if (Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container == undefined) {
-                    var containersNearToSource = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter(structure => {
-                        return structure.structureType == STRUCTURE_CONTAINER && Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(structure, 2)
+                    var containersNearToSource = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
+                        return structure.structureType == STRUCTURE_CONTAINER && Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(structure, 2);
                     });
                     if (containersNearToSource.length) {
-                        Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container = {}
-                        Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id = containersNearToSource[0].id
+                        Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container = {};
+                        Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id = containersNearToSource[0].id;
                     }
                 }
                 var container = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id);
                 creep.memory.targetContainer = container.id;
                 // createRoadBetweenTargets(container, Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id))
-            } catch (e) {            
+            } catch (e) {
                 console.log(`${creep}: ${e}`);
-                console.log(`${creep}: ${creep.memory.targetRoomName}`); 
-                console.log(`${creep}: ${creep.memory.targetSource}`); 
+                console.log(`${creep}: ${creep.memory.targetRoomName}`);
+                console.log(`${creep}: ${creep.memory.targetSource}`);
             }
             if (container == undefined) {
                 // console.log(666)

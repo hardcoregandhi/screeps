@@ -4,7 +4,7 @@ roomTracking = function () {
             Memory.rooms = {};
         }
         const terrain = r.getTerrain();
-        
+
         if (Memory.rooms[r.name] == undefined) Memory.rooms[r.name] = {};
 
         if (myRooms.includes(r.name)) {
@@ -45,7 +45,7 @@ roomTracking = function () {
                         observers.push(structure);
                         break;
                 }
-            }        
+            }
 
             //elapsed = Game.cpu.getUsed() - startCpu;
             //console.log("allStructures find has used " + elapsed + " CPU time");
@@ -62,8 +62,7 @@ roomTracking = function () {
             //console.log("eenergy calc has used " + elapsed + " CPU time");
             //startCpu = Game.cpu.getUsed();
 
-            Memory.rooms[r.name].towers = towers.map((t) => t.id)
-
+            Memory.rooms[r.name].towers = towers.map((t) => t.id);
 
             // if (Memory.rooms[r.name] != undefined) delete Memory.rooms[r.name].sources;
 
@@ -145,16 +144,16 @@ roomTracking = function () {
             //elapsed = Game.cpu.getUsed() - startCpu;
             //console.log("eenergy calc has used " + elapsed + " CPU time");
             //startCpu = Game.cpu.getUsed();
-            
+
             if (Memory.rooms[r.name] == undefined) {
                 Memory.rooms[r.name] = {};
             }
         }
 
         var sources = r.find(FIND_SOURCES);
-        
-        if(Memory.rooms[r.name].sources == undefined) {
-            Memory.rooms[r.name].sources = {}
+
+        if (Memory.rooms[r.name].sources == undefined) {
+            Memory.rooms[r.name].sources = {};
         }
 
         // Memory.rooms[r.name].sources = {};
@@ -164,7 +163,7 @@ roomTracking = function () {
             // //console.log(i)
             // //console.log(s.id)
             if (Memory.rooms[r.name].sources[s.id] == undefined) {
-                console.log("adding new source ", r.name, " ", s.id)
+                console.log("adding new source ", r.name, " ", s.id);
                 Memory.rooms[r.name].sources[s.id] = {};
                 Memory.rooms[r.name].sources[s.id].id = s.id;
             }
@@ -192,18 +191,18 @@ roomTracking = function () {
             if (Memory.rooms[r.name].sources[s.id].container == undefined) {
                 for (cont of containers) {
                     if (cont.pos.inRangeTo(s, 2)) {
-                        console.log("adding new container ", r.name, " ", cont.id)
+                        console.log("adding new container ", r.name, " ", cont.id);
                         Memory.rooms[r.name].sources[s.id].container = {};
                         Memory.rooms[r.name].sources[s.id].container.id = cont.id;
                         Memory.rooms[r.name].sources[s.id].container.targettedBy = 0;
                     }
                 }
             }
-            
-            if (Memory.rooms[r.name].sources[s.id].link == undefined && r.controller.level >=6 && links.length) {
+
+            if (Memory.rooms[r.name].sources[s.id].link == undefined && r.controller.level >= 6 && links.length) {
                 for (link of links) {
                     if (link.pos.inRangeTo(s, 2)) {
-                        console.log("adding new link ", r.name, " ", link.id)
+                        console.log("adding new link ", r.name, " ", link.id);
                         Memory.rooms[r.name].sources[s.id].link = {};
                         Memory.rooms[r.name].sources[s.id].link = link.id;
                     }
@@ -211,13 +210,13 @@ roomTracking = function () {
             }
 
             // resetSourceContainerTracking(r.name)
-            
+
             new RoomVisual().text(Memory.rooms[r.name].sources[s.id].targettedBy, s.pos.x - 0.17, s.pos.y + 0.2, { align: "left", font: 0.6 });
 
             if (Memory.rooms[r.name].sources[s.id].container != undefined) {
                 var cont = Game.getObjectById(Memory.rooms[r.name].sources[s.id].container.id);
                 if (cont == null) {
-                    Memory.rooms[r.name].sources[s.id].container = undefined
+                    Memory.rooms[r.name].sources[s.id].container = undefined;
                 } else {
                     new RoomVisual().text(Memory.rooms[r.name].sources[s.id].container.targettedBy, cont.pos.x - 0.17, cont.pos.y + 0.2, { align: "left", font: 0.6 });
                 }
@@ -228,18 +227,17 @@ roomTracking = function () {
         try {
             if (myRooms.includes(r.name)) {
                 if (links.length >= 2 && Memory.rooms[r.name].link_storage == undefined && Memory.rooms[r.name].link_controller == undefined && Memory.rooms[r.name].mainStorage != undefined) {
-                    
                     var link_storage = Game.getObjectById(Memory.rooms[r.name].mainStorage).pos.findInRange(links, 2);
-                    if (link_storage.length) link_storage = link_storage[0]
+                    if (link_storage.length) link_storage = link_storage[0];
                     var link_controller = r.controller.pos.findInRange(links, 3);
-                    if (link_controller.length) link_controller = link_controller[0]
-        
+                    if (link_controller.length) link_controller = link_controller[0];
+
                     Memory.rooms[r.name].link_storage = link_storage.id;
                     Memory.rooms[r.name].link_controller = link_controller.id;
                 }
             }
-        } catch(e) {
-            console.log(`link setup failed in ${r.name}: ${e}`)
+        } catch (e) {
+            console.log(`link setup failed in ${r.name}: ${e}`);
         }
 
         //elapsed = Game.cpu.getUsed() - startCpu;
@@ -263,7 +261,7 @@ roomTracking = function () {
             continue;
         }
         // Creep info
-        new RoomVisual().text(`${r.name} L:${r.controller.level}, ${Math.round(r.controller.progress/1000)}K/${r.controller.progressTotal/1000}K`, 1, listOffset + inc(), { align: "left", font: fontSize });
+        new RoomVisual().text(`${r.name} L:${r.controller.level}, ${Math.round(r.controller.progress / 1000)}K/${r.controller.progressTotal / 1000}K`, 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text("🔋  ExcessEnergy: " + creepRoomMap.get(r.name + "eenergy"), 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text("⚡️ Energy      : " + r.energyAvailable + "/" + r.energyCapacityAvailable, 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text("⛏️ Harvesters  : " + creepRoomMap.get(r.name + "harvester"), 1, listOffset + inc(), { align: "left", font: fontSize });
@@ -279,26 +277,22 @@ roomTracking = function () {
     }
 };
 
-
-
-resetSourceContainerTracking = function() {
-    
+resetSourceContainerTracking = function () {
     _.forEach(Game.rooms, (r) => {
         _.forEach(Memory.rooms[r.name].sources, (s) => {
             s.targettedBy = 0;
-            if(s.container != undefined)
-                s.container.targettedBy = 0
-        })
-    })
+            if (s.container != undefined) s.container.targettedBy = 0;
+        });
+    });
 
     _.forEach(Game.creeps, (c) => {
         // console.log(c.name, c.pos)
 
-        if(c.memory.baseRoomName == undefined) {
-            console.log(c.name, c.pos, "no baseRoomName")
+        if (c.memory.baseRoomName == undefined) {
+            console.log(c.name, c.pos, "no baseRoomName");
         }
-        
-        try{
+
+        try {
             if (c.memory.role == "harvester") {
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].targettedBy += 1;
             } else if (c.memory.role == "harvesterExt") {
@@ -309,8 +303,8 @@ resetSourceContainerTracking = function() {
                 Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
             }
 
-        
-            if(c.memory.role == "soldier" || c.memory.role == "gunner") {// protects against claimers which will have baseRoomNames which dont have defenders
+            if (c.memory.role == "soldier" || c.memory.role == "gunner") {
+                // protects against claimers which will have baseRoomNames which dont have defenders
                 if (Memory.rooms[c.memory.baseRoomName].defenders.soldier == null) {
                     if (c.memory.role == "soldier") {
                         Memory.rooms[c.memory.baseRoomName].defenders.soldier = c.id;
@@ -318,13 +312,12 @@ resetSourceContainerTracking = function() {
                 }
                 if (Memory.rooms[c.memory.baseRoomName].defenders.gunner == null) {
                     if (c.memory.role == "gunner") {
-                       Memory.rooms[c.memory.baseRoomName].defenders.gunner = c.id;
+                        Memory.rooms[c.memory.baseRoomName].defenders.gunner = c.id;
                     }
                 }
             }
-        } catch(e) {
-            console.log("error", c.name, c.pos, c.memory.baseRoomName, e)
+        } catch (e) {
+            console.log("error", c.name, c.pos, c.memory.baseRoomName, e);
         }
-        
     });
-}
+};

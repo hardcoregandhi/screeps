@@ -16,7 +16,7 @@ requestSoldier = function (_baseRoomName, _targetRoomName) {
         return;
     }
     soldier = Game.getObjectById(Memory.rooms[_baseRoomName].defenders.soldier);
-    if(soldier == null) {
+    if (soldier == null) {
         spawnCreep(roleSoldier, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName } }, _baseRoomName);
         return;
     }

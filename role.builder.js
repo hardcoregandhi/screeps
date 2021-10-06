@@ -61,18 +61,16 @@ global.roleBuilder = {
         //             lineStyle: "dashed",
         //             fill: "transparent",
         //         });
-        
-        
+
         if (creepRoomMap.get(creep.room.name + "harvester") < 1 && (creepRoomMap.get(creep.room.name + "eenergy") == undefined || creepRoomMap.get(creep.room.name + "eenergy") < 200)) {
-            log(creep, "Defauling to Harvester")
+            log(creep, "Defauling to Harvester");
             roleHarvester.run(creep);
             return;
         } else if (creepRoomMap.get(r.name + "csites") == 0) {
-            log(creep, "Defauling to Upgrader")
+            log(creep, "Defauling to Upgrader");
             roleUpgrader.run(creep);
             return;
         }
-        
 
         if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.building = false;
@@ -125,7 +123,7 @@ global.roleBuilder = {
                     });
                 }
             } else {
-                roleBuilder.run(creep)
+                roleBuilder.run(creep);
             }
             if (customStructureSpecificPercentLimits.length) {
                 repairTarget = creep.pos.findClosestByPath(customStructureSpecificPercentLimits);

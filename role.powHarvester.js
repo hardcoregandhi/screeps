@@ -27,7 +27,7 @@ global.rolePowHarvester = {
                 Memory.prevPowerBankHealth = powerBanks[0].hits;
             }
         } catch (e) {
-            console.log(`${creep}: ${e}`); 
+            console.log(`${creep}: ${e}`);
         }
         if (powerBanks.length) {
             if (creep.attack(powerBanks[0]) != OK) {

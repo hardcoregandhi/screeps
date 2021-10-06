@@ -205,7 +205,7 @@ global.roleMover = {
                     }
                 }
             } catch (e) {
-                console.log(`${creep}: ${e}`); 
+                console.log(`${creep}: ${e}`);
             }
 
             if (!targets.length) {
@@ -215,7 +215,7 @@ global.roleMover = {
                     log(creep, 8);
                     creep.moveTo(mainStorage);
                 } catch (e) {
-                    console.log(`${creep}: ${e}`); 
+                    console.log(`${creep}: ${e}`);
                 }
                 return;
             }
