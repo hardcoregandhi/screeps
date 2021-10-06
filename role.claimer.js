@@ -17,10 +17,10 @@ global.roleClaimer = {
     /** @param {Creep} creep **/
     run: function (creep) {
         creep.say("🏳️");
-        
+
         if (creep.memory.interShard) {
-            interShardMove(creep)
-            return
+            interShardMove(creep);
+            return;
         }
 
         if (Game.rooms[creep.memory.baseRoomName] == undefined) {

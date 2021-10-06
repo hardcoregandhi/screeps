@@ -4,13 +4,12 @@ function log(str) {
 
 global.roleTrucker = {
     name: "trucker",
-    roleMemory: { memory: { targetRoomName:null } },
+    roleMemory: { memory: { targetRoomName: null } },
     // prettier-ignore
     BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
     baseBodyParts: [],
     bodyLoop: [CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
     bodyPartsMaxCount: 30,
-
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -63,14 +62,14 @@ global.roleTrucker = {
         }
 
         if (!creep.memory.returning) {
-            var target = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].mainStorage)
+            var target = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].mainStorage);
             if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {
                     visualizePathStyle: { stroke: "#ffaa00" },
                 });
             }
         } else {
-            var target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage)
+            var target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {
                     visualizePathStyle: { stroke: "#ffaa00" },

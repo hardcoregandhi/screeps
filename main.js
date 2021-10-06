@@ -45,9 +45,9 @@ PathFinder.use(true);
 focusHealing = false;
 global.myRooms = ["W6S1", "W3S2", "W6S2"];
 global.creepRoomMap = new Map();
-global.nextCreepRoomMapRefreshInterval = 60
-global.nextCreepRoomMapRefreshTime = Game.time + nextCreepRoomMapRefreshInterval
-global.refreshCreepTrackingNextTick = false
+global.nextCreepRoomMapRefreshInterval = 60;
+global.nextCreepRoomMapRefreshTime = Game.time + nextCreepRoomMapRefreshInterval;
+global.refreshCreepTrackingNextTick = false;
 /*
 calls		time		avg		    function
 2119		571.4		0.270		Creep.moveTo
@@ -140,7 +140,7 @@ module.exports.loop = function () {
         //         }
         //     });
         // });
-        
+
         // _.forEach(Game.rooms, (r) => {
         //     _.forEach(Memory.rooms[r.name].sources, (s) => {
         //         if(Game.getObjectById(s.id) == null) {
@@ -152,62 +152,59 @@ module.exports.loop = function () {
         //             delete Memory.rooms[r.name].sources[s]
         //         }
         //     })
-            
+
         // })
-        
-        if(creepRoomMap.size == 0 || Game.time >= nextCreepRoomMapRefreshTime || refreshCreepTrackingNextTick) {
-            console.log("Refreshing CreepRoomMap")
+
+        if (creepRoomMap.size == 0 || Game.time >= nextCreepRoomMapRefreshTime || refreshCreepTrackingNextTick) {
+            console.log("Refreshing CreepRoomMap");
             creepTracking();
-            resetSourceContainerTracking()
-            nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval
+            resetSourceContainerTracking();
+            nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval;
         }
-        
+
         try {
             roomTracking();
-        } catch(e) {
-            console.log(`roomTracking() failed: ${e}`)
+        } catch (e) {
+            console.log(`roomTracking() failed: ${e}`);
         }
-        
+
         try {
             runStructs();
-        } catch(e) {
-            console.log(`runStructs() failed: ${e}`)
-            for(var b in e) { 
-              console.log(b); 
+        } catch (e) {
+            console.log(`runStructs() failed: ${e}`);
+            for (var b in e) {
+                console.log(b);
             }
-        }       
+        }
 
         try {
             runSpawns();
-        } catch(e) {
-            console.log(`runSpawns() failed: ${e}`)
-        }  
-        
+        } catch (e) {
+            console.log(`runSpawns() failed: ${e}`);
+        }
+
         try {
             runCreeps();
-        } catch(e) {
-            console.log(`runCreeps() failed: ${e}`)
-        }  
+        } catch (e) {
+            console.log(`runCreeps() failed: ${e}`);
+        }
 
         try {
             runRenew();
-        } catch(e) {
-            console.log(`runRenew() failed: ${e}`)
+        } catch (e) {
+            console.log(`runRenew() failed: ${e}`);
         }
-        
+
         try {
             runBaseBuilder();
-        } catch(e) {
-            console.log(`runBaseBuilder() failed: ${e}`)
+        } catch (e) {
+            console.log(`runBaseBuilder() failed: ${e}`);
         }
 
         // runRoads();
 
-        
-
         // createRoadBetweenTargets(Game.getObjectById("6147ee1a74690ff102592dd3"), Game.getObjectById("5bbcac7f9099fc012e635904"), false)
-        
-        // Memory.prevMemory = Object.assign({}, Memory)
 
+        // Memory.prevMemory = Object.assign({}, Memory)
     });
 };

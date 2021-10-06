@@ -70,26 +70,25 @@ global.roleUpgrader = {
 
             if (Memory.rooms[creep.memory.baseRoomName].link_storage != undefined && Memory.rooms[creep.memory.baseRoomName].link_controller != undefined) {
                 try {
-                    log(creep, "links")
+                    log(creep, "links");
                     var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
                     if (link_controller /*&& link_controller.store.getUsedCapacity(RESOURCE_ENERGY) > 0*/) {
                         creep.say("h2link");
-                        log(creep, "h2link")
+                        log(creep, "h2link");
                         if (link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
                             creep.memory.upgrading = true;
-                        }
-                        else if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
+                        } else if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
                             moveToTarget(creep, link_controller);
                         }
                         moveToTarget(creep, link_controller);
                         return;
                     }
                 } catch (e) {
-                    console.log(`${creep}: ${e}`); 
+                    console.log(`${creep}: ${e}`);
                 }
             }
             if (mainStorage != undefined) {
-                log(creep, "mainStorage")
+                log(creep, "mainStorage");
                 if (
                     (creepRoomMap.get(creep.room.name + "eenergy") < 2000 && creep.room.energyAvailable < creep.room.energyCapacityAvailable - 400) ||
                     (mainStorage.structureType == STRUCTURE_CONTAINER && mainStorage.store.getUsedCapacity() < mainStorage.store.getCapacity() / 2)

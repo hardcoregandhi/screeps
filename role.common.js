@@ -79,35 +79,37 @@ global.returnToHeal = function (creep, room) {
     }
 };
 
-global.interShardMove = function(creep) {
-    if(creep.memory.interShard.length == 0) {
+global.interShardMove = function (creep) {
+    if (creep.memory.interShard.length == 0) {
         delete creep.memory.interShard;
     }
 
-    switch(creep.memory.interShard[0]) {
+    switch (creep.memory.interShard[0]) {
         case "PORTAL":
-            portal = creep.room.find(FIND_STRUCTURES).filter(s => {return s.structureType == STRUCTURE_PORTAL});
+            portal = creep.room.find(FIND_STRUCTURES).filter((s) => {
+                return s.structureType == STRUCTURE_PORTAL;
+            });
             if (!portal.length) {
-                console.log(`${creep.name}@${creep.pos} error: no portal found`)
-                return
+                console.log(`${creep.name}@${creep.pos} error: no portal found`);
+                return;
             }
-            if(portal.isNearTo(creep)) {
-                creep.memory.interShard.shift()
-                return
+            if (portal.isNearTo(creep)) {
+                creep.memory.interShard.shift();
+                return;
             }
-            creep.moveTo(portal[0])
-            
+            creep.moveTo(portal[0]);
+
             break;
         default:
-            if(creep.room.name != creep.memory.interShard[0]) {
+            if (creep.room.name != creep.memory.interShard[0]) {
                 const route = Game.map.findRoute(creep.room.name, creep.memory.interShard[0]);
                 if (route.length > 0) {
                     const exit = creep.pos.findClosestByRange(route[0].exit);
                     creep.moveTo(exit);
                 }
             } else {
-                creep.memory.interShard.shift()
+                creep.memory.interShard.shift();
             }
             break;
     }
-}
+};

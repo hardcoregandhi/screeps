@@ -11,7 +11,7 @@ global.roleMoverLink = {
         MOVING: 1,
         PICKUP: 2,
         LOADING: 3,
-      },
+    },
     name: "moverLink",
     roleMemory: { memory: {} },
     // prettier-ignore
@@ -71,20 +71,19 @@ global.roleMoverLink = {
 
         log(creep, 5);
 
-        var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller)
+        var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
         var link_storage = Game.getObjectById(Memory.rooms[creep.room.name].link_storage);
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
         if (creepRoomMap.get(creep.room.name + "eenergy") > 100000 && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
-            log(creep, "controller empty, filling ", link_controller)
-            creep.withdraw(mainStorage, RESOURCE_ENERGY)
-            creep.transfer(link_storage, RESOURCE_ENERGY)
-            link_storage.transferEnergy(link_controller, link_storage.store.getUsedCapacity(RESOURCE_ENERGY))
-            return
+            log(creep, "controller empty, filling ", link_controller);
+            creep.withdraw(mainStorage, RESOURCE_ENERGY);
+            creep.transfer(link_storage, RESOURCE_ENERGY);
+            link_storage.transferEnergy(link_controller, link_storage.store.getUsedCapacity(RESOURCE_ENERGY));
+            return;
         }
 
         if (creep.memory.moving) {
             log(creep, "moving");
-            
 
             if (mainStorage == undefined) {
                 log(creep, "mainStorage could not be found");
@@ -107,14 +106,14 @@ global.roleMoverLink = {
                     creep.memory.moving = true;
                 }
                 // if (creepRoomMap.get(creep.room.name + "eenergy") < 20000) {
-                    if (creep.withdraw(link_storage, RESOURCE_ENERGY) != OK) {
-                        log(creep, creep.withdraw(link_storage, RESOURCE_ENERGY))
-                        log(creep, "moving to " + link_storage)
-                        creep.moveTo(link_storage);
-                    }
+                if (creep.withdraw(link_storage, RESOURCE_ENERGY) != OK) {
+                    log(creep, creep.withdraw(link_storage, RESOURCE_ENERGY));
+                    log(creep, "moving to " + link_storage);
+                    creep.moveTo(link_storage);
+                }
                 // } else {
                 //     try {
-                //         
+                //
                 //         if (link_controller.store.getFreeCapacity(RESOURCE_ENERGY) > 10) {
                 //             console.log(link_storage.transferEnergy(link_controller, link_controller.store.getFreeCapacity(RESOURCE_ENERGY)))
                 //             return
@@ -125,7 +124,7 @@ global.roleMoverLink = {
                 // }
                 return;
             } catch (e) {
-                console.log(`${creep}: ${e}`); 
+                console.log(`${creep}: ${e}`);
             }
         }
     },

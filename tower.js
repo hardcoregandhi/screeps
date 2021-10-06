@@ -89,7 +89,7 @@ var roleTower = {
 
             if (closestTarget) {
                 if (Game.flags.DISMANTLE != undefined && Game.flags.DISMANTLE.pos.isEqualTo(closestTarget)) {
-                    return
+                    return;
                 }
                 tower.room.visual.circle(closestTarget.pos, {
                     stroke: "green",

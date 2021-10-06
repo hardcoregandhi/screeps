@@ -1,10 +1,10 @@
-refreshCreepTracking = function() {
-    if(creepRoomMap.size == 0 || Game.time >= nextCreepRoomMapRefreshTime) {
-        console.log("Refreshing CreepRoomMap")
+refreshCreepTracking = function () {
+    if (creepRoomMap.size == 0 || Game.time >= nextCreepRoomMapRefreshTime) {
+        console.log("Refreshing CreepRoomMap");
         creepTracking();
-        nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval
+        nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval;
     }
-}
+};
 
 creepTracking = function () {
     global.creepRoomMap = new Map();
@@ -63,7 +63,7 @@ creepTracking = function () {
         });
         creepRoomMap.set(r.name + "csites", r.find(FIND_CONSTRUCTION_SITES).length);
     });
-    
-    nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval
-    refreshCreepTrackingNextTick = false
+
+    nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval;
+    refreshCreepTrackingNextTick = false;
 };
