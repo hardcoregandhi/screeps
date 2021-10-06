@@ -35,7 +35,7 @@ global.runCreeps = function () {
 
             pickupNearby(creep);
 
-            if (creep.memory.role == "DIE") {
+            if (creep.memory.DIE != undefined) {
                 spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
                 creep.moveTo(spawn.pos);
                 if (spawn.recycleCreep(creep) != 0) {
@@ -108,6 +108,9 @@ global.runCreeps = function () {
             }
             if (creep.memory.role == "moverExt") {
                 roleMoverExt.run(creep);
+            }
+            if (creep.memory.role == "moverLink") {
+                roleMoverLink.run(creep);
             }
             if (creep.memory.role == "trucker") {
                 roleTrucker.run(creep);

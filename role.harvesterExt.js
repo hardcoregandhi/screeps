@@ -1,5 +1,5 @@
 function log(creep, str) {
-    if (creep.name == "HarvesterExt_534") if (0) console.log(str);
+    if (0) if (creep.name == "HarvesterExt_161") console.log(str);
 }
 
 var roleHarvester = require("role.harvester");
@@ -25,21 +25,7 @@ global.roleHarvesterExt = {
                     creep.memory.targetSource = s.id;
                 }
             });
-        }
-
-        if (Game.flags.DISMANTLE) {
-            if (Game.flags.DISMANTLE.room == creep.room) {
-                var dismantle = Game.flags.DISMANTLE.pos.lookFor(LOOK_STRUCTURES)[0];
-                if (dismantle) {
-                    if (creep.dismantle(dismantle) != OK) {
-                        // console.log(creep.dismantle(dismantle));
-                        creep.moveTo(dismantle, {
-                            visualizePathStyle: { stroke: "#ffaa00" },
-                        });
-                    }
-                    return;
-                }
-            }
+            Memory.rooms[creep.memory.targetRoomName].sources[s.id].targettedBy += 1;
         }
 
         log(creep, 1);
@@ -49,7 +35,7 @@ global.roleHarvesterExt = {
         }
 
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
-            if (creep.store.getUsedCapacity > 0) {
+            if (creep.store.getUsedCapacity() > 0) {
                 var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
                     return structure.structureType == STRUCTURE_CONTAINER && creep.pos.inRangeTo(structure.pos, 1);
                 });
@@ -115,11 +101,14 @@ global.roleHarvesterExt = {
         }
 
         if (hostileCreeps.length || closestStructure) {
-            if (meleeCount > rangedCount || creepRoomMap.get(creep.memory.targetRoomName + "soldierTarget") == undefined || creepRoomMap.get(creep.memory.targetRoomName + "soldierTarget") < 1) {
-                requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName);
-            } else if (meleeCount < rangedCount || creepRoomMap.get(creep.memory.targetRoomName + "gunnerTarget") == undefined || creepRoomMap.get(creep.memory.targetRoomName + "gunnerTarget") < 1) {
-                // spawnCreep(roleGunner, "auto", { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
-                requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName);
+            try {
+                if (meleeCount > rangedCount || creepRoomMap.get(creep.memory.targetRoomName + "soldierTarget") == undefined || creepRoomMap.get(creep.memory.targetRoomName + "soldierTarget") < 1) {
+                    requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName);
+                } else if (meleeCount < rangedCount || creepRoomMap.get(creep.memory.targetRoomName + "gunnerTarget") == undefined || creepRoomMap.get(creep.memory.targetRoomName + "gunnerTarget") < 1) {
+                    requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName);
+                }
+            } catch(e) {
+                console.log(`${creep}: ${e}`); 
             }
             if (closestStructure) return;
             creep.memory.fleeing = 20;
@@ -203,10 +192,23 @@ global.roleHarvesterExt = {
                 return;
             }
             try {
+                if (Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container == undefined) {
+                    var containersNearToSource = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter(structure => {
+                        return structure.structureType == STRUCTURE_CONTAINER && Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(structure, 2)
+                    });
+                    if (containersNearToSource.length) {
+                        Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container = {}
+                        Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id = containersNearToSource[0].id
+                    }
+                }
                 var container = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id);
                 creep.memory.targetContainer = container.id;
                 // createRoadBetweenTargets(container, Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id))
-            } catch (e) {}
+            } catch (e) {            
+                console.log(`${creep}: ${e}`);
+                console.log(`${creep}: ${creep.memory.targetRoomName}`); 
+                console.log(`${creep}: ${creep.memory.targetSource}`); 
+            }
             if (container == undefined) {
                 // console.log(666)
                 log(creep, "no exts, spawn, or container found");

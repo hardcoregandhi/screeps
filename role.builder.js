@@ -61,6 +61,18 @@ global.roleBuilder = {
         //             lineStyle: "dashed",
         //             fill: "transparent",
         //         });
+        
+        
+        if (creepRoomMap.get(creep.room.name + "harvester") < 1 && (creepRoomMap.get(creep.room.name + "eenergy") == undefined || creepRoomMap.get(creep.room.name + "eenergy") < 200)) {
+            log(creep, "Defauling to Harvester")
+            roleHarvester.run(creep);
+            return;
+        } else if (creepRoomMap.get(r.name + "csites") == 0) {
+            log(creep, "Defauling to Upgrader")
+            roleUpgrader.run(creep);
+            return;
+        }
+        
 
         if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.building = false;
@@ -112,6 +124,8 @@ global.roleBuilder = {
                         visualizePathStyle: { stroke: "#ffffff" },
                     });
                 }
+            } else {
+                roleBuilder.run(creep)
             }
             if (customStructureSpecificPercentLimits.length) {
                 repairTarget = creep.pos.findClosestByPath(customStructureSpecificPercentLimits);
@@ -139,16 +153,16 @@ global.roleBuilder = {
                 if ((creepRoomMap.get(creep.room.name + "eenergy") === undefined && creep.room.energyAvailable < creep.room.energyCapacityAvailable / 2) || creepRoomMap.get(creep.room.name + "eenergy") < 1500) {
                     log(creep, 10);
                     try {
-                        var l_to = Game.getObjectById(Memory.rooms[creep.room.name].l_to);
-                        if (l_to && l_to.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-                            if (creep.withdraw(l_to, RESOURCE_ENERGY) != OK) {
-                                moveToTarget(creep, l_to);
+                        var link_controller = Game.getObjectById(Memory.rooms[creep.room.name].link_controller);
+                        if (link_controller && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                            if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
+                                moveToTarget(creep, link_controller);
                             }
                             return;
                         }
                     } catch (error) {
-                        // console.log(error);
-                        console.trace();
+                        console.log(error);
+                        // console.trace();
                     }
 
                     moveToTarget(creep, creep.room.controller.pos, false);

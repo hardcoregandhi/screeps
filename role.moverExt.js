@@ -148,7 +148,11 @@ global.roleMoverExt = {
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (mainStorage != undefined) {
                 if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
-                    moveToMultiRoomTarget(creep, mainStorage);
+                    if (mainStorage.pos.getRangeTo(creep.pos) < 5) {
+                        moveToMultiRoomTarget(creep, mainStorage);
+                    } else {
+                        moveToMultiRoomTarget(creep, mainStorage);
+                    }
                 }
                 return;
             }

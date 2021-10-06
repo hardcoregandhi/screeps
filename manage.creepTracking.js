@@ -1,6 +1,14 @@
+refreshCreepTracking = function() {
+    if(creepRoomMap.size == 0 || Game.time >= nextCreepRoomMapRefreshTime) {
+        console.log("Refreshing CreepRoomMap")
+        creepTracking();
+        nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval
+    }
+}
+
 creepTracking = function () {
-    // Active Creep Tracking
     global.creepRoomMap = new Map();
+    // Active Creep Tracking
     _.forEach(Game.rooms, (r) => {
         creepRoomMap.set(r.name + "builder", 0);
         creepRoomMap.set(r.name + "mover", 0);
@@ -9,6 +17,7 @@ creepTracking = function () {
         creepRoomMap.set(r.name + "claimer", 0);
         creepRoomMap.set(r.name + "harvesterExt", 0);
         creepRoomMap.set(r.name + "moverExt", 0);
+        creepRoomMap.set(r.name + "moverLink", 0);
     });
 
     _.forEach(Game.rooms, (r) => {
@@ -54,4 +63,7 @@ creepTracking = function () {
         });
         creepRoomMap.set(r.name + "csites", r.find(FIND_CONSTRUCTION_SITES).length);
     });
+    
+    nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval
+    refreshCreepTrackingNextTick = false
 };

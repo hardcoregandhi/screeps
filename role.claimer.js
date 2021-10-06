@@ -17,12 +17,17 @@ global.roleClaimer = {
     /** @param {Creep} creep **/
     run: function (creep) {
         creep.say("🏳️");
+        
+        if (creep.memory.interShard) {
+            interShardMove(creep)
+            return
+        }
 
         if (Game.rooms[creep.memory.baseRoomName] == undefined) {
             // usePathfinder(creep, { pos: new RoomPosition(25,25,creep.memory.baseRoomName), range: 1 })
             moveToRoom(creep, creep.memory.baseRoomName);
         } else {
-            if (creep.name == "Claimer_127") {
+            if (creep.memory.claim != undefined) {
                 if (creep.claimController(Game.rooms[creep.memory.baseRoomName].controller) != OK) {
                     moveToMultiRoomTarget(creep, Game.rooms[creep.memory.baseRoomName].controller, true);
                 }

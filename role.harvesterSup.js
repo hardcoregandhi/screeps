@@ -84,9 +84,18 @@ global.roleHarvSup = {
 
                 containers.sort((a, b) => b.store.getUsedCapacity() - a.store.getUsedCapacity());
                 creep.memory.targetContainer = containers[0].id;
+                creep.memory.targetSource = containers[0].pos.findClosestByRange(FIND_SOURCES).id
             }
+            
+            
 
             target = Game.getObjectById(creep.memory.targetContainer);
+            creep.memory.targetSource = target.pos.findClosestByRange(FIND_SOURCES).id
+            
+            if(creep.room.controller.level >= 6 && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined && target.store.getUsedCapacity() == 0) {
+                creep.memory.DIE = {}
+            }
+            
             for (const resourceType in target.store) {
                 log(creep, 9);
                 if (creep.withdraw(target, resourceType) != OK) {
