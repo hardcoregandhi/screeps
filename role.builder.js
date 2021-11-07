@@ -3,7 +3,7 @@ require("movement");
 require("role.common");
 
 function log(creep, str) {
-    if (0) if (creep.name == "Builder_812") console.log(str);
+    if (0) if (creep.name == "Builder_334") console.log(str);
 }
 
 global.roleBuilder = {
@@ -20,6 +20,11 @@ global.roleBuilder = {
     roleMemory: { memory: {} },
     /** @param {Creep} creep **/
     run: function (creep) {
+        if (creep.memory.interShard) {
+            interShardMove(creep);
+            return;
+        }
+
         if (!creep.memory.currentSource == null) {
             creep.memory.currentSource = 0;
         }
@@ -66,7 +71,7 @@ global.roleBuilder = {
             log(creep, "Defauling to Harvester");
             roleHarvester.run(creep);
             return;
-        } else if (creepRoomMap.get(r.name + "csites") == 0) {
+        } else if (creepRoomMap.get(creep.room.name + "csites") == 0) {
             log(creep, "Defauling to Upgrader");
             roleUpgrader.run(creep);
             return;
@@ -133,7 +138,7 @@ global.roleBuilder = {
             }
         } else {
             log(creep, 8);
-            if (Game.flags.DISMANTLE) {
+            if (Game.flags.DISMANTLE && creep.memory.baseRoomName == Game.flags.DISMANTLE.room.name) {
                 var dismantle = Game.flags.DISMANTLE.pos.lookFor(LOOK_STRUCTURES)[0];
                 if (dismantle) {
                     if (creep.dismantle(dismantle) != OK) {

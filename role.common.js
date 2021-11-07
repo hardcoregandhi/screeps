@@ -93,11 +93,9 @@ global.interShardMove = function (creep) {
                 console.log(`${creep.name}@${creep.pos} error: no portal found`);
                 return;
             }
-            if (portal.isNearTo(creep)) {
-                creep.memory.interShard.shift();
-                return;
-            }
-            creep.moveTo(portal[0]);
+            portal = portal[0];
+            InterShardMemory.setLocal(JSON.stringify(creep.memory));
+            creep.moveTo(portal);
 
             break;
         default:

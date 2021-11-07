@@ -1,13 +1,13 @@
 var roleTower = require("tower");
 
 global.runStructs = function () {
-    console.log(Game.shard.name);
-    myRooms.forEach((r) => {
+    // console.log(Game.shard.name);
+    myRooms[Game.shard.name].forEach((r) => {
         room = Game.rooms[r];
 
         if (room == null) return;
 
-        console.log(room);
+        // console.log(room);
 
         // var allStructures = room.find(FIND_STRUCTURES);
 
@@ -77,26 +77,57 @@ global.runStructs = function () {
 
         // }
 
-        if (Memory.rooms[room.name].observer != undefined) {
+        if (Memory.rooms[room.name].structs.observer != undefined) {
             // set target rooms and iterator
-            targetPowerRooms = ["W13S21", "W14S21", "W15S21", "W16S21", "W17S21", "W18S21", "W19S21"];
-            if (Memory.rooms[room.name].targetPowerRooms == undefined) {
-                Memory.rooms[room.name].targetPowerRooms = targetPowerRooms;
-                Memory.rooms[room.name].targetPowerRoom = 0;
+            if (Memory.rooms[room.name].structs.observer.targetPowerRooms == undefined) {
+                targetPowerRooms = [];
+                let re = /([NWSE])(\d*)([NWSE])(\d*)/;
+                const match = room.name.match(re);
+                if (match.length == 5) {
+                    //match length is 5, the original word and then the matches
+                    let modX = match[2] % 10; // strip to 0-9
+                    let roundX = Math.round(modX / 10) * 10; // find it's closest 10
+                    let diffX = Math.abs(roundX - modX); // find the dist to the column
+                    let modY = match[4] % 10;
+                    let roundY = Math.round(modY / 10) * 10;
+                    let diffY = Math.abs(roundY - modY); // find the dist to the row
+                    console.log(diffX);
+                    console.log(diffY);
+                    if (diffX > diffY) {
+                        // closest to row
+                        console.log("closest to row");
+                        for (let i = match[2] - modX; i <= match[2] - modX + 10; i++) {
+                            targetPowerRooms.push(match[1] + String(i) + match[3] + Math.floor(match[4] / 10) * 10);
+                        }
+                    } else {
+                        // closest to column OR same dist from both
+                        console.log("closest to column");
+                        console.log(match[4]);
+                        for (let i = parseInt(match[4]) - modY; i <= parseInt(match[4]) - modY + 10; i++) {
+                            targetPowerRooms.push(match[1] + Math.floor(match[2] / 10) * 10 + match[3] + String(i));
+                        }
+                    }
+                    //   console.log(targetPowerRooms)
+                    Memory.rooms[room.name].structs.observer.targetPowerRooms = targetPowerRooms;
+                    Memory.rooms[room.name].structs.observer.targetPowerRoom = 0;
+                } else {
+                    console.log("Error parsing room name");
+                }
             }
 
-            o = Game.getObjectById(Memory.rooms[room.name].observer);
-            observerTarget = Memory.rooms[room.name].targetPowerRooms[Memory.rooms[room.name].targetPowerRoom];
+            o = Game.getObjectById(Memory.rooms[room.name].structs.observer.id);
+            observerTarget = Memory.rooms[room.name].structs.observer.targetPowerRooms[Memory.rooms[room.name].structs.observer.targetPowerRoom];
             o.observeRoom(observerTarget);
-            console.log(Game.rooms[observerTarget]);
             // the room will be available on the next tick after observeRoom runs
             if (Game.rooms[observerTarget] != undefined) {
                 var powerBanks = room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
                 if (powerBanks.length) {
                     // TODO: do something with found power bank
+                    console.log("found power bank in " + powerBanks[0].room.name);
                 } else {
-                    console.log("no power found, iterating observer");
-                    Memory.rooms[room.name].targetPowerRoom = Memory.rooms[room.name].targetPowerRooms.length == Memory.rooms[room.name].targetPowerRoom ? 0 : Memory.rooms[room.name].targetPowerRoom + 1;
+                    // console.log("no power found, iterating observer");
+                    Memory.rooms[room.name].structs.observer.targetPowerRoom =
+                        Memory.rooms[room.name].structs.observer.targetPowerRooms.length == Memory.rooms[room.name].structs.observer.targetPowerRoom ? 0 : Memory.rooms[room.name].structs.observer.targetPowerRoom + 1;
                 }
             }
         }

@@ -13,8 +13,7 @@ global.roleHealer = {
     /** @param {Creep} creep **/
     run: function (creep) {
         // creep.say('🏳️');
-        if (creep.memory.targetRoomName == undefined) creep.memory.targetRoomName = "W9S3";
-        creep.memory.targetRoomName = "W3S1";
+        if (creep.memory.targetRoomName == undefined) creep.memory.targetRoomName = "W8S2";
         // creep.memory.return = true;
 
         if (creep.hits < creep.hitsMax) {
@@ -44,12 +43,17 @@ global.roleHealer = {
             //     cloneCreep(creep.name)
             // }
 
-            var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS).filter((c) => {
-                return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
-            });
+            var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
 
-            if (creep.pos.isNearTo(closestHostile)) {
-                creep.moveTo((creep.pos.x - closestHostile.pos.x) * -1, (creep.pos.y - closestHostile.pos.y) * -1);
+            if (closestHostile)
+                closestHostile = closestHostile.filter((c) => {
+                    return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
+                });
+
+            if (closestHostile) {
+                if (creep.pos.isNearTo(closestHostile)) {
+                    creep.moveTo((creep.pos.x - closestHostile.pos.x) * -1, (creep.pos.y - closestHostile.pos.y) * -1);
+                }
             }
 
             // console.log(closestHostile)

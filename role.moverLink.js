@@ -1,5 +1,5 @@
 function log(creep, str) {
-    if (0) if (creep.name == "MoverLink_875") console.log(str);
+    if (0) if (creep.name == "MoverLink_765") console.log(str);
 }
 
 /*
@@ -74,12 +74,42 @@ global.roleMoverLink = {
         var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
         var link_storage = Game.getObjectById(Memory.rooms[creep.room.name].link_storage);
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
-        if (creepRoomMap.get(creep.room.name + "eenergy") > 100000 && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
+        log(creep, "creep.room.controller.ticksToDowngrade: " + creep.room.controller.ticksToDowngrade);
+        if ((creepRoomMap.get(creep.room.name + "eenergy") > 100000 && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) || creep.room.controller.ticksToDowngrade < 1000) {
             log(creep, "controller empty, filling ", link_controller);
             creep.withdraw(mainStorage, RESOURCE_ENERGY);
             creep.transfer(link_storage, RESOURCE_ENERGY);
-            link_storage.transferEnergy(link_controller, link_storage.store.getUsedCapacity(RESOURCE_ENERGY));
-            return;
+            if (link_storage.transferEnergy(link_controller, link_storage.store.getUsedCapacity(RESOURCE_ENERGY))) {
+                return;
+            }
+        }
+
+        // SELL excess energy if storage is almost full
+        if (creepRoomMap.get(creep.room.name + "eenergy") > 980000) {
+            var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
+            creep.withdraw(mainStorage, RESOURCE_ENERGY);
+            creep.transfer(terminal, RESOURCE_ENERGY);
+            ret = Game.market.createOrder({
+                type: ORDER_SELL,
+                resourceType: RESOURCE_ENERGY,
+                price: Game.market.getHistory(RESOURCE_ENERGY)[0].avgPrice / 0.95,
+                totalAmount: terminal.store.getCapacity(RESOURCE_ENERGY),
+                roomName: creep.room.name,
+            });
+            if (ret != OK) {
+                sortedOrders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType: RESOURCE_ENERGY }).sort((o1, o2) => {
+                    Game.market.calcTransactionCost(Math.min(100, o1.remainingAmount), creep.room.name, o1.roomName) < Game.market.calcTransactionCost(Math.min(100, o2.remainingAmount), creep.room.name, o2.roomName);
+                });
+                ret = Game.market.deal(sortedOrders[0].id, Math.min(terminal.store.getCapacity(RESOURCE_ENERGY) * 0.8, sortedOrders[0].remainingAmount), creep.room.name);
+                if (ret != OK) {
+                    console.log(
+                        `Market Transaction completed: ${Game.market.outgoingTransactions[0].transactionId} ${Game.market.outgoingTransactions[0].amount} ${Game.market.outgoingTransactions[0].resourceType} for ${
+                            Game.market.outgoingTransactions[0].order.price
+                        } : ${Game.market.outgoingTransactions[0].amount * Game.market.outgoingTransactions[0].order.price}`
+                    );
+                }
+            }
+            console.log(ret);
         }
 
         if (creep.memory.moving) {

@@ -1,8 +1,8 @@
 global.runBaseBuilder = function () {
-    for (var roomName of myRooms) {
+    for (var roomName of myRooms[Game.shard.name]) {
         r = Game.rooms[roomName];
         if (r == undefined) {
-            log.error("Couldn't retrieve room to upgrade it");
+            log.error("runBaseBuilder: Couldn't retrieve room to upgrade it");
             continue;
         }
         if (r.controller.level == 1) continue;
@@ -111,6 +111,30 @@ function buildControllerRampartSurroundings(r) {
                 if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
                     // r.visual.circle(i, j, { fill: "green", lineStyle: "dashed", radius: 0.55 });
                     r.createConstructionSite(i, j, "rampart");
+                }
+            }
+        }
+    }
+}
+
+function buildRampartSurroundings(r) {
+    // controller surroundings
+    const terrain = r.getTerrain();
+    var center = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos;
+    for (var i = center.x - 8; i <= center.x + 8; i++) {
+        for (var j = center.y - 8; j <= center.y + 8; j++) {
+            // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
+            if (
+                // any edges
+                // i == center.x - 8 ||
+                // i == center.x + 8 ||
+                // j == center.y - 8 ||
+                // j == center.y + 8
+                center.getRangeTo(i, j) == 7
+            ) {
+                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                    r.visual.circle(i, j, { fill: "green", lineStyle: "dashed", radius: 0.55 });
+                    // r.createConstructionSite(i, j, "rampart");
                 }
             }
         }
@@ -483,7 +507,88 @@ global.baseRawData = `
             ]
         ]
     },
-    "8": {}
+    "8": {
+        "stages": [
+            [
+                {
+                    "buildingType": "tower",
+                    "pos": [
+                        { "x": -1, "y": 2 },
+                        { "x": -1, "y": -2 },
+                        { "x": 0, "y": -3 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "spawn",
+                    "pos": [
+                        { "x": -2, "y": 1 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "observer",
+                    "pos": [
+                        { "x": 3, "y": -4 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "extension",
+                    "pos": [
+                        { "x": -1, "y": 4 },
+                        { "x": -2, "y": 5 },
+                        { "x": -3, "y": 6 },
+                        { "x": -4, "y": 7 },
+                        { "x": -5, "y": 8 },
+                        { "x": -3, "y": 7 },
+                        { "x": -6, "y": 7 },
+                        { "x": -7, "y": 6 },
+                        { "x": -6, "y": -6 },
+                        { "x": -3, "y": -7 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "powerSpawn",
+                    "pos": [
+                        { "x": 3, "y": -2 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "observer",
+                    "pos": [
+                        { "x": 3, "y": -4 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "nuker",
+                    "pos": [
+                        { "x": 4, "y": -3 }
+                    ]
+                }
+            ],
+            [
+                {
+                    "buildingType": "lab",
+                    "pos": [
+                        { "x": 6, "y": 2 },
+                        { "x": 6, "y": 3 },
+                        { "x": 4, "y": 4 },
+                        { "x": 5, "y": 4 }
+                    ]
+                }
+            ]
+        ]
+    }
 }
 `;
 

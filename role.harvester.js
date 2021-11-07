@@ -169,6 +169,20 @@ global.roleHarvester = {
                         return;
                     }
 
+                    if (creep.room.controller.level >= 6) {
+                        //try to build a link
+                        var csites = Game.rooms[creep.memory.baseRoomName].find(FIND_CONSTRUCTION_SITES).filter((site) => {
+                            return creep.pos.inRangeTo(site, 1);
+                        });
+                        if (csites.length) {
+                            log(creep, "building");
+                            if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
+                                moveToMultiRoomTarget(creep, csites[0]);
+                            }
+                            return;
+                        }
+                    }
+
                     if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
                         target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id);
                         creep.memory.targetContainer = target.id;

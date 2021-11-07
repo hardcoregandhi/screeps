@@ -145,14 +145,41 @@ global.roleMoverExt = {
             }
         } else {
             log(creep, "banking");
+
+            if (creep.room.name == creep.memory.baseRoomName && creep.room.controller.level == 8 && creep.memory.target_link == undefined) {
+                var linkId;
+                if (creep.pos.x >= 45 && creep.room.memory.link_right != undefined) {
+                    creep.memory.target_link = creep.room.memory.link_right;
+                }
+                if (creep.pos.x <= 5 && creep.room.memory.link_left != undefined) {
+                    creep.memory.target_link = creep.room.memory.link_left;
+                }
+                if (creep.pos.y >= 45 && creep.room.memory.link_up != undefined) {
+                    creep.memory.target_link = creep.room.memory.link_up;
+                }
+                if (creep.pos.y <= 5 && creep.room.memory.link_down != undefined) {
+                    creep.memory.target_link = creep.room.memory.link_down;
+                }
+            }
+
+            if (creep.memory.target_link != null) {
+                link = Game.getObjectById(creep.memory.target_link);
+                if (link != undefined) {
+                    if (creep.transfer(link, RESOURCE_ENERGY) != OK) {
+                        moveToMultiRoomTarget(creep, link);
+                    }
+                    if (link.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+                        link_storage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_storage);
+                        link.transferEnergy(link_storage, link_storage.store.getFreeCapacity(RESOURCE_ENERGY));
+                    }
+                    return;
+                }
+            }
+
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (mainStorage != undefined) {
                 if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
-                    if (mainStorage.pos.getRangeTo(creep.pos) < 5) {
-                        moveToMultiRoomTarget(creep, mainStorage);
-                    } else {
-                        moveToMultiRoomTarget(creep, mainStorage);
-                    }
+                    moveToMultiRoomTarget(creep, mainStorage);
                 }
                 return;
             }

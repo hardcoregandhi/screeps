@@ -43,7 +43,10 @@ var roleCleaner = require("role.cleaner");
 PathFinder.use(true);
 
 focusHealing = false;
-global.myRooms = ["W6S1", "W3S2", "W6S2"];
+global.myRooms = {};
+
+myRooms["shard3"] = ["W6S1", "W3S2", "W6S2"];
+myRooms["shard2"] = ["W11S5"];
 global.creepRoomMap = new Map();
 global.nextCreepRoomMapRefreshInterval = 60;
 global.nextCreepRoomMapRefreshTime = Game.time + nextCreepRoomMapRefreshInterval;

@@ -1,5 +1,8 @@
 global.runCreeps = function () {
-    myRooms.forEach((r) => {
+    myRooms[Game.shard.name].forEach((r) => {
+        if (!Game.rooms[r]) return;
+
+        if (Memory.rooms[r].scav === null) Memory.rooms[r].scav = false;
         Memory.rooms[r].scav = false;
         var droppedResource = Game.rooms[r].find(FIND_DROPPED_RESOURCES).filter((r) => r.amount >= 150);
         var tombstoneResource = Game.rooms[r].find(FIND_TOMBSTONES).filter((r) => r.store.getUsedCapacity() >= 150);
@@ -21,6 +24,11 @@ global.runCreeps = function () {
     });
 
     for (var name in Game.creeps) {
+        if (Object.keys(Game.creeps[name].memory).length == 0) {
+            Game.creeps[name].memory = JSON.parse(InterShardMemory.getRemote("shard3"));
+            Game.creeps[name].memory.InterShard.shift();
+        }
+
         if (Game.cpu.getUsed() > (Game.cpu.tickLimit / 10) * 9.9) {
             console.log("CPU limit");
             return;

@@ -7,7 +7,10 @@ roomTracking = function () {
 
         if (Memory.rooms[r.name] == undefined) Memory.rooms[r.name] = {};
 
-        if (myRooms.includes(r.name)) {
+        var csites = r.find(FIND_CONSTRUCTION_SITES);
+        creepRoomMap.set(r.name + "csites", csites.length);
+
+        if (myRooms[Game.shard.name].includes(r.name)) {
             //console.log(`room ${r}`);
             stores = [];
             spawns = [];
@@ -15,9 +18,14 @@ roomTracking = function () {
             containers = [];
             towers = [];
             links = [];
+            terminals = [];
             observers = [];
 
             //startCpu = Game.cpu.getUsed();
+
+            if (Memory.rooms[r.name].structs == undefined) {
+                Memory.rooms[r.name].structs = {};
+            }
 
             var allStructures = r.find(FIND_STRUCTURES);
 
@@ -41,8 +49,20 @@ roomTracking = function () {
                     case STRUCTURE_LINK:
                         links.push(structure);
                         break;
+                    case STRUCTURE_TERMINAL:
+                        if (Memory.rooms[r.name].structs.terminal == undefined) {
+                            Memory.rooms[r.name].structs.terminal = {};
+                            Memory.rooms[r.name].structs.terminal.id = structure.id;
+                        }
+                        terminals.push(structure);
+                        break;
                     case STRUCTURE_OBSERVER:
+                        if (Memory.rooms[r.name].structs.observer == undefined) {
+                            Memory.rooms[r.name].structs.observer = {};
+                            Memory.rooms[r.name].structs.observer.id = structure.id;
+                        }
                         observers.push(structure);
+
                         break;
                 }
             }
@@ -72,6 +92,7 @@ roomTracking = function () {
                 Memory.rooms[r.name].spawns = {};
                 _.forEach(spawns, (s) => {
                     Memory.rooms[r.name].spawns[s.name] = {};
+                    Memory.rooms[r.name].spawns[s.name].id = s.id;
                     Memory.rooms[r.name].spawns[s.name].massHealing = false;
 
                     surroundingCreeps = 0;
@@ -225,7 +246,7 @@ roomTracking = function () {
 
         // links
         try {
-            if (myRooms.includes(r.name)) {
+            if (myRooms[Game.shard.name].includes(r.name)) {
                 if (links.length >= 2 && Memory.rooms[r.name].link_storage == undefined && Memory.rooms[r.name].link_controller == undefined && Memory.rooms[r.name].mainStorage != undefined) {
                     var link_storage = Game.getObjectById(Memory.rooms[r.name].mainStorage).pos.findInRange(links, 2);
                     if (link_storage.length) link_storage = link_storage[0];
@@ -257,7 +278,7 @@ roomTracking = function () {
 
     for (var room in Game.rooms) {
         r = Game.rooms[room];
-        if (!myRooms.includes(r.name)) {
+        if (!myRooms[Game.shard.name].includes(r.name)) {
             continue;
         }
         // Creep info

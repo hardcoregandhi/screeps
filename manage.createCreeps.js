@@ -60,6 +60,7 @@ cloneCreep = function (sourceCreepName, room = null, force = null) {
     if (sourceCreep === null) return -1;
     spawnRoom = room != null ? Game.rooms[room] : Game.rooms[sourceCreep.memory.baseRoomName];
     if (spawnRoom === null) return -1;
+    console.log(spawnRoom);
     roomSpawner = Game.getObjectById(spawnRoom.memory.mainSpawn.id);
     if (roomSpawner == null) return -1;
     var newName = _.capitalize(sourceCreep.memory.role) + "_" + getRandomInt();
@@ -69,7 +70,7 @@ cloneCreep = function (sourceCreepName, room = null, force = null) {
     // console.log(newName);
     memoryClone = Object.assign({}, { memory: sourceCreep.memory });
     // console.log(memoryClone.memory.role)
-    // console.log(JSON.stringify(memoryClone));
+    console.log(JSON.stringify(memoryClone));
     if (force != null) {
         return roomSpawner.spawnCreep(
             sourceCreep.body.map((a) => a.type),
@@ -84,7 +85,7 @@ cloneCreep = function (sourceCreepName, room = null, force = null) {
             spawnRoom.name
         );
         return spawnCreep(
-            "role" + _.capitalize(sourceCreep.memory.role),
+            eval("role" + _.capitalize(sourceCreep.memory.role)),
             sourceCreep.body.map((a) => a.type),
             memoryClone,
             spawnRoom.name
@@ -133,7 +134,13 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
             console.log(`Room ${_spawnRoom} not found`);
             return -1;
         }
-        spawn = Game.getObjectById(room.memory.mainSpawn.id);
+        var spawn;
+        _.forEach(room.memory.spawns, (s) => {
+            spawn = Game.getObjectById(s.id);
+            if (spawn.spawning != null) {
+                return;
+            }
+        });
         if (spawn == null) {
             console.log(`Spawn could not be found in ${_spawnRoom}`);
             return -1;
