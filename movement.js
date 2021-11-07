@@ -190,8 +190,6 @@ global.moveToRoomIgnoreStructures = function (creep, targetRoom) {
 };
 
 global.moveToRoom = function (creep, targetRoom) {
-    console.log("moveToRoom");
-
     if (creep.memory.pathfinderPath == undefined || creep.memory.pathfinderPath.length == 0) {
         let from = creep.pos;
         let to = { pos: new RoomPosition(25, 25, targetRoom), range: 1 };
@@ -199,6 +197,8 @@ global.moveToRoom = function (creep, targetRoom) {
         // Use `findRoute` to calculate a high-level plan for this path,
         // prioritizing highways and owned rooms
         let allowedRooms = { [from.roomName]: true };
+        log.log("moveToRoom");
+        log.log(creep.name);
         log.log(from.toString());
         log.log(to.pos.toString());
         Game.map
@@ -267,30 +267,21 @@ global.moveToRoom = function (creep, targetRoom) {
 
     if (creep.memory.pathfinderPath != undefined && creep.memory.pathfinderPath.path.length) {
         if (creep.fatigue == 0) {
-            if (creep.memory.pathfinderPath.path[0].roomName != creep.room.name) {
-                // console.log(creep.room.name)
-                // console.log(creep.memory.pathfinderPath.path[0].roomName)
-                const route = Game.map.findRoute(creep.room, creep.memory.pathfinderPath.path[0].roomName);
-                if (route.length > 0) {
-                    // console.log(exit)
-                    creep.move(route[0].exit, {
-                        visualizePathStyle: { stroke: "#ffffff" },
-                    });
-                    return;
-                } else {
-                    console.log("erroe");
-                }
-            }
+            creep.memory.prevPos = {};
+            creep.memory.prevPos.pos = creep.pos;
+            creep.memory.prevPos.tick = Game.time;
             if ((ret = creep.moveTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)) == OK) {
                 creep.room.visual.circle(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y);
                 creep.memory.pathfinderPath.path.shift();
-                if ((creep.memory.prevPos != undefined && creep.memory.prevPos == creep.pos) || !creep.pos.isNearTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)) {
+                if (
+                    creep.memory.prevPos != undefined &&
+                    creep.memory.prevPos == creep.pos // ||
+                    // !creep.pos.isNearTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)
+                ) {
                     //red flag, reset
+                    log.log("resetting path");
                     creep.memory.pathfinderPath = undefined;
                 }
-                creep.memory.prevPos = {};
-                creep.memory.prevPos.pos = creep.pos;
-                creep.memory.prevPos.tick = Game.time;
             } else {
                 // log.log(ret)
                 // log.log(creep.memory.pathfinderPath.path[0].toString())

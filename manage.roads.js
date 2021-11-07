@@ -3,7 +3,7 @@ global.runRoads = function () {
     for (var room in Game.rooms) {
         var r = Game.rooms[room];
         // console.log(r.name)
-        if (!myRooms.includes(r.name)) {
+        if (!myRooms[Game.shard.name].includes(r.name)) {
             continue;
         }
         if (!r.controller) {

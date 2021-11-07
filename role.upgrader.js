@@ -62,6 +62,60 @@ global.roleUpgrader = {
             log(creep, "upgrading");
 
             healRoads(creep);
+
+            if (creep.room.controller.level == 8) {
+                if (creep.memory.sweetSpot == undefined) {
+                    controllerSpots = [];
+                    const terrain = r.getTerrain();
+                    for (var i = r.controller.pos.x - 1; i <= r.controller.pos.x + 1; i++) {
+                        for (var j = r.controller.pos.y - 1; j <= r.controller.pos.y + 1; j++) {
+                            // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
+                            if (
+                                // any edges
+                                i == r.controller.pos.x - 1 ||
+                                i == r.controller.pos.x + 1 ||
+                                j == r.controller.pos.y - 1 ||
+                                j == r.controller.pos.y + 1
+                            ) {
+                                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                                    r.visual.circle(i, j, { fill: "green", lineStyle: "dashed", radius: 0.55 });
+                                    controllerSpots.push(new RoomPosition(i, j, r.name));
+                                }
+                            }
+                        }
+                    }
+                    var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
+                    linkSpots = [];
+
+                    for (var i = link_controller.pos.x - 1; i <= link_controller.pos.x + 1; i++) {
+                        for (var j = link_controller.pos.y - 1; j <= link_controller.pos.y + 1; j++) {
+                            // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
+                            if (
+                                // any edges
+                                i == link_controller.pos.x - 1 ||
+                                i == link_controller.pos.x + 1 ||
+                                j == link_controller.pos.y - 1 ||
+                                j == link_controller.pos.y + 1
+                            ) {
+                                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                                    r.visual.circle(i, j, { fill: "green", lineStyle: "dashed", radius: 0.55 });
+                                    linkSpots.push(new RoomPosition(i, j, r.name));
+                                }
+                            }
+                        }
+                    }
+                    const intersectionSpots = controllerSpots.filter((value) => linkSpots.includes(value));
+                    if (intersectionSpots.length) {
+                        creep.memory.sweetSpot = intersectionSpots[0];
+                    }
+                } else {
+                    moveToTarget(creep, creep.memory.sweetSpot, false);
+                }
+
+                if (creep.room.controller.ticksToDowngrade >= 200000) {
+                    creep.memory.DIE = {};
+                }
+            }
             if (creep.upgradeController(creep.room.controller) != OK) {
                 moveToTarget(creep, creep.room.controller.pos, false);
             }
