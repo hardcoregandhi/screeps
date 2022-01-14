@@ -65,6 +65,12 @@ global.returnToHeal = function (creep, room) {
             moveToMultiRoomTarget(creep, spawn);
             return true;
         }
+        
+        if(creep.pos.isNearTo(spawn)){
+            // console.log(`${creep.name} setting ${spawn.name} renewRequested: true` )
+            Memory.rooms[creep.room.name].spawns[spawn.name].renewRequested = true
+            Memory.rooms[creep.room.name].spawns[spawn.name].creeps[creep.id] = true
+        }
 
         // if (targets.length == 0 || (creep.room.energyAvailable < 100 && creep.store.getUsedCapacity(RESOURCE_ENERGY) < 50)) {
         //     return false;

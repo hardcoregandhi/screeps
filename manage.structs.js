@@ -50,8 +50,19 @@ global.runStructs = function () {
         // for (t of Memory.rooms[room.name].towers) {
         //     roleTower.run(Game.getObjectById(t));
         // }
-
-        runTowers(room);
+        
+        // Resets
+        _.forEach(Memory.rooms[room.name].spawns, (s) => {
+            s.massHealing = false;
+            s.renewRequested = false;
+            s.creeps = {};
+        })
+        if (Memory.rooms[room.name].mainSpawn != undefined)
+            Memory.rooms[room.name].mainSpawn.refilling = false;
+        if (Memory.rooms[room.name].mainTower != undefined)
+            Memory.rooms[room.name].mainTower.healRequested = false
+        
+        
 
         if (Memory.rooms[room.name].link_storage && Memory.rooms[room.name].link_controller) {
             // console.log(`${room.name} has 2 links`)
