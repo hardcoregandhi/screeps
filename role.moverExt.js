@@ -154,11 +154,11 @@ global.roleMoverExt = {
                 if (creep.pos.x <= 5 && creep.room.memory.link_left != undefined) {
                     creep.memory.target_link = creep.room.memory.link_left;
                 }
-                if (creep.pos.y >= 45 && creep.room.memory.link_up != undefined) {
-                    creep.memory.target_link = creep.room.memory.link_up;
-                }
-                if (creep.pos.y <= 5 && creep.room.memory.link_down != undefined) {
+                if (creep.pos.y >= 45 && creep.room.memory.link_down != undefined) {
                     creep.memory.target_link = creep.room.memory.link_down;
+                }
+                if (creep.pos.y <= 5 && creep.room.memory.link_up != undefined) {
+                    creep.memory.target_link = creep.room.memory.link_up;
                 }
             }
 
