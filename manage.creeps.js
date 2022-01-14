@@ -163,6 +163,9 @@ global.runCreeps = function () {
             if (creep.memory.role == "healer") {
                 roleHealer.run(creep);
             }
+            if (creep.memory.role == "healerChase") {
+                roleHealerChase.run(creep);
+            }
             if (creep.memory.role == "mover") {
                 if (creep.room.energyAvailable > 300 && Memory.rooms[creep.room.name].scav == true) {
                     roleScavenger.run(creep);
