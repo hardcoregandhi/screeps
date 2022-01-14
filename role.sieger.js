@@ -30,6 +30,7 @@ global.roleSieger = {
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
+            delete creep.memory.pathfinderPath
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
@@ -77,8 +78,8 @@ global.roleSieger = {
                 log(creep, "wall found");
                 log(creep, wall[0]);
 
-                // if (creep.dismantle(wall[0])) {
-                if (creep.attack(wall[0])) {
+                if (creep.dismantle(wall[0])) {
+                // if (creep.attack(wall[0])) {
                     log(creep, creep.attack(wall[0]));
 
                     log(creep, moveToTarget(creep, wall[0]));
