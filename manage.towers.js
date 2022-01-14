@@ -1,3 +1,19 @@
+getStructureHealLimit = function (room, structure) {
+    var wallHealPercent = room.controller.level * 0.01;
+    
+    switch(structure.structureType) {
+        case (STRUCTURE_ROAD):
+            return Math.round((structure.hits / structure.hitsMax) * 100 < 50)
+        case (STRUCTURE_CONTAINER):
+            return Math.round((structure.hits / structure.hitsMax) * 100 < 50)
+        case (STRUCTURE_RAMPART):
+            return Math.round((structure.hits / structure.hitsMax) * 100) < wallHealPercent
+        case (STRUCTURE_WALL):
+            return Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent)
+    }
+    
+}
+
 var towerRangeImpactFactor = function (distance) {
     if (distance <= TOWER_OPTIMAL_RANGE) {
         return 1;
@@ -11,21 +27,37 @@ var towerRangeImpactFactor = function (distance) {
 
 global.runTowers = function (room) {
     var towers = [];
-    for (towerId of Memory.rooms[room.name].towers) {
+    _.forEach(Memory.rooms[room.name].towers, (t) => {
         // console.log(towerId)
-        towers.push(Game.getObjectById(towerId));
-    }
+        towers.push(Game.getObjectById(t.id));
+    })
 
     if (!towers.length) return;
 
+
+    // startCpu = Game.cpu.getUsed();
     if (attack(room, towers)) return;
+    // elapsed = Game.cpu.getUsed() - startCpu;
+    // console.log("attack has used " + elapsed + " CPU time");
+    
+    // startCpu = Game.cpu.getUsed();
     if (heal(room, towers)) return;
+    // elapsed = Game.cpu.getUsed() - startCpu;
+    // console.log("heal has used " + elapsed + " CPU time");
+
+    // startCpu = Game.cpu.getUsed();
     if (repair(room, towers)) return;
+    // elapsed = Game.cpu.getUsed() - startCpu;
+    // console.log(room.name + " repair has used " + elapsed + " CPU time");
 };
 
 attack = function (room, towers) {
     var allHostiles = room.find(FIND_HOSTILE_CREEPS);
-    if (!allHostiles.length) return 0;
+    if (!allHostiles.length) {
+        Memory.rooms[room.name].mainTower.enemyInRoom = false;
+        return 0;
+    }
+    Memory.rooms[room.name].mainTower.enemyInRoom = true;
     try {
         var healer = null;
         var healerCount = 0;
@@ -87,10 +119,9 @@ heal = function (room, towers) {
     var hurtCreeps = room.find(FIND_MY_CREEPS).filter((creep) => {
         return Math.round((creep.hits / creep.hitsMax) * 100 < 99);
     });
-    for (var tower of towers) {
-        if (hurtCreeps.length) {
+    if (hurtCreeps.length) {
+        for (var tower of towers) {
             tower.heal(hurtCreeps[0]);
-            return;
         }
     }
     if (hurtCreeps.length) {
@@ -101,24 +132,18 @@ heal = function (room, towers) {
 };
 
 repair = function (room, towers) {
+    
+    if (room.energyAvailable <= 2500) return 0;
+    
     var wallHealPercent = room.controller.level * 0.01;
-
+    
     var highlyDamagedStructs = room.find(FIND_STRUCTURES).filter((structure) => {
         return (
-            (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 5)) ||
+            (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100) < 5) ||
+            (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100) < 0.01) ||
             (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent / 10) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos)))
         );
     });
-
-    var customStructureSpecificPercentLimits = room.find(FIND_STRUCTURES).filter((structure) => {
-        return (
-            (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
-            (structure.structureType == STRUCTURE_CONTAINER && Math.round((structure.hits / structure.hitsMax) * 100 < 50)) ||
-            (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent)) ||
-            (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos)))
-        );
-    });
-
     if (highlyDamagedStructs.length) {
         highlyDamagedStructs.sort((a, b) => a.hits - b.hits);
         var mostDamagedStructure = highlyDamagedStructs[0];
@@ -187,6 +212,9 @@ repair = function (room, towers) {
                 fill: "transparent",
             });
             tower.repair(closestTarget);
+            Memory.rooms[tower.room.name].towers[tower.id].currentTarget = closestTarget.id
+            
+            
         }
         return 1;
     }
