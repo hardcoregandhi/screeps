@@ -158,6 +158,14 @@ global.roleHarvester = {
 
                             try {
                                 link_storage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_storage);
+                                mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
+                                if (link_storage.cooldown > 0 && mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 950000) {
+                                    link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
+                                    if (link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
+                                        link.transferEnergy(link_controller, link_controller.store.getFreeCapacity(RESOURCE_ENERGY));
+                                        return;
+                                    }
+                                }
                                 if (link_storage.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                                     link.transferEnergy(link_storage, link_storage.store.getFreeCapacity(RESOURCE_ENERGY));
                                     return;
