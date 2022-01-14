@@ -1,6 +1,9 @@
 global.runRenew = function () {
     // Renew
     _.forEach(Game.spawns, (s) => {
+        if(Memory.rooms[s.room.name].spawns[s.name].renewRequested == false) {
+            return
+        }
         highestLocalTickCount = 0;
         highestLocalTickCreep = null;
         lowestLocalTickCount = 1500;
@@ -8,46 +11,39 @@ global.runRenew = function () {
         soldierCreep = null;
         moverCreep = null;
         localCreeps = [];
-        for (var i = s.pos.x - 1; i <= s.pos.x + 1; i++) {
-            for (var j = s.pos.y - 1; j <= s.pos.y + 1; j++) {
-                // console.log(`${i} ${j}`)
-                localCreep = s.room.lookForAt(LOOK_CREEPS, i, j);
-                // console.log(localCreep)
-                if (s.room.lookForAt(LOOK_CREEPS, i, j).length == 0) {
-                    continue;
-                }
-                // console.log(localCreep)
-                // console.log(localCreep[0])
-                c = localCreep[0];
+        
+        // console.log(s)
+        for (var creepId of Object.keys(Memory.rooms[s.room.name].spawns[s.name].creeps)) {
+            c = Game.getObjectById(creepId)
+            // console.log(c)
 
-                if (!c.my) continue;
-                // console.log(c)
+            if (!c.my) continue;
+            // console.log(c)
 
-                if (c.memory.healing == false) continue;
+            if (c.memory.healing == false) continue;
 
-                if (c.ticksToLive > 1400) {
-                    c.memory.healing = false;
-                    continue;
-                }
+            if (c.ticksToLive > 1400) {
+                c.memory.healing = false;
+                continue;
+            }
 
-                // console.log(c)
-                localCreeps.push(c);
-                // console.log(localCreeps)
+            // console.log(c)
+            localCreeps.push(c);
+            // console.log(localCreeps)
 
-                if (c.ticksToLive > highestLocalTickCount) {
-                    highestLocalTickCount = c.ticksToLive;
-                    highestLocalTickCreep = c;
-                }
-                if (c.ticksToLive < lowestLocalTickCount) {
-                    lowestLocalTickCount = c.ticksToLive;
-                    lowestLocalTickCreep = c;
-                }
-                if (c.memory.role == "mover") {
-                    moverCreep = c;
-                }
-                if (c.memory.role == "soldier") {
-                    soldierCreep = c;
-                }
+            if (c.ticksToLive > highestLocalTickCount) {
+                highestLocalTickCount = c.ticksToLive;
+                highestLocalTickCreep = c;
+            }
+            if (c.ticksToLive < lowestLocalTickCount) {
+                lowestLocalTickCount = c.ticksToLive;
+                lowestLocalTickCreep = c;
+            }
+            if (c.memory.role == "mover") {
+                moverCreep = c;
+            }
+            if (c.memory.role == "soldier") {
+                soldierCreep = c;
             }
         }
         // console.log(localCreeps)
