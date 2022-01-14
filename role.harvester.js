@@ -70,6 +70,11 @@ global.roleHarvester = {
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
+            if (creep.body.length < roleHarvester.BodyParts) {
+                if (upgradeCreep(creep.name) == 0) {
+                    return;
+                }
+            }
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
