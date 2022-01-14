@@ -103,7 +103,7 @@ Avg: 19.10	Total: 1872.12	Ticks: 98
 
 // Any modules that you use that modify the game's prototypes should be require'd
 // before you require the profiler.
-const profiler = require("screeps-profiler");
+global.profiler = require("screeps-profiler");
 
 // This line monkey patches the global prototypes.
 profiler.enable();
@@ -116,6 +116,7 @@ try {
     runRenew = profiler.registerFN(runRenew, "renew");
     runRoads = profiler.registerFN(runRoads, "roads");
     runStructs = profiler.registerFN(runStructs, "structs");
+    runTowers = profiler.registerFN(runTowers, "towers");
     runSpawns = profiler.registerFN(runSpawns, "spawns");
     creepTracking = profiler.registerFN(creepTracking, "creepTracking");
     roomTracking = profiler.registerFN(roomTracking, "roomTracking");
@@ -199,6 +200,7 @@ module.exports.loop = function () {
         
 
         try {
+            // Also includes struct resets
             runStructs();
         } catch (e) {
             console.log(`runStructs() failed: ${e}`);
