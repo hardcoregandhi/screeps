@@ -36,6 +36,13 @@ global.runCreeps = function () {
         var creep = Game.creeps[name];
         // console.log(creep.name)
         try {
+            if(creep.room.name == creep.room.baseRoomName) {
+                if(creep.hits < creep.hitsMax) {
+                    Memory.rooms[creep.memory.baseRoomName].mainTower.healRequested = true
+                }
+            }
+            
+            
             if (creep.pos.x == 49) creep.move(7);
             if (creep.pos.y == 49) creep.move(1);
             if (creep.pos.x == 0) creep.move(3);
