@@ -178,6 +178,9 @@ global.runCreeps = function () {
             if (creep.memory.role == "engineer") {
                 eval("role" + _.capitalize(creep.memory.role)).run(creep)
             }
+            if (creep.memory.role == "raider") {
+                eval("role" + _.capitalize(creep.memory.role)).run(creep)
+            }
         } catch (e) {
             console.log(`${e}`);
             console.log(creep, " failed to run");
