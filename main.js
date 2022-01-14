@@ -42,6 +42,7 @@ var roleHealerChase = require("role.healerChase");
 var roleInvader = require("role.invader");
 var roleExplorer = require("role.explorer");
 var roleCleaner = require("role.cleaner");
+var roleEngineer = require("role.engineer");
 
 PathFinder.use(true);
 
