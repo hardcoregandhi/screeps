@@ -54,8 +54,20 @@ myRooms["shard3"] = ["W6S1", "W3S2", "W6S2"];
 myRooms["shard2"] = ["W11S5"];
 global.creepRoomMap = new Map();
 global.nextCreepRoomMapRefreshInterval = 60;
-global.nextCreepRoomMapRefreshTime = Game.time + nextCreepRoomMapRefreshInterval;
+global.nextCreepRoomMapRefreshTime = Game.time;
 global.refreshCreepTrackingNextTick = false;
+
+global.roomTrackingRefreshInterval = 120;
+global.nextRoomTrackingRefreshTime = Game.time;
+global.refreshRoomTrackingNextTick = false;
+
+global.roomRefreshMap = {}
+for (s of Object.keys(myRooms)) {
+    for (r of myRooms[s]) {
+        roomRefreshMap[r] = nextRoomTrackingRefreshTime;
+    }
+}
+
 /*
 calls		time		avg		    function
 2119		571.4		0.270		Creep.moveTo
@@ -167,14 +179,23 @@ module.exports.loop = function () {
             console.log("Refreshing CreepRoomMap");
             creepTracking();
             resetSourceContainerTracking();
-            nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval;
+            nextCreepRoomMapRefreshTime = Game.time + nextCreepRoomMapRefreshInterval;
+        }
+        
+        if (refreshRoomTrackingNextTick) {
+            console.log("refreshRoomTrackingNextTick is true. Refreshing forced.")
         }
 
-        try {
-            roomTracking();
-        } catch (e) {
-            console.log(`roomTracking() failed: ${e}`);
-        }
+        // if (Game.time >= nextRoomTrackingRefreshTime || refreshRoomTrackingNextTick) {
+            // console.log("Refreshing Room Tracking");
+            try {
+                roomTracking();
+            } catch (e) {
+                console.log(`roomTracking() failed: ${e}`);
+            }
+            nextRoomTrackingRefreshTime = Game.time + roomTrackingRefreshInterval;
+        // }
+        
 
         try {
             runStructs();
