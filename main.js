@@ -18,6 +18,7 @@ require("global.logging");
 var roleHarvester = require("role.harvester");
 var roleHarvSup = require("role.harvesterSup");
 var roleHarvesterExt = require("role.harvesterExt");
+var roleHarvesterDeposit = require("role.harvesterDeposit");
 var roleUpgrader = require("role.upgrader");
 var roleBuilder = require("role.builder");
 var roleBuilderExt = require("role.builderExt");
