@@ -4,11 +4,10 @@ global.rolePowHarvester = {
     // prettier-ignore
     BodyParts: [ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
     baseBodyParts: [],
-    bodyLoop: [ATTACK, MOVE],
+    bodyLoop: [MOVE, MOVE, ATTACK, ATTACK, MOVE],
     /** @param {Creep} creep **/
     run: function (creep) {
         // creep.say('🏳️');
-        targetRoom = "W18S20";
 
         // var enemies = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3);
         // if (enemies.length) {
