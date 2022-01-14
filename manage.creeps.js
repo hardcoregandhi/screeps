@@ -186,4 +186,61 @@ global.runCreeps = function () {
             console.log(creep, " failed to run");
         }
     }
+    
+    for (var name in Game.powerCreeps) {
+        var creep = Game.powerCreeps[name];
+        // console.log(creep.name)
+        try {
+            
+            if (isNaN(creep.ticksToLive)) {
+                ps = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.pspawn.id);
+                creep.spawn(ps);
+                return
+            }
+            
+            if (creep.ticksToLive < 50) {
+                mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage)
+                if (creep.transfer(mainStorage, RESOURCE_OPS) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(mainStorage)
+                }
+                return
+            }
+            
+            if (creep.ticksToLive < 300 || creep.memory.healing) {
+                creep.say("healing");
+                creep.memory.healing = true;
+                ps = Game.getObjectById(Memory.rooms[creep.room.name].structs.pspawn.id);
+                ret = creep.renew(ps);
+                if (ret != OK) {
+                    creep.moveTo(ps);
+                }
+            }
+            
+            if(!creep.room.controller.isPowerEnabled) {
+                if(creep.enableRoom(creep.room.controller) != OK) {
+                    creep.moveTo(creep.room.controller)
+                }
+            }
+            
+            if (creep.room.memory.structs.factory != undefined) {
+               factory = Game.getObjectById(creep.room.memory.structs.factory.id)
+               if (factory != undefined) {
+                   if (factory.level == undefined) {
+                       ret = creep.usePower(PWR_OPERATE_FACTORY, factory);
+                       if (ret == ERR_NOT_IN_RANGE) {
+                           creep.moveTo(factory);
+                       }
+                   }
+               }
+            }
+            
+            if (creep.usePower(PWR_OPERATE_SPAWN, Game.spawns['Spawn7']) != OK) {
+                creep.moveTo(Game.spawns['Spawn7'])
+                creep.usePower(PWR_GENERATE_OPS);
+            }
+        } catch (e) {
+            console.log(`${e}`);
+            console.log(creep, " failed to run");
+        }
+    }
 };
