@@ -140,8 +140,8 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
         var spawn;
         _.forEach(room.memory.spawns, (s) => {
             spawn = Game.getObjectById(s.id);
-            if (spawn.spawning != null) {
-                return;
+            if (spawn.spawning == null) {
+                return false;
             }
         });
         if (spawn == null) {
