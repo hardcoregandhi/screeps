@@ -38,6 +38,7 @@ var rolePowHarvester = require("role.powHarvester");
 var rolePowMover = require("role.powMover");
 var roleDoctor = require("role.doctor");
 var roleHealer = require("role.healer");
+var roleHealerChase = require("role.healerChase");
 var roleInvader = require("role.invader");
 var roleExplorer = require("role.explorer");
 var roleCleaner = require("role.cleaner");
