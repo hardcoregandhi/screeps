@@ -143,7 +143,29 @@ repair = function (room, towers) {
             }
             return 1;
         }
-    } else if (customStructureSpecificPercentLimits.length) {
+    }
+    
+    // first check cached target
+    for (var tower of towers) {
+        // console.log(tower)
+        if (Memory.rooms[tower.room.name].towers[tower.id].currentTarget != null) {
+            target = Game.getObjectById(Memory.rooms[tower.room.name].towers[tower.id].currentTarget)
+            if (target != undefined && target.hits < getStructureHealLimit(room, target)) {
+                tower.heal(target)
+                _.remove(towers, tower)
+            } else {
+                Memory.rooms[tower.room.name].towers[tower.id].currentTarget = null
+            }
+        }
+    }
+    if(!towers.length) return
+    
+    var customStructureSpecificPercentLimits = room.find(FIND_STRUCTURES).filter((structure) => {
+        return (
+            getStructureHealLimit(room, structure) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos))
+        );
+    });
+    if (customStructureSpecificPercentLimits.length) {
         //customStructureSpecificPercent
         customStructureSpecificPercentLimits.sort((a, b) => a.hits - b.hits);
         for (var tower of towers) {
