@@ -21,11 +21,7 @@ global.roleExplorer = {
         }
 
         if (creep.memory.targetRoomName != creep.room.name) {
-            const route = Game.map.findRoute(creep.room.name, creep.memory.targetRoomName);
-            if (route.length > 0) {
-                const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit);
-            }
+            moveToMultiRoomTarget(creep, new RoomPosition(25,25, creep.memory.targetRoomName))
         } else {
         }
     },
