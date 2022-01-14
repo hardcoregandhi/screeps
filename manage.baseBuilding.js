@@ -117,7 +117,7 @@ function buildControllerRampartSurroundings(r) {
     }
 }
 
-function buildRampartSurroundings(r) {
+buildRampartSurroundings = function(r) {
     // controller surroundings
     const terrain = r.getTerrain();
     var center = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos;
@@ -133,8 +133,8 @@ function buildRampartSurroundings(r) {
                 center.getRangeTo(i, j) == 7
             ) {
                 if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
-                    r.visual.circle(i, j, { fill: "green", lineStyle: "dashed", radius: 0.55 });
-                    // r.createConstructionSite(i, j, "rampart");
+                    // r.visual.circle(i, j, { fill: "green", lineStyle: "dashed", radius: 0.55 });
+                    r.createConstructionSite(i, j, "rampart");
                 }
             }
         }
