@@ -6,7 +6,7 @@ var roleHarvester = require("role.harvester");
 
 global.roleHarvesterExt = {
     name: "harvesterExt",
-    roleMemory: { memory: { targetRoomName: "W17S21" } },
+    roleMemory: { memory: { targetRoomName: "W17S21", targetResourceType: RESOURCE_ENERGY, moverLimit: 1 } },
 
     // prettier-ignore
     BodyParts: [WORK,WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE],
@@ -27,6 +27,10 @@ global.roleHarvesterExt = {
             });
             Memory.rooms[creep.memory.targetRoomName].sources[s.id].targettedBy += 1;
         }
+        
+        if (creep.memory.moverLimit == undefined) {
+            creep.memory.moverLimit = 1;
+        }
 
         log(creep, 1);
         if (creep.ticksToLive > 1400) {
@@ -40,7 +44,9 @@ global.roleHarvesterExt = {
                     return structure.structureType == STRUCTURE_CONTAINER && creep.pos.inRangeTo(structure.pos, 1);
                 });
                 if (!containers.length) {
-                    creep.transfer(target, RESOURCE_ENERGY);
+                    for(resourceType in creep.store) {
+                        creep.transfer(target, resourceType);
+                    }
                 }
             }
             creep.say("healing");
@@ -77,7 +83,9 @@ global.roleHarvesterExt = {
         log(creep, 2);
 
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        var closestStructure = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
+        var closestStructure = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((structure) => {
+            return structure.structureType == STRUCTURE_INVADER_CORE;    
+        });
 
         var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter((c) => {
             return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
@@ -100,7 +108,7 @@ global.roleHarvesterExt = {
             });
         }
 
-        if (hostileCreeps.length || closestStructure) {
+        if (hostileCreeps.length || closestStructure.length) {
             try {
                 if (meleeCount > rangedCount || creepRoomMap.get(creep.memory.targetRoomName + "soldierTarget") == undefined || creepRoomMap.get(creep.memory.targetRoomName + "soldierTarget") < 1) {
                     requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName);
@@ -110,7 +118,7 @@ global.roleHarvesterExt = {
             } catch (e) {
                 console.log(`${creep}: ${e}`);
             }
-            if (closestStructure) return;
+            if (closestStructure.length) return;
             creep.memory.fleeing = 20;
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
             if (route.length > 0) {
@@ -131,17 +139,16 @@ global.roleHarvesterExt = {
         // TODO a creep should not spawn other creeps
         if (creep.memory.noSpawn == undefined || creep.memory.noSpawn == false) {
             if (creep.memory.targetRoomName != undefined && Game.rooms[creep.memory.targetRoomName] != undefined && creep.room.name == creep.memory.targetRoomName) {
-                if (
+                if (creep.memory.noClaimSpawn != true &&
                     (Game.rooms[creep.memory.targetRoomName].controller.reservation == undefined || Game.rooms[creep.memory.targetRoomName].controller.reservation.ticksToEnd < 1000) &&
-                    creepRoomMap.get(creep.memory.targetRoomName + "claimer") < 1 &&
-                    creep.memory.noClaimSpawn != true
+                    creepRoomMap.get(creep.memory.targetRoomName + "claimer") < 1
                 ) {
                     //TODO FIX THIS
                     spawnCreep(roleClaimer, "auto", { memory: { baseRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
                 } else if (
                     containersNearToSource.length > 0 &&
                     creep.memory.targetSource != undefined &&
-                    (creepRoomMap.get(creep.memory.targetRoomName + "moverExtTarget" + creep.memory.targetSource) == undefined || creepRoomMap.get(creep.memory.targetRoomName + "moverExtTarget" + creep.memory.targetSource) < 1)
+                    (creepRoomMap.get(creep.memory.targetRoomName + "moverExtTarget" + creep.memory.targetSource) == undefined || creepRoomMap.get(creep.memory.targetRoomName + "moverExtTarget" + creep.memory.targetSource) < creep.memory.moverLimit)
                 ) {
                     spawnCreep(roleMoverExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource } }, creep.memory.baseRoomName);
                 }
@@ -219,6 +226,24 @@ global.roleHarvesterExt = {
                     moveToMultiRoomTarget(creep, targetSource.pos);
                 }
             } else {
+                if (container.store.getFreeCapacity() == 0) {
+                    // TODO: Bug: when a harvester dies, it does not carry over the moverLimit increase to the next harvester
+                    //            This should be stored as source information
+                    if (creep.memory.containerFilledTimestamp == undefined) {
+                        creep.memory.containerFilledTimestamp = Game.time;
+                    }
+                    if (Game.time > creep.memory.containerFilledTimestamp + 60 ) {
+                        if (creep.memory.moverLimitIncreaseCooldownTimestamp == undefined) {
+                            creep.memory.moverLimitIncreaseCooldownTimestamp = Game.time;
+                        }
+                        if (Game.time > creep.memory.moverLimitIncreaseCooldownTimestamp + 10000) {
+                            creep.memory.moverLimit = creep.memory.moverLimit + 1;
+                            creep.memory.containerFilledTimestamp = undefined;
+                            creep.memory.moverLimitIncreaseCooldownTimestamp = Game.time;
+                        }
+                    }
+                }
+                creep.memory.containerFilledTimestamp = undefined;
                 if (container != null && container.hits < 200000) {
                     log(creep, `healing ${container}`);
                     if (creep.repair(container) != OK) {
