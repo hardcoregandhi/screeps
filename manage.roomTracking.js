@@ -3,6 +3,20 @@ roomTracking = function () {
         if (Memory.rooms == undefined) {
             Memory.rooms = {};
         }
+        
+        if (roomRefreshMap[r.name] == undefined) {
+            console.log(r.name + " was added to roomRefreshMap")
+            roomRefreshMap[r.name] = Game.time
+        }
+        
+        if (roomRefreshMap[r.name] > Game.time) {
+            // console.log(`Skipping ${r.name} refresh`)
+            return;
+        }
+        
+        console.log(`Refreshing ${r.name}`)
+
+        
         const terrain = r.getTerrain();
 
         if (Memory.rooms[r.name] == undefined) Memory.rooms[r.name] = {};
@@ -45,6 +59,10 @@ roomTracking = function () {
                         break;
                     case STRUCTURE_POWER_SPAWN:
                         pspawns.push(structure);
+                        if (Memory.rooms[r.name].structs.pspawn == undefined) {
+                            Memory.rooms[r.name].structs.pspawn = {};
+                            Memory.rooms[r.name].structs.pspawn.id = structure.id;
+                        }
                         break;
                     case STRUCTURE_LINK:
                         links.push(structure);
@@ -54,15 +72,21 @@ roomTracking = function () {
                             Memory.rooms[r.name].structs.terminal = {};
                             Memory.rooms[r.name].structs.terminal.id = structure.id;
                         }
-                        terminals.push(structure);
+                        // terminals.push(structure);
                         break;
                     case STRUCTURE_OBSERVER:
                         if (Memory.rooms[r.name].structs.observer == undefined) {
                             Memory.rooms[r.name].structs.observer = {};
                             Memory.rooms[r.name].structs.observer.id = structure.id;
                         }
-                        observers.push(structure);
+                        // observers.push(structure);
 
+                        break;
+                    case STRUCTURE_FACTORY:
+                        if (Memory.rooms[r.name].structs.factory == undefined) {
+                            Memory.rooms[r.name].structs.factory = {};
+                            Memory.rooms[r.name].structs.factory.id = structure.id;
+                        }
                         break;
                 }
             }
@@ -81,8 +105,21 @@ roomTracking = function () {
             //elapsed = Game.cpu.getUsed() - startCpu;
             //console.log("eenergy calc has used " + elapsed + " CPU time");
             //startCpu = Game.cpu.getUsed();
-
-            Memory.rooms[r.name].towers = towers.map((t) => t.id);
+            if (Memory.rooms[r.name].towers == undefined) {
+                Memory.rooms[r.name].towers = {};
+            }
+            _.forEach(towers, (t) => {
+                if(Memory.rooms[r.name].mainTower == undefined) {
+                    Memory.rooms[r.name].mainTower = {}
+                    Memory.rooms[r.name].mainTower.id = t.id
+                    Memory.rooms[r.name].mainTower.healRequested = false
+                }
+                if (Memory.rooms[r.name].towers[t.id] == undefined) {
+                    Memory.rooms[r.name].towers[t.id] = {};
+                    Memory.rooms[r.name].towers[t.id].id = t.id;
+                    Memory.rooms[r.name].towers[t.id].currentTarget = null;
+                }
+            });
 
             // if (Memory.rooms[r.name] != undefined) delete Memory.rooms[r.name].sources;
 
@@ -94,6 +131,7 @@ roomTracking = function () {
                     Memory.rooms[r.name].spawns[s.name] = {};
                     Memory.rooms[r.name].spawns[s.name].id = s.id;
                     Memory.rooms[r.name].spawns[s.name].massHealing = false;
+                    Memory.rooms[r.name].spawns[s.name].renewRequested = false;
 
                     surroundingCreeps = 0;
                     for (var i = s.pos.x - 1; i < s.pos.x + 1; i++) {
@@ -210,6 +248,7 @@ roomTracking = function () {
             }
 
             if (Memory.rooms[r.name].sources[s.id].container == undefined) {
+                containers = s.pos.findInRange(FIND_STRUCTURES, 2).filter((r) => r.structureType == STRUCTURE_CONTAINER)
                 for (cont of containers) {
                     if (cont.pos.inRangeTo(s, 2)) {
                         console.log("adding new container ", r.name, " ", cont.id);
@@ -264,38 +303,14 @@ roomTracking = function () {
         //elapsed = Game.cpu.getUsed() - startCpu;
         //console.log("source setup has used " + elapsed + " CPU time");
         //startCpu = Game.cpu.getUsed();
+        
+        refreshRoomTrackingNextTick = false;
+        nextRoomTrackingRefreshTime += roomTrackingRefreshInterval;
+        roomRefreshMap[r.name] = Game.time + roomTrackingRefreshInterval;
+        
     });
 
-    // Logging
-    roomOffset = 0;
-    global.listOffset = 1;
-    fontSize = 0.3;
-    global.textOffset = 0;
-    global.inc = function () {
-        textOffset += fontSize;
-        return textOffset;
-    };
-
-    for (var room in Game.rooms) {
-        r = Game.rooms[room];
-        if (!myRooms[Game.shard.name].includes(r.name)) {
-            continue;
-        }
-        // Creep info
-        new RoomVisual().text(`${r.name} L:${r.controller.level}, ${Math.round(r.controller.progress / 1000)}K/${r.controller.progressTotal / 1000}K`, 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("🔋  ExcessEnergy: " + creepRoomMap.get(r.name + "eenergy"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("⚡️ Energy      : " + r.energyAvailable + "/" + r.energyCapacityAvailable, 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("⛏️ Harvesters  : " + creepRoomMap.get(r.name + "harvester"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("🚚 Movers      : " + creepRoomMap.get(r.name + "mover"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("👷 Builders    : " + creepRoomMap.get(r.name + "builder"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("🚧 C sites     : " + creepRoomMap.get(r.name + "csites"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("🔺Upgraders    : " + creepRoomMap.get(r.name + "upgrader"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("HarvestExt    : " + creepRoomMap.get(r.name + "harvesterExt"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("MoverExt    : " + creepRoomMap.get(r.name + "moverExt"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("HarvestExtTarget    : " + creepRoomMap.get(r.name + "harvesterExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("MoverExtTarget    : " + creepRoomMap.get(r.name + "moverExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        textOffset;
-    }
+    
 };
 
 resetSourceContainerTracking = function () {
@@ -342,3 +357,5 @@ resetSourceContainerTracking = function () {
         }
     });
 };
+
+

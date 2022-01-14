@@ -1,3 +1,4 @@
+require("manage.GUI");
 require("manage.baseBuilding");
 require("manage.deadCreepCleanup");
 require("manage.defenders");
@@ -203,6 +204,8 @@ module.exports.loop = function () {
         } catch (e) {
             console.log(`runBaseBuilder() failed: ${e}`);
         }
+        
+        drawGUI();
 
         // runRoads();
 
