@@ -1,7 +1,7 @@
 require("movement");
 
 function log(creep, str) {
-    if (0) if (creep.name === "Upgrader_647") console.log(str);
+    if (1) if (creep.name === "Builder_576") console.log(str);
 }
 
 global.roleUpgrader = {
@@ -64,9 +64,13 @@ global.roleUpgrader = {
             healRoads(creep);
 
             if (creep.room.controller.level == 8) {
+                log(creep, "controller is level 8")
                 if (creep.memory.sweetSpot == undefined) {
+                    log(creep, "sweet spot undefined")
                     controllerSpots = [];
-                    const terrain = r.getTerrain();
+                    const terrain = room.getTerrain();
+                    log(creep, "painting controller spots")
+                    r = creep.room
                     for (var i = r.controller.pos.x - 1; i <= r.controller.pos.x + 1; i++) {
                         for (var j = r.controller.pos.y - 1; j <= r.controller.pos.y + 1; j++) {
                             // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
@@ -86,7 +90,7 @@ global.roleUpgrader = {
                     }
                     var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
                     linkSpots = [];
-
+                    log(creep, "painting link spots")
                     for (var i = link_controller.pos.x - 1; i <= link_controller.pos.x + 1; i++) {
                         for (var j = link_controller.pos.y - 1; j <= link_controller.pos.y + 1; j++) {
                             // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
@@ -106,6 +110,7 @@ global.roleUpgrader = {
                     }
                     const intersectionSpots = controllerSpots.filter((value) => linkSpots.includes(value));
                     if (intersectionSpots.length) {
+                        log(creep, "intersection found")
                         creep.memory.sweetSpot = intersectionSpots[0];
                     }
                 } else {
