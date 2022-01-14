@@ -58,10 +58,31 @@ global.roleBuilderExt = {
 
             healRoads(creep);
 
+            if (creep.memory.currentTarget != null) {
+                target = Game.getObjectById(creep.memory.currentTarget)
+                if (target != undefined) {
+                    if (creep.build(target) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(target, {
+                            visualizePathStyle: { stroke: "#ffffff" },
+                        });
+                    }
+                    return
+                } else {
+                    creep.memory.currentTarget = null
+                    roomRefreshMap[creep.memory.targetRoomName] = Game.time;       
+                }
+            }
+
+            if (Game.rooms[creep.memory.targetRoomName] == null) {
+                moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.targetRoomName));
+                return;
+            }
+
             var targets = Game.rooms[creep.memory.targetRoomName].find(FIND_CONSTRUCTION_SITES);
             if (targets.length) {
                 log(creep, targets);
                 var closest = creep.pos.findClosestByPath(targets);
+                creep.memory.currentTarget = closest.id
                 if (closest == null) {
                     // not in the correct room so can't figure out closest
                     moveToMultiRoomTarget(creep, targets[0], false);
