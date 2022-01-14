@@ -93,7 +93,7 @@ cloneCreep = function (sourceCreepName, room = null, force = null) {
     }
 };
 
-upgradeCreep = function (sourceCreepName, dryRun = null) {
+upgradeCreep = function (sourceCreepName) {
     var sourceCreep = Game.creeps[sourceCreepName];
     if (sourceCreep === null) return -1;
     var spawnRoom = Game.rooms[sourceCreep.memory.baseRoomName];
@@ -101,7 +101,6 @@ upgradeCreep = function (sourceCreepName, dryRun = null) {
     var roomSpawner = Game.getObjectById(spawnRoom.memory.mainSpawn.id);
     if (roomSpawner == null) return -1;
     var newName = _.capitalize(sourceCreep.memory.role) + "_" + getRandomInt();
-    console.log("Upgrading" + newName + " from " + sourceCreepName);
     // console.log(sourceCreep.body);
     // console.log(sourceCreep.memory.role);
     // console.log(newName);
@@ -109,19 +108,23 @@ upgradeCreep = function (sourceCreepName, dryRun = null) {
 
     var newBody = generateBodyParts(sourceCreep.memory.baseRoomName, eval("role" + _.capitalize(sourceCreep.memory.role)));
 
+    // console.log(`old : ${sourceCreep.body.map((a) => a.type)}`);
+    // console.log(`new : ${newBody}`);
+
     if (newBody.length <= sourceCreep.body.length) {
-        console.log("no upgrade available");
+        // console.log("no upgrade available");
+        return -1
     }
 
     // console.log(memoryClone.memory.role)
     // console.log(JSON.stringify(memoryClone));
-    if (dryRun != null) {
-        roomSpawner.spawnCreep(newBody, newName, memoryClone);
+    console.log("Upgrading" + newName + " from " + sourceCreepName);
+    ret = roomSpawner.spawnCreep(newBody, newName, memoryClone)
+    if (ret == OK) {
         sourceCreep.memory.DIE = "";
-        return;
+        return 0;
     } else {
-        console.log(`old : ${sourceCreep.body.map((a) => a.type)}`);
-        console.log(`new : ${newBody}`);
+        return ret;
     }
 };
 
