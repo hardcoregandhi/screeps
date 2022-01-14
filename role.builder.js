@@ -87,6 +87,22 @@ global.roleBuilder = {
         }
 
         if (creep.memory.building) {
+            if (creep.memory.currentTarget != null) {
+                target = Game.getObjectById(creep.memory.currentTarget)
+                if (target != undefined) {
+                    if (creep.build(target) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(target, {
+                            visualizePathStyle: { stroke: "#ffffff" },
+                        });
+                    }
+                    return
+                } else {
+                    creep.memory.currentTarget = null
+                    roomRefreshMap[creep.room.name] = Game.time;
+                    // refreshRoomTrackingNextTick = true;
+                    
+                }
+            }
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if (targets.length == 0 && customStructureSpecificPercentLimits.length == 0) {
                 // if (creep.body.filter((x) => x.type == MOVE).length > 5) {
@@ -120,6 +136,7 @@ global.roleBuilder = {
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if (targets.length) {
                 var closest = creep.pos.findClosestByPath(targets);
+                creep.memory.currentTarget = closest.id
 
                 if (creep.build(closest) == ERR_NOT_IN_RANGE) {
                     // moveToTarget(creep, closest, false)
