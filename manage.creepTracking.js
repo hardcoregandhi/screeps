@@ -7,7 +7,19 @@ refreshCreepTracking = function () {
 };
 
 creepTracking = function () {
+    
+    var backupExcessEnergyValue
+    if(creepRoomMap != undefined) {
+        backupExcessEnergyValue = myRooms[Game.shard.name].map((r) => { return creepRoomMap.get(r + "eenergy") })
+    }
+        
     global.creepRoomMap = new Map();
+    
+    var i = 0
+    _.forEach(myRooms[Game.shard.name], (r) => {
+        creepRoomMap.set(r + "eenergy", backupExcessEnergyValue[i++]);
+    })
+    
     // Active Creep Tracking
     _.forEach(Game.rooms, (r) => {
         creepRoomMap.set(r.name + "builder", 0);
