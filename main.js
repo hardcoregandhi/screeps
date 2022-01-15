@@ -51,8 +51,19 @@ PathFinder.use(true);
 focusHealing = false;
 global.myRooms = {};
 
-myRooms["shard3"] = ["W6S1", "W3S2", "W6S2"];
-myRooms["shard2"] = ["W11S5"];
+while (Memory.myRooms == undefined || Memory.myRooms.length == 0) {
+    for (const i in Game.spawns) {
+        Memory.myRooms = []
+        if (Memory.myRooms.indexOf(Game.spawns[i].room.name) === -1) {
+            Memory.myRooms.push(Game.spawns[i].room.name)
+        }
+    }
+}
+
+myRooms[Game.shard.name] = Memory.myRooms
+
+// myRooms["shard3"] = ["W6S1", "W3S2", "W6S2"];
+// myRooms["shard2"] = ["W11S5"];
 global.creepRoomMap = new Map();
 global.nextCreepRoomMapRefreshInterval = 60;
 global.nextCreepRoomMapRefreshTime = Game.time;
