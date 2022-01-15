@@ -1,8 +1,6 @@
 require("movement");
 
-function log(creep, str) {
-    if (1) if (creep.name === "Builder_576") console.log(str);
-}
+
 
 global.roleUpgrader = {
     name: "upgrader",
@@ -18,7 +16,7 @@ global.roleUpgrader = {
     bodyLoop: [WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
     run: function (creep) {
-        log(creep, "run");
+        Log(creep, "run");
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
@@ -46,7 +44,7 @@ global.roleUpgrader = {
             creep.memory.upgrading = true;
             creep.say("⚡ upgrade");
         }
-        log(creep, 1);
+        Log(creep, 1);
 
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
@@ -59,17 +57,17 @@ global.roleUpgrader = {
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
 
         if (creep.memory.upgrading) {
-            log(creep, "upgrading");
+            Log(creep, "upgrading");
 
             healRoads(creep);
 
             if (creep.room.controller.level == 8) {
-                log(creep, "controller is level 8")
+                Log(creep, "controller is level 8")
                 if (creep.memory.sweetSpot == undefined) {
-                    log(creep, "sweet spot undefined")
+                    Log(creep, "sweet spot undefined")
                     controllerSpots = [];
                     const terrain = room.getTerrain();
-                    log(creep, "painting controller spots")
+                    Log(creep, "painting controller spots")
                     r = creep.room
                     for (var i = r.controller.pos.x - 1; i <= r.controller.pos.x + 1; i++) {
                         for (var j = r.controller.pos.y - 1; j <= r.controller.pos.y + 1; j++) {
@@ -90,7 +88,7 @@ global.roleUpgrader = {
                     }
                     var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
                     linkSpots = [];
-                    log(creep, "painting link spots")
+                    Log(creep, "painting link spots")
                     for (var i = link_controller.pos.x - 1; i <= link_controller.pos.x + 1; i++) {
                         for (var j = link_controller.pos.y - 1; j <= link_controller.pos.y + 1; j++) {
                             // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
@@ -110,7 +108,7 @@ global.roleUpgrader = {
                     }
                     const intersectionSpots = controllerSpots.filter((value) => linkSpots.includes(value));
                     if (intersectionSpots.length) {
-                        log(creep, "intersection found")
+                        Log(creep, "intersection found")
                         creep.memory.sweetSpot = intersectionSpots[0];
                     }
                 } else {
@@ -125,15 +123,15 @@ global.roleUpgrader = {
                 moveToTarget(creep, creep.room.controller.pos, false);
             }
         } else {
-            log(creep, "retrieving");
+            Log(creep, "retrieving");
 
             if (Memory.rooms[creep.memory.baseRoomName].link_storage != undefined && Memory.rooms[creep.memory.baseRoomName].link_controller != undefined) {
                 try {
-                    log(creep, "links");
+                    Log(creep, "links");
                     var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
                     if (link_controller /*&& link_controller.store.getUsedCapacity(RESOURCE_ENERGY) > 0*/) {
                         creep.say("h2link");
-                        log(creep, "h2link");
+                        Log(creep, "h2link");
                         if (link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
                             creep.memory.upgrading = true;
                         } else if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
@@ -147,7 +145,7 @@ global.roleUpgrader = {
                 }
             }
             if (mainStorage != undefined) {
-                log(creep, "mainStorage");
+                Log(creep, "mainStorage");
                 if (
                     (creepRoomMap.get(creep.room.name + "eenergy") < 2000 && creep.room.energyAvailable < creep.room.energyCapacityAvailable - 400) ||
                     (mainStorage.structureType == STRUCTURE_CONTAINER && mainStorage.store.getUsedCapacity() < mainStorage.store.getCapacity() / 2)

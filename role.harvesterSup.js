@@ -1,6 +1,4 @@
-function log(creep, str) {
-    if (0) if ((creep.name = "MoverExt_577")) console.log(str);
-}
+
 
 global.roleHarvSup = {
     name: "harvSup",
@@ -28,7 +26,7 @@ global.roleHarvSup = {
 
         mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
         if (mainStorage == undefined) {
-            log(creep, "mainStorage could not be found");
+            Log(creep, "mainStorage could not be found");
         }
 
         if (creep.memory.returning && creep.store.getFreeCapacity() == 0) {
@@ -65,7 +63,7 @@ global.roleHarvSup = {
         }
 
         if (!creep.memory.returning) {
-            log(creep, "retrieving");
+            Log(creep, "retrieving");
             healRoads(creep);
 
             for (const resourceType in creep.store) {
@@ -74,10 +72,10 @@ global.roleHarvSup = {
                 }
             }
         } else {
-            log(creep, "returning");
+            Log(creep, "returning");
             pickupNearby(creep);
             if (creep.memory.targetContainer == undefined) {
-                log(creep, "finding new container");
+                Log(creep, "finding new container");
 
                 var containers = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0 && structure != mainStorage);
                 if (!containers.length) return -1;
@@ -95,7 +93,7 @@ global.roleHarvSup = {
             }
 
             for (const resourceType in target.store) {
-                log(creep, 9);
+                Log(creep, 9);
                 if (creep.withdraw(target, resourceType) != OK) {
                     moveToTarget(creep, target);
                 }

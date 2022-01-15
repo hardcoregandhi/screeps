@@ -1,6 +1,4 @@
-function log(creep, str) {
-    if (0) if (creep.name == "Engineer_188") console.log(str);
-}
+
 
 /*
 
@@ -31,14 +29,14 @@ global.roleEngineer = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        log(creep, 0);
+        Log(creep, 0);
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
             if (creep.memory.experimentalMovement != undefined) {
                 moveToRoom(creep, creep.memory.baseRoomName);
                 return;
             }
-            log(creep, 1);
+            Log(creep, 1);
             const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
             if (route.length > 0) {
                 creep.say("Headin oot");
@@ -52,16 +50,16 @@ global.roleEngineer = {
             return;
         }
 
-        log(creep, 2);
+        Log(creep, 2);
 
         if (creep.memory.moving == undefined) creep.memory.moving = true;
         if (creep.memory.moving && creep.store.getUsedCapacity() == 0) {
-            log(creep, "setting moving false");
+            Log(creep, "setting moving false");
             creep.memory.moving = false;
             creep.say("🔄 harvest");
         }
         if (!creep.memory.moving && creep.store.getFreeCapacity() == 0) {
-            log(creep, "setting moving true");
+            Log(creep, "setting moving true");
             creep.memory.moving = true;
             creep.say("dropping");
         }
@@ -72,19 +70,19 @@ global.roleEngineer = {
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
-        log(creep, 5);
+        Log(creep, 5);
 
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
         var factory = Game.getObjectById(Memory.rooms[creep.room.name].structs.factory.id);
         var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
 
         // if (creep.memory.moving) {
-        //     log(creep, "moving");
+        //     Log(creep, "moving");
 
         //     if (factory == undefined) {
-        //         log(creep, "factory could not be found");
+        //         Log(creep, "factory could not be found");
         //     } else {
-        //         log(creep, "using factory");
+        //         Log(creep, "using factory");
         //         if (creep.transfer(factory, RESOURCE_ENERGY) != OK) {
         //             // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
         //             creep.moveTo(factory);
@@ -93,7 +91,7 @@ global.roleEngineer = {
         //     }
         //     return;
         // } else {
-        //     log(creep, "!moving");
+        //     Log(creep, "!moving");
         //         if (creepRoomMap.get(creep.room.name + "eenergy") > 20000) {
         //             if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
         //                 creep.moveTo(mainStorage);
@@ -121,12 +119,12 @@ global.roleEngineer = {
             } else if (ret == ERR_NOT_ENOUGH_RESOURCES) {
                 if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000 && terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 50000) {
                     if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        log(creep, "moving to mainStorage");
+                        Log(creep, "moving to mainStorage");
                         creep.moveTo(mainStorage)
                         return;
                     }
                     if (creep.transfer(terminal, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                       log(creep, "moving to terminal");
+                       Log(creep, "moving to terminal");
                         creep.moveTo(terminal)
                         return;
                     }

@@ -81,36 +81,37 @@ for (s of Object.keys(myRooms)) {
 }
 
 /*
-calls		time		avg		    function
-2119		571.4		0.270		Creep.moveTo
-2127		407.4		0.192		Creep.move
-1547		317.2		0.205		Creep.moveByPath
-498		    266.1		0.534		roleMover.run
-579		    254.5		0.440		roleMoverExt.run
-577		    189.0		0.328		roleHarvester.run
-536		    172.2		0.321		roleHarvesterExt.run
-30149		142.8		0.005		Room.find
-415		    132.2		0.318		roleUpgrader.run
-83		    129.7		1.563		roomTracking
-805		    127.2		0.158		Creep.harvest
-83		    108.2		1.303		structs
-166		    83.2		0.501		roleGunner.run
-553		    78.3		0.142		RoomPosition.findPathTo
-553		    71.8		0.130		Room.findPath
-727		    71.6		0.098		Creep.transfer
-166		    70.7		0.426		roleSoldier.run
-3807		60.4		0.016		RoomPosition.findClosestByRange
-166		    56.3		0.339		roleBuilder.run
-166		    55.7		0.336		roleHarvSup.run
-82		    53.4		0.651		renew
-200		    42.5		0.213		Creep.heal
-839		    21.0		0.025		Creep.withdraw
-208		    19.6		0.094		Creep.repair
-82		    19.3		0.235		Spawn.renewCreep
-79		    18.7		0.237		Creep.upgradeController
-78		    18.4		0.236		roleClaimer.run
-Avg: 19.10	Total: 1872.12	Ticks: 98
-*/
+calls	time	avg		function
+205		68.5	0.334		Creep.moveTo
+136		45.5	0.335		roleMoverExt.run
+247		32.2	0.130		Creep.move
+80		28.9	0.361		roleHarvesterExt.run
+155		25.4	0.164		Creep.moveByPath
+83		23.8	0.287		RoomPosition.findPathTo
+83		22.7	0.274		Room.findPath
+48		21.9	0.457		roleMover.run
+48		19.7	0.410		roleHarvester.run
+88		16.2	0.184		Creep.harvest
+24		12.9	0.538		roleBuilderExt.run
+40		12.2	0.304		roleClaimer.run
+2871	11.5	0.004		Room.find
+120		10.8	0.090		Creep.transfer
+24		10.0	0.415		towers
+8		6.4		0.801		structs
+78		3.7		0.048		Creep.withdraw
+40		3.7		0.093		Creep.reserveController
+8		3.6		0.452		renew
+13		3.1		0.237		Spawn.renewCreep
+464		2.3		0.005		RoomPosition.isNearTo
+8		2.3		0.282		roleBuilder.run
+9		2.0		0.223		Creep.repair
+615		1.7		0.003		RoomPosition.inRangeTo
+95		0.9		0.010		RoomPosition.findClosestByRange
+132		0.7		0.005		Creep.say
+8		0.5		0.063		roomTracking
+8		0.5		0.060		Creep.build
+8		0.5		0.059		spawns
+Avg: 25.35	Total: 202.77	Ticks: 8*/
 
 // Any modules that you use that modify the game's prototypes should be require'd
 // before you require the profiler.

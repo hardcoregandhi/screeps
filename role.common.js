@@ -7,8 +7,8 @@
  * mod.thing == 'a thing'; // true
  */
 
-function log(creep, msg) {
-    if (0) if (creep.name == "MoverExt_250") console.log(msg);
+global.Log = function(creep, str) {
+    if (creep.memory.debug != undefined && creep.memory.debug == true ) console.log(str);
 }
 
 global.healRoads = function (creep) {
@@ -17,14 +17,14 @@ global.healRoads = function (creep) {
         return structure.structureType == STRUCTURE_TOWER;
     });
     if (towers.length == 0) {
-        log(creep, "no towers");
+        Log(creep, "no towers");
         const damagedStructs = creep.room.find(FIND_STRUCTURES).filter((object) => {
             return object.structureType == STRUCTURE_ROAD && object.hits < object.hitsMax / 2 && creep.pos.inRangeTo(object, 1);
         });
         damagedStructs.sort((a, b) => a.hits - b.hits);
         if (damagedStructs.length > 0) {
-            log(creep, "damaged tower found");
-            log(creep, creep.repair(damagedStructs[0]));
+            Log(creep, "damaged tower found");
+            Log(creep, creep.repair(damagedStructs[0]));
 
             return creep.repair(damagedStructs[0]);
         }

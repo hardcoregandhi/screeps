@@ -1,6 +1,4 @@
-function log(creep, str) {
-    if (creep.name == "Mover_651") if (1) console.log(str);
-}
+
 
 global.roleScavenger = {
     /** @param {Creep} creep **/
@@ -57,9 +55,9 @@ global.roleScavenger = {
                 //no storage, just grab energy
                 mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
                 if (mainStorage == undefined) {
-                    log(creep, "mainStorage could not be found");
+                    Log(creep, "mainStorage could not be found");
                 } else {
-                    log(creep, "using mainStorage");
+                    Log(creep, "using mainStorage");
                     if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
                         // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
                         creep.moveTo(mainStorage, {

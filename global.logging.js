@@ -3,7 +3,7 @@ global.logging = function (bool) {
     global.LOGGING_ENABLED = bool;
 };
 global.log = {
-    log: function log(arg) {
+    log: function Log(arg) {
         if (global.LOGGING_ENABLED) return console.log(arg);
     },
     warn: function warn(arg) {

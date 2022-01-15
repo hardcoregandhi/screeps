@@ -2,9 +2,7 @@ var roleHarvester = require("role.harvester");
 require("movement");
 require("role.common");
 
-function log(creep, str) {
-    if (0) if (creep.name == "Builder_334") console.log(str);
-}
+
 
 global.roleBuilder = {
     name: "builder",
@@ -68,11 +66,11 @@ global.roleBuilder = {
         //         });
 
         if (creepRoomMap.get(creep.room.name + "harvester") < 1 && (creepRoomMap.get(creep.room.name + "eenergy") == undefined || creepRoomMap.get(creep.room.name + "eenergy") < 200)) {
-            log(creep, "Defauling to Harvester");
+            Log(creep, "Defauling to Harvester");
             roleHarvester.run(creep);
             return;
         } else if (creepRoomMap.get(creep.room.name + "csites") == 0) {
-            log(creep, "Defauling to Upgrader");
+            Log(creep, "Defauling to Upgrader");
             roleUpgrader.run(creep);
             return;
         }
@@ -123,7 +121,7 @@ global.roleBuilder = {
                     return;
                 }
             }
-            log(creep, 5);
+            Log(creep, 5);
             // var targets = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
             // if (targets.length > 0) {
             //     if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
@@ -154,7 +152,7 @@ global.roleBuilder = {
                 }
             }
         } else {
-            log(creep, 8);
+            Log(creep, 8);
             if (Game.flags.DISMANTLE && creep.memory.baseRoomName == Game.flags.DISMANTLE.room.name) {
                 var dismantle = Game.flags.DISMANTLE.pos.lookFor(LOOK_STRUCTURES)[0];
                 if (dismantle) {
@@ -169,9 +167,9 @@ global.roleBuilder = {
             }
 
             if (creepRoomMap.get(creep.room.name + "mover") >= 1) {
-                log(creep, 81);
+                Log(creep, 81);
                 if ((creepRoomMap.get(creep.room.name + "eenergy") === undefined && creep.room.energyAvailable < creep.room.energyCapacityAvailable / 2) || creepRoomMap.get(creep.room.name + "eenergy") < 1500) {
-                    log(creep, 10);
+                    Log(creep, 10);
                     try {
                         var link_controller = Game.getObjectById(Memory.rooms[creep.room.name].link_controller);
                         if (link_controller && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
@@ -190,9 +188,9 @@ global.roleBuilder = {
                 }
                 mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
                 if (mainStorage == undefined) {
-                    log(creep, "mainStorage could not be found");
+                    Log(creep, "mainStorage could not be found");
                 } else {
-                    log(creep, "using mainStorage");
+                    Log(creep, "using mainStorage");
                     if (mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity() * 0.01) {
                         if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
                             // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
@@ -211,7 +209,7 @@ global.roleBuilder = {
                 var containers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
                     return structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > 500;
                 });
-                log(creep, containers);
+                Log(creep, containers);
                 if (containers.length) {
                     container = creep.pos.findClosestByPath(containers);
                     if (creep.withdraw(container, RESOURCE_ENERGY) != OK) {
@@ -220,7 +218,7 @@ global.roleBuilder = {
                     return;
                 }
                 var sources = creep.room.find(FIND_SOURCES);
-                log(creep, 9);
+                Log(creep, 9);
                 if (sources.length > 0) {
                     target = creep.pos.findClosestByPath(sources);
                     if (creep.harvest(target) == ERR_NOT_IN_RANGE) {

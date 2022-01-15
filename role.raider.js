@@ -1,6 +1,4 @@
-function log(creep, str) {
-    if (creep.name == "Raider_612") if (1) console.log(str);
-}
+
 
 global.roleRaider = {
     name: "raider",
@@ -43,9 +41,9 @@ global.roleRaider = {
             //no storage, just grab energy
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (mainStorage == undefined) {
-                log(creep, "mainStorage could not be found");
+                Log(creep, "mainStorage could not be found");
             } else {
-                log(creep, "using mainStorage");
+                Log(creep, "using mainStorage");
                 for (const resourceType in creep.store) {
                     if (creep.transfer(mainStorage, resourceType) != OK) {
                         moveToMultiRoomTarget(creep, mainStorage)

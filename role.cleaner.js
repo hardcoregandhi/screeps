@@ -1,6 +1,4 @@
-function log(creep, str) {
-    if (creep.name == "Mover_872") if (0) console.log(str);
-}
+
 
 global.roleCleaner = {
     name: "cleaner",
@@ -34,9 +32,9 @@ global.roleCleaner = {
             }
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (mainStorage == undefined) {
-                log(creep, "mainStorage could not be found");
+                Log(creep, "mainStorage could not be found");
             } else {
-                log(creep, "using mainStorage");
+                Log(creep, "using mainStorage");
                 for (const resourceType in creep.store) {
                     if (creep.transfer(mainStorage, resourceType) != OK) {
                         creep.moveTo(mainStorage, {
