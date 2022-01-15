@@ -1,6 +1,4 @@
-function log(creep, str) {
-    if (creep.memory.debug != undefined && creep.memory.debug == true ) console.log(str);
-}
+
 
 global.roleHarvesterDeposit = {
     name: "harvesterDeposit",
@@ -31,7 +29,7 @@ global.roleHarvesterDeposit = {
             Memory.rooms[creep.memory.targetRoomName].sources[s.id].targettedBy += 1;
         }
 
-        log(creep, 1);
+        Log(creep, 1);
         if (creep.ticksToLive > 1400) {
             creep.memory.healing = false;
         }
@@ -43,30 +41,30 @@ global.roleHarvesterDeposit = {
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
         
-        log(creep, 2);
+        Log(creep, 2);
 
         if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
             creep.memory.mining = false;
             creep.say("🔄 dropping");
-            log(creep, "switching to dropping");
+            Log(creep, "switching to dropping");
         }
         if (!creep.memory.mining && creep.store.getUsedCapacity() == 0) {
             creep.memory.healing = false;
             creep.memory.mining = true;
             creep.say("⛏️ mining");
-            log(creep, "switching to mining");
+            Log(creep, "switching to mining");
         }
 
         if (creep.memory.fakeBaseRoomName == undefined) {
             creep.memory.fakeBaseRoomName = creep.memory.targetRoomName;
         }
         if (creep.memory.mining) {
-            log(creep, "mining");
+            Log(creep, "mining");
 
             if (Game.rooms[creep.memory.targetRoomName] == undefined) {
-                log(creep, creep.memory.targetRoomName);
+                Log(creep, creep.memory.targetRoomName);
                 if (creep.room.name != creep.memory.targetRoomName) {
-                    log(creep, "finding route to " + creep.memory.targetRoomName);
+                    Log(creep, "finding route to " + creep.memory.targetRoomName);
                     const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName);
                     if (route.length > 0) {
                         creep.say("Headin oot");
@@ -74,7 +72,7 @@ global.roleHarvesterDeposit = {
                         moveToMultiRoomTarget(creep, exit);
                     } else {
                         creep.say("No route found");
-                        log(creep, "no route to target room");
+                        Log(creep, "no route to target room");
                     }
                     return;
                 }
@@ -121,7 +119,7 @@ global.roleHarvesterDeposit = {
             if (targetSource == undefined) {
                 log.error("source not found");
             }
-            // log(creep, targetSource);
+            // Log(creep, targetSource);
 
             if (creep.harvest(targetSource) != OK) {
                 // console.log(creep.harvest(targetSource))
@@ -129,9 +127,9 @@ global.roleHarvesterDeposit = {
             }
             return;
         } else {
-            log(creep, "dropping");
+            Log(creep, "dropping");
             if (creep.room.name != creep.memory.baseRoomName) {
-                log(creep, "wrong room");
+                Log(creep, "wrong room");
                 const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
                 if (route.length > 0) {
                     creep.say("Headin oot");
@@ -139,7 +137,7 @@ global.roleHarvesterDeposit = {
                     moveToMultiRoomTarget(creep, exit);
                 } else {
                     creep.say("No route found");
-                    log(creep, "no route to target room");
+                    Log(creep, "no route to target room");
                 }
                 return;
             }

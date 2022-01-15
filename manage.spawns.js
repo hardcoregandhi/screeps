@@ -22,7 +22,7 @@ global.runSpawns = function () {
             if (spawnCreep(roleClaimer, null, { memory: { baseRoomName: r.name } }, r.name) == 0) {
                 Memory.createClaimer = false;
             }
-        } else if (creepRoomMap.get(r.name + "harvester") == undefined || creepRoomMap.get(r.name + "harvester") < _.size(Memory.rooms[r.name].sources)) {
+        } else if (creepRoomMap.get(r.name + "harvester") == undefined || creepRoomMap.get(r.name + "harvester") < Memory.rooms[r.name].totalMiningSpots) {
             if (r.energyAvailable <= 300) {
                 BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
                 spawnCreep(roleHarvester, BaseBodyParts, null, r.name);

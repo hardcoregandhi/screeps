@@ -1,6 +1,3 @@
-function log(creep, str) {
-    if (0) if (creep.name == "HarvesterExt_161") console.log(str);
-}
 
 var roleHarvester = require("role.harvester");
 
@@ -32,7 +29,7 @@ global.roleHarvesterExt = {
             creep.memory.moverLimit = 1;
         }
 
-        log(creep, 1);
+        Log(creep, 1);
         if (creep.ticksToLive > 1400) {
             creep.memory.healing = false;
             creep.memory.mining = true;
@@ -55,10 +52,10 @@ global.roleHarvesterExt = {
         }
 
         if (Game.rooms[creep.memory.targetRoomName] == undefined) {
-            log(creep, "target room not currently used");
-            log(creep, creep.memory.targetRoomName);
+            Log(creep, "target room not currently used");
+            Log(creep, creep.memory.targetRoomName);
             if (creep.room.name != creep.memory.targetRoomName) {
-                log(creep, "wrong room");
+                Log(creep, "wrong room");
                 const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName);
                 if (route.length > 0) {
                     creep.say("Headin oot");
@@ -66,7 +63,7 @@ global.roleHarvesterExt = {
                     moveToMultiRoomTarget(creep, exit);
                 } else {
                     creep.say("No route found");
-                    log(creep, "no route to target room");
+                    Log(creep, "no route to target room");
                 }
                 return;
             }
@@ -80,7 +77,7 @@ global.roleHarvesterExt = {
         var containersNearToSource = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
             return structure.structureType == STRUCTURE_CONTAINER && Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(structure, 2);
         });
-        log(creep, 2);
+        Log(creep, 2);
 
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         var closestStructure = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((structure) => {
@@ -134,7 +131,7 @@ global.roleHarvesterExt = {
             return;
         }
 
-        log(creep, creep.memory.noClaimSpawn != undefined && creep.memory.noClaimSpawn == false);
+        Log(creep, creep.memory.noClaimSpawn != undefined && creep.memory.noClaimSpawn == false);
 
         // TODO a creep should not spawn other creeps
         if (creep.memory.noSpawn == undefined || creep.memory.noSpawn == false) {
@@ -158,13 +155,13 @@ global.roleHarvesterExt = {
         if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
             creep.memory.mining = false;
             creep.say("🔄 dropping");
-            log(creep, "switching to dropping");
+            Log(creep, "switching to dropping");
         }
         if (!creep.memory.mining && creep.store.getUsedCapacity() == 0) {
             creep.memory.healing = false;
             creep.memory.mining = true;
             creep.say("⛏️ mining");
-            log(creep, "switching to mining");
+            Log(creep, "switching to mining");
         }
 
         if (creep.memory.fakeBaseRoomName == undefined) {
@@ -174,25 +171,25 @@ global.roleHarvesterExt = {
         if (targetSource == undefined) {
             log.error("source not found");
         }
-        log(creep, targetSource);
+        Log(creep, targetSource);
 
         if (creep.memory.mining) {
-            log(creep, "mining");
+            Log(creep, "mining");
 
             pickupNearby(creep);
 
-            log(creep, targetSource);
+            Log(creep, targetSource);
             if (creep.harvest(targetSource) != OK) {
                 // console.log(creep.harvest(targetSource))
                 moveToMultiRoomTarget(creep, targetSource);
             }
             return;
         } else {
-            log(creep, "dropping");
+            Log(creep, "dropping");
 
             //Build any nearby container or road
             if (csites.length) {
-                log(creep, "building");
+                Log(creep, "building");
                 if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
                     moveToMultiRoomTarget(creep, csites[0]);
                 }
@@ -218,7 +215,7 @@ global.roleHarvesterExt = {
             }
             if (container == undefined) {
                 // console.log(666)
-                log(creep, "no exts, spawn, or container found");
+                Log(creep, "no exts, spawn, or container found");
                 creep.say("makin con");
                 if (targetSource.pos.inRangeTo(creep.pos, 2)) {
                     creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER);
@@ -245,13 +242,13 @@ global.roleHarvesterExt = {
                 }
                 creep.memory.containerFilledTimestamp = undefined;
                 if (container != null && container.hits < 200000) {
-                    log(creep, `healing ${container}`);
+                    Log(creep, `healing ${container}`);
                     if (creep.repair(container) != OK) {
                         moveToMultiRoomTarget(creep, container);
                     }
                 } else if (creep.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     moveToMultiRoomTarget(creep, container);
-                    log(creep, `filling ${container}`);
+                    Log(creep, `filling ${container}`);
                 }
             }
         }

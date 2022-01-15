@@ -2,9 +2,7 @@ var roleHarvester = require("role.harvester");
 require("movement");
 require("role.common");
 
-function log(creep, str) {
-    if (0) if (creep.name == "Upgrader_673") console.log(str);
-}
+
 
 global.roleBuilderExt = {
     name: "builderExt",
@@ -22,7 +20,7 @@ global.roleBuilderExt = {
     roleMemory: { memory: { building: false, targetRoomName: null, targetSource: null } },
     /** @param {Creep} creep **/
     run: function (creep) {
-        log(creep, 0);
+        Log(creep, 0);
         if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.building = false;
             creep.say("🔄 harvest");
@@ -39,16 +37,16 @@ global.roleBuilderExt = {
         }
 
         if (creep.memory.targetRoomName == undefined) {
-            log(creep, 2);
+            Log(creep, 2);
             creep.say("awaiting target");
-            log(creep, "awaiting target");
+            Log(creep, "awaiting target");
             creep.memory.targetRoomName = undefined;
             return;
         }
 
         if (creep.memory.building) {
-            log(creep, 5);
-            log(creep, creep.memory.targetRoomName);
+            Log(creep, 5);
+            Log(creep, creep.memory.targetRoomName);
             // var targets = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
             // if (targets.length > 0) {
             //     if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
@@ -80,7 +78,7 @@ global.roleBuilderExt = {
 
             var targets = Game.rooms[creep.memory.targetRoomName].find(FIND_CONSTRUCTION_SITES);
             if (targets.length) {
-                log(creep, targets);
+                Log(creep, targets);
                 var closest = creep.pos.findClosestByPath(targets);
                 creep.memory.currentTarget = closest.id
                 if (closest == null) {
@@ -98,13 +96,13 @@ global.roleBuilderExt = {
                 roleBuilder.run(creep);
             }
         } else {
-            log(creep, 7);
+            Log(creep, 7);
             var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
                 return structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 500;
             });
 
             if (containers.length) {
-                log(creep, 71);
+                Log(creep, 71);
                 var closest = creep.pos.findClosestByPath(containers);
                 if (closest == null) {
                     // not in room cant look for closest yet
@@ -116,7 +114,7 @@ global.roleBuilderExt = {
                 return;
             }
 
-            log(creep, 8);
+            Log(creep, 8);
             var targets = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES).filter((structure) => {
                 return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
             });

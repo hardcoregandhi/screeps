@@ -232,7 +232,9 @@ roomTracking = function () {
             }
 
             // get valid mining spots
-            // Memory.rooms[r.name].totalMiningSpots = 0;
+            if (Memory.rooms[r.name].totalMiningSpots == undefined) {
+                Memory.rooms[r.name].totalMiningSpots = 0;
+            }
             if (Memory.rooms[r.name].sources[s.id].miningSpots == undefined) {
                 localMiningSpots = 0;
                 totalMiningSpots = 0;

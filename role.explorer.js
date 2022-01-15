@@ -1,6 +1,4 @@
-function log(creep, str) {
-    if (creep.name == "Explorer_444") if (0) console.log(str);
-}
+
 
 global.roleExplorer = {
     name: "explorer",
@@ -8,13 +6,13 @@ global.roleExplorer = {
     // prettier-ignore
     BodyParts: [MOVE],
     baseBodyParts: [MOVE],
-    bodyLoop: [TOUGH],
+    bodyLoop: [TOUGH, MOVE],
 
     run: function (creep) {
-        log(creep, "hello");
+        Log(creep, "hello");
         creep.say("🏳️");
 
-        if ((creep.hits < creep.hitsMax * 0.1 || creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
+        if ((creep.hits < creep.hitsMax * 0.5 || creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;

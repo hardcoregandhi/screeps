@@ -1,6 +1,4 @@
-function log(creep, str) {
-    if (0) if (creep.name == "Sieger_325") console.log(str);
-}
+
 
 global.roleSieger = {
     name: "sieger",
@@ -61,28 +59,28 @@ global.roleSieger = {
         // }
 
         if (creep.room.name != creep.memory.targetRoomName) {
-            log(creep, "travelling");
+            Log(creep, "travelling");
             if (Game.rooms[creep.memory.targetRoomName] == undefined) {
                 moveToRoom(creep, creep.memory.targetRoomName);
                 return;
             }
         }
-        log(creep, 0);
+        Log(creep, 0);
 
         // moveToSoftestWall(creep, enemyTowers.length ? enemyTowers[0].pos : creep.room.controller.pos)
         if (Game.flags.WEAK) {
-            log(creep, "WEAK");
+            Log(creep, "WEAK");
 
             wall = Game.flags.WEAK.pos.lookFor(LOOK_STRUCTURES);
             if (wall.length) {
-                log(creep, "wall found");
-                log(creep, wall[0]);
+                Log(creep, "wall found");
+                Log(creep, wall[0]);
 
                 if (creep.dismantle(wall[0])) {
                 // if (creep.attack(wall[0])) {
-                    log(creep, creep.attack(wall[0]));
+                    Log(creep, creep.attack(wall[0]));
 
-                    log(creep, moveToTarget(creep, wall[0]));
+                    Log(creep, moveToTarget(creep, wall[0]));
                     return;
                 }
             } else {
@@ -91,7 +89,7 @@ global.roleSieger = {
             return;
         }
         if (enemyTowers.length) {
-            log(creep, "TOWERS");
+            Log(creep, "TOWERS");
 
             if (creep.dismantle(enemyTowers[0])) {
                 creep.move(enemyTowers[0]);
