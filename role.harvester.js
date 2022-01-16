@@ -226,8 +226,12 @@ global.roleHarvester = {
                             if (creep.repair(mainStorage) == ERR_NOT_IN_RANGE) {
                                 moveToMultiRoomTarget(creep, mainStorage.pos);
                             }
-                        } else if (creep.transfer(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        } else if (mainStorage.store.getFreeCapacity() == 0) {
+                            roleUpgrader.run(creep)
+                        } else {
+                            if (creep.transfer(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                             moveToMultiRoomTarget(creep, mainStorage.pos);
+                            }
                         }
                         return;
                     }
