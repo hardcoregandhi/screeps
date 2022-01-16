@@ -207,9 +207,9 @@ roomTracking = function () {
                                     return
                                 }
                                 source = Game.getObjectById(s);
-                                console.log(source)
+                                // console.log(source)
                                 if (source != null) {
-                                    console.log(source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)))
+                                    // console.log(source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)))
                                     if (source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)).length < 100) {
                                         if(Memory.rooms[r.name].externalSources == undefined) {
                                             Memory.rooms[r.name].externalSources = []
