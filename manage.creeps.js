@@ -189,7 +189,7 @@ global.runCreeps = function () {
             }
         } catch (e) {
             console.log(`${e}`);
-            console.log(creep, " failed to run");
+            console.log(creep, `${creep.pos} failed to run`);
         }
     }
     

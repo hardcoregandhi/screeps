@@ -8,7 +8,7 @@
  */
 
 global.Log = function(creep, str) {
-    if (creep.memory.debug != undefined && creep.memory.debug == true ) console.log(str);
+    if (creep.memory.debug != undefined && creep.memory.debug == true ) console.log(`${creep.name}: ${str}`);
 }
 
 global.healRoads = function (creep) {
