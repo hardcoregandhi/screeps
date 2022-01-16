@@ -198,20 +198,14 @@ global.roleHarvester = {
                         Log(creep, "local ccont found");
                         Log(creep, target);
 
-                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy < 1 && Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined) {
+                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy < Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.moversNeeded && Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined) {
                             spawnCreep(roleHarvSup, "auto", { memory: { targetContainer: target.id } }, creep.memory.baseRoomName);
                             roleHarvSup.run(creep);
                             return;
                         }
-
-                        if (target != null && target.hits < 200000 && target.structureType == STRUCTURE_CONTAINER) {
-                            if (creep.repair(target) != OK) {
-                                moveToMultiRoomTarget(creep, target.pos);
-                            }
-                        } else if (creep.transfer(target, RESOURCE_ENERGY) != OK) {
-                            moveToMultiRoomTarget(creep, target.pos);
-                        }
-                        return;
+                        
+                        source = Game.getObjectById(creep.memory.targetSource);
+                        return depositInSupportedContainer(creep, source, target);
                     }
 
                     var csites = Game.rooms[creep.memory.baseRoomName].find(FIND_CONSTRUCTION_SITES).filter((site) => {
