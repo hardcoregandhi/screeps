@@ -119,7 +119,7 @@ global.roleSieger = {
             return;
         }
 
-        creep.memory.role = "DIE";
+        creep.memory.DIE = true
     },
 };
 
