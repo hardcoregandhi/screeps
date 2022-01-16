@@ -18,6 +18,11 @@ global.runSpawns = function () {
         //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name } }, "W6S1");
         //     continue
         // }
+        
+        // Neighbouring room investigations
+        unsearchedNeighbouringRooms = _.filter(Memory.rooms[r.name].neighbouringRooms, roomName => {return Memory.rooms[roomName] == undefined })
+        console.log(unsearchedNeighbouringRooms)
+        
         if (Memory.createClaimer) {
             if (spawnCreep(roleClaimer, null, { memory: { baseRoomName: r.name } }, r.name) == 0) {
                 Memory.createClaimer = false;
@@ -29,6 +34,9 @@ global.runSpawns = function () {
             } else {
                 spawnCreep(roleHarvester, null, null, r.name);
             }
+            continue;
+        } else if (unsearchedNeighbouringRooms.length > 0) {
+            // spawnCreep(roleExplorer, null, {memory: {targetRoomName:unsearchedNeighbouringRooms[0]}}, r.name);
             continue;
         } else if (Memory.rooms[r.name].mainStorage == undefined) {
             continue;
@@ -48,9 +56,9 @@ global.runSpawns = function () {
         } else if (creepRoomMap.get(r.name + "builder") < creepRoomMap.get(r.name + "csites") / 2 && creepRoomMap.get(r.name + "builder") < 1) {
             spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } else if (r.controller.level < 3) {
-            continue;
         } else if (spawnExternalHarvester(r.name)) {
+            continue;
+        } else if (r.controller.level < 3) {
             continue;
         } else if (r.controller.level < 4) {
             continue;

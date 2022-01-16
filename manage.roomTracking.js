@@ -194,6 +194,46 @@ roomTracking = function () {
                         });
                     }
                 }
+                
+                // setup external sources
+                if (Memory.rooms[r.name].neighbouringRooms == undefined) {
+                    exits = Game.map.describeExits(r.name);
+                    Memory.rooms[r.name].neighbouringRooms = Object.values(exits);
+                } else {
+                    if (_.every(Memory.rooms[r.name].neighbouringRooms, roomName => { return Memory.rooms[roomName] != null })) {
+                        _.forEach(Memory.rooms[r.name].neighbouringRooms, roomName => {
+                            _.forEach(Object.keys(Memory.rooms[roomName].sources), s => {
+                                if (Memory.rooms[r.name].externalSources.lastIndexOf(s) != -1) {
+                                    return
+                                }
+                                source = Game.getObjectById(s);
+                                console.log(source)
+                                if (source != null) {
+                                    console.log(source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)))
+                                    if (source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)).length < 100) {
+                                        if(Memory.rooms[r.name].externalSources == undefined) {
+                                            Memory.rooms[r.name].externalSources = []
+                                        }
+                                        if (Memory.rooms[r.name].externalSources.lastIndexOf(source.id) === -1) {
+                                            Memory.rooms[r.name].externalSources.push(source.id)
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                    }
+                }
+                    /*
+                    if all neihgbouring rooms are valid
+                    for each room
+                    for each sources
+                    get source
+                    if not source return
+                    if source . distance to spawn < 100
+                    add to external sources
+                    */
+                
+                
 
                 //elapsed = Game.cpu.getUsed() - startCpu;
                 //console.log("transitionCheck has used " + elapsed + " CPU time");
