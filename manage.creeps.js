@@ -51,12 +51,18 @@ global.runCreeps = function () {
             pickupNearby(creep);
 
             if (creep.memory.DIE != undefined) {
-                spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
-                creep.moveTo(spawn.pos);
-                if (spawn.recycleCreep(creep) != 0) {
+                if (creep.spawning) { 
+                    // if this creep was copied from a another, it may have DIE set from the memory clone
+                    console.log("spawning dyinng creep")
+                    delete creep.memory.DIE;
+                } else {
+                    spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
                     creep.moveTo(spawn.pos);
+                    if (spawn.recycleCreep(creep) != 0) {
+                        creep.moveTo(spawn.pos);
+                    }
+                    continue;
                 }
-                continue;
             }
 
             // if(creep.name == "Soldier_748") {
