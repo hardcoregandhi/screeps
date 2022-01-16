@@ -83,8 +83,12 @@ global.runRenew = function () {
             } else if (highestLocalTickCreep) {
                 healTarget = highestLocalTickCreep;
             }
-            if (s.renewCreep(healTarget) == OK) {
+            // console.log(healTarget)
+            ret = s.renewCreep(healTarget)
+            if (ret == OK) {
                 healTarget.cancelOrder("move");
+            } else if (ret == ERR_FULL) {
+                healTarget.memory.healing == false;
             }
         }
     });
