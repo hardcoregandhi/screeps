@@ -17,6 +17,11 @@ global.roleExplorer = {
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
+        
+        if (creep.memory.targetRoomName == undefined) {
+            console.log(`creeps.${creep.name} is waiting for a targetRoomName`);
+            return;
+        }
 
         if (creep.memory.targetRoomName != creep.room.name) {
             moveToMultiRoomTarget(creep, new RoomPosition(25,25, creep.memory.targetRoomName))
