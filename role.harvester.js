@@ -1,4 +1,4 @@
-
+require("role.harvesterCommon")
 
 global.roleHarvester = {
     name: "harvester",
