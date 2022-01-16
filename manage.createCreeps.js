@@ -108,10 +108,10 @@ upgradeCreep = function (sourceCreepName) {
 
     var newBody = generateBodyParts(sourceCreep.memory.baseRoomName, eval("role" + _.capitalize(sourceCreep.memory.role)));
 
-    // console.log(`old : ${sourceCreep.body.map((a) => a.type)}`);
-    // console.log(`new : ${newBody}`);
+    console.log(`old : ${sourceCreep.body.map((a) => a.type)}`);
+    console.log(`new : ${newBody}`);
 
-    if (newBody.length <= sourceCreep.body.length) {
+    if (getBodyCost(newBody) <= getBodyCost(sourceCreep.body)) {
         // console.log("no upgrade available");
         return -1
     }
