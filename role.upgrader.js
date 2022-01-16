@@ -49,6 +49,15 @@ global.roleUpgrader = {
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
+            try {
+                if (creep.body.length < eval("role" + _.capitalize(creep.memory.role)).BodyParts) {
+                    if (upgradeCreep(creep.name) == 0) {
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.log(`${creep.name} failed to upgrade. ${e}`)
+            }
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
