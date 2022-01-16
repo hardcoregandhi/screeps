@@ -50,10 +50,21 @@ global.runCreeps = function () {
 
             pickupNearby(creep);
 
+
+
+            // cull creeps
+            _.forEach(creepsToKill, c => {
+                creepToKill = Game.creeps[c]
+                if (creepToKill != null) {
+                    console.log(`setting ${creep.name} to DIE`)
+                    creepToKill.memory.DIE = true
+                }
+            })
+            creepsToKill = []
             if (creep.memory.DIE != undefined) {
                 if (creep.spawning) { 
                     // if this creep was copied from a another, it may have DIE set from the memory clone
-                    console.log("spawning dyinng creep")
+                    console.log("spawning dying creep")
                     delete creep.memory.DIE;
                 } else {
                     spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
