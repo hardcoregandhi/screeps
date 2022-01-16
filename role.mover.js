@@ -129,7 +129,7 @@ global.roleMover = {
             Log(creep, "moving");
             
             // console.log(closestHostile)
-            if (creep.room.memory.mainTower.enemyInRoom == true) {
+            if (creep.room.memory.mainTower != undefined && creep.room.memory.mainTower.enemyInRoom == true) {
                 var towers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
                     return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 });
