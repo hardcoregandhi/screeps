@@ -297,6 +297,8 @@ roomTracking = function () {
                         Memory.rooms[r.name].sources[s.id].container = {};
                         Memory.rooms[r.name].sources[s.id].container.id = cont.id;
                         Memory.rooms[r.name].sources[s.id].container.targettedBy = 0;
+                        Memory.rooms[r.name].sources[s.id].container.moversNeeded = 2;
+
                     }
                 }
             }
