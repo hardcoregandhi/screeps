@@ -60,7 +60,7 @@ cloneCreep = function (sourceCreepName, room = null, force = null) {
     if (sourceCreep === null) return -1;
     spawnRoom = room != null ? Game.rooms[room] : Game.rooms[sourceCreep.memory.baseRoomName];
     if (spawnRoom === null) return -1;
-    console.log(spawnRoom);
+    // console.log(spawnRoom);
     roomSpawner = Game.getObjectById(spawnRoom.memory.mainSpawn.id);
     if (roomSpawner == null) return -1;
     var newName = _.capitalize(sourceCreep.memory.role) + "_" + getRandomInt();
@@ -111,7 +111,7 @@ upgradeCreep = function (sourceCreepName) {
     // console.log(`old : ${sourceCreep.body.map((a) => a.type)}`);
     // console.log(`new : ${newBody}`);
 
-    if (getBodyCost(newBody) <= getBodyCost(sourceCreep.body)) {
+    if (getBodyCost(newBody) <= getBodyCost(sourceCreep.body.map((a) => a.type))) {
         // console.log("no upgrade available");
         return -1
     }
