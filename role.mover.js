@@ -56,6 +56,10 @@ global.roleMover = {
         
         // Deposit other resources that may have been picked up during scavenging
         mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
+        if (mainStorage == null) {
+            delete Memory.rooms[creep.room.name].mainStorage;
+            resetMainStorage(creep.room.name);
+        }
         for (const resourceType in creep.store) {
             if (resourceType != RESOURCE_ENERGY) {
                 Log(creep, 3);
