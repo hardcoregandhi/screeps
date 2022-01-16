@@ -13,7 +13,7 @@ global.roleHarvester = {
         if (creep.memory.targetSource == undefined) {
             var lowestSource = 99;
             _.forEach(Memory.rooms[creep.memory.baseRoomName].sources, (s) => {
-                if (s.targettedBy >= s.miningSpots) {
+                if (s.targettedBy >= s.miningSpots && s.container == undefined) {
                     return;
                 }
                 if (s.targettedBy < lowestSource) {
