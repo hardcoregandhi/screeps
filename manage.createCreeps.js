@@ -108,8 +108,8 @@ upgradeCreep = function (sourceCreepName) {
 
     var newBody = generateBodyParts(sourceCreep.memory.baseRoomName, eval("role" + _.capitalize(sourceCreep.memory.role)));
 
-    console.log(`old : ${sourceCreep.body.map((a) => a.type)}`);
-    console.log(`new : ${newBody}`);
+    // console.log(`old : ${sourceCreep.body.map((a) => a.type)}`);
+    // console.log(`new : ${newBody}`);
 
     if (getBodyCost(newBody) <= getBodyCost(sourceCreep.body)) {
         // console.log("no upgrade available");
@@ -118,10 +118,12 @@ upgradeCreep = function (sourceCreepName) {
 
     // console.log(memoryClone.memory.role)
     // console.log(JSON.stringify(memoryClone));
-    console.log("Upgrading" + newName + " from " + sourceCreepName);
-    ret = roomSpawner.spawnCreep(newBody, newName, memoryClone)
+    // ret = roomSpawner.spawnCreep(newBody, newName, memoryClone)
+    ret = spawnCreep(eval("role" + _.capitalize(sourceCreep.memory.role)), newBody, memoryClone, sourceCreep.memory.baseRoomName)
     if (ret == OK) {
-        sourceCreep.memory.DIE = "";
+        console.log("Upgrading to " + newName + " from " + sourceCreepName);
+        // sourceCreep.memory.DIE = "";
+        creepsToKill.push(sourceCreepName)
         return 0;
     } else {
         return ret;
