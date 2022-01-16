@@ -64,6 +64,10 @@ global.roleUpgrader = {
         pickupNearby(creep);
 
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
+        if (mainStorage == null) {
+            roleBuilder.run(creep)
+            return
+        }
 
         if (creep.memory.upgrading) {
             Log(creep, "upgrading");

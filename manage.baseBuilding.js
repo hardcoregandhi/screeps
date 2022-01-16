@@ -158,6 +158,17 @@ restartRoomBuildingLevel = function (roomName, level = 1) {
     }
 };
 
+resetMainStorage = function (roomName) {
+    room = Game.rooms[roomName];
+    if (room == undefined) return;
+    mainSpawnPos = room.memory.mainSpawn.pos
+    if (room.controller.level >= 4) {
+        r.createConstructionSite(mainSpawnPos.x + 2, mainSpawnPos.y - 1, "storage");
+    } else {
+        r.createConstructionSite(mainSpawnPos.x + 2, mainSpawnPos.y, "container");
+    }
+}
+
 global.baseRawData = `
 {
     "2": {

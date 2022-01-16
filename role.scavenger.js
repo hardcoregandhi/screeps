@@ -54,9 +54,7 @@ global.roleScavenger = {
             } else {
                 //no storage, just grab energy
                 mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
-                if (mainStorage == undefined) {
-                    Log(creep, "mainStorage could not be found");
-                } else {
+                if (mainStorage != undefined) {
                     Log(creep, "using mainStorage");
                     if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
                         // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
@@ -66,6 +64,31 @@ global.roleScavenger = {
                         });
                     }
                     return;
+                } else {
+                    Log(creep, "mainStorage could not be found");
+                    var targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
+                        return (
+                            ((structure.structureType == STRUCTURE_TOWER && Math.round((structure.store[RESOURCE_ENERGY] / structure.store.getCapacity([RESOURCE_ENERGY])) * 100) < 70) ||
+                                structure.structureType == STRUCTURE_EXTENSION ||
+                                structure.structureType == STRUCTURE_SPAWN) &&
+                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                        );
+                    });
+                    if (target.length) {
+                        closest = creep.pos.findClosestByRange(targets);
+                        for (const resourceType in creep.store) {
+                            if (creep.transfer(closest, resourceType) != OK) {
+                                creep.moveTo(closest, {
+                                    visualizePathStyle: { stroke: "#ffaa00" },
+                                    maxRooms: 1,
+                                });
+                            }
+                            return;
+                        }
+                    } else {
+                        console.log(`Scavenger ${creep.name} @ ${creep.pos} is out of options`)
+                        return;
+                    }
                 }
             }
         } else {
