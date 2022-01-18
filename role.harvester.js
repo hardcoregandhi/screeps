@@ -198,8 +198,24 @@ global.roleHarvester = {
                         Log(creep, "local ccont found");
                         Log(creep, target);
 
-                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy < Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.moversNeeded && Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined) {
+                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
+                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts != 0 &&
+                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.currentCarryParts < 
+                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts && 
+                            Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined
+                        ) {
                             spawnCreep(roleHarvSup, "auto", { memory: { targetContainer: target.id } }, creep.memory.baseRoomName);
+                        }
+
+                        
+                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy == 0) {
+                            if (target != null && target.hits < 200000) {
+                                Log(creep, `healing ${target}`);
+                                if (creep.repair(target) != OK) {
+                                    moveToMultiRoomTarget(creep, target);
+                                }
+                                return;
+                            }
                             roleHarvSup.run(creep);
                             return;
                         }

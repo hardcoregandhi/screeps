@@ -81,15 +81,15 @@ global.roleMoverExt = {
         if (creep.memory.targetSource == undefined) {
             console.log(creep.name, creep.pos);
         } else {
-            if (creep.memory.noSpawn == undefined || creep.memory.noSpawn == false) {
-                if (
-                    creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" + creep.memory.targetSource) == undefined ||
-                    (creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" + creep.memory.targetSource) < 1 && creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" < 3))
-                ) {
-                    spawnCreep(roleHarvesterExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource, noHeal: true } }, creep.memory.baseRoomName);
-                    Log(creep, `spawning Harvester`);
-                }
-            }
+            // if (creep.memory.noSpawn == undefined || creep.memory.noSpawn == false) {
+            //     if (
+            //         creepRoomMap.get(creep.memory.baseRoomName + "harvesterExtTarget" + creep.memory.targetSource) == undefined ||
+            //         (creepRoomMap.get(creep.memory.baseRoomName + "harvesterExtTarget" + creep.memory.targetSource) < 1 && creepRoomMap.get(creep.memory.targetRoomName + "harvesterExtTarget" < 3))
+            //     ) {
+            //         spawnCreep(roleHarvesterExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource, noHeal: true } }, creep.memory.baseRoomName);
+            //         Log(creep, `spawning Harvester`);
+            //     }
+            // }
         }
 
         // if (creep.room.name != creep.memory.fakeBaseRoomName) {

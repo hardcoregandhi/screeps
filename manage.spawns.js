@@ -21,23 +21,19 @@ global.runSpawns = function () {
         
         // Neighbouring room investigations
         unsearchedNeighbouringRooms = _.filter(Memory.rooms[r.name].neighbouringRooms, roomName => {return Memory.rooms[roomName] == undefined })
-        console.log(unsearchedNeighbouringRooms)
+        // console.log(unsearchedNeighbouringRooms)
+        
+        
         
         if (Memory.createClaimer) {
             if (spawnCreep(roleClaimer, null, { memory: { baseRoomName: r.name } }, r.name) == 0) {
                 Memory.createClaimer = false;
             }
-        } else if (creepRoomMap.get(r.name + "harvester") == undefined || creepRoomMap.get(r.name + "harvester") < Memory.rooms[r.name].totalMiningSpots) {
-            if (r.energyAvailable <= 300) {
-                BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
-                spawnCreep(roleHarvester, BaseBodyParts, null, r.name);
-            } else {
-                spawnCreep(roleHarvester, null, null, r.name);
-            }
+        } else if (creepRoomMap.get(r.name + "harvester") == undefined || spawnHarvester(r)) {
             continue;
-        } else if (unsearchedNeighbouringRooms.length > 0) {
+        /*} else if (unsearchedNeighbouringRooms.length > 0) {
             // spawnCreep(roleExplorer, null, {memory: {targetRoomName:unsearchedNeighbouringRooms[0]}}, r.name);
-            continue;
+            continue;*/
         } else if (Memory.rooms[r.name].mainStorage == undefined) {
             continue;
         } else if (creepRoomMap.get(r.name + "mover") < 1) {
@@ -55,6 +51,8 @@ global.runSpawns = function () {
             continue;
         } else if (creepRoomMap.get(r.name + "builder") < creepRoomMap.get(r.name + "csites") / 2 && creepRoomMap.get(r.name + "builder") < 1) {
             spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
+            continue;
+        } else if (scoutNeighbouringRooms(r)) {
             continue;
         } else if (spawnExternalHarvester(r.name)) {
             continue;
@@ -116,8 +114,12 @@ function spawnExternalHarvester(roomName) {
             if (source == undefined || source == null) {
                 return;
             }
-            // console.log(creepRoomMap.get(source.room.name + "harvesterExtTarget" + source.id))
-            if (creepRoomMap.get(source.room.name + "harvesterExtTarget" + source.id) == undefined || creepRoomMap.get(source.room.name + "harvesterExtTarget" + source.id) < 1) {
+            // console.log(roomName + "harvesterExtTarget" + source.id)
+            if (
+                Memory.rooms[source.room.name].sources[source.id].currentMiningParts != undefined &&
+                Memory.rooms[source.room.name].sources[source.id].currentMiningParts < 7 &&
+                Memory.rooms[source.room.name].sources[source.id].targettedBy < Memory.rooms[source.room.name].sources[source.id].miningSpots
+            ) {
                 spawnCreep(roleHarvesterExt, null, { memory: { targetRoomName: source.room.name, targetSource: source.id, noHeal: true } }, roomName);
                 return true;
             }
@@ -125,4 +127,55 @@ function spawnExternalHarvester(roomName) {
     }
 
     return false;
+}
+
+function spawnHarvester(room) {
+    ret = false
+    _.forEach(Memory.rooms[room.name].sources, (s) => {
+        if (s.currentMiningParts != undefined && s.currentMiningParts < 7 && s.targettedBy < s.miningSpots) {
+            if (r.energyAvailable <= 300) {
+                BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
+                // console.log(1)
+                spawnCreep(roleHarvester, BaseBodyParts, {memory:{targetSource: s.id}}, room.name);
+            } else {
+                // console.log(2)
+                spawnCreep(roleHarvester, null, {memory:{targetSource: s.id}}, room.name);
+            }
+            ret = true;
+            return false
+        } else {
+            // console.log(-1)
+        }
+    });
+    return ret;
+}
+
+function scoutNeighbouringRooms(room) {
+    // console.log("scoutNeighbouringRooms")
+    ret = false
+    _.forEach(Memory.rooms[room.name].neighbouringRooms, (n) => {
+        if (Game.rooms[n] == undefined) {
+            if ( creepRoomMap.get(room.name + "explorerTarget" + n) == undefined ||
+                 creepRoomMap.get(room.name + "explorerTarget" + n) < 1) {
+                spawnCreep(roleExplorer, null, {memory:{targetRoomName:n}}, room.name)
+                ret = true
+                return false; //early escape
+            }
+        } else {
+            _.forEach(Memory.rooms[n].neighbouringRooms, (nn) => {
+                if (Game.rooms[nn] == undefined) {
+                    if ( creepRoomMap.get(room.name + "explorerTarget" + nn) == undefined ||
+                         creepRoomMap.get(room.name + "explorerTarget" + nn) < 1) {
+                        spawnCreep(roleExplorer, null, {memory:{targetRoomName:nn}}, room.name)
+                        ret = true
+                        return false; //early escape
+                    }
+                } 
+            });
+            if (ret == true) {
+                return false; //early escape
+            }
+        }
+    });
+    return ret
 }
