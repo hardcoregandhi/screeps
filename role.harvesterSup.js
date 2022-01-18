@@ -59,6 +59,9 @@ global.roleHarvSup = {
 
         if ((creep.ticksToLive < 200 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
+            if (upgradeCreep(creep.name) == 0) {
+                return;
+            }
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
