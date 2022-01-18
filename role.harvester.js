@@ -116,7 +116,7 @@ global.roleHarvester = {
                     4. speed
                 */
 
-                healRoads(creep);
+               if (healRoads(creep) == OK) return;
 
                 var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
                 // console.log(closestHostile)
