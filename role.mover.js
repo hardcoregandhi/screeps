@@ -52,7 +52,7 @@ global.roleMover = {
         Log(creep, 2);
         pickupNearby(creep);
 
-        if (creep.room.energyCapacityAvailable - creep.room.energyAvailable < 100 && Memory.rooms[creep.room.name].link_storage == undefined) return;
+        // if (creep.room.energyCapacityAvailable - creep.room.energyAvailable < 100 && Memory.rooms[creep.room.name].link_storage == undefined) return;
         
         // Deposit other resources that may have been picked up during scavenging
         mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
