@@ -26,7 +26,7 @@ global.roleHarvester = {
             creep.memory.mining = true;
         }
 
-        if (creep.memory.scoopSize == undefined) {
+        if (creep.memory.scoopSize == undefined || creep.spawning) {
             scoopSize = 0;
             _.forEach(creep.body, (b) => {
                 if (b.type == WORK) {
