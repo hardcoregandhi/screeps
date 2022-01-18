@@ -89,7 +89,7 @@ global.roleHarvester = {
                 return;
             }
 
-            healRoads(creep);
+           if (healRoads(creep) == OK) return;
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (
@@ -115,9 +115,6 @@ global.roleHarvester = {
                     3. healing
                     4. speed
                 */
-
-               if (healRoads(creep) == OK) return;
-
                 var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
                 // console.log(closestHostile)
                 if (closestHostile && towers.length) {
