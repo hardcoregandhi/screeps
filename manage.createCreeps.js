@@ -121,6 +121,20 @@ upgradeCreep = function (sourceCreepName) {
         return -1
     }
 
+    if (sourceCreep.body.map((a) => a.type) == eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts) {
+        return -1
+    }
+    
+    if(_.isEqual(_.sortBy(sourceCreep.body.map((a) => a.type)), _.sortBy(eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts))) {
+        return -1
+    }
+
+    
+    if (getBodyCost(newBody) > getBodyCost(eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts)) {
+        newBody = eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts
+    }
+    
+
     // console.log(memoryClone.memory.role)
     // console.log(JSON.stringify(memoryClone));
     // ret = roomSpawner.spawnCreep(newBody, newName, memoryClone)
