@@ -150,6 +150,7 @@ upgradeCreep = function (sourceCreepName) {
 };
 
 spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
+    // console.log(`spawnCreep ${_role.name} ${customBodyParts} ${customMemory} ${_spawnRoom}`)
     var ret = -1;
 
     if (_spawnRoom != null) {

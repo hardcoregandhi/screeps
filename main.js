@@ -215,7 +215,6 @@ module.exports.loop = function () {
             }
             nextRoomTrackingRefreshTime = Game.time + roomTrackingRefreshInterval;
         // }
-        
 
         try {
             // Also includes struct resets
