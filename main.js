@@ -83,6 +83,8 @@ for (s of Object.keys(myRooms)) {
 
 global.creepsToKill = []
 
+Memory.RoomVisualData = {}
+
 /*
 calls	time	avg		function
 205		68.5	0.334		Creep.moveTo
