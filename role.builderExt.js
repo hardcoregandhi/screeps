@@ -54,7 +54,7 @@ global.roleBuilderExt = {
             //     }
             // }
 
-            healRoads(creep);
+           if (healRoads(creep) == OK) return;
 
             if (creep.memory.currentTarget != null) {
                 target = Game.getObjectById(creep.memory.currentTarget)
