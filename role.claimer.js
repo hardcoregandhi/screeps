@@ -6,7 +6,7 @@ global.roleClaimer = {
         CLAIM, CLAIM,
         MOVE, MOVE, MOVE, MOVE, MOVE
         ],
-    baseBodyParts: [CLAIM, CLAIM],
+    baseBodyParts: [CLAIM, CLAIM, MOVE],
     bodyLoop: [MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM],
     bodyPartsMaxCount: 7,
     // 1 - UP
