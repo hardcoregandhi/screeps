@@ -1,5 +1,3 @@
-
-
 global.roleSieger = {
     name: "sieger",
     roleMemory: { memory: { return: false } },
@@ -28,7 +26,7 @@ global.roleSieger = {
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
-            delete creep.memory.pathfinderPath
+            delete creep.memory.pathfinderPath;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
@@ -77,7 +75,7 @@ global.roleSieger = {
                 Log(creep, wall[0]);
 
                 if (creep.dismantle(wall[0])) {
-                // if (creep.attack(wall[0])) {
+                    // if (creep.attack(wall[0])) {
                     Log(creep, creep.attack(wall[0]));
 
                     Log(creep, moveToTarget(creep, wall[0]));
@@ -119,7 +117,7 @@ global.roleSieger = {
             return;
         }
 
-        creep.memory.DIE = true
+        creep.memory.DIE = true;
     },
 };
 

@@ -1,5 +1,3 @@
-
-
 global.roleHarvesterDeposit = {
     name: "harvesterDeposit",
     roleMemory: { memory: { baseRoomName: null, targetRoomName: null, targetResourceType: null } },
@@ -40,7 +38,7 @@ global.roleHarvesterDeposit = {
             creep.memory.mining = false;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
-        
+
         Log(creep, 2);
 
         if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
@@ -79,7 +77,7 @@ global.roleHarvesterDeposit = {
             }
 
             // var closestStructure = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((structure) => {
-            //     return structure.structureType == STRUCTURE_INVADER_CORE;    
+            //     return structure.structureType == STRUCTURE_INVADER_CORE;
             // });
 
             // var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter((c) => {
@@ -142,8 +140,8 @@ global.roleHarvesterDeposit = {
                 return;
             }
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
-            
-            for(var type in creep.store) {
+
+            for (var type in creep.store) {
                 if (creep.transfer(mainStorage, type) != OK) {
                     moveToMultiRoomTarget(creep, mainStorage);
                 }

@@ -6,20 +6,20 @@ global.inc = function () {
     return textOffset;
 };
 
-drawGUI = function() {
+drawGUI = function () {
     // Logging
     roomOffset = 0;
     textOffset = 0;
     for (var room in Game.rooms) {
         r = Game.rooms[room];
-        
+
         if (1) {
-            style =  {color: '#FF0000', fontSize: 5}
-            Game.map.visual.text("R: " + r.name, new RoomPosition(5, 5, r.name), style); 
+            style = { color: "#FF0000", fontSize: 5 };
+            Game.map.visual.text("R: " + r.name, new RoomPosition(5, 5, r.name), style);
             Game.map.visual.text("HarvestExtTarget    : " + creepRoomMap.get(r.name + "harvesterExtTarget"), new RoomPosition(5, 10, r.name), style);
             Game.map.visual.text("MoverExtTarget    : " + creepRoomMap.get(r.name + "moverExtTarget"), new RoomPosition(5, 15, r.name), style);
         }
-        
+
         if (!myRooms[Game.shard.name].includes(r.name)) {
             continue;
         }
@@ -36,17 +36,13 @@ drawGUI = function() {
         new RoomVisual().text("MoverExt    : " + creepRoomMap.get(r.name + "moverExt"), 1, listOffset + inc(), { align: "left", font: fontSize });
         // new RoomVisual().text("HarvestExtTarget    : " + creepRoomMap.get(r.name + "harvesterExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
         // new RoomVisual().text("MoverExtTarget    : " + creepRoomMap.get(r.name + "moverExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("ExternalHarvesting    : ",  1, listOffset + inc(), { align: "left", font: fontSize });
+        new RoomVisual().text("ExternalHarvesting    : ", 1, listOffset + inc(), { align: "left", font: fontSize });
         _.forEach(Memory.rooms[r.name].neighbouringRooms, (n) => {
             new RoomVisual().text(`    ${n}    :  ${creepRoomMap.get(r.name + "harvesterExtTarget" + n)}`, 1, listOffset + inc(), { align: "left", font: fontSize });
-        })
-        
-
+        });
 
         textOffset;
-        
+
         r.visual.import(Memory.RoomVisualData[r.name]);
     }
-    
-
-}
+};

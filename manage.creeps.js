@@ -36,13 +36,12 @@ global.runCreeps = function () {
         var creep = Game.creeps[name];
         // console.log(creep.name)
         try {
-            if(creep.room.name == creep.room.baseRoomName) {
-                if(creep.hits < creep.hitsMax) {
-                    Memory.rooms[creep.memory.baseRoomName].mainTower.healRequested = true
+            if (creep.room.name == creep.room.baseRoomName) {
+                if (creep.hits < creep.hitsMax) {
+                    Memory.rooms[creep.memory.baseRoomName].mainTower.healRequested = true;
                 }
             }
-            
-            
+
             if (creep.pos.x == 49) creep.move(7);
             if (creep.pos.y == 49) creep.move(1);
             if (creep.pos.x == 0) creep.move(3);
@@ -50,21 +49,19 @@ global.runCreeps = function () {
 
             pickupNearby(creep);
 
-
-
             // cull creeps
-            _.forEach(creepsToKill, c => {
-                creepToKill = Game.creeps[c]
+            _.forEach(creepsToKill, (c) => {
+                creepToKill = Game.creeps[c];
                 if (creepToKill != null) {
-                    console.log(`setting ${creep.name} to DIE`)
-                    creepToKill.memory.DIE = true
+                    console.log(`setting ${creep.name} to DIE`);
+                    creepToKill.memory.DIE = true;
                 }
-            })
-            creepsToKill = []
+            });
+            creepsToKill = [];
             if (creep.memory.DIE != undefined) {
-                if (creep.spawning) { 
+                if (creep.spawning) {
                     // if this creep was copied from a another, it may have DIE set from the memory clone
-                    console.log("spawning dying creep")
+                    console.log("spawning dying creep");
                     delete creep.memory.DIE;
                 } else {
                     spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
@@ -193,36 +190,35 @@ global.runCreeps = function () {
                 }
             }
             if (creep.memory.role == "engineer") {
-                eval("role" + _.capitalize(creep.memory.role)).run(creep)
+                eval("role" + _.capitalize(creep.memory.role)).run(creep);
             }
             if (creep.memory.role == "raider") {
-                eval("role" + _.capitalize(creep.memory.role)).run(creep)
+                eval("role" + _.capitalize(creep.memory.role)).run(creep);
             }
         } catch (e) {
             console.log(`${e}`);
             console.log(creep, `${creep.pos} failed to run`);
         }
     }
-    
+
     for (var name in Game.powerCreeps) {
         var creep = Game.powerCreeps[name];
         // console.log(creep.name)
         try {
-            
             if (isNaN(creep.ticksToLive)) {
                 ps = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.pspawn.id);
                 creep.spawn(ps);
-                return
+                return;
             }
-            
+
             if (creep.ticksToLive < 50) {
-                mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage)
+                mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
                 if (creep.transfer(mainStorage, RESOURCE_OPS) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(mainStorage)
+                    creep.moveTo(mainStorage);
                 }
-                return
+                return;
             }
-            
+
             if (creep.ticksToLive < 300 || creep.memory.healing) {
                 creep.say("healing");
                 creep.memory.healing = true;
@@ -232,27 +228,27 @@ global.runCreeps = function () {
                     creep.moveTo(ps);
                 }
             }
-            
-            if(!creep.room.controller.isPowerEnabled) {
-                if(creep.enableRoom(creep.room.controller) != OK) {
-                    creep.moveTo(creep.room.controller)
+
+            if (!creep.room.controller.isPowerEnabled) {
+                if (creep.enableRoom(creep.room.controller) != OK) {
+                    creep.moveTo(creep.room.controller);
                 }
             }
-            
+
             if (creep.room.memory.structs.factory != undefined) {
-               factory = Game.getObjectById(creep.room.memory.structs.factory.id)
-               if (factory != undefined) {
-                   if (factory.level == undefined) {
-                       ret = creep.usePower(PWR_OPERATE_FACTORY, factory);
-                       if (ret == ERR_NOT_IN_RANGE) {
-                           creep.moveTo(factory);
-                       }
-                   }
-               }
+                factory = Game.getObjectById(creep.room.memory.structs.factory.id);
+                if (factory != undefined) {
+                    if (factory.level == undefined) {
+                        ret = creep.usePower(PWR_OPERATE_FACTORY, factory);
+                        if (ret == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(factory);
+                        }
+                    }
+                }
             }
-            
-            if (creep.usePower(PWR_OPERATE_SPAWN, Game.spawns['Spawn7']) != OK) {
-                creep.moveTo(Game.spawns['Spawn7'])
+
+            if (creep.usePower(PWR_OPERATE_SPAWN, Game.spawns["Spawn7"]) != OK) {
+                creep.moveTo(Game.spawns["Spawn7"]);
                 creep.usePower(PWR_GENERATE_OPS);
             }
         } catch (e) {

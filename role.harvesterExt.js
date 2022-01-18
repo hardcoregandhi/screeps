@@ -1,4 +1,3 @@
-
 var roleHarvester = require("role.harvester");
 
 global.roleHarvesterExt = {
@@ -24,7 +23,7 @@ global.roleHarvesterExt = {
             });
             Memory.rooms[creep.memory.targetRoomName].sources[s.id].targettedBy += 1;
         }
-        
+
         if (creep.memory.moverLimit == undefined) {
             creep.memory.moverLimit = 1;
         }
@@ -41,7 +40,7 @@ global.roleHarvesterExt = {
                     return structure.structureType == STRUCTURE_CONTAINER && creep.pos.inRangeTo(structure.pos, 1);
                 });
                 if (!containers.length) {
-                    for(resourceType in creep.store) {
+                    for (resourceType in creep.store) {
                         creep.transfer(target, resourceType);
                     }
                 }
@@ -81,7 +80,7 @@ global.roleHarvesterExt = {
 
         var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         var closestStructure = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((structure) => {
-            return structure.structureType == STRUCTURE_INVADER_CORE;    
+            return structure.structureType == STRUCTURE_INVADER_CORE;
         });
 
         var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter((c) => {
@@ -136,21 +135,19 @@ global.roleHarvesterExt = {
         // TODO a creep should not spawn other creeps
         if (creep.memory.noSpawn == undefined || creep.memory.noSpawn == false) {
             if (creep.memory.targetRoomName != undefined && Game.rooms[creep.memory.targetRoomName] != undefined && creep.room.name == creep.memory.targetRoomName) {
-                
                 if (
                     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
                     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != 0 &&
-                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts < 
-                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts && 
+                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts < Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts &&
                     Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined
                 ) {
                     spawnCreep(roleMoverExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource } }, creep.memory.baseRoomName);
                 }
-                
-                if (creep.memory.noClaimSpawn != true &&
+
+                if (
+                    creep.memory.noClaimSpawn != true &&
                     (Game.rooms[creep.memory.targetRoomName].controller.reservation == undefined || Game.rooms[creep.memory.targetRoomName].controller.reservation.ticksToEnd < 1000) &&
-                    (creepRoomMap.get(creep.memory.baseRoomName + "claimerTarget" + creep.memory.targetRoomName) == undefined ||
-                    creepRoomMap.get(creep.memory.baseRoomName + "claimerTarget" + creep.memory.targetRoomName) < 1) &&
+                    (creepRoomMap.get(creep.memory.baseRoomName + "claimerTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "claimerTarget" + creep.memory.targetRoomName) < 1) &&
                     Game.rooms[creep.memory.baseRoomName].energyCapacityAvailable >= 1250
                 ) {
                     //TODO FIX THIS
@@ -214,7 +211,7 @@ global.roleHarvesterExt = {
                 }
                 var container = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id);
                 if (container == null) {
-                    delete Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container
+                    delete Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container;
                 } else {
                     creep.memory.targetContainer = container.id;
                 }
@@ -240,7 +237,7 @@ global.roleHarvesterExt = {
                     if (creep.memory.containerFilledTimestamp == undefined) {
                         creep.memory.containerFilledTimestamp = Game.time;
                     }
-                    if (Game.time > creep.memory.containerFilledTimestamp + 60 ) {
+                    if (Game.time > creep.memory.containerFilledTimestamp + 60) {
                         if (creep.memory.moverLimitIncreaseCooldownTimestamp == undefined) {
                             creep.memory.moverLimitIncreaseCooldownTimestamp = Game.time;
                         }

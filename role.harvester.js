@@ -1,4 +1,4 @@
-require("role.harvesterCommon")
+require("role.harvesterCommon");
 
 global.roleHarvester = {
     name: "harvester",
@@ -89,7 +89,7 @@ global.roleHarvester = {
                 return;
             }
 
-           if (healRoads(creep) == OK) return;
+            if (healRoads(creep) == OK) return;
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (
@@ -195,16 +195,15 @@ global.roleHarvester = {
                         Log(creep, "local ccont found");
                         Log(creep, target);
 
-                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
+                        if (
+                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
                             Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts != 0 &&
-                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.currentCarryParts < 
-                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts && 
+                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.currentCarryParts < Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts &&
                             Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined
                         ) {
                             spawnCreep(roleHarvSup, "auto", { memory: { targetContainer: target.id } }, creep.memory.baseRoomName);
                         }
 
-                        
                         if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy == 0) {
                             if (target != null && target.hits < 200000) {
                                 Log(creep, `healing ${target}`);
@@ -216,7 +215,7 @@ global.roleHarvester = {
                             roleHarvSup.run(creep);
                             return;
                         }
-                        
+
                         source = Game.getObjectById(creep.memory.targetSource);
                         return depositInSupportedContainer(creep, source, target);
                     }
@@ -240,10 +239,10 @@ global.roleHarvester = {
                                 moveToMultiRoomTarget(creep, mainStorage.pos);
                             }
                         } else if (mainStorage.store.getFreeCapacity() == 0) {
-                            roleUpgrader.run(creep)
+                            roleUpgrader.run(creep);
                         } else {
                             if (creep.transfer(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            moveToMultiRoomTarget(creep, mainStorage.pos);
+                                moveToMultiRoomTarget(creep, mainStorage.pos);
                             }
                         }
                         return;

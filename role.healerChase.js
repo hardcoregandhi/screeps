@@ -1,15 +1,14 @@
-findNewHealTarget = function(_creep) {
-    newTargetCandidates = _creep.room.find(FIND_MY_CREEPS).filter(c => c.memory.role == "soldier")
+findNewHealTarget = function (_creep) {
+    newTargetCandidates = _creep.room.find(FIND_MY_CREEPS).filter((c) => c.memory.role == "soldier");
     if (newTargetCandidates.length == 0) {
-        console.log(`${_creep} has no other soldiers to heal. returning'`)
+        console.log(`${_creep} has no other soldiers to heal. returning'`);
         _creep.memory.healing == true;
         return 1;
     } else {
-        _creep.memory.targetCreep = _creep.pos.findClosestByRange(newTargetCandidates).id
+        _creep.memory.targetCreep = _creep.pos.findClosestByRange(newTargetCandidates).id;
         return 0;
     }
-}
-
+};
 
 global.roleHealerChase = {
     name: "healerChase",
@@ -50,7 +49,7 @@ global.roleHealerChase = {
                 return;
             }
         }
-        
+
         targetCreep = Game.getObjectById(creep.memory.targetCreep);
         if (targetCreep == null) {
             console.log(creep + "'s targetCreep is dead");
@@ -60,12 +59,12 @@ global.roleHealerChase = {
             }
             targetCreep = Game.getObjectById(creep.memory.targetCreep);
         }
-        
+
         if (creep.pos.isNearTo("targetCreep")) {
-            creep.heal(targetCreep)
+            creep.heal(targetCreep);
         } else {
-            creep.rangedHeal(targetCreep)
-            creep.moveTo(targetCreep)
+            creep.rangedHeal(targetCreep);
+            creep.moveTo(targetCreep);
         }
     },
 };

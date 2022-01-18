@@ -26,13 +26,13 @@ global.rolePowMover.run = function (creep) {
         }
         return;
     }
-    var power_spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.pspawn.id)
-    var mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage)
+    var power_spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.pspawn.id);
+    var mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
     var power_spawn_pow = power_spawn.store.getUsedCapacity(RESOURCE_POWER) < 20;
     var power_spawn_en = power_spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-    
+
     power_spawn.processPower();
-    
+
     if (mainStorage.store.getUsedCapacity(RESOURCE_POWER) == 0 && power_spawn.store.getUsedCapacity(RESOURCE_POWER) == 0) {
         creep.memory.DIE = true;
         return;
@@ -87,14 +87,14 @@ global.rolePowMover.run = function (creep) {
 
     if (!creep.memory.moving) {
         // creep.say("hello")
-        
+
         creep.say("m2storage");
         switch (creep.memory.job) {
             case job.MOVING_POWER:
                 if (creep.withdraw(mainStorage, RESOURCE_POWER) != OK) {
                     moveToTarget(creep, mainStorage);
                     if (mainStorage.store.getUsedCapacity(RESOURCE_POWER) == 0) {
-                        creep.memory.moving = true
+                        creep.memory.moving = true;
                     }
                 }
                 break;

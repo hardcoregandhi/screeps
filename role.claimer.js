@@ -22,9 +22,9 @@ global.roleClaimer = {
             interShardMove(creep);
             return;
         }
-        
+
         if (creep.memory.targetRoomName == undefined) {
-            console.log(`creeps.${creep.name} @ ${creep.pos} is awaiting a targetRoomName`)
+            console.log(`creeps.${creep.name} @ ${creep.pos} is awaiting a targetRoomName`);
             return;
         }
 

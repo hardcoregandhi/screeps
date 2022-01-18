@@ -1,5 +1,3 @@
-
-
 global.roleCleaner = {
     name: "cleaner",
     memory: { memory: {} },

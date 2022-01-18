@@ -50,19 +50,15 @@ global.runStructs = function () {
         // for (t of Memory.rooms[room.name].towers) {
         //     roleTower.run(Game.getObjectById(t));
         // }
-        
+
         // Resets
         _.forEach(Memory.rooms[room.name].spawns, (s) => {
             s.massHealing = false;
             s.renewRequested = false;
             s.creeps = {};
-        })
-        if (Memory.rooms[room.name].mainSpawn != undefined)
-            Memory.rooms[room.name].mainSpawn.refilling = false;
-        if (Memory.rooms[room.name].mainTower != undefined)
-            Memory.rooms[room.name].mainTower.healRequested = false
-        
-        
+        });
+        if (Memory.rooms[room.name].mainSpawn != undefined) Memory.rooms[room.name].mainSpawn.refilling = false;
+        if (Memory.rooms[room.name].mainTower != undefined) Memory.rooms[room.name].mainTower.healRequested = false;
 
         if (Memory.rooms[room.name].link_storage && Memory.rooms[room.name].link_controller) {
             // console.log(`${room.name} has 2 links`)
@@ -129,12 +125,12 @@ global.runStructs = function () {
 
             o = Game.getObjectById(Memory.rooms[room.name].structs.observer.id);
             observerTarget = Memory.rooms[room.name].structs.observer.targetPowerRooms[Memory.rooms[room.name].structs.observer.targetPowerRoom];
-            
+
             if (observerTarget == undefined) {
                 Memory.rooms[room.name].structs.observer.targetPowerRoom = 0;
                 observerTarget = Memory.rooms[room.name].structs.observer.targetPowerRooms[Memory.rooms[room.name].structs.observer.targetPowerRoom];
             }
-            
+
             o.observeRoom(observerTarget);
             // the room will be available on the next tick after observeRoom runs
             if (Game.rooms[observerTarget] != undefined) {
@@ -154,7 +150,7 @@ global.runStructs = function () {
                         Memory.rooms[room.name].structs.observer.externalResources[d.id].type = d.depositType;
                         Memory.rooms[room.name].structs.observer.externalResources[d.id].room = d.room.name;
                         Memory.rooms[room.name].structs.observer.externalResources[d.id].lastCooldown = d.lastCooldown;
-                        
+
                         // get valid mining spots
                         // Memory.rooms[r.name].totalMiningSpots = 0;
                         if (Memory.rooms[room.name].structs.observer.externalResources[d.id].miningSpots == undefined) {
@@ -170,38 +166,38 @@ global.runStructs = function () {
                             }
                             Memory.rooms[room.name].structs.observer.externalResources[d.id].miningSpots = localMiningSpots;
                         }
-                        
+
                         if (Memory.rooms[room.name].structs.observer.externalResources[d.id].creeps == undefined) {
                             Memory.rooms[room.name].structs.observer.externalResources[d.id].creeps = {};
-                            Memory.rooms[room.name].structs.observer.externalResources[d.id].creepsUntracked = []
+                            Memory.rooms[room.name].structs.observer.externalResources[d.id].creepsUntracked = [];
                         }
-                        if (Object.keys(Memory.rooms[room.name].structs.observer.externalResources[d.id].creeps).length < Memory.rooms[room.name].structs.observer.externalResources[d.id].miningSpots
-                            && d.lastCooldown < 100) {
+                        if (Object.keys(Memory.rooms[room.name].structs.observer.externalResources[d.id].creeps).length < Memory.rooms[room.name].structs.observer.externalResources[d.id].miningSpots && d.lastCooldown < 100) {
                             _role = roleHarvesterDeposit;
-                            spawn = Game.getObjectById(Memory.rooms[room.name].mainSpawn.id)
-                            
+                            spawn = Game.getObjectById(Memory.rooms[room.name].mainSpawn.id);
+
                             if (0 && !spawn.spawning) {
                                 var newName = _.capitalize(_role.name) + "_" + (Math.floor(Math.random() * (999 - 100 + 1)) + 100);
                                 console.log("Spawning new " + _role.name + " : " + newName);
-                                
-                        
+
                                 ret = spawn.spawnCreep(
                                     _role.BodyParts,
                                     newName,
                                     _.merge(
-                                        { memory: {
-                                            role: _role.name,
-                                            currentSource: "0",
-                                            baseRoomName: spawn.room.name,
-                                            "targetRoomName" : d.room.name,
-                                            "targetSource" : d.id
-                                        }},
+                                        {
+                                            memory: {
+                                                role: _role.name,
+                                                currentSource: "0",
+                                                baseRoomName: spawn.room.name,
+                                                targetRoomName: d.room.name,
+                                                targetSource: d.id,
+                                            },
+                                        },
                                         _role.memory
                                     )
                                 );
                                 if (ret == 0) {
                                     refreshCreepTrackingNextTick = true;
-                                    Memory.rooms[room.name].structs.observer.externalResources[d.id].creepsUntracked.push(newName)
+                                    Memory.rooms[room.name].structs.observer.externalResources[d.id].creepsUntracked.push(newName);
                                 } else if (ret != 0) {
                                     console.log("Spawn failed: ", ret);
                                 }
@@ -219,20 +215,20 @@ global.runStructs = function () {
                     Memory.rooms[room.name].structs.observer.targetPowerRoom = Memory.rooms[room.name].structs.observer.targetPowerRoom + 1;
                 }
             }
-            
+
             _.forEach(Memory.rooms[room.name].structs.observer.externalResources, (resource) => {
                 _.forEach(resource.creepsUntracked, (name) => {
                     // When spawning a new creep, that creep doesn't have a valid id until the next tick, so we handle that here
                     Memory.rooms[room.name].structs.observer.externalResources[d.id].creeps[Game.creeps[name].id] = {};
                     Memory.rooms[room.name].structs.observer.externalResources[d.id].creeps[Game.creeps[name].id] = Game.creeps[name].id;
-                    resource.creepsUntracked = resource.creepsUntracked.filter(v => v !== name);
-                })
+                    resource.creepsUntracked = resource.creepsUntracked.filter((v) => v !== name);
+                });
                 _.forEach(resource.creeps, (c) => {
                     if (Game.getObjectById(c) == undefined) {
                         delete resource.creeps[c];
                     }
-                })
-            })
+                });
+            });
         }
 
         // var ramparts = room.find(FIND_STRUCTURES, {

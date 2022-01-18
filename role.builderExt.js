@@ -2,8 +2,6 @@ var roleHarvester = require("role.harvester");
 require("movement");
 require("role.common");
 
-
-
 global.roleBuilderExt = {
     name: "builderExt",
     // prettier-ignore
@@ -54,20 +52,20 @@ global.roleBuilderExt = {
             //     }
             // }
 
-           if (healRoads(creep) == OK) return;
+            if (healRoads(creep) == OK) return;
 
             if (creep.memory.currentTarget != null) {
-                target = Game.getObjectById(creep.memory.currentTarget)
+                target = Game.getObjectById(creep.memory.currentTarget);
                 if (target != undefined) {
                     if (creep.build(target) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, {
                             visualizePathStyle: { stroke: "#ffffff" },
                         });
                     }
-                    return
+                    return;
                 } else {
-                    creep.memory.currentTarget = null
-                    roomRefreshMap[creep.memory.targetRoomName] = Game.time;       
+                    creep.memory.currentTarget = null;
+                    roomRefreshMap[creep.memory.targetRoomName] = Game.time;
                 }
             }
 
@@ -83,9 +81,9 @@ global.roleBuilderExt = {
                 if (closest == null) {
                     // not in the correct room so can't figure out closest
                     moveToMultiRoomTarget(creep, targets[0], false);
-                    return
+                    return;
                 }
-                creep.memory.currentTarget = closest.id
+                creep.memory.currentTarget = closest.id;
                 if (creep.build(closest) != OK) {
                     moveToMultiRoomTarget(creep, closest, false);
                     // creep.moveTo(closest, {

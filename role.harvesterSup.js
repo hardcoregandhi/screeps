@@ -1,5 +1,3 @@
-
-
 global.roleHarvSup = {
     name: "harvSup",
     roleMemory: { memory: {} },
@@ -27,7 +25,7 @@ global.roleHarvSup = {
         mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
         if (mainStorage == null) {
             console.log(`${creep}: mainStorage could not be found`);
-            resetMainStorage(creep.memory.baseRoomName)
+            resetMainStorage(creep.memory.baseRoomName);
         }
 
         if (creep.memory.returning && creep.store.getFreeCapacity() == 0) {
@@ -69,17 +67,17 @@ global.roleHarvSup = {
         if (!creep.memory.returning) {
             Log(creep, "retrieving");
             if (healRoads(creep) == OK) return;
-           
+
             if (mainStorage == null) {
-                return roleBuilder.run(creep)
+                return roleBuilder.run(creep);
             }
-            
+
             if (mainStorage.structureType == STRUCTURE_CONTAINER) {
                 if (mainStorage.hits < 200000) {
                     if (creep.repair(target) == ERR_NOT_IN_RANGE) {
                         moveToMultiRoomTarget(creep, target.pos);
                     }
-                    return
+                    return;
                 }
             }
 
@@ -89,9 +87,8 @@ global.roleHarvSup = {
                         moveToTarget(creep, mainStorage);
                     }
                 }
-            }
-            else {
-                fallbackToOtherRoles(creep)
+            } else {
+                fallbackToOtherRoles(creep);
             }
         } else {
             Log(creep, "returning");
@@ -124,7 +121,7 @@ global.roleHarvSup = {
                     }
                 }
             } else {
-                Log(creep, "moving straight to target")
+                Log(creep, "moving straight to target");
                 moveToTarget(creep, target);
             }
         }
