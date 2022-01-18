@@ -9,6 +9,7 @@ global.roleExplorer = {
     bodyLoop: [TOUGH, MOVE],
 
     run: function (creep) {
+        creep.memory.noHeal = true
         Log(creep, "hello");
         creep.say("🏳️");
 
