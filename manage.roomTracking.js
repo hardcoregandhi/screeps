@@ -15,7 +15,6 @@ roomTracking = function () {
         }
         
         console.log(`Refreshing ${r.name}`)
-
         
         const terrain = r.getTerrain();
 
@@ -203,6 +202,15 @@ roomTracking = function () {
                 } else {
                     if (_.every(Memory.rooms[r.name].neighbouringRooms, roomName => { return Memory.rooms[roomName] != null })) {
                         _.forEach(Memory.rooms[r.name].neighbouringRooms, roomName => {
+                            // Get the neighbours, neighbours
+                            if (Memory.rooms[roomName].neighbouringRooms == undefined) {
+                                exits = Game.map.describeExits(roomName);
+                                Memory.rooms[roomName].neighbouringRooms = Object.values(exits);
+                                _.pull(Memory.rooms[roomName].neighbouringRooms, r.name);
+                            }
+                            if (Memory.rooms[roomName].parentRoom == undefined) {
+                                Memory.rooms[roomName].parentRoom = r.name;
+                            }
                             _.forEach(Object.keys(Memory.rooms[roomName].sources), s => {
                                 if (Memory.rooms[r.name].externalSources.lastIndexOf(s) != -1) {
                                     return
@@ -345,6 +353,15 @@ roomTracking = function () {
         } catch (e) {
             console.log(`link setup failed in ${r.name}: ${e}`);
         }
+        
+        try {
+            creepReduction(r);
+        } catch (e) {
+            console.log(`creepReduction() failed: ${e}`);
+            for (var b in e) {
+                console.log(b);
+            }
+        }
 
         //elapsed = Game.cpu.getUsed() - startCpu;
         //console.log("source setup has used " + elapsed + " CPU time");
@@ -365,7 +382,12 @@ resetSourceContainerTracking = function () {
     _.forEach(Game.rooms, (r) => {
         _.forEach(Memory.rooms[r.name].sources, (s) => {
             s.targettedBy = 0;
-            if (s.container != undefined) s.container.targettedBy = 0;
+            s.targettedByList = [];
+            if (s.container != undefined) {
+                s.container.targettedBy = 0;
+                s.container.targettedByList = [];
+            }
+            
         });
     });
 
@@ -379,12 +401,16 @@ resetSourceContainerTracking = function () {
         try {
             if (c.memory.role == "harvester") {
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].targettedBy += 1;
+                Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].targettedByList.push(c.name);
             } else if (c.memory.role == "harvesterExt") {
                 Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].targettedBy += 1;
+                Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].targettedByList.push(c.name);
             } else if (c.memory.role == "harvSup") {
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
+                Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
             } else if (c.memory.role == "moverExt") {
                 Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
+                Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
             }
 
             if (c.memory.role == "soldier" || c.memory.role == "gunner") {

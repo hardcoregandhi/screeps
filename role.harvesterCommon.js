@@ -2,21 +2,21 @@
 
 depositInSupportedContainer = function(creep, source, container) {
     if (container.store.getFreeCapacity() == 0) {
-        if (creep.memory.containerFilledTimestamp == undefined) {
-            creep.memory.containerFilledTimestamp = Game.time;
+        if (Memory.rooms[container.room.name].sources[source.id].container.containerFilledTimestamp == undefined) {
+            Memory.rooms[container.room.name].sources[source.id].container.containerFilledTimestamp = Game.time;
         }
-        if (Game.time > creep.memory.containerFilledTimestamp + 60 ) {
-            if (creep.memory.moverLimitIncreaseCooldownTimestamp == undefined) {
-                creep.memory.moverLimitIncreaseCooldownTimestamp = Game.time;
+        if (Game.time > Memory.rooms[container.room.name].sources[source.id].container.containerFilledTimestamp + 60 ) {
+            if (Memory.rooms[container.room.name].sources[source.id].container.moverLimitIncreaseCooldownTimestamp == undefined) {
+                Memory.rooms[container.room.name].sources[source.id].container.moverLimitIncreaseCooldownTimestamp = Game.time;
             }
-            if (Game.time > creep.memory.moverLimitIncreaseCooldownTimestamp + 10000) {
+            if (Game.time > Memory.rooms[container.room.name].sources[source.id].container.moverLimitIncreaseCooldownTimestamp + 10000) {
                 Memory.rooms[container.room.name].sources[source.id].container.moversNeeded = Memory.rooms[container.room.name].sources[source.id].container.moversNeeded + 1;
-                creep.memory.containerFilledTimestamp = undefined;
-                creep.memory.moverLimitIncreaseCooldownTimestamp = Game.time;
+                Memory.rooms[container.room.name].sources[source.id].container.containerFilledTimestamp = undefined;
+                Memory.rooms[container.room.name].sources[source.id].container.moverLimitIncreaseCooldownTimestamp = Game.time;
             }
         }
     }
-    creep.memory.containerFilledTimestamp = undefined;
+    Memory.rooms[container.room.name].sources[source.id].container.containerFilledTimestamp = undefined;
     if (container != null && container.hits < 200000) {
         Log(creep, `healing ${container}`);
         if (creep.repair(container) != OK) {
