@@ -39,19 +39,24 @@ generateBodyParts = function (_spawnRoom, _role = null) {
     // console.log(energyAvailable)
     // console.log(bodyParts.length)
 
-    while (getBodyCost(bodyParts) < energyAvailable && bodyParts.length < bodyPartsMaxCount + 1) {
-        //one more as the last is always popped
+    while (getBodyCost(bodyParts) <= energyAvailable && bodyParts.length < bodyPartsMaxCount + 1) {
+        //one more as the last is popped unless we could only match the baseBodyParts
+        // if (bodyParts.length > _role.baseBodyParts.length)
         bodyParts.splice(insertIndex++, 0, bodyLoop[bodyIter++]);
         // console.log(bodyParts);
         if (bodyIter >= bodyLoop.length) bodyIter = 0;
     }
+    if (bodyParts.length > _role.baseBodyParts.length)
+        _.pullAt(bodyParts, --insertIndex);
     // console.log(bodyParts)
-    _.pullAt(bodyParts, --insertIndex);
     // console.log(bodyParts)
     // console.log(getBodyCost(bodyParts))
-    if (bodyParts.length < 5) {
-        return [];
-    }
+    
+    // TODO: add protection against spawning creeps in roles they can't do
+    // TODO: i.e. a harvester without work, claimer without claim
+    // if (bodyParts.length < 5) {
+    //     return [];
+    // }
     return bodyParts;
 };
 
