@@ -74,11 +74,24 @@ global.roleHarvSup = {
                 return roleBuilder.run(creep)
             }
             
-
-            for (const resourceType in creep.store) {
-                if (creep.transfer(mainStorage, resourceType) != OK) {
-                    moveToTarget(creep, mainStorage);
+            if (mainStorage.structureType == STRUCTURE_CONTAINER) {
+                if (mainStorage.hits < 200000) {
+                    if (creep.repair(target) == ERR_NOT_IN_RANGE) {
+                        moveToMultiRoomTarget(creep, target.pos);
+                    }
+                    return
                 }
+            }
+
+            if (mainStorage.store.getFreeCapacity() > 0) {
+                for (const resourceType in creep.store) {
+                    if (creep.transfer(mainStorage, resourceType) != OK) {
+                        moveToTarget(creep, mainStorage);
+                    }
+                }
+            }
+            else {
+                fallbackToOtherRoles(creep)
             }
         } else {
             Log(creep, "returning");
