@@ -108,17 +108,24 @@ global.roleHarvSup = {
             }
 
             target = Game.getObjectById(creep.memory.targetContainer);
-            creep.memory.targetSource = target.pos.findClosestByRange(FIND_SOURCES).id;
+            if (creep.memory.targetSource == undefined) {
+                creep.memory.targetSource = target.pos.findClosestByRange(FIND_SOURCES).id;
+            }
 
             if (creep.room.controller.level >= 6 && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined && target.store.getUsedCapacity() == 0) {
                 creep.memory.DIE = {};
             }
 
-            for (const resourceType in target.store) {
-                Log(creep, 9);
-                if (creep.withdraw(target, resourceType) != OK) {
-                    moveToTarget(creep, target);
+            if (target.store.getUsedCapacity() > 0) {
+                for (const resourceType in target.store) {
+                    Log(creep, 9);
+                    if (creep.withdraw(target, resourceType) != OK) {
+                        moveToTarget(creep, target);
+                    }
                 }
+            } else {
+                Log(creep, "moving straight to target")
+                moveToTarget(creep, target);
             }
         }
     },
