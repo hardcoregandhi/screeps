@@ -4,6 +4,7 @@ global.runRenew = function () {
         if(Memory.rooms[s.room.name].spawns[s.name].renewRequested == false) {
             return
         }
+        // console.log(`${s} is renewing creeps`)
         highestLocalTickCount = 0;
         highestLocalTickCreep = null;
         lowestLocalTickCount = 1500;
