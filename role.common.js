@@ -85,6 +85,17 @@ global.returnToHeal = function (creep, room) {
     }
 };
 
+global.fallbackToOtherRoles = function (creep, roomName) {
+    var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+    if (targets.length) {
+        roleBuilder.run(creep);
+        return;
+    } else {
+        roleUpgrader.run(creep);
+        return;
+    }
+}
+
 global.interShardMove = function (creep) {
     if (creep.memory.interShard.length == 0) {
         delete creep.memory.interShard;
