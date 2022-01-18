@@ -133,7 +133,7 @@ heal = function (room, towers) {
 
 repair = function (room, towers) {
     
-    if (room.energyAvailable <= 2500) return 0;
+    if (room.energyAvailable <= room.energyCapacityAvailable / 2) return 0;
     
     var wallHealPercent = room.controller.level * 0.01;
     
