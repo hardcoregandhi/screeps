@@ -129,7 +129,7 @@ global.roleBuilder = {
             //     }
             // }
 
-            healRoads(creep);
+           if (healRoads(creep) == OK) return;
 
             var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             if (targets.length) {
