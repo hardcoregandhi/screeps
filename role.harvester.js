@@ -4,7 +4,7 @@ global.roleHarvester = {
     name: "harvester",
     roleMemory: { memory: {} },
     // prettier-ignore
-    BodyParts: [WORK,WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE],
+    BodyParts: [WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE],
     baseBodyParts: [],
     bodyLoop: [WORK, WORK, WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
