@@ -136,18 +136,25 @@ global.roleHarvesterExt = {
         // TODO a creep should not spawn other creeps
         if (creep.memory.noSpawn == undefined || creep.memory.noSpawn == false) {
             if (creep.memory.targetRoomName != undefined && Game.rooms[creep.memory.targetRoomName] != undefined && creep.room.name == creep.memory.targetRoomName) {
-                if (creep.memory.noClaimSpawn != true &&
-                    (Game.rooms[creep.memory.targetRoomName].controller.reservation == undefined || Game.rooms[creep.memory.targetRoomName].controller.reservation.ticksToEnd < 1000) &&
-                    creepRoomMap.get(creep.memory.targetRoomName + "claimer") < 1
-                ) {
-                    //TODO FIX THIS
-                    spawnCreep(roleClaimer, "auto", { memory: { baseRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
-                } else if (
-                    containersNearToSource.length > 0 &&
-                    creep.memory.targetSource != undefined &&
-                    (creepRoomMap.get(creep.memory.targetRoomName + "moverExtTarget" + creep.memory.targetSource) == undefined || creepRoomMap.get(creep.memory.targetRoomName + "moverExtTarget" + creep.memory.targetSource) < creep.memory.moverLimit)
+                
+                if (
+                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
+                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != 0 &&
+                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts < 
+                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts && 
+                    Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined
                 ) {
                     spawnCreep(roleMoverExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource } }, creep.memory.baseRoomName);
+                }
+                
+                if (creep.memory.noClaimSpawn != true &&
+                    (Game.rooms[creep.memory.targetRoomName].controller.reservation == undefined || Game.rooms[creep.memory.targetRoomName].controller.reservation.ticksToEnd < 1000) &&
+                    (creepRoomMap.get(creep.memory.baseRoomName + "claimerTarget" + creep.memory.targetRoomName) == undefined ||
+                    creepRoomMap.get(creep.memory.baseRoomName + "claimerTarget" + creep.memory.targetRoomName) < 1) &&
+                    Game.rooms[creep.memory.baseRoomName].energyCapacityAvailable >= 1250
+                ) {
+                    //TODO FIX THIS
+                    spawnCreep(roleClaimer, "auto", { memory: { targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
                 }
             }
         }
