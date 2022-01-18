@@ -25,8 +25,9 @@ global.roleHarvSup = {
         }
 
         mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
-        if (mainStorage == undefined) {
-            Log(creep, "mainStorage could not be found");
+        if (mainStorage == null) {
+            console.log(`${creep}: mainStorage could not be found`);
+            resetMainStorage(creep.memory.baseRoomName)
         }
 
         if (creep.memory.returning && creep.store.getFreeCapacity() == 0) {
@@ -64,7 +65,10 @@ global.roleHarvSup = {
 
         if (!creep.memory.returning) {
             Log(creep, "retrieving");
-            healRoads(creep);
+            if (mainStorage == null) {
+                return roleBuilder.run(creep)
+            }
+            
 
             for (const resourceType in creep.store) {
                 if (creep.transfer(mainStorage, resourceType) != OK) {
