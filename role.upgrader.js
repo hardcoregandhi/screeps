@@ -72,7 +72,7 @@ global.roleUpgrader = {
         if (creep.memory.upgrading) {
             Log(creep, "upgrading");
 
-            healRoads(creep);
+           if (healRoads(creep) == OK) return;
 
             if (creep.room.controller.level == 8) {
                 Log(creep, "controller is level 8")
