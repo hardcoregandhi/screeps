@@ -6,7 +6,7 @@ global.roleHarvesterExt = {
     roleMemory: { memory: { targetRoomName: "W17S21", targetResourceType: RESOURCE_ENERGY, moverLimit: 1 } },
 
     // prettier-ignore
-    BodyParts: [WORK,WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE],
+    BodyParts: [WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE],
     baseBodyParts: [],
     bodyLoop: [WORK, WORK, CARRY, MOVE, MOVE],
 
