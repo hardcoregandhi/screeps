@@ -1,5 +1,3 @@
-
-
 global.roleRaider = {
     name: "raider",
     roleMemory: { memory: {} },
@@ -12,14 +10,14 @@ global.roleRaider = {
         ],
     baseBodyParts: [],
     bodyLoop: [CARRY, MOVE],
-    
+
     /** @param {Creep} creep **/
     run: function (creep) {
         creep.say("raidin");
         if (creep.memory.scav == undefined) {
             creep.memory.scav = false;
         }
-        
+
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
@@ -37,7 +35,7 @@ global.roleRaider = {
 
         if (!creep.memory.scav) {
             creep.say("emptyin");
-            
+
             //no storage, just grab energy
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (mainStorage == undefined) {
@@ -46,13 +44,12 @@ global.roleRaider = {
                 Log(creep, "using mainStorage");
                 for (const resourceType in creep.store) {
                     if (creep.transfer(mainStorage, resourceType) != OK) {
-                        moveToMultiRoomTarget(creep, mainStorage)
+                        moveToMultiRoomTarget(creep, mainStorage);
                         return;
                     }
                 }
                 return;
             }
-        
         } else {
             if (creep.room.name != creep.memory.targetRoomName) {
                 // const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName, {
@@ -63,29 +60,27 @@ global.roleRaider = {
                 //     creep.moveTo(exit);
                 //     return;
                 // }
-                if(Game.rooms[creep.memory.targetRoomName] == undefined)
-                    moveToRoom(creep, creep.memory.targetRoomName)
-                else 
-                    creep.moveTo(new RoomPosition(25, 25, creep.memory.targetRoomName))
+                if (Game.rooms[creep.memory.targetRoomName] == undefined) moveToRoom(creep, creep.memory.targetRoomName);
+                else creep.moveTo(new RoomPosition(25, 25, creep.memory.targetRoomName));
             } else {
                 if (creep.memory.currentTarget == null) {
                     var resourceFilledStructs = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
                         filter: (r) => r.store != undefined && r.store.getUsedCapacity() >= 150,
                     });
-                    creep.memory.currentTarget = resourceFilledStructs.id
+                    creep.memory.currentTarget = resourceFilledStructs.id;
                 }
-                
-                resourceFilledStructs = Game.getObjectById(creep.memory.currentTarget)
-                
-                if(resourceFilledStructs == null || resourceFilledStructs.store.getUsedCapacity() < 150) {
-                    creep.memory.currentTarget = null
+
+                resourceFilledStructs = Game.getObjectById(creep.memory.currentTarget);
+
+                if (resourceFilledStructs == null || resourceFilledStructs.store.getUsedCapacity() < 150) {
+                    creep.memory.currentTarget = null;
                 }
-               
+
                 if (resourceFilledStructs) {
                     creep.say("f/tomb");
                     for (const resourceType in resourceFilledStructs.store) {
                         if (creep.withdraw(resourceFilledStructs, resourceType) != 0) {
-                            moveToMultiRoomTarget(creep, resourceFilledStructs)
+                            moveToMultiRoomTarget(creep, resourceFilledStructs);
                         }
                     }
                 } else {

@@ -3,26 +3,26 @@ roomTracking = function () {
         if (Memory.rooms == undefined) {
             Memory.rooms = {};
         }
-        
+
         if (roomRefreshMap[r.name] == undefined) {
-            console.log(r.name + " was added to roomRefreshMap")
-            roomRefreshMap[r.name] = Game.time
+            console.log(r.name + " was added to roomRefreshMap");
+            roomRefreshMap[r.name] = Game.time;
         }
-        
+
         if (roomRefreshMap[r.name] > Game.time) {
             // console.log(`Skipping ${r.name} refresh`)
             return;
         }
-        
-        console.log(`Refreshing ${r.name}`)
-        
+
+        console.log(`Refreshing ${r.name}`);
+
         const terrain = r.getTerrain();
 
         if (Memory.rooms[r.name] == undefined) Memory.rooms[r.name] = {};
 
         var csites = r.find(FIND_CONSTRUCTION_SITES);
         creepRoomMap.set(r.name + "csites", csites.length);
-        Memory.rooms[r.name].roomVisuals = []
+        Memory.rooms[r.name].roomVisuals = [];
 
         if (myRooms[Game.shard.name].includes(r.name)) {
             //console.log(`room ${r}`);
@@ -109,10 +109,10 @@ roomTracking = function () {
                 Memory.rooms[r.name].towers = {};
             }
             _.forEach(towers, (t) => {
-                if(Memory.rooms[r.name].mainTower == undefined) {
-                    Memory.rooms[r.name].mainTower = {}
-                    Memory.rooms[r.name].mainTower.id = t.id
-                    Memory.rooms[r.name].mainTower.healRequested = false
+                if (Memory.rooms[r.name].mainTower == undefined) {
+                    Memory.rooms[r.name].mainTower = {};
+                    Memory.rooms[r.name].mainTower.id = t.id;
+                    Memory.rooms[r.name].mainTower.healRequested = false;
                 }
                 if (Memory.rooms[r.name].towers[t.id] == undefined) {
                     Memory.rooms[r.name].towers[t.id] = {};
@@ -194,14 +194,18 @@ roomTracking = function () {
                         });
                     }
                 }
-                
+
                 // setup external sources
                 if (Memory.rooms[r.name].neighbouringRooms == undefined) {
                     exits = Game.map.describeExits(r.name);
                     Memory.rooms[r.name].neighbouringRooms = Object.values(exits);
                 } else {
-                    if (_.every(Memory.rooms[r.name].neighbouringRooms, roomName => { return Memory.rooms[roomName] != null })) {
-                        _.forEach(Memory.rooms[r.name].neighbouringRooms, roomName => {
+                    if (
+                        _.every(Memory.rooms[r.name].neighbouringRooms, (roomName) => {
+                            return Memory.rooms[roomName] != null;
+                        })
+                    ) {
+                        _.forEach(Memory.rooms[r.name].neighbouringRooms, (roomName) => {
                             // Get the neighbours, neighbours
                             if (Memory.rooms[roomName].neighbouringRooms == undefined) {
                                 exits = Game.map.describeExits(roomName);
@@ -211,20 +215,20 @@ roomTracking = function () {
                             if (Memory.rooms[roomName].parentRoom == undefined) {
                                 Memory.rooms[roomName].parentRoom = r.name;
                             }
-                            _.forEach(Object.keys(Memory.rooms[roomName].sources), s => {
+                            _.forEach(Object.keys(Memory.rooms[roomName].sources), (s) => {
                                 if (Memory.rooms[r.name].externalSources.lastIndexOf(s) != -1) {
-                                    return
+                                    return;
                                 }
                                 source = Game.getObjectById(s);
                                 // console.log(source)
                                 if (source != null) {
                                     // console.log(source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)))
                                     if (source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)).length < 100) {
-                                        if(Memory.rooms[r.name].externalSources == undefined) {
-                                            Memory.rooms[r.name].externalSources = []
+                                        if (Memory.rooms[r.name].externalSources == undefined) {
+                                            Memory.rooms[r.name].externalSources = [];
                                         }
                                         if (Memory.rooms[r.name].externalSources.lastIndexOf(source.id) === -1) {
-                                            Memory.rooms[r.name].externalSources.push(source.id)
+                                            Memory.rooms[r.name].externalSources.push(source.id);
                                         }
                                     }
                                 }
@@ -232,7 +236,7 @@ roomTracking = function () {
                         });
                     }
                 }
-                    /*
+                /*
                     if all neihgbouring rooms are valid
                     for each room
                     for each sources
@@ -241,8 +245,6 @@ roomTracking = function () {
                     if source . distance to spawn < 100
                     add to external sources
                     */
-                
-                
 
                 //elapsed = Game.cpu.getUsed() - startCpu;
                 //console.log("transitionCheck has used " + elapsed + " CPU time");
@@ -299,7 +301,7 @@ roomTracking = function () {
             }
 
             if (Memory.rooms[r.name].sources[s.id].container == undefined) {
-                containers = s.pos.findInRange(FIND_STRUCTURES, 2).filter((r) => r.structureType == STRUCTURE_CONTAINER)
+                containers = s.pos.findInRange(FIND_STRUCTURES, 2).filter((r) => r.structureType == STRUCTURE_CONTAINER);
                 for (cont of containers) {
                     if (cont.pos.inRangeTo(s, 2)) {
                         console.log("adding new container ", r.name, " ", cont.id);
@@ -307,7 +309,6 @@ roomTracking = function () {
                         Memory.rooms[r.name].sources[s.id].container.id = cont.id;
                         Memory.rooms[r.name].sources[s.id].container.targettedBy = 0;
                         Memory.rooms[r.name].sources[s.id].container.moversNeeded = 2;
-
                     }
                 }
             }
@@ -325,7 +326,6 @@ roomTracking = function () {
             // resetSourceContainerTracking(r.name)
 
             new RoomVisual(r.name).text(Memory.rooms[r.name].sources[s.id].targettedBy, s.pos.x - 0.17, s.pos.y + 0.2, { align: "left", font: 0.6 });
-            
 
             if (Memory.rooms[r.name].sources[s.id].container != undefined) {
                 var cont = Game.getObjectById(Memory.rooms[r.name].sources[s.id].container.id);
@@ -353,7 +353,7 @@ roomTracking = function () {
         } catch (e) {
             console.log(`link setup failed in ${r.name}: ${e}`);
         }
-        
+
         try {
             creepReduction(r);
         } catch (e) {
@@ -366,16 +366,13 @@ roomTracking = function () {
         //elapsed = Game.cpu.getUsed() - startCpu;
         //console.log("source setup has used " + elapsed + " CPU time");
         //startCpu = Game.cpu.getUsed();
-        
+
         Memory.RoomVisualData[r.name] = Game.rooms[r.name].visual.export();
-        
+
         refreshRoomTrackingNextTick = false;
         nextRoomTrackingRefreshTime += roomTrackingRefreshInterval;
         roomRefreshMap[r.name] = Game.time + roomTrackingRefreshInterval;
-        
     });
-
-    
 };
 
 resetSourceContainerTracking = function () {
@@ -387,7 +384,6 @@ resetSourceContainerTracking = function () {
                 s.container.targettedBy = 0;
                 s.container.targettedByList = [];
             }
-            
         });
     });
 
@@ -431,5 +427,3 @@ resetSourceContainerTracking = function () {
         }
     });
 };
-
-

@@ -1,8 +1,8 @@
-getRandomInt = function(min = 100, max = 999) {
+getRandomInt = function (min = 100, max = 999) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
 getBodyCost = function (bodyParts) {
     // console.log(bodyParts)
     return _.sum(bodyParts, (b) => BODYPART_COST[b]);
@@ -46,12 +46,11 @@ generateBodyParts = function (_spawnRoom, _role = null) {
         // console.log(bodyParts);
         if (bodyIter >= bodyLoop.length) bodyIter = 0;
     }
-    if (bodyParts.length > _role.baseBodyParts.length)
-        _.pullAt(bodyParts, --insertIndex);
+    if (bodyParts.length > _role.baseBodyParts.length) _.pullAt(bodyParts, --insertIndex);
     // console.log(bodyParts)
     // console.log(bodyParts)
     // console.log(getBodyCost(bodyParts))
-    
+
     // TODO: add protection against spawning creeps in roles they can't do
     // TODO: i.e. a harvester without work, claimer without claim
     // if (bodyParts.length < 5) {
@@ -118,31 +117,29 @@ upgradeCreep = function (sourceCreepName) {
 
     if (getBodyCost(newBody) <= getBodyCost(sourceCreep.body.map((a) => a.type))) {
         // console.log("no upgrade available");
-        return -1
+        return -1;
     }
 
     if (sourceCreep.body.map((a) => a.type) == eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts) {
-        return -1
-    }
-    
-    if(_.isEqual(_.sortBy(sourceCreep.body.map((a) => a.type)), _.sortBy(eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts))) {
-        return -1
+        return -1;
     }
 
-    
-    if (getBodyCost(newBody) > getBodyCost(eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts)) {
-        newBody = eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts
+    if (_.isEqual(_.sortBy(sourceCreep.body.map((a) => a.type)), _.sortBy(eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts))) {
+        return -1;
     }
-    
+
+    if (getBodyCost(newBody) > getBodyCost(eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts)) {
+        newBody = eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts;
+    }
 
     // console.log(memoryClone.memory.role)
     // console.log(JSON.stringify(memoryClone));
     // ret = roomSpawner.spawnCreep(newBody, newName, memoryClone)
-    ret = spawnCreep(eval("role" + _.capitalize(sourceCreep.memory.role)), newBody, memoryClone, sourceCreep.memory.baseRoomName)
+    ret = spawnCreep(eval("role" + _.capitalize(sourceCreep.memory.role)), newBody, memoryClone, sourceCreep.memory.baseRoomName);
     if (ret == OK) {
         console.log("Upgrading to " + newName + " from " + sourceCreepName);
         // sourceCreep.memory.DIE = "";
-        creepsToKill.push(sourceCreepName)
+        creepsToKill.push(sourceCreepName);
         return 0;
     } else {
         return ret;

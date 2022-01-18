@@ -1,5 +1,3 @@
-
-
 global.roleScavenger = {
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -86,7 +84,7 @@ global.roleScavenger = {
                             return;
                         }
                     } else {
-                        console.log(`Scavenger ${creep.name} @ ${creep.pos} is out of options`)
+                        console.log(`Scavenger ${creep.name} @ ${creep.pos} is out of options`);
                         return;
                     }
                 }

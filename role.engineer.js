@@ -1,13 +1,11 @@
-
-
 /*
 
 */
 
-Object.filter = (obj, predicate) => 
+Object.filter = (obj, predicate) =>
     Object.keys(obj)
-          .filter( key => predicate(obj[key]) )
-          .reduce( (res, key) => (res[key] = obj[key], res), {} );
+        .filter((key) => predicate(obj[key]))
+        .reduce((res, key) => ((res[key] = obj[key]), res), {});
 
 global.roleEngineer = {
     Status: {
@@ -102,66 +100,67 @@ global.roleEngineer = {
 
         //         return;
         // }
-        
+
         if (terminal.store.getUsedCapacity(RESOURCE_BATTERY)) {
             sortedOrders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType: RESOURCE_BATTERY }).sort((o1, o2) => {
-                    return 
-                        ((o2.price * Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o2.remainingAmount)) - Game.market.calcTransactionCost(Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o2.remainingAmount), "W6S1", o2.roomName)) -
-                        ((o1.price * Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o1.remainingAmount)) - Game.market.calcTransactionCost(Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o1.remainingAmount), "W6S1", o1.roomName))
-                });
+                return (
+                    o2.price * Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o2.remainingAmount) - Game.market.calcTransactionCost(Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o2.remainingAmount), "W6S1", o2.roomName) <
+                    o1.price * Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o1.remainingAmount) - Game.market.calcTransactionCost(Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o1.remainingAmount), "W6S1", o1.roomName)
+                );
+            });
             ret = Game.market.deal(sortedOrders[0].id, Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), sortedOrders[0].remainingAmount), creep.room.name);
             if (ret == OK) {
                 msg = `Market Transaction completed: ${Game.market.outgoingTransactions[0].transactionId} ${Game.market.outgoingTransactions[0].amount} ${Game.market.outgoingTransactions[0].resourceType} for ${
-                            Game.market.outgoingTransactions[0].order.price
-                        } : ${Game.market.outgoingTransactions[0].amount * Game.market.outgoingTransactions[0].order.price}`
+                    Game.market.outgoingTransactions[0].order.price
+                } : ${Game.market.outgoingTransactions[0].amount * Game.market.outgoingTransactions[0].order.price}`;
                 console.log(msg);
                 Game.notify(msg);
             } else if (ret == ERR_NOT_ENOUGH_RESOURCES) {
                 if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000 && terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 50000) {
                     if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         Log(creep, "moving to mainStorage");
-                        creep.moveTo(mainStorage)
+                        creep.moveTo(mainStorage);
                         return;
                     }
                     if (creep.transfer(terminal, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                       Log(creep, "moving to terminal");
-                        creep.moveTo(terminal)
+                        Log(creep, "moving to terminal");
+                        creep.moveTo(terminal);
                         return;
                     }
                 }
             }
         } else {
-            if(creep.store.getUsedCapacity(RESOURCE_BATTERY)) {
-                if(creep.transfer(terminal, RESOURCE_BATTERY) != OK) {
-                    creep.moveTo(terminal)
-                    return
+            if (creep.store.getUsedCapacity(RESOURCE_BATTERY)) {
+                if (creep.transfer(terminal, RESOURCE_BATTERY) != OK) {
+                    creep.moveTo(terminal);
+                    return;
                 }
             } else {
                 if (factory.store.getUsedCapacity(RESOURCE_BATTERY)) {
                     if (creep.withdraw(factory, RESOURCE_BATTERY) != OK) {
                         if (creep.transfer(factory, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(factory)
+                            creep.moveTo(factory);
                         }
                         if (creep.transfer(factory, RESOURCE_ENERGY) == ERR_FULL) {
                             if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
-                                creep.moveTo(mainStorage)
+                                creep.moveTo(mainStorage);
                             }
                         }
-                        creep.moveTo(factory)
-                        return
+                        creep.moveTo(factory);
+                        return;
                     }
                 } else {
                     // Make battery
                     if (factory.produce(RESOURCE_BATTERY) != OK) {
-                        if(creep.store.getUsedCapacity(RESOURCE_ENERGY)) {
-                            if(creep.transfer(factory, RESOURCE_ENERGY) != OK) {
-                                creep.moveTo(factory)
-                                return
+                        if (creep.store.getUsedCapacity(RESOURCE_ENERGY)) {
+                            if (creep.transfer(factory, RESOURCE_ENERGY) != OK) {
+                                creep.moveTo(factory);
+                                return;
                             }
                         } else {
-                             if(creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
-                                creep.moveTo(mainStorage)
-                                return
+                            if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
+                                creep.moveTo(mainStorage);
+                                return;
                             }
                         }
                     }
@@ -172,13 +171,13 @@ global.roleEngineer = {
 };
 
 // MakeBattery(factory) {
-    
+
 // }
 
 // SellBattery() {
 //     if (terminal.store.getUsedCapacity(RESOURCE_BATTERY)) {
 //         sortedOrders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType: RESOURCE_ENERGY }).sort((o1, o2) => {
-//                 return ((o1.price * Math.min(terminal.store.getUsedCapacity(RESOURCE_ENERGY), o1.remainingAmount)) - Game.market.calcTransactionCost(Math.min(terminal.store.getUsedCapacity(RESOURCE_ENERGY), o1.remainingAmount), "W6S1", o1.roomName)) < 
+//                 return ((o1.price * Math.min(terminal.store.getUsedCapacity(RESOURCE_ENERGY), o1.remainingAmount)) - Game.market.calcTransactionCost(Math.min(terminal.store.getUsedCapacity(RESOURCE_ENERGY), o1.remainingAmount), "W6S1", o1.roomName)) <
 //                 ((o2.price * Math.min(terminal.store.getUsedCapacity(RESOURCE_ENERGY), o2.remainingAmount)) - Game.market.calcTransactionCost(Math.min(terminal.store.getUsedCapacity(RESOURCE_ENERGY), o2.remainingAmount), "W6S1", o2.roomName))
 //             });
 //         ret = Game.market.deal(sortedOrders[0].id, Math.min(terminal.store.getUsedCapacity(RESOURCE_ENERGY) * 0.8, sortedOrders[0].remainingAmount), creep.room.name);

@@ -117,7 +117,7 @@ function buildControllerRampartSurroundings(r) {
     }
 }
 
-buildRampartSurroundings = function(r) {
+buildRampartSurroundings = function (r) {
     // controller surroundings
     const terrain = r.getTerrain();
     var center = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos;
@@ -139,7 +139,7 @@ buildRampartSurroundings = function(r) {
             }
         }
     }
-}
+};
 
 function buildExtractor(r) {
     deposits = r.find(FIND_DEPOSITS);
@@ -148,32 +148,31 @@ function buildExtractor(r) {
     }
 }
 
-buildRoadsToSources = function(r) {
+buildRoadsToSources = function (r) {
     if (_.isString(r)) {
-        r = Game.rooms[r]
+        r = Game.rooms[r];
         if (r == undefined) {
-            return false
+            return false;
         }
     }
-    mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id) // Use spawn just incase storage doesn't exist
-    
-    console.log(mainSpawn.pos)
-    new RoomVisual().circle(mainSpawn, {fill: 'transparent', radius: 0.55, stroke: 'red'})
+    mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
+
+    console.log(mainSpawn.pos);
+    new RoomVisual().circle(mainSpawn, { fill: "transparent", radius: 0.55, stroke: "red" });
 
     _.forEach(Memory.rooms[r.name].externalSources, (ext) => {
         s = Game.getObjectById(ext);
         if (s == undefined) {
             return;
         }
-        pathTo = mainSpawn.pos.findPathTo(s, {ignoreCreeps:true})
+        pathTo = mainSpawn.pos.findPathTo(s, { ignoreCreeps: true });
         _.forEach(pathTo, (step) => {
-            r.createConstructionSite(step.x, step.y, "road")
-        })
-        console.log(JSON.stringify(pathTo))
+            r.createConstructionSite(step.x, step.y, "road");
+        });
+        console.log(JSON.stringify(pathTo));
         new RoomVisual().poly(pathTo);
-        
     });
-}
+};
 
 restartRoomBuildingLevel = function (roomName, level = 1) {
     room = Game.rooms[roomName];
@@ -188,13 +187,13 @@ restartRoomBuildingLevel = function (roomName, level = 1) {
 resetMainStorage = function (roomName) {
     room = Game.rooms[roomName];
     if (room == undefined) return;
-    mainSpawnPos = room.memory.mainSpawn.pos
+    mainSpawnPos = room.memory.mainSpawn.pos;
     if (room.controller.level >= 4) {
         r.createConstructionSite(mainSpawnPos.x + 2, mainSpawnPos.y - 1, "storage");
     } else {
         r.createConstructionSite(mainSpawnPos.x + 2, mainSpawnPos.y, "container");
     }
-}
+};
 
 global.baseRawData = `
 {

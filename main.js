@@ -54,14 +54,14 @@ global.myRooms = {};
 
 while (Memory.myRooms == undefined || Memory.myRooms.length == 0) {
     for (const i in Game.spawns) {
-        Memory.myRooms = []
+        Memory.myRooms = [];
         if (Memory.myRooms.indexOf(Game.spawns[i].room.name) === -1) {
-            Memory.myRooms.push(Game.spawns[i].room.name)
+            Memory.myRooms.push(Game.spawns[i].room.name);
         }
     }
 }
 
-myRooms[Game.shard.name] = Memory.myRooms
+myRooms[Game.shard.name] = Memory.myRooms;
 
 // myRooms["shard3"] = ["W6S1", "W3S2", "W6S2"];
 // myRooms["shard2"] = ["W11S5"];
@@ -74,17 +74,16 @@ global.roomTrackingRefreshInterval = 120;
 global.nextRoomTrackingRefreshTime = Game.time;
 global.refreshRoomTrackingNextTick = false;
 
-global.roomRefreshMap = {}
+global.roomRefreshMap = {};
 for (s of Object.keys(myRooms)) {
     for (r of myRooms[s]) {
         roomRefreshMap[r] = nextRoomTrackingRefreshTime;
     }
 }
 
+global.creepsToKill = [];
 
-global.creepsToKill = []
-
-Memory.RoomVisualData = {}
+Memory.RoomVisualData = {};
 
 /*
 calls	time	avg		function
@@ -201,19 +200,19 @@ module.exports.loop = function () {
             resetSourceContainerTracking();
             nextCreepRoomMapRefreshTime = Game.time + nextCreepRoomMapRefreshInterval;
         }
-        
+
         if (refreshRoomTrackingNextTick) {
-            console.log("refreshRoomTrackingNextTick is true. Refreshing forced.")
+            console.log("refreshRoomTrackingNextTick is true. Refreshing forced.");
         }
 
         // if (Game.time >= nextRoomTrackingRefreshTime || refreshRoomTrackingNextTick) {
-            // console.log("Refreshing Room Tracking");
-            try {
-                roomTracking();
-            } catch (e) {
-                console.log(`roomTracking() failed: ${e}`);
-            }
-            nextRoomTrackingRefreshTime = Game.time + roomTrackingRefreshInterval;
+        // console.log("Refreshing Room Tracking");
+        try {
+            roomTracking();
+        } catch (e) {
+            console.log(`roomTracking() failed: ${e}`);
+        }
+        nextRoomTrackingRefreshTime = Game.time + roomTrackingRefreshInterval;
         // }
 
         try {
@@ -237,17 +236,16 @@ module.exports.loop = function () {
         } catch (e) {
             console.log(`runCreeps() failed: ${e}`);
         }
-        
+
         try {
             // Must be ran after creeps that will have set healingRequested
             myRooms[Game.shard.name].forEach((r) => {
                 room = Game.rooms[r];
                 runTowers(room);
-            })
+            });
         } catch (e) {
             console.log(`runTowers() failed: ${e}`);
         }
-        
 
         try {
             // Must be ran after creeps that will have set renewRequested
@@ -261,7 +259,7 @@ module.exports.loop = function () {
         } catch (e) {
             console.log(`runBaseBuilder() failed: ${e}`);
         }
-        
+
         drawGUI();
 
         // runRoads();

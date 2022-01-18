@@ -1,11 +1,9 @@
-
-
-depositInSupportedContainer = function(creep, source, container) {
+depositInSupportedContainer = function (creep, source, container) {
     if (container.store.getFreeCapacity() == 0) {
         if (Memory.rooms[container.room.name].sources[source.id].container.containerFilledTimestamp == undefined) {
             Memory.rooms[container.room.name].sources[source.id].container.containerFilledTimestamp = Game.time;
         }
-        if (Game.time > Memory.rooms[container.room.name].sources[source.id].container.containerFilledTimestamp + 60 ) {
+        if (Game.time > Memory.rooms[container.room.name].sources[source.id].container.containerFilledTimestamp + 60) {
             if (Memory.rooms[container.room.name].sources[source.id].container.moverLimitIncreaseCooldownTimestamp == undefined) {
                 Memory.rooms[container.room.name].sources[source.id].container.moverLimitIncreaseCooldownTimestamp = Game.time;
             }
@@ -26,4 +24,4 @@ depositInSupportedContainer = function(creep, source, container) {
         moveToMultiRoomTarget(creep, container);
         Log(creep, `filling ${container}`);
     }
-}
+};

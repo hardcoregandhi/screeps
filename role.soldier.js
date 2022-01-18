@@ -34,7 +34,7 @@ global.roleSoldier = {
             creep.heal(creep);
         }
 
-        if(Game.rooms[creep.memory.baseRoomName].controller.level == 8) creep.memory.noHeal = true
+        if (Game.rooms[creep.memory.baseRoomName].controller.level == 8) creep.memory.noHeal = true;
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;

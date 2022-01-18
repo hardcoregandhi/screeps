@@ -1,5 +1,3 @@
-
-
 global.roleExplorer = {
     name: "explorer",
     roleMemory: { memory: { targetRoomName: null } },
@@ -9,7 +7,7 @@ global.roleExplorer = {
     bodyLoop: [TOUGH, MOVE],
 
     run: function (creep) {
-        creep.memory.noHeal = true
+        creep.memory.noHeal = true;
         Log(creep, "hello");
         creep.say("🏳️");
 
@@ -18,14 +16,14 @@ global.roleExplorer = {
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
-        
+
         if (creep.memory.targetRoomName == undefined) {
             console.log(`creeps.${creep.name} is waiting for a targetRoomName`);
             return;
         }
 
         if (creep.memory.targetRoomName != creep.room.name) {
-            moveToMultiRoomTarget(creep, new RoomPosition(25,25, creep.memory.targetRoomName))
+            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.targetRoomName));
         } else {
         }
     },

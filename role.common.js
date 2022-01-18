@@ -7,9 +7,9 @@
  * mod.thing == 'a thing'; // true
  */
 
-global.Log = function(creep, str) {
-    if (creep.memory.debug != undefined && creep.memory.debug == true ) console.log(`${creep.name}: ${str}`);
-}
+global.Log = function (creep, str) {
+    if (creep.memory.debug != undefined && creep.memory.debug == true) console.log(`${creep.name}: ${str}`);
+};
 
 global.healRoads = function (creep) {
     // Heal Roads
@@ -65,11 +65,11 @@ global.returnToHeal = function (creep, room) {
             moveToMultiRoomTarget(creep, spawn);
             return true;
         }
-        
-        if(creep.pos.isNearTo(spawn)){
+
+        if (creep.pos.isNearTo(spawn)) {
             // console.log(`${creep.name} setting ${spawn.name} renewRequested: true` )
-            Memory.rooms[creep.room.name].spawns[spawn.name].renewRequested = true
-            Memory.rooms[creep.room.name].spawns[spawn.name].creeps[creep.id] = true
+            Memory.rooms[creep.room.name].spawns[spawn.name].renewRequested = true;
+            Memory.rooms[creep.room.name].spawns[spawn.name].creeps[creep.id] = true;
         }
 
         // if (targets.length == 0 || (creep.room.energyAvailable < 100 && creep.store.getUsedCapacity(RESOURCE_ENERGY) < 50)) {
@@ -94,7 +94,7 @@ global.fallbackToOtherRoles = function (creep, roomName) {
         roleUpgrader.run(creep);
         return;
     }
-}
+};
 
 global.interShardMove = function (creep) {
     if (creep.memory.interShard.length == 0) {

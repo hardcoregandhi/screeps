@@ -1,7 +1,5 @@
 require("movement");
 
-
-
 global.roleUpgrader = {
     name: "upgrader",
     roleMemory: { memory: {} },
@@ -56,7 +54,7 @@ global.roleUpgrader = {
                     }
                 }
             } catch (e) {
-                console.log(`${creep.name} failed to upgrade. ${e}`)
+                console.log(`${creep.name} failed to upgrade. ${e}`);
             }
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
@@ -65,23 +63,23 @@ global.roleUpgrader = {
 
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
         if (mainStorage == null) {
-            roleBuilder.run(creep)
-            return
+            roleBuilder.run(creep);
+            return;
         }
 
         if (creep.memory.upgrading) {
             Log(creep, "upgrading");
 
-           if (healRoads(creep) == OK) return;
+            if (healRoads(creep) == OK) return;
 
             if (creep.room.controller.level == 8) {
-                Log(creep, "controller is level 8")
+                Log(creep, "controller is level 8");
                 if (creep.memory.sweetSpot == undefined) {
-                    Log(creep, "sweet spot undefined")
+                    Log(creep, "sweet spot undefined");
                     controllerSpots = [];
                     const terrain = room.getTerrain();
-                    Log(creep, "painting controller spots")
-                    r = creep.room
+                    Log(creep, "painting controller spots");
+                    r = creep.room;
                     for (var i = r.controller.pos.x - 1; i <= r.controller.pos.x + 1; i++) {
                         for (var j = r.controller.pos.y - 1; j <= r.controller.pos.y + 1; j++) {
                             // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
@@ -101,7 +99,7 @@ global.roleUpgrader = {
                     }
                     var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
                     linkSpots = [];
-                    Log(creep, "painting link spots")
+                    Log(creep, "painting link spots");
                     for (var i = link_controller.pos.x - 1; i <= link_controller.pos.x + 1; i++) {
                         for (var j = link_controller.pos.y - 1; j <= link_controller.pos.y + 1; j++) {
                             // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
@@ -121,7 +119,7 @@ global.roleUpgrader = {
                     }
                     const intersectionSpots = controllerSpots.filter((value) => linkSpots.includes(value));
                     if (intersectionSpots.length) {
-                        Log(creep, "intersection found")
+                        Log(creep, "intersection found");
                         creep.memory.sweetSpot = intersectionSpots[0];
                     }
                 } else {

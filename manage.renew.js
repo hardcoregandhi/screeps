@@ -1,8 +1,8 @@
 global.runRenew = function () {
     // Renew
     _.forEach(Game.spawns, (s) => {
-        if(Memory.rooms[s.room.name].spawns[s.name].renewRequested == false) {
-            return
+        if (Memory.rooms[s.room.name].spawns[s.name].renewRequested == false) {
+            return;
         }
         // console.log(`${s} is renewing creeps`)
         highestLocalTickCount = 0;
@@ -12,10 +12,10 @@ global.runRenew = function () {
         soldierCreep = null;
         moverCreep = null;
         localCreeps = [];
-        
+
         // console.log(s)
         for (var creepId of Object.keys(Memory.rooms[s.room.name].spawns[s.name].creeps)) {
-            c = Game.getObjectById(creepId)
+            c = Game.getObjectById(creepId);
             // console.log(c)
 
             if (!c.my) continue;
@@ -85,7 +85,7 @@ global.runRenew = function () {
                 healTarget = highestLocalTickCreep;
             }
             // console.log(healTarget)
-            ret = s.renewCreep(healTarget)
+            ret = s.renewCreep(healTarget);
             if (ret == OK) {
                 healTarget.cancelOrder("move");
             } else if (ret == ERR_FULL) {

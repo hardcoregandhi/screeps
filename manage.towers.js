@@ -1,18 +1,17 @@
 getStructureHealLimit = function (room, structure) {
     var wallHealPercent = room.controller.level * 0.01;
-    
-    switch(structure.structureType) {
-        case (STRUCTURE_ROAD):
-            return Math.round((structure.hits / structure.hitsMax) * 100 < 50)
-        case (STRUCTURE_CONTAINER):
-            return Math.round((structure.hits / structure.hitsMax) * 100 < 50)
-        case (STRUCTURE_RAMPART):
-            return Math.round((structure.hits / structure.hitsMax) * 100) < wallHealPercent
-        case (STRUCTURE_WALL):
-            return Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent)
+
+    switch (structure.structureType) {
+        case STRUCTURE_ROAD:
+            return Math.round((structure.hits / structure.hitsMax) * 100 < 50);
+        case STRUCTURE_CONTAINER:
+            return Math.round((structure.hits / structure.hitsMax) * 100 < 50);
+        case STRUCTURE_RAMPART:
+            return Math.round((structure.hits / structure.hitsMax) * 100) < wallHealPercent;
+        case STRUCTURE_WALL:
+            return Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent);
     }
-    
-}
+};
 
 var towerRangeImpactFactor = function (distance) {
     if (distance <= TOWER_OPTIMAL_RANGE) {
@@ -30,16 +29,15 @@ global.runTowers = function (room) {
     _.forEach(Memory.rooms[room.name].towers, (t) => {
         // console.log(towerId)
         towers.push(Game.getObjectById(t.id));
-    })
+    });
 
     if (!towers.length) return;
-
 
     // startCpu = Game.cpu.getUsed();
     if (attack(room, towers)) return;
     // elapsed = Game.cpu.getUsed() - startCpu;
     // console.log("attack has used " + elapsed + " CPU time");
-    
+
     // startCpu = Game.cpu.getUsed();
     if (heal(room, towers)) return;
     // elapsed = Game.cpu.getUsed() - startCpu;
@@ -132,11 +130,10 @@ heal = function (room, towers) {
 };
 
 repair = function (room, towers) {
-    
     if (room.energyAvailable <= room.energyCapacityAvailable / 2) return 0;
-    
+
     var wallHealPercent = room.controller.level * 0.01;
-    
+
     var highlyDamagedStructs = room.find(FIND_STRUCTURES).filter((structure) => {
         return (
             (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100) < 5) ||
@@ -169,26 +166,24 @@ repair = function (room, towers) {
             return 1;
         }
     }
-    
+
     // first check cached target
     for (var tower of towers) {
         // console.log(tower)
         if (Memory.rooms[tower.room.name].towers[tower.id].currentTarget != null) {
-            target = Game.getObjectById(Memory.rooms[tower.room.name].towers[tower.id].currentTarget)
+            target = Game.getObjectById(Memory.rooms[tower.room.name].towers[tower.id].currentTarget);
             if (target != undefined && target.hits < getStructureHealLimit(room, target)) {
-                tower.heal(target)
-                _.remove(towers, tower)
+                tower.heal(target);
+                _.remove(towers, tower);
             } else {
-                Memory.rooms[tower.room.name].towers[tower.id].currentTarget = null
+                Memory.rooms[tower.room.name].towers[tower.id].currentTarget = null;
             }
         }
     }
-    if(!towers.length) return
-    
+    if (!towers.length) return;
+
     var customStructureSpecificPercentLimits = room.find(FIND_STRUCTURES).filter((structure) => {
-        return (
-            getStructureHealLimit(room, structure) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos))
-        );
+        return getStructureHealLimit(room, structure) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos));
     });
     if (customStructureSpecificPercentLimits.length) {
         //customStructureSpecificPercent
@@ -212,9 +207,7 @@ repair = function (room, towers) {
                 fill: "transparent",
             });
             tower.repair(closestTarget);
-            Memory.rooms[tower.room.name].towers[tower.id].currentTarget = closestTarget.id
-            
-            
+            Memory.rooms[tower.room.name].towers[tower.id].currentTarget = closestTarget.id;
         }
         return 1;
     }

@@ -18,20 +18,20 @@ global.runSpawns = function () {
         //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name } }, "W6S1");
         //     continue
         // }
-        
+
         // Neighbouring room investigations
-        unsearchedNeighbouringRooms = _.filter(Memory.rooms[r.name].neighbouringRooms, roomName => {return Memory.rooms[roomName] == undefined })
+        unsearchedNeighbouringRooms = _.filter(Memory.rooms[r.name].neighbouringRooms, (roomName) => {
+            return Memory.rooms[roomName] == undefined;
+        });
         // console.log(unsearchedNeighbouringRooms)
-        
-        
-        
+
         if (Memory.createClaimer) {
             if (spawnCreep(roleClaimer, null, { memory: { baseRoomName: r.name } }, r.name) == 0) {
                 Memory.createClaimer = false;
             }
         } else if (creepRoomMap.get(r.name + "harvester") == undefined || spawnHarvester(r)) {
             continue;
-        /*} else if (unsearchedNeighbouringRooms.length > 0) {
+            /*} else if (unsearchedNeighbouringRooms.length > 0) {
             // spawnCreep(roleExplorer, null, {memory: {targetRoomName:unsearchedNeighbouringRooms[0]}}, r.name);
             continue;*/
         } else if (Memory.rooms[r.name].mainStorage == undefined) {
@@ -130,19 +130,19 @@ function spawnExternalHarvester(roomName) {
 }
 
 function spawnHarvester(room) {
-    ret = false
+    ret = false;
     _.forEach(Memory.rooms[room.name].sources, (s) => {
         if (s.currentMiningParts != undefined && s.currentMiningParts < 7 && s.targettedBy < s.miningSpots) {
             if (r.energyAvailable <= 300) {
                 BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
                 // console.log(1)
-                spawnCreep(roleHarvester, BaseBodyParts, {memory:{targetSource: s.id}}, room.name);
+                spawnCreep(roleHarvester, BaseBodyParts, { memory: { targetSource: s.id } }, room.name);
             } else {
                 // console.log(2)
-                spawnCreep(roleHarvester, null, {memory:{targetSource: s.id}}, room.name);
+                spawnCreep(roleHarvester, null, { memory: { targetSource: s.id } }, room.name);
             }
             ret = true;
-            return false
+            return false;
         } else {
             // console.log(-1)
         }
@@ -152,30 +152,28 @@ function spawnHarvester(room) {
 
 function scoutNeighbouringRooms(room) {
     // console.log("scoutNeighbouringRooms")
-    ret = false
+    ret = false;
     _.forEach(Memory.rooms[room.name].neighbouringRooms, (n) => {
         if (Game.rooms[n] == undefined) {
-            if ( creepRoomMap.get(room.name + "explorerTarget" + n) == undefined ||
-                 creepRoomMap.get(room.name + "explorerTarget" + n) < 1) {
-                spawnCreep(roleExplorer, null, {memory:{targetRoomName:n}}, room.name)
-                ret = true
+            if (creepRoomMap.get(room.name + "explorerTarget" + n) == undefined || creepRoomMap.get(room.name + "explorerTarget" + n) < 1) {
+                spawnCreep(roleExplorer, null, { memory: { targetRoomName: n } }, room.name);
+                ret = true;
                 return false; //early escape
             }
         } else {
             _.forEach(Memory.rooms[n].neighbouringRooms, (nn) => {
                 if (Game.rooms[nn] == undefined) {
-                    if ( creepRoomMap.get(room.name + "explorerTarget" + nn) == undefined ||
-                         creepRoomMap.get(room.name + "explorerTarget" + nn) < 1) {
-                        spawnCreep(roleExplorer, null, {memory:{targetRoomName:nn}}, room.name)
-                        ret = true
+                    if (creepRoomMap.get(room.name + "explorerTarget" + nn) == undefined || creepRoomMap.get(room.name + "explorerTarget" + nn) < 1) {
+                        spawnCreep(roleExplorer, null, { memory: { targetRoomName: nn } }, room.name);
+                        ret = true;
                         return false; //early escape
                     }
-                } 
+                }
             });
             if (ret == true) {
                 return false; //early escape
             }
         }
     });
-    return ret
+    return ret;
 }

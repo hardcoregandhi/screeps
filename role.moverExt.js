@@ -1,5 +1,3 @@
-
-
 global.roleMoverExt = {
     name: "moverExt",
     roleMemory: { memory: {} },
