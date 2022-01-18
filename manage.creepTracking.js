@@ -30,50 +30,36 @@ creepTracking = function () {
         creepRoomMap.set(r.name + "harvesterExt", 0);
         creepRoomMap.set(r.name + "moverExt", 0);
         creepRoomMap.set(r.name + "moverLink", 0);
+        creepRoomMap.set(r.name + "csites", r.find(FIND_CONSTRUCTION_SITES).length);
     });
 
-    _.forEach(Game.rooms, (r) => {
-        _.forEach(Game.creeps, (c) => {
-            key = r.name + c.memory.role;
-            if (c.memory.baseRoomName == r.name) {
-                if (creepRoomMap.get(key)) {
-                    creepRoomMap.set(key, creepRoomMap.get(key) + 1);
-                } else {
-                    creepRoomMap.set(key, 1);
-                }
-            } else {
-                if (creepRoomMap.get(key) == undefined) {
-                    creepRoomMap.set(key, 0);
-                }
-            }
+    _.forEach(Game.creeps, (c) => {
+        key = c.memory.baseRoomName + c.memory.role;
+        if (creepRoomMap.get(key) != undefined) {
+            creepRoomMap.set(key, creepRoomMap.get(key) + 1);
+        } else {
+            creepRoomMap.set(key, 1);
+        }
 
-            key = r.name + c.memory.role + "Target";
-            if (c.memory.targetRoomName == r.name) {
-                if (creepRoomMap.get(key)) {
-                    creepRoomMap.set(key, creepRoomMap.get(key) + 1);
-                } else {
-                    creepRoomMap.set(key, 1);
-                }
+        if (c.memory.targetSource != undefined) {
+            key = c.memory.baseRoomName + c.memory.role + "Target" + c.memory.targetSource;
+            if (creepRoomMap.get(key) != undefined) {
+                creepRoomMap.set(key, creepRoomMap.get(key) + 1);
             } else {
-                if (creepRoomMap.get(key) == undefined) {
-                    creepRoomMap.set(key, 0);
-                }
+                creepRoomMap.set(key, 1);
             }
-
-            key = r.name + c.memory.role + "Target" + c.memory.targetSource;
-            if (c.memory.targetRoomName == r.name) {
-                if (creepRoomMap.get(key)) {
-                    creepRoomMap.set(key, creepRoomMap.get(key) + 1);
-                } else {
-                    creepRoomMap.set(key, 1);
-                }
+        }
+        
+        if (c.memory.targetRoomName != undefined) {
+            key = c.memory.baseRoomName + c.memory.role + "Target" + c.memory.targetRoomName;
+            // console.log(key)
+            if (creepRoomMap.get(key) != undefined) {
+                creepRoomMap.set(key, creepRoomMap.get(key) + 1);
             } else {
-                if (creepRoomMap.get(key) == undefined) {
-                    creepRoomMap.set(key, 0);
-                }
+                creepRoomMap.set(key, 1);
             }
-        });
-        creepRoomMap.set(r.name + "csites", r.find(FIND_CONSTRUCTION_SITES).length);
+        }
+        
     });
 
     nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval;
