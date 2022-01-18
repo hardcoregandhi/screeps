@@ -34,9 +34,19 @@ drawGUI = function() {
         new RoomVisual().text("🔺Upgraders    : " + creepRoomMap.get(r.name + "upgrader"), 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text("HarvestExt    : " + creepRoomMap.get(r.name + "harvesterExt"), 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text("MoverExt    : " + creepRoomMap.get(r.name + "moverExt"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("HarvestExtTarget    : " + creepRoomMap.get(r.name + "harvesterExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("MoverExtTarget    : " + creepRoomMap.get(r.name + "moverExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
+        // new RoomVisual().text("HarvestExtTarget    : " + creepRoomMap.get(r.name + "harvesterExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
+        // new RoomVisual().text("MoverExtTarget    : " + creepRoomMap.get(r.name + "moverExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
+        new RoomVisual().text("ExternalHarvesting    : ",  1, listOffset + inc(), { align: "left", font: fontSize });
+        _.forEach(Memory.rooms[r.name].neighbouringRooms, (n) => {
+            new RoomVisual().text(`    ${n}    :  ${creepRoomMap.get(r.name + "harvesterExtTarget" + n)}`, 1, listOffset + inc(), { align: "left", font: fontSize });
+        })
+        
+
 
         textOffset;
+        
+        r.visual.import(Memory.RoomVisualData[r.name]);
     }
+    
+
 }

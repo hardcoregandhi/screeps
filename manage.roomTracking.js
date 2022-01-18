@@ -23,6 +23,7 @@ roomTracking = function () {
 
         var csites = r.find(FIND_CONSTRUCTION_SITES);
         creepRoomMap.set(r.name + "csites", csites.length);
+        Memory.rooms[r.name].roomVisuals = []
 
         if (myRooms[Game.shard.name].includes(r.name)) {
             //console.log(`room ${r}`);
@@ -315,14 +316,15 @@ roomTracking = function () {
 
             // resetSourceContainerTracking(r.name)
 
-            new RoomVisual().text(Memory.rooms[r.name].sources[s.id].targettedBy, s.pos.x - 0.17, s.pos.y + 0.2, { align: "left", font: 0.6 });
+            new RoomVisual(r.name).text(Memory.rooms[r.name].sources[s.id].targettedBy, s.pos.x - 0.17, s.pos.y + 0.2, { align: "left", font: 0.6 });
+            
 
             if (Memory.rooms[r.name].sources[s.id].container != undefined) {
                 var cont = Game.getObjectById(Memory.rooms[r.name].sources[s.id].container.id);
                 if (cont == null) {
                     Memory.rooms[r.name].sources[s.id].container = undefined;
                 } else {
-                    new RoomVisual().text(Memory.rooms[r.name].sources[s.id].container.targettedBy, cont.pos.x - 0.17, cont.pos.y + 0.2, { align: "left", font: 0.6 });
+                    new RoomVisual(r.name).text(Memory.rooms[r.name].sources[s.id].container.targettedBy, cont.pos.x - 0.17, cont.pos.y + 0.2, { align: "left", font: 0.6 });
                 }
             }
         });
@@ -347,6 +349,8 @@ roomTracking = function () {
         //elapsed = Game.cpu.getUsed() - startCpu;
         //console.log("source setup has used " + elapsed + " CPU time");
         //startCpu = Game.cpu.getUsed();
+        
+        Memory.RoomVisualData[r.name] = Game.rooms[r.name].visual.export();
         
         refreshRoomTrackingNextTick = false;
         nextRoomTrackingRefreshTime += roomTrackingRefreshInterval;
