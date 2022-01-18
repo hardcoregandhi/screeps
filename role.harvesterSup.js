@@ -68,6 +68,8 @@ global.roleHarvSup = {
 
         if (!creep.memory.returning) {
             Log(creep, "retrieving");
+            if (healRoads(creep) == OK) return;
+           
             if (mainStorage == null) {
                 return roleBuilder.run(creep)
             }
