@@ -234,6 +234,31 @@ roomTracking = function () {
                                     }
                                 }
                             });
+                            // Add Neighbours Neighbours sources
+                            _.forEach(Object.keys(Memory.rooms[roomName].neighbouringRooms), (nn) => {
+                                if (Memory.rooms[nn] == undefined) {
+                                    return
+                                }
+                                if (Memory.rooms[nn].sources == undefined) {
+                                    return;
+                                }
+                                _.forEach(Object.keys(Memory.rooms[nn].sources), (ss) => {
+                                    if (Memory.rooms[r.name].externalSources.lastIndexOf(ss) != -1) {
+                                        return;
+                                    }
+                                    ssource = Game.getObjectById(ss);
+                                    if (ssource != null) {
+                                        if (PathFinder.search(ssource.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 100) {
+                                            if (Memory.rooms[r.name].externalSources == undefined) {
+                                                Memory.rooms[r.name].externalSources = [];
+                                            }
+                                            if (Memory.rooms[r.name].externalSources.lastIndexOf(ssource.id) === -1) {
+                                                Memory.rooms[r.name].externalSources.push(ssource.id);
+                                            }
+                                        }
+                                    }
+                                });
+                            });
                         });
                     }
                 }
