@@ -210,11 +210,12 @@ roomTracking = function () {
                             if (Memory.rooms[roomName].neighbouringRooms == undefined) {
                                 exits = Game.map.describeExits(roomName);
                                 Memory.rooms[roomName].neighbouringRooms = Object.values(exits);
-                                _.pull(Memory.rooms[roomName].neighbouringRooms, r.name);
+                                _.pull(Memory.rooms[roomName].neighbouringRooms, r.name); // Remove r.name so no circular searching
                             }
                             if (Memory.rooms[roomName].parentRoom == undefined) {
                                 Memory.rooms[roomName].parentRoom = r.name;
                             }
+                            // Add Neighbours sources
                             _.forEach(Object.keys(Memory.rooms[roomName].sources), (s) => {
                                 if (Memory.rooms[r.name].externalSources.lastIndexOf(s) != -1) {
                                     return;
@@ -223,7 +224,7 @@ roomTracking = function () {
                                 // console.log(source)
                                 if (source != null) {
                                     // console.log(source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)))
-                                    if (source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)).length < 100) {
+                                    if (PathFinder.search(source.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 100) {
                                         if (Memory.rooms[r.name].externalSources == undefined) {
                                             Memory.rooms[r.name].externalSources = [];
                                         }
