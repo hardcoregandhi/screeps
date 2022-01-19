@@ -57,7 +57,7 @@ creepReduction = function (r) {
             totalCarryAmount = totalCarryParts * 50;
             container = Game.getObjectById(s.container.id);
             pathLength = PathFinder.search(container.pos, mainSpawn.pos).path.length;
-            roundTripEnergyAccumulation = pathLength * energyPerTick;
+            roundTripEnergyAccumulation = Math.round(pathLength * energyPerTick * 1.2); // Allow 20% overhead for renewing and traffic
             targetCarryParts = Math.ceil(roundTripEnergyAccumulation / 50);
             creepCarryPartsMap.sort((e1, e2) => e1[1] < e2[1]);
             console.log(`targetCarryParts ${targetCarryParts}`);
