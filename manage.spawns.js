@@ -24,6 +24,11 @@ global.runSpawns = function () {
             return Memory.rooms[roomName] == undefined;
         });
         // console.log(unsearchedNeighbouringRooms)
+        
+        if ( creepRoomMap.get(r.name+"eenergy") > 750000) {
+            spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name);
+            continue
+        }
 
         if (Memory.createClaimer) {
             if (spawnCreep(roleClaimer, null, { memory: { baseRoomName: r.name } }, r.name) == 0) {
@@ -55,6 +60,9 @@ global.runSpawns = function () {
         } else if (scoutNeighbouringRooms(r)) {
             continue;
         } else if (spawnExternalHarvester(r.name)) {
+            continue;
+        } else if (creepRoomMap.get(r.name + "upgrader") < 2 && creepRoomMap.get(r.name+"eenergy") > 200000 && (r.controller.level < 8 || (r.controller.level == 8 && r.controller.ticksToDowngrade < 10000))) {
+            spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (r.controller.level < 3) {
             continue;
