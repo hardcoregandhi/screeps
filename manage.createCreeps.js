@@ -8,8 +8,14 @@ getBodyCost = function (bodyParts) {
     return _.sum(bodyParts, (b) => BODYPART_COST[b]);
 };
 
-displaySpawnFailMessage = function (_roomName, _roleName, _cost, _reason) {
-    new RoomVisual().text(`${_reason} Next ` + _roomName + ": " + _.capitalize(_roleName) + " Cost: " + _cost, 1, listOffset + inc(), { align: "left", font: 0.5 });
+displaySpawnFailMessage = function (_roomName, _roleName, _cost, _reason, _memory = null) {
+    var extraInfo = ""
+    if(_roleName == "moverExt" || _roleName == "moverExtRepair" || _roleName == "harvesterExt") {
+        if (_memory != null) {
+            extraInfo = `Target = ${_memory.memory.targetRoomName} : ${_memory.memory.targetSource}`
+        }
+    }
+    new RoomVisual().text(`${_reason} ${_roomName}: ${_.capitalize(_roleName).padEnd(15)} Cost: ${_cost} ${extraInfo}`, 1, listOffset + inc(), { align: "left", font: '0.3 Lucida Console' });
 };
 
 generateBodyParts = function (_spawnRoom, _role = null) {
@@ -172,12 +178,20 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
         spawn = "Spawn1";
         spawn = Game.spawns[spawn];
     }
-    if (Memory.rooms[spawn.room.name].spawns[spawn.name].massHealing) {
-        displaySpawnFailMessage(spawn.room.name, _role.name, 0, "[MassHealing]");
+    if (spawn.spawning) {
+        displaySpawnFailMessage(spawn.room.name, _role.name, 0, "[Spawning]", customMemory);
         return -1;
     }
-    if (spawn.spawning) {
-        displaySpawnFailMessage(spawn.room.name, _role.name, 0, "[Spawning]");
+    if (Memory.rooms[spawn.room.name].spawns[spawn.name].massHealing) {
+        displaySpawnFailMessage(spawn.room.name, _role.name, 0, "[MassHealing]", customMemory);
+        return -1;
+    }
+    if (Memory.rooms[spawn.room.name].spawns[spawn.name].spawnRequested) {
+        displaySpawnFailMessage(spawn.room.name, _role.name, 0, "[SpawnRequested]", customMemory);
+        return -1;
+    }
+    if (Memory.rooms[spawn.room.name].spawns[spawn.name].blockSpawn) {
+        displaySpawnFailMessage(spawn.room.name, _role.name, 0, "[Renewing]", customMemory);
         return -1;
     }
 
@@ -235,6 +249,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
             )
         );
         if (ret == 0) {
+            Memory.rooms[spawn.room.name].spawns[spawn.name].spawnRequested = true
             refreshCreepTrackingNextTick = true;
             roomRefreshMap[spawn.room.name] = Game.time;
         } else if (ret != 0) {

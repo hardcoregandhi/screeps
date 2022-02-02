@@ -13,6 +13,23 @@ getStructureHealLimit = function (room, structure) {
     }
 };
 
+getEmergencyStructureHealLimit = function (room, structure) {
+    var wallHealPercent = 0.001;
+    
+
+    switch (structure.structureType) {
+        case STRUCTURE_ROAD:
+            return Math.round((structure.hits / structure.hitsMax) * 100 < 10);
+        case STRUCTURE_CONTAINER:
+            return Math.round((structure.hits / structure.hitsMax) * 100 < 10);
+        case STRUCTURE_RAMPART:
+            // console.log(`${structure} {structure.structureType} ${structure.hits / structure.hitsMax} ${Math.round((structure.hits / structure.hitsMax) * 100)} < ${wallHealPercent}`)
+            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent;
+        case STRUCTURE_WALL:
+            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent;
+    }
+};
+
 var towerRangeImpactFactor = function (distance) {
     if (distance <= TOWER_OPTIMAL_RANGE) {
         return 1;
@@ -130,17 +147,15 @@ heal = function (room, towers) {
 };
 
 repair = function (room, towers) {
+    // console.log(`repair ${room.name}`)
     if (room.energyAvailable <= room.energyCapacityAvailable / 2) return 0;
 
-    var wallHealPercent = room.controller.level * 0.01;
+    var wallHealPercent = room.controller.level * 0.001;
 
     var highlyDamagedStructs = room.find(FIND_STRUCTURES).filter((structure) => {
-        return (
-            (structure.structureType == STRUCTURE_ROAD && Math.round((structure.hits / structure.hitsMax) * 100) < 5) ||
-            (structure.structureType == STRUCTURE_RAMPART && Math.round((structure.hits / structure.hitsMax) * 100) < 0.01) ||
-            (structure.structureType == STRUCTURE_WALL && Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent / 10) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos)))
-        );
+        return getEmergencyStructureHealLimit(room, structure) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos));
     });
+    
     if (highlyDamagedStructs.length) {
         highlyDamagedStructs.sort((a, b) => a.hits - b.hits);
         var mostDamagedStructure = highlyDamagedStructs[0];
@@ -155,7 +170,7 @@ repair = function (room, towers) {
 
         if (mostDamagedStructure) {
             room.visual.circle(mostDamagedStructure.pos, {
-                stroke: "green",
+                stroke: "red",
                 radius: 0.5,
                 lineStyle: "dashed",
                 fill: "transparent",
@@ -186,18 +201,26 @@ repair = function (room, towers) {
         return getStructureHealLimit(room, structure) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos));
     });
     if (customStructureSpecificPercentLimits.length) {
-        //customStructureSpecificPercent
         customStructureSpecificPercentLimits.sort((a, b) => a.hits - b.hits);
+        
+        if (creepRoomMap.get(room.name+"eenergy") < 200000) {
+            customStructureSpecificPercentLimits = customStructureSpecificPercentLimits.filter(s => s.structureType != STRUCTURE_RAMPART)
+            if (!customStructureSpecificPercentLimits.length) {
+                return;
+            }
+        }
+        
+        for (var t of customStructureSpecificPercentLimits) {
+            new RoomVisual().text(t.hits, t.pos, {
+                align: "right",
+                font: 0.2,
+            });
+        }
+        
         for (var tower of towers) {
             // console.log(tower)
             closestTarget = tower.pos.findClosestByRange(customStructureSpecificPercentLimits);
 
-            for (var t of customStructureSpecificPercentLimits) {
-                new RoomVisual().text(t.hits, t.pos, {
-                    align: "right",
-                    font: 0.2,
-                });
-            }
             // damagedStructures.forEach((e, i) => (new RoomVisual().text(e.hits + " Order: " + i, e.pos, {align: 'left'})));
 
             tower.room.visual.circle(closestTarget.pos, {

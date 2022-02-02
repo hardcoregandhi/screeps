@@ -12,9 +12,12 @@ global.roleHarvester = {
         var sources = creep.room.find(FIND_SOURCES);
         if (creep.memory.targetSource == undefined) {
             var lowestSource = 99;
+            
             _.forEach(Memory.rooms[creep.memory.baseRoomName].sources, (s) => {
-                if (s.targettedBy >= s.miningSpots && s.container == undefined) {
-                    return;
+                if (myRooms[Game.shard.name].includes(r.name) || Memory.rooms[r.name].mainSpawn != undefined) { // for new rooms we don't care
+                    if (s.targettedBy >= s.miningSpots && s.container == undefined) {
+                        return;
+                    }
                 }
                 if (s.targettedBy < lowestSource) {
                     lowestSource = s.targettedBy;
@@ -173,19 +176,24 @@ global.roleHarvester = {
                             }
                         }
                         return;
-                    }
-
-                    if (creep.room.controller.level >= 6) {
-                        //try to build a link
-                        var csites = Game.rooms[creep.memory.baseRoomName].find(FIND_CONSTRUCTION_SITES).filter((site) => {
-                            return creep.pos.inRangeTo(site, 1);
-                        });
-                        if (csites.length) {
-                            Log(creep, "building");
-                            if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
-                                moveToMultiRoomTarget(creep, csites[0]);
+                    } else {
+                        if (creep.room.controller.level >= 6) {
+                            //try to build a link
+                            var csites = creep.room.find(FIND_CONSTRUCTION_SITES).filter((site) => {
+                                return creep.pos.inRangeTo(site, 1);
+                            });
+                            if (csites.length) {
+                                Log(creep, "building");
+                                if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
+                                    moveToMultiRoomTarget(creep, csites[0]);
+                                }
+                                return;
+                            } else {
+                                targetSource = Game.getObjectById(creep.memory.targetSource);
+                                if (targetSource.pos.inRangeTo(creep.pos, 2)) {
+                                    creep.room.createConstructionSite(creep.pos, STRUCTURE_LINK);
+                                }
                             }
-                            return;
                         }
                     }
 
@@ -196,11 +204,13 @@ global.roleHarvester = {
                         Log(creep, target);
 
                         if (
+                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy == 0 ||
                             Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
                             Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts != 0 &&
                             Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.currentCarryParts < Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts &&
                             Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined
                         ) {
+                            Log(creep, "spawning harvSup")
                             spawnCreep(roleHarvSup, "auto", { memory: { targetContainer: target.id } }, creep.memory.baseRoomName);
                         }
 
@@ -212,12 +222,45 @@ global.roleHarvester = {
                                 }
                                 return;
                             }
-                            roleHarvSup.run(creep);
-                            return;
+                            if (target.store.getFreeCapacity() <= 50){
+                                roleHarvSup.run(creep);
+                                return;
+                            }
                         }
 
                         source = Game.getObjectById(creep.memory.targetSource);
                         return depositInSupportedContainer(creep, source, target);
+                    } else {
+                        creep.say("makin con");
+                        source = Game.getObjectById(creep.memory.targetSource)
+                        
+                        if (source.pos.inRangeTo(creep.pos, 2)) {
+                            var csites = Game.rooms[creep.memory.baseRoomName].find(FIND_CONSTRUCTION_SITES, {
+                                filter: (site) => {
+                                    return source.pos.inRangeTo(site, 3); //; && site.structureType == STRUCTURE_CONTAINER;
+                                },
+                            });
+                            if (csites.length == 0) {
+                                const terrain = creep.room.getTerrain();
+                                for (var i = source.pos.x - 1; i <= source.pos.x + 1; i++) {
+                                    for (var j = source.pos.y - 1; j <= source.pos.y + 1; j++) {
+                                        if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                                            for (var ii = i - 1; ii <= i + 1; ii++) {
+                                                for (var jj = j - 1; jj <= j + 1; jj++) {
+                                                    if (terrain.get(ii, jj) != TERRAIN_MASK_WALL) {
+                                                        if(creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER) == OK)
+                                                            return;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            moveToMultiRoomTarget(creep, source);
+                        }
+
                     }
 
                     var csites = Game.rooms[creep.memory.baseRoomName].find(FIND_CONSTRUCTION_SITES).filter((site) => {
@@ -296,6 +339,7 @@ global.roleHarvester = {
 };
 
 function fallbackToOtherRoles(creep) {
+    Log(creep, "fallbackToOtherRoles")
     var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
     if (targets.length) {
         roleBuilder.run(creep);

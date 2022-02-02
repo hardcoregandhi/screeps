@@ -7,7 +7,7 @@ global.roleClaimer = {
         MOVE, MOVE, MOVE, MOVE, MOVE
         ],
     baseBodyParts: [CLAIM, CLAIM, MOVE],
-    bodyLoop: [MOVE, MOVE, MOVE, MOVE, MOVE, CLAIM],
+    bodyLoop: [MOVE, CLAIM],
     bodyPartsMaxCount: 7,
     // 1 - UP
     // 3 - RIGHT
@@ -42,7 +42,7 @@ global.roleClaimer = {
             // }
             // console.log(creep.claimController(creep.room.controller));
             if (creep.reserveController(Game.rooms[creep.memory.targetRoomName].controller) != OK) {
-                moveToMultiRoomTarget(creep, Game.rooms[creep.memory.targetRoomName].controller, true);
+                moveToMultiRoomTargetAvoidCreep(creep, Game.rooms[creep.memory.targetRoomName].controller, true);
             }
         }
     },

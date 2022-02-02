@@ -138,7 +138,7 @@ global.runCreeps = function () {
             if (creep.memory.role == "harvSup") {
                 roleHarvSup.run(creep);
             }
-            if (creep.memory.role == "moverExt") {
+            if (creep.memory.role == "moverExt" || creep.memory.role == "moverExtRepair") {
                 roleMoverExt.run(creep);
             }
             if (creep.memory.role == "moverLink") {
@@ -177,6 +177,9 @@ global.runCreeps = function () {
             if (creep.memory.role == "healer") {
                 roleHealer.run(creep);
             }
+            if (creep.memory.role == "wanderer") {
+                roleWanderer.run(creep);
+            }
             if (creep.memory.role == "healerChase") {
                 roleHealerChase.run(creep);
             }
@@ -193,6 +196,9 @@ global.runCreeps = function () {
                 eval("role" + _.capitalize(creep.memory.role)).run(creep);
             }
             if (creep.memory.role == "raider") {
+                eval("role" + _.capitalize(creep.memory.role)).run(creep);
+            }
+            if (creep.memory.role == "harvesterMineral") {
                 eval("role" + _.capitalize(creep.memory.role)).run(creep);
             }
         } catch (e) {

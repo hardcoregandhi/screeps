@@ -10,7 +10,7 @@ global.roleUpgrader = {
         CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
-    baseBodyParts: [],
+    baseBodyParts: [MOVE, WORK, CARRY, MOVE],
     bodyLoop: [WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -47,22 +47,16 @@ global.roleUpgrader = {
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
-            try {
-                if (creep.body.length < eval("role" + _.capitalize(creep.memory.role)).BodyParts) {
-                    if (upgradeCreep(creep.name) == 0) {
-                        return;
-                    }
-                }
-            } catch (e) {
-                console.log(`${creep.name} failed to upgrade. ${e}`);
+            if (upgradeCreep(creep.name) == 0) {
+                return;
             }
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
-        pickupNearby(creep);
+        // pickupNearby(creep);
 
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
-        if (mainStorage == null) {
+        if (mainStorage == null && creep.room.controller.level > 1) {
             roleBuilder.run(creep);
             return;
         }
@@ -131,7 +125,11 @@ global.roleUpgrader = {
                 }
             }
             if (creep.upgradeController(creep.room.controller) != OK) {
-                moveToTarget(creep, creep.room.controller.pos, false);
+                if (!creep.pos.inRangeTo(creep.room.controller, 4))
+                    moveToMultiRoomTarget(creep, creep.room.controller.pos);
+                else
+                    moveToMultiRoomTargetAvoidCreep(creep, creep.room.controller.pos);
+
             }
         } else {
             Log(creep, "retrieving");
@@ -161,11 +159,11 @@ global.roleUpgrader = {
                     (creepRoomMap.get(creep.room.name + "eenergy") < 2000 && creep.room.energyAvailable < creep.room.energyCapacityAvailable - 400) ||
                     (mainStorage.structureType == STRUCTURE_CONTAINER && mainStorage.store.getUsedCapacity() < mainStorage.store.getCapacity() / 2)
                 ) {
-                    moveToTarget(creep, creep.room.controller.pos, false);
+                    moveToTarget(creep, creep.room.controller.pos);
                     return;
                 } else {
                     if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
-                        moveToTarget(creep, mainStorage.pos, false);
+                        moveToMultiRoomTarget(creep, mainStorage.pos);
                     }
                 }
             }

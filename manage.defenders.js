@@ -1,25 +1,31 @@
 requestGunner = function (_baseRoomName, _targetRoomName) {
+    if (Memory.rooms[_baseRoomName].defenders == undefined) {
+        Memory.rooms[_baseRoomName].defenders = {}
+    }
     if (Memory.rooms[_baseRoomName].defenders.gunner == undefined) {
-        spawnCreep(roleGunner, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName } }, _baseRoomName);
+        spawnCreep(roleGunner, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
         return;
     }
     gunner = Game.getObjectById(Memory.rooms[_baseRoomName].defenders.gunner);
     if (gunner == null) {
         Memory.rooms[_baseRoomName].defenders.gunner = null;
-        spawnCreep(roleGunner, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName } }, _baseRoomName);
+        spawnCreep(roleGunner, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
     }
     requestDefender(_baseRoomName, _targetRoomName, gunner);
 };
 
 requestSoldier = function (_baseRoomName, _targetRoomName) {
+    if (Memory.rooms[_baseRoomName].defenders == undefined) {
+        Memory.rooms[_baseRoomName].defenders = {}
+    }
     if (Memory.rooms[_baseRoomName].defenders.soldier == undefined) {
-        spawnCreep(roleSoldier, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName } }, _baseRoomName);
+        spawnCreep(roleSoldier, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
         return;
     }
     soldier = Game.getObjectById(Memory.rooms[_baseRoomName].defenders.soldier);
     if (soldier == null) {
         Memory.rooms[_baseRoomName].defenders.soldier = null;
-        spawnCreep(roleSoldier, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName } }, _baseRoomName);
+        spawnCreep(roleSoldier, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
         return;
     }
     requestDefender(_baseRoomName, _targetRoomName, soldier);
