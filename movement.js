@@ -2,10 +2,48 @@ global.moveToTarget = function (creep, target, canUseSwamp = true) {
     // if(creep.fatigue != 0) return -1
     canUseSwamp = true;
     if (canUseSwamp) {
+        spawnMemoryObject = Memory.rooms[creep.memory.baseRoomName].mainSpawn
+        distanceToSpawn = creep.pos.getRangeTo(spawnMemoryObject.pos.x, spawnMemoryObject.pos.y)
+        if (creep.room.name != creep.memory.baseRoomName)
+            distanceToSpawn = Infinity
+        distanceToTarget = creep.pos.getRangeTo(target)
+        Log(creep, `distanceToSpawn: ${distanceToSpawn} `)
+        Log(creep, `distanceToTarget: ${distanceToTarget} `)
+        if ((distanceToSpawn == Infinity || distanceToTarget == Infinity) && (distanceToSpawn > 8 && distanceToTarget > 3) ) {
+            Log(creep, "moveToTarget: ignoringCreeps")
+            ret = creep.moveTo(target, {
+                visualizePathStyle: { stroke: "#ffffff" },
+                maxRooms: 0,
+                ignoreCreeps: true,
+                maxOps: 100000,
+            });
+            Log(creep, `${ret}`)
+            if (ret == OK) {
+                if(creep.memory.prevPos == undefined) {
+                    creep.memory.prevPos = {}
+                    creep.memory.prevPos.pos = creep.pos
+                    creep.memory.prevPos.time = Game.time
+                } else {
+                    if(creep.pos == creep.memory.prevPos.pos.x &&
+                            creep.pos == creep.memory.prevPos.pos.y &&
+                            Game.time + 5 > creep.memory.prevPos.time
+                    ) {
+                        ret = moveToMultiRoomTargetAvoidCreep(creep, target)
+                        if (ret == OK) {
+                            delete creep.memory.prevPos
+                        }
+                   }
+                }
+                
+            }
+            return
+        }
+        
         creep.moveTo(target, {
             visualizePathStyle: { stroke: "#ffffff" },
             maxRooms: 0,
             maxOps: 100000,
+            reusePath: 1,
         });
     } else {
         const path = creep.room.findPath(creep.pos, target, {
@@ -34,74 +72,72 @@ global.moveToTarget = function (creep, target, canUseSwamp = true) {
 };
 
 global.moveToMultiRoomTarget = function (creep, target, canUseSwamp = true) {
-    canUseSwamp = true;
-    if (canUseSwamp) {
-        ret = creep.moveTo(target, {
-            visualizePathStyle: { stroke: "#ffffff" },
-            maxOps: 100000,
-            maxRooms: 16,
-        });
-        // console.log(target)
-    } else {
-        const path = creep.room.findPath(creep.pos, target, {
-            ignoreCreeps: false,
-            maxRooms: 16,
-        });
-        if (path.length) {
-            roomPos = new RoomPosition(path[0].x, path[0].y, creep.room.name);
-            isSwamp = new Room.Terrain(creep.room.name).get(path[0].x, path[0].y) == TERRAIN_MASK_SWAMP;
-            isPath = roomPos.lookFor(LOOK_STRUCTURES).length != 0;
-            for (var pathStep of path) {
-                if (!isSwamp || (isSwamp && isPath)) {
-                    creep.room.visual.circle(pathStep, { fill: "red" });
-                }
-            }
-            if (!isSwamp || (isSwamp && isPath)) {
-                return creep.moveTo(path[0].x, path[0].y, {
-                    visualizePathStyle: { stroke: "#ffffff" },
-                    maxRooms: 1,
-                });
-            }
-        } else {
-            return -1;
+    
+    if (creep.memory.prevPos != undefined) {
+        if(
+            creep.pos.x != creep.memory.prevPos.pos.x ||
+            creep.pos.y != creep.memory.prevPos.pos.y
+        ) {
+            Log(creep, "deleting prevPos")
+            Log(creep, `pos: ${creep.pos} mem: ${JSON.stringify(creep.memory.prevPos.pos)}`)
+            delete creep.memory.prevPos
         }
     }
-};
-
-global.moveToMultiRoomTargetIgnoreCreep = function (creep, target, canUseSwamp = true) {
-    canUseSwamp = true;
-    if (canUseSwamp) {
+    
+    spawnMemoryObject = Memory.rooms[creep.memory.baseRoomName].mainSpawn
+    distanceToSpawn = creep.pos.getRangeTo(spawnMemoryObject.pos.x, spawnMemoryObject.pos.y)
+    distanceToTarget = creep.pos.getRangeTo(target)
+    Log(creep, `distanceToSpawn: ${distanceToSpawn} `)
+    Log(creep, `distanceToTarget: ${distanceToTarget} `)
+    if ((distanceToSpawn == Infinity || distanceToTarget == Infinity) || (distanceToSpawn > 8 && distanceToTarget > 3) ) {
+        Log(creep, "moveToMultiRoomTarget: ignoringCreeps")
         ret = creep.moveTo(target, {
             visualizePathStyle: { stroke: "#ffffff" },
-            maxOps: 100000,
             maxRooms: 16,
             ignoreCreeps: true,
+            maxOps: 100000,
         });
-        // console.log(target)
-    } else {
-        const path = creep.room.findPath(creep.pos, target, {
-            ignoreCreeps: false,
-            maxRooms: 16,
-        });
-        if (path.length) {
-            roomPos = new RoomPosition(path[0].x, path[0].y, creep.room.name);
-            isSwamp = new Room.Terrain(creep.room.name).get(path[0].x, path[0].y) == TERRAIN_MASK_SWAMP;
-            isPath = roomPos.lookFor(LOOK_STRUCTURES).length != 0;
-            for (var pathStep of path) {
-                if (!isSwamp || (isSwamp && isPath)) {
-                    creep.room.visual.circle(pathStep, { fill: "red" });
-                }
+        Log(creep, `${ret}`)
+        if (ret == OK) {
+            if(creep.memory.prevPos == undefined) {
+                creep.memory.prevPos = {}
+                creep.memory.prevPos.pos = creep.pos
+                creep.memory.prevPos.time = Game.time
+            } else {
+                if(creep.pos.x == creep.memory.prevPos.pos.x &&
+                        creep.pos.y == creep.memory.prevPos.pos.y &&
+                        Game.time + 5 > creep.memory.prevPos.time
+                ) {
+                    if (creep.memory.prevPos.unstuckAttempt == undefined) {
+                        Log(creep, `stuck.`)
+                        creep.memory.prevPos.unstuckAttempt = true
+                        ret = moveToMultiRoomTargetAvoidCreep(creep, target)
+                    } else {
+                        creep.move(Math.round(Math.random() * 10))
+                    }
+               }
             }
-            if (!isSwamp || (isSwamp && isPath)) {
-                return creep.moveTo(path[0].x, path[0].y, {
-                    visualizePathStyle: { stroke: "#ffffff" },
-                    maxRooms: 1,
-                });
-            }
-        } else {
-            return -1;
+            
         }
+        return
     }
+    ret = creep.moveTo(target, {
+        visualizePathStyle: { stroke: "#ffffff" },
+        maxOps: 100000,
+        maxRooms: 16,
+        reusePath: 0,
+    });
+    // console.log(target)
+
+};
+
+global.moveToMultiRoomTargetAvoidCreep = function (creep, target) {
+    return creep.moveTo(target, {
+        visualizePathStyle: { stroke: "#ffffff" },
+        maxOps: 100000,
+        maxRooms: 16,
+        reusePath: 0,
+    });
 };
 
 global.moveToRoomIgnoreStructures = function (creep, targetRoom) {
@@ -275,8 +311,8 @@ global.moveToRoom = function (creep, targetRoom) {
                 creep.memory.pathfinderPath.path.shift();
                 if (
                     creep.memory.prevPos != undefined &&
-                    creep.memory.prevPos == creep.pos // ||
-                    // !creep.pos.isNearTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)
+                    creep.memory.prevPos == creep.pos  ||
+                    !creep.pos.isNearTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)
                 ) {
                     //red flag, reset
                     log.log("resetting path");
@@ -435,3 +471,37 @@ global.usePathfinder = function (creep, goals) {
         }
     }
 };
+
+PathfinderSearchUsePathsIgnoreCreeps = function(fromPos, toPos) {
+    return PathFinder.search(fromPos, toPos, {
+        // We need to set the defaults costs higher so that we
+        // can set the road cost lower in `roomCallback`
+        plainCost: 2,
+        swampCost: 10,
+        maxOps: 15000,
+
+        roomCallback: function (roomName) {
+            let room = Game.rooms[roomName];
+            // In this example `room` will always exist, but since
+            // PathFinder supports searches which span multiple rooms
+            // you should be careful!
+            console.log(roomName);
+            if (!room) return;
+            
+            let costs = new PathFinder.CostMatrix();
+
+            room.find(FIND_STRUCTURES).concat(room.find(FIND_CONSTRUCTION_SITES)).forEach(function (struct) {
+                if (struct.structureType === STRUCTURE_ROAD) {
+                    // Favor roads over plain tiles
+                    costs.set(struct.pos.x, struct.pos.y, 1);
+                } else if (struct.structureType !== STRUCTURE_CONTAINER && (struct.structureType !== STRUCTURE_RAMPART || !struct.my)) {
+                    // Can't walk through non-walkable buildings
+                    costs.set(struct.pos.x, struct.pos.y, 0xff);
+                }
+            });
+
+            return costs;
+        },
+    });
+}
+

@@ -1,3 +1,5 @@
+const { has } = require("lodash");
+
 global.roleExplorer = {
     name: "explorer",
     roleMemory: { memory: { targetRoomName: null } },
@@ -21,11 +23,7 @@ global.roleExplorer = {
             console.log(`creeps.${creep.name} is waiting for a targetRoomName`);
             return;
         }
-
-        if (creep.memory.targetRoomName != creep.room.name) {
-            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.targetRoomName));
-        } else {
-        }
+        moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.targetRoomName));
     },
 };
 

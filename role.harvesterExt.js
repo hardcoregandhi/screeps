@@ -27,6 +27,17 @@ global.roleHarvesterExt = {
         if (creep.memory.moverLimit == undefined) {
             creep.memory.moverLimit = 1;
         }
+        
+        if (creep.memory.scoopSize == undefined || creep.spawning) {
+            scoopSize = 0;
+            _.forEach(creep.body, (b) => {
+                if (b.type == WORK) {
+                    scoopSize += 2;
+                }
+            });
+            // console.log(creep.name, scoopSize)
+            creep.memory.scoopSize = scoopSize;
+        }
 
         Log(creep, 1);
         if (creep.ticksToLive > 1400) {
@@ -78,52 +89,7 @@ global.roleHarvesterExt = {
         });
         Log(creep, 2);
 
-        var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        var closestStructure = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((structure) => {
-            return structure.structureType == STRUCTURE_INVADER_CORE;
-        });
-
-        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter((c) => {
-            return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
-        });
-        rangedCount = 0;
-        meleeCount = 0;
-        if (hostileCreeps.length) {
-            console.log(hostileCreeps);
-            _.forEach(hostileCreeps, (c) => {
-                _.forEach(c.body, (part) => {
-                    switch (part.type) {
-                        case ATTACK:
-                            meleeCount++;
-                            break;
-                        case RANGED_ATTACK:
-                            rangedCount++;
-                            break;
-                    }
-                });
-            });
-        }
-
-        if (hostileCreeps.length || closestStructure.length) {
-            try {
-                if (meleeCount > rangedCount || creepRoomMap.get(creep.memory.targetRoomName + "soldierTarget") == undefined || creepRoomMap.get(creep.memory.targetRoomName + "soldierTarget") < 1) {
-                    requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName);
-                } else if (meleeCount < rangedCount || creepRoomMap.get(creep.memory.targetRoomName + "gunnerTarget") == undefined || creepRoomMap.get(creep.memory.targetRoomName + "gunnerTarget") < 1) {
-                    requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName);
-                }
-            } catch (e) {
-                console.log(`${creep}: ${e}`);
-            }
-            if (closestStructure.length) return;
-            creep.memory.fleeing = 20;
-            const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
-            if (route.length > 0) {
-                creep.say("Headin oot");
-                const exit = creep.pos.findClosestByRange(route[0].exit);
-                moveToTarget(creep, exit, true);
-                return;
-            }
-        }
+        EnemyCheckFleeRequestBackup(creep);
         if (creep.memory.fleeing > 0) {
             creep.memory.fleeing -= 1;
             moveToTarget(creep, creep.room.controller, true);
@@ -135,15 +101,16 @@ global.roleHarvesterExt = {
         // TODO a creep should not spawn other creeps
         if (creep.memory.noSpawn == undefined || creep.memory.noSpawn == false) {
             if (creep.memory.targetRoomName != undefined && Game.rooms[creep.memory.targetRoomName] != undefined && creep.room.name == creep.memory.targetRoomName) {
-                if (
-                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container != undefined &&
-                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
-                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != 0 &&
-                    Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts < Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts &&
-                    Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined
-                ) {
-                    spawnCreep(roleMoverExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource } }, creep.memory.baseRoomName);
-                }
+                // if (
+                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container != undefined &&
+                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
+                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != 0 &&
+                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts < Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts &&
+                //     Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined &&
+                //     Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id).store.getUsedCapacity(RESOURCE_ENERGY) > 1000
+                // ) {
+                //     spawnCreep(roleMoverExt, null, { memory: { baseRoomName: creep.memory.baseRoomName, targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource, targetContainer: creep.memory.targetContainer } }, creep.memory.baseRoomName);
+                // }
 
                 if (
                     creep.memory.noClaimSpawn != true &&
@@ -154,10 +121,22 @@ global.roleHarvesterExt = {
                     //TODO FIX THIS
                     spawnCreep(roleClaimer, "auto", { memory: { targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
                 }
+                
+                if (
+                    creepRoomMap.get(creep.memory.targetRoomName + "csites") != undefined &&
+                    creepRoomMap.get(creep.memory.targetRoomName + "csites") > 2
+                ) {
+                    if (
+                        creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) == undefined ||
+                        creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) > 1
+                    ) {
+                        spawnCreep(roleBuilderExt, "auto", { memory: { targetRoomName:creep.memory.targetRoomName } }, creep.memory.baseRoomName)
+                    }
+                }
             }
         }
 
-        if (creep.memory.mining && creep.store.getFreeCapacity() == 0) {
+        if (creep.memory.mining && creep.store.getFreeCapacity() < creep.memory.scoopSize) {
             creep.memory.mining = false;
             creep.say("🔄 dropping");
             Log(creep, "switching to dropping");
@@ -186,7 +165,7 @@ global.roleHarvesterExt = {
             Log(creep, targetSource);
             if (creep.harvest(targetSource) != OK) {
                 // console.log(creep.harvest(targetSource))
-                moveToMultiRoomTarget(creep, targetSource);
+                moveToMultiRoomTargetAvoidCreep(creep, targetSource);
             }
             return;
         } else {
@@ -196,7 +175,7 @@ global.roleHarvesterExt = {
             if (csites.length) {
                 Log(creep, "building");
                 if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
-                    moveToMultiRoomTarget(creep, csites[0]);
+                    moveToMultiRoomTargetAvoidCreep(creep, csites[0]);
                 }
                 return;
             }
@@ -253,10 +232,10 @@ global.roleHarvesterExt = {
                 if (container != null && container.hits < 200000) {
                     Log(creep, `healing ${container}`);
                     if (creep.repair(container) != OK) {
-                        moveToMultiRoomTarget(creep, container);
+                        moveToMultiRoomTargetAvoidCreep(creep, container);
                     }
                 } else if (creep.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    moveToMultiRoomTarget(creep, container);
+                    moveToMultiRoomTargetAvoidCreep(creep, container);
                     Log(creep, `filling ${container}`);
                 }
             }

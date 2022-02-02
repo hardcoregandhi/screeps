@@ -36,3 +36,8 @@ findSoftestWall = function (roomName, creep = null) {
 findStructureType = function (room, type) {
     return room.find(FIND_STRUCTURES).filter((s) => s.structureType == type);
 };
+
+isHighwayRoom = function(roomName) {
+    let parsed = /^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName);
+    return (parsed[1] % 10 === 0) || (parsed[2] % 10 === 0);
+}

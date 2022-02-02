@@ -29,6 +29,7 @@ global.healRoads = function (creep) {
             return creep.repair(damagedStructs[0]);
         }
     }
+    return -1
     //END Heal Roads
 };
 
@@ -52,9 +53,16 @@ global.pickupNearby = function (creep) {
 
 global.returnToHeal = function (creep, room) {
     if (creep.ticksToLive >= 1400) {
+        delete creep.memory.timeStartingRenew;
         creep.memory.healing = false;
         return false;
     }
+    
+    if (creep.memory.timeStartingRenew == undefined) {
+        creep.memory.timeStartingRenew = Game.time
+    }
+    
+    
     if (Game.rooms[room].energyAvailable < 50) {
         return false;
     }
@@ -68,6 +76,18 @@ global.returnToHeal = function (creep, room) {
 
         if (creep.pos.isNearTo(spawn)) {
             // console.log(`${creep.name} setting ${spawn.name} renewRequested: true` )
+            lowestWaitListSpawn = null
+            lowestWaitListLength = 99
+            _.forEach(Memory.rooms[creep.room.name].spawns, (s) => {
+                // console.log(JSON.stringify(s))
+                if (Object.keys(s.creeps).length < lowestWaitListLength) {
+                    lowestWaitListLength = Object.keys(s.creeps).length
+                    lowestWaitListSpawn = Game.getObjectById(s.id);
+                }
+            })
+            // console.log(`lowestWaitListLength: ${lowestWaitListLength}`)
+            // console.log(`lowestWaitListSpawn: ${lowestWaitListSpawn}`)
+            spawn = lowestWaitListSpawn
             Memory.rooms[creep.room.name].spawns[spawn.name].renewRequested = true;
             Memory.rooms[creep.room.name].spawns[spawn.name].creeps[creep.id] = true;
         }
@@ -128,3 +148,52 @@ global.interShardMove = function (creep) {
             break;
     }
 };
+
+global.EnemyCheckFleeRequestBackup = function(creep) {
+    var invaderCore = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((structure) => {
+            return structure.structureType == STRUCTURE_INVADER_CORE;
+        });
+    var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter((c) => {
+            return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
+        });
+    rangedCount = 0;
+    meleeCount = 0;
+    if (hostileCreeps.length) {
+        console.log(hostileCreeps);
+        _.forEach(hostileCreeps, (c) => {
+            _.forEach(c.body, (part) => {
+                switch (part.type) {
+                    case ATTACK:
+                        meleeCount++;
+                        break;
+                    case RANGED_ATTACK:
+                        rangedCount++;
+                        break;
+                }
+            });
+        });
+    }
+
+    if (hostileCreeps.length && hostileCreeps[0].owner.username != "Tigga" || invaderCore.length ) {
+        try {
+            if (meleeCount > rangedCount || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) < 1) {
+                requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName);
+            } else if (meleeCount < rangedCount || creepRoomMap.get(creep.memory.baseRoomName + "gunnerTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "gunnerTarget" + creep.memory.targetRoomName) < 1) {
+                requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName);
+            }
+        } catch (e) {
+            console.log(`${creep}: ${e}`);
+        }
+        if (invaderCore.length) return;
+        creep.memory.fleeing = 20;
+        const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
+        if (route.length > 0) {
+            creep.say("Headin oot");
+            const exit = creep.pos.findClosestByRange(route[0].exit);
+            moveToTarget(creep, exit, true);
+            return;
+        }
+    } else {
+        creep.memory.fleeing = false;
+    }
+}

@@ -97,6 +97,9 @@ global.roleMover = {
 
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
+            if (upgradeCreep(creep.name) == 0) {
+                return;
+            }
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
@@ -167,12 +170,16 @@ global.roleMover = {
                 if (currentTarget == null || currentTarget.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
                     creep.memory.currentTarget = null;
                 } else {
-                    for (const resourceType in creep.store) {
-                        Log(creep, "transferring to currentTarget");
-                        if (creep.transfer(currentTarget, resourceType) != OK) {
-                            creep.moveTo(currentTarget);
+                    if (currentTarget.structureType == STRUCTURE_SPAWN && Memory.rooms[creep.room.name].mainSpawn.refilling != false && Memory.rooms[creep.room.name].mainSpawn.refilling != creep.name) {
+                        creep.memory.currentTarget = null;
+                    } else {
+                        for (const resourceType in creep.store) {
+                            Log(creep, "transferring to currentTarget");
+                            if (creep.transfer(currentTarget, resourceType) != OK) {
+                                creep.moveTo(currentTarget);
+                            }
+                            return;
                         }
-                        return;
                     }
                 }
             }
@@ -246,7 +253,7 @@ global.roleMover = {
             target = creep.pos.findClosestByPath(targets);
 
             creep.memory.currentTarget = target.id;
-            if (target.structureType == STRUCTURE_SPAWN) Memory.rooms[creep.room.name].mainSpawn.refilling = true;
+            if (target.structureType == STRUCTURE_SPAWN) Memory.rooms[creep.room.name].mainSpawn.refilling = creep.name;
 
             for (const resourceType in creep.store) {
                 Log(creep, 9);

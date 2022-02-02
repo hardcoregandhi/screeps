@@ -57,6 +57,7 @@ global.runBaseBuilder = function () {
                 }
                 if (r.controller.level == 5) {
                     buildControllerRampartSurroundings(r);
+                    buildRampartSurroundings(r);
                 }
                 if (r.controller.level == 6) {
                     buildExtractor(r);
@@ -145,10 +146,51 @@ function buildExtractor(r) {
     deposits = r.find(FIND_DEPOSITS);
     for (d of deposits) {
         r.createConstructionSite(d.pos, "extractor");
+        const terrain = r.getTerrain();
+        for (var i = d.pos.x - 1; i <= d.pos.x + 1; i++) {
+            for (var j = d.pos.y - 1; j <= d.pos.y + 1; j++) {
+                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                    for (var ii = i - 1; ii <= i + 1; ii++) {
+                        for (var jj = j - 1; jj <= j + 1; jj++) {
+                            if (terrain.get(ii, jj) != TERRAIN_MASK_WALL) {
+                                if(r.createConstructionSite(ii, jj, STRUCTURE_CONTAINER) == OK)
+                                    return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 buildRoadsToSources = function (r) {
+    if (_.isString(r)) {
+        r = Game.rooms[r];
+        if (r == undefined) {
+            return false;
+        }
+    }
+    mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
+
+    console.log(mainSpawn.pos);
+    new RoomVisual().circle(mainSpawn, { fill: "transparent", radius: 0.55, stroke: "red" });
+
+    _.forEach(Memory.rooms[r.name].sources, (source) => {
+        s = Game.getObjectById(source.id);
+        if (s == undefined) {
+            return;
+        }
+        pathTo = mainSpawn.pos.findPathTo(s, { ignoreCreeps: true });
+        _.forEach(pathTo, (step) => {
+            r.createConstructionSite(step.x, step.y, "road");
+        });
+        console.log(JSON.stringify(pathTo));
+        new RoomVisual().poly(pathTo);
+    });
+};
+
+buildRoadsToExtSources = function (r) {
     if (_.isString(r)) {
         r = Game.rooms[r];
         if (r == undefined) {
@@ -165,12 +207,17 @@ buildRoadsToSources = function (r) {
         if (s == undefined) {
             return;
         }
-        pathTo = mainSpawn.pos.findPathTo(s, { ignoreCreeps: true });
-        _.forEach(pathTo, (step) => {
-            r.createConstructionSite(step.x, step.y, "road");
+        // pathTo = mainSpawn.pos.findPathTo(s, { ignoreCreeps: true, maxRooms: 3 });
+        pathTo = PathfinderSearchUsePathsIgnoreCreeps(mainSpawn.pos, s.pos)
+        _.forEach(pathTo.path, (step) => {
+            const terrain = Game.rooms[step.roomName].getTerrain();
+            if (terrain.get(step.x, step.y) != TERRAIN_MASK_WALL) {
+                Game.rooms[step.roomName].createConstructionSite(step.x, step.y, "road");
+            }
         });
         console.log(JSON.stringify(pathTo));
         new RoomVisual().poly(pathTo);
+        return;
     });
 };
 
@@ -328,7 +375,6 @@ global.baseRawData = `
                         { "x": -4, "y": 0 },
                         { "x": -4, "y": -1 },
                         { "x": -4, "y": 1 },
-                        { "x": -5, "y": 1 },
                         { "x": -5, "y": 2 },
                         { "x": -2, "y": 2 },
                         { "x": -2, "y": 3 }
@@ -355,59 +401,6 @@ global.baseRawData = `
                     "buildingType": "tower",
                     "pos": [
                         { "x": 1, "y": 2 }
-                    ]
-                }
-            ],
-            [
-                {
-                    "buildingType": "rampart",
-                    "pos": [
-                        { "x": 0, "y": 8 },
-                        { "x": 1, "y": 8 },
-                        { "x": 2, "y": 8 },
-                        { "x": 3, "y": 8 },
-                        { "x": -1, "y": 8 },
-                        { "x": -2, "y": 8 },
-                        { "x": -3, "y": 8 },
-                        { "x": -4, "y": 8 },
-                        { "x": 4, "y": 8 },
-                        { "x": -5, "y": 8 },
-                        { "x": -6, "y": 7 },
-                        { "x": -7, "y": 6 },
-                        { "x": -8, "y": 5 },
-                        { "x": -8, "y": 1 },
-                        { "x": -8, "y": 2 },
-                        { "x": -8, "y": 3 },
-                        { "x": -8, "y": 4 },
-                        { "x": 0, "y": -8 },
-                        { "x": -1, "y": -8 },
-                        { "x": -2, "y": -8 },
-                        { "x": -3, "y": -8 },
-                        { "x": -4, "y": -8 },
-                        { "x": -5, "y": -8 },
-                        { "x": 7, "y": 6 },
-                        { "x": 8, "y": 4 },
-                        { "x": 8, "y": 3 },
-                        { "x": 8, "y": 2 },
-                        { "x": 8, "y": 1 },
-                        { "x": 8, "y": 5 },
-                        { "x": 8, "y": 0 },
-                        { "x": 8, "y": -1 },
-                        { "x": 8, "y": -2 },
-                        { "x": 8, "y": -3 },
-                        { "x": 8, "y": -4 },
-                        { "x": 8, "y": -5 },
-                        { "x": 7, "y": -6 },
-                        { "x": 8, "y": 6 },
-                        { "x": -8, "y": 6 },
-                        { "x": -7, "y": 7 },
-                        { "x": -6, "y": 8 },
-                        { "x": 7, "y": -7 },
-                        { "x": 8, "y": -6 },
-                        { "x": 6, "y": -7 },
-                        { "x": 7, "y": 7 },
-                        { "x": 6, "y": 7 },
-                        { "x": 5, "y": 8 }
                     ]
                 }
             ]

@@ -13,60 +13,63 @@ global.roleTrucker = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        if (creep.memory.fakeBaseRoomName == undefined) {
-            creep.memory.fakeBaseRoomName = creep.memory.baseRoomName;
-        }
         if (creep.memory.returning == undefined) {
             creep.memory.returning = true;
         }
 
         if (creep.memory.returning && creep.store.getFreeCapacity() == 0) {
             creep.memory.returning = false;
-            creep.memory.fakeBaseRoomName = creep.memory.targetRoomName;
             creep.say("m2dest");
         }
         if (!creep.memory.returning && creep.store.getUsedCapacity() == 0) {
             creep.memory.returning = true;
-            creep.memory.fakeBaseRoomName = creep.memory.baseRoomName;
+            creep.memory.healing = true;
             creep.say("m2home");
         }
 
-        // Lost creeps return home
-        if (creep.room.name != creep.memory.fakeBaseRoomName) {
-            const route = Game.map.findRoute(creep.room, creep.memory.fakeBaseRoomName, { maxRooms: 1 });
-            if (route.length > 0) {
-                creep.say("Headin oot");
-                const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit, {
-                    visualizePathStyle: { stroke: "#ffffff" },
-                    maxRooms: 1,
-                });
-            } else {
-                creep.say("No route found");
-            }
-            return;
-        }
-
-        if (creep.ticksToLive < 200) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
-            var targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-                return structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-            });
-            if (creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(targets[0], {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                });
-            }
-            return;
+            if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
 
         if (!creep.memory.returning) {
+            
+            // if (creep.room.name != creep.memory.targetRoomName) {
+            //     creep.moveTo(creep.memory.targetRoomName)
+            //     return
+            // }
             var target = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].mainStorage);
-            if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target, {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                });
+            if (target != undefined && target.store.getFreeCapacity > 50) {
+                if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(target, {
+                        visualizePathStyle: { stroke: "#ffaa00" },
+                    });
+                }
+            } else if (creep.memory.dumper != undefined || creep.memory.dumper == true) {
+                var target = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].mainSpawn.id);
+                if (creep.room.name != creep.memory.targetRoomName) {
+                    moveToTarget(creep, target)
+                    return
+                }
+                if (creep.room.controller.level < 2 ) {
+                creeps = creep.room.find(FIND_MY_CREEPS).filter((c) => {
+                    return c.memory.role == 'harvester';
+                })
+                } else {
+                    creeps = creep.room.find(FIND_MY_CREEPS).filter((c) => {
+                    return c.memory.role == 'upgrader';
+                })
+                }
+                if (creeps.length) {
+                    targetCreep = creep.pos.findClosestByRange(creeps)
+                    // console.log(targetCreep)
+                    if (creep.transfer(targetCreep, RESOURCE_ENERGY) != OK) {
+                        creep.moveTo(targetCreep)
+                    }
+                }
+                
+                
             }
         } else {
             var target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);

@@ -12,8 +12,10 @@ require("manage.roads");
 require("manage.utilityFunctions");
 require("manage.creepTracking");
 require("manage.roomTracking");
+require("manage.roomExpansion");
 require("manage.creepReduction");
 require("manage.market");
+require("manage.factory");
 require("role.common");
 require("global.logging");
 
@@ -21,6 +23,7 @@ var roleHarvester = require("role.harvester");
 var roleHarvSup = require("role.harvesterSup");
 var roleHarvesterExt = require("role.harvesterExt");
 var roleHarvesterDeposit = require("role.harvesterDeposit");
+var roleHarvesterMineral = require("role.harvesterMineral");
 var roleUpgrader = require("role.upgrader");
 var roleBuilder = require("role.builder");
 var roleBuilderExt = require("role.builderExt");
@@ -28,6 +31,7 @@ var roleTower = require("tower");
 var roleClaimer = require("role.claimer");
 var roleMover = require("role.mover");
 var roleMoverExt = require("role.moverExt");
+var roleMoverExtRepair = require("role.moverExtRepair");
 var roleMoverLink = require("role.moverLink");
 var roleDefence = require("role.defense");
 var roleScavenger = require("role.scavenger");
@@ -46,6 +50,7 @@ var roleExplorer = require("role.explorer");
 var roleCleaner = require("role.cleaner");
 var roleEngineer = require("role.engineer");
 var roleRaider = require("role.raider");
+var roleWanderer = require("role.wanderer");
 
 PathFinder.use(true);
 
@@ -86,37 +91,36 @@ global.creepsToKill = [];
 Memory.RoomVisualData = {};
 
 /*
-calls	time	avg		function
-205		68.5	0.334		Creep.moveTo
-136		45.5	0.335		roleMoverExt.run
-247		32.2	0.130		Creep.move
-80		28.9	0.361		roleHarvesterExt.run
-155		25.4	0.164		Creep.moveByPath
-83		23.8	0.287		RoomPosition.findPathTo
-83		22.7	0.274		Room.findPath
-48		21.9	0.457		roleMover.run
-48		19.7	0.410		roleHarvester.run
-88		16.2	0.184		Creep.harvest
-24		12.9	0.538		roleBuilderExt.run
-40		12.2	0.304		roleClaimer.run
-2871	11.5	0.004		Room.find
-120		10.8	0.090		Creep.transfer
-24		10.0	0.415		towers
-8		6.4		0.801		structs
-78		3.7		0.048		Creep.withdraw
-40		3.7		0.093		Creep.reserveController
-8		3.6		0.452		renew
-13		3.1		0.237		Spawn.renewCreep
-464		2.3		0.005		RoomPosition.isNearTo
-8		2.3		0.282		roleBuilder.run
-9		2.0		0.223		Creep.repair
-615		1.7		0.003		RoomPosition.inRangeTo
-95		0.9		0.010		RoomPosition.findClosestByRange
-132		0.7		0.005		Creep.say
-8		0.5		0.063		roomTracking
-8		0.5		0.060		Creep.build
-8		0.5		0.059		spawns
-Avg: 25.35	Total: 202.77	Ticks: 8*/
+calls	time		avg		function
+1106	398.3		0.360		Creep.moveTo
+677		270.5		0.400		roleMoverExt.run
+386		191.7		0.497		RoomPosition.findPathTo
+386		188.2		0.488		Room.findPath
+171		169.6		0.992		roleHarvesterExt.run
+967		167.0		0.173		Creep.move
+583		111.8		0.192		Creep.moveByPath
+130		54.2		0.417		roleUpgrader.run
+558		26.4		0.047		Creep.transfer
+50		25.8		0.516		roleBuilder.run
+8785	23.3		0.003		Room.find
+143		22.9		0.160		Creep.harvest
+58		22.3		0.384		roleMover.run
+60		18.8		0.313		roleClaimer.run
+220		16.8		0.076		roleExplorer.run
+304		10.3		0.034		Creep.withdraw
+60		8.8	    	0.146		Creep.reserveController
+30		8.7	    	0.289		roleHarvSup.run
+30		8.5	    	0.285		towers
+61		7.3	    	0.119		Creep.repair
+30		6.3	    	0.211		Creep.heal
+20		6.2	    	0.308		roleSoldier.run
+10		5.7	    	0.567		roomTracking
+10		4.9 		0.486		renew
+20		4.3	    	0.216		Spawn.renewCreep
+1964	3.9	    	0.002		RoomPosition.getRangeTo
+4		3.5	    	0.877		resetSourceContainerTracking
+Avg: 88.59	Total: 708.72	Ticks: 8
+*/
 
 // Any modules that you use that modify the game's prototypes should be require'd
 // before you require the profiler.
@@ -137,6 +141,8 @@ try {
     runSpawns = profiler.registerFN(runSpawns, "spawns");
     creepTracking = profiler.registerFN(creepTracking, "creepTracking");
     roomTracking = profiler.registerFN(roomTracking, "roomTracking");
+    creepReduction = profiler.registerFN(creepReduction, "creepReduction");
+    resetSourceContainerTracking = profiler.registerFN(resetSourceContainerTracking, "resetSourceContainerTracking");
 
     profiler.registerObject(roleHarvester, "roleHarvester");
     profiler.registerObject(roleHarvSup, "roleHarvSup");
@@ -195,7 +201,7 @@ module.exports.loop = function () {
         // })
 
         if (creepRoomMap.size == 0 || Game.time >= nextCreepRoomMapRefreshTime || refreshCreepTrackingNextTick) {
-            console.log("Refreshing CreepRoomMap");
+            // console.log("Refreshing CreepRoomMap");
             creepTracking();
             resetSourceContainerTracking();
             nextCreepRoomMapRefreshTime = Game.time + nextCreepRoomMapRefreshInterval;
@@ -226,12 +232,6 @@ module.exports.loop = function () {
         }
 
         try {
-            runSpawns();
-        } catch (e) {
-            console.log(`runSpawns() failed: ${e}`);
-        }
-
-        try {
             runCreeps();
         } catch (e) {
             console.log(`runCreeps() failed: ${e}`);
@@ -253,14 +253,32 @@ module.exports.loop = function () {
         } catch (e) {
             console.log(`runRenew() failed: ${e}`);
         }
+        
+        try {
+            // Must be after renew so healing can cancel spawns
+            runSpawns();
+        } catch (e) {
+            console.log(`runSpawns() failed: ${e}`);
+        }
 
         try {
             runBaseBuilder();
         } catch (e) {
             console.log(`runBaseBuilder() failed: ${e}`);
         }
+        
+        // try {
+        //     roomExpansion();
+        // } catch (e) {
+        //     console.log(`roomExpansion() failed: ${e}`);
+        // }
 
-        drawGUI();
+        try {
+            drawGUI();
+        } catch (e) {
+            console.log(`drawGUI() failed: ${e}`);
+        }
+        
 
         // runRoads();
 

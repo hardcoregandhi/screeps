@@ -1,14 +1,18 @@
 global.runRenew = function () {
     // Renew
     _.forEach(Game.spawns, (s) => {
+        Memory.rooms[s.room.name].spawns[s.name].blockSpawn = false;
         if (Memory.rooms[s.room.name].spawns[s.name].renewRequested == false) {
             return;
         }
+
         // console.log(`${s} is renewing creeps`)
         highestLocalTickCount = 0;
         highestLocalTickCreep = null;
         lowestLocalTickCount = 1500;
         lowestLocalTickCreep = null;
+        longestWaitTime = 0;
+        longestWaitCreep = null;
         soldierCreep = null;
         moverCreep = null;
         localCreeps = [];
@@ -40,6 +44,10 @@ global.runRenew = function () {
                 lowestLocalTickCount = c.ticksToLive;
                 lowestLocalTickCreep = c;
             }
+            if (Game.time - c.memory.timeStartingRenew > longestWaitTime) {
+                longestWaitTime = Game.time - c.memory.timeStartingRenew;
+                longestWaitCreep = c;
+            }
             if (c.memory.role == "mover") {
                 moverCreep = c;
             }
@@ -56,7 +64,7 @@ global.runRenew = function () {
         // console.log(`soldierCreep: ${soldierCreep}`)
         // console.log(`moverCreep: ${moverCreep}`)
         if (highestLocalTickCreep != undefined) {
-            if (localCreeps.length == 8 || s.spawning) {
+            if (localCreeps.length == 8 && s.spawning) {
                 // console.log("spawn surrounded")
                 if (highestLocalTickCreep.ticksToLive > 600) {
                     highestLocalTickCreep.memory.healing = false;
@@ -74,10 +82,16 @@ global.runRenew = function () {
             // 3 highest to remove traffic
             var healTarget;
             if (lowestLocalTickCount < 50) {
+                Memory.rooms[s.room.name].spawns[s.name].blockSpawn = true;
                 healTarget = lowestLocalTickCreep;
             } else if (highestLocalTickCount > 1200) {
+                Memory.rooms[s.room.name].spawns[s.name].blockSpawn = true;
                 healTarget = highestLocalTickCreep;
+            } else if (longestWaitTime > 100) {
+                Memory.rooms[s.room.name].spawns[s.name].blockSpawn = true;
+                healTarget = longestWaitCreep;
             } else if (moverCreep != undefined) {
+                Memory.rooms[s.room.name].spawns[s.name].blockSpawn = true;
                 healTarget = moverCreep;
             } else if (soldierCreep != undefined) {
                 healTarget = soldierCreep;

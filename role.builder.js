@@ -25,7 +25,7 @@ global.roleBuilder = {
             creep.memory.currentSource = 0;
         }
 
-        if (creep.ticksToLive < 300 || creep.memory.healing) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
@@ -63,15 +63,15 @@ global.roleBuilder = {
         //             fill: "transparent",
         //         });
 
-        if (creepRoomMap.get(creep.room.name + "harvester") < 1 && (creepRoomMap.get(creep.room.name + "eenergy") == undefined || creepRoomMap.get(creep.room.name + "eenergy") < 200)) {
-            Log(creep, "Defauling to Harvester");
-            roleHarvester.run(creep);
-            return;
-        } else if (creepRoomMap.get(creep.room.name + "csites") == 0) {
-            Log(creep, "Defauling to Upgrader");
-            roleUpgrader.run(creep);
-            return;
-        }
+        // if (creepRoomMap.get(creep.room.name + "harvester") < 1 && (creepRoomMap.get(creep.room.name + "eenergy") == undefined || creepRoomMap.get(creep.room.name + "eenergy") < 200)) {
+        //     Log(creep, "Defauling to Harvester");
+        //     roleHarvester.run(creep);
+        //     return;
+        // } else if (creepRoomMap.get(creep.room.name + "csites") == 0) {
+        //     Log(creep, "Defauling to Upgrader");
+        //     roleUpgrader.run(creep);
+        //     return;
+        // }
 
         if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.building = false;
@@ -98,8 +98,8 @@ global.roleBuilder = {
                     // refreshRoomTrackingNextTick = true;
                 }
             }
-            var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-            if (targets.length == 0 && customStructureSpecificPercentLimits.length == 0) {
+            var csites = creepRoomMap.get(creep.room.name + "csites")
+            if (!csites) {
                 // if (creep.body.filter((x) => x.type == MOVE).length > 5) {
                 //     _.forEach(Game.rooms, (room) => {
                 //         if (room.find(FIND_CONSTRUCTION_SITES).length) {

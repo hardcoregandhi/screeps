@@ -51,6 +51,19 @@ global.roleSoldier = {
             creep.moveTo(Game.flags.holding.pos);
             return;
         }
+        
+        if (Game.rooms[creep.memory.targetRoomName] != undefined) {
+            var invaderCore =
+                Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_STRUCTURES, {
+                    filter: (s) => {
+                        return s.structureType == STRUCTURE_INVADER_CORE;
+                    },
+                });
+                
+            if (invaderCore.length) {
+                creep.memory.targetCore = invaderCore[0].id
+            }
+        }
 
         if (creep.memory.passiveTravel == undefined || creep.memory.passiveTravel == false) {
             var allHostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);
@@ -112,6 +125,23 @@ global.roleSoldier = {
             //     usePathfinder(creep, { pos: new RoomPosition(25,25,creep.memory.targetRoomName), range: 1 })
             // }
             // else {
+            
+            if (creep.memory.targetCore != undefined) {
+                invaderCore = Game.getObjectById(creep.memory.targetCore) 
+                if (invaderCore != undefined) {
+                    creep.moveTo(invaderCore);
+                    requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName)
+                    return
+                } else {
+                    delete creep.memory.targetCore
+                }
+            }
+            
+            if (Game.rooms[creep.memory.targetRoomName] != undefined) {
+                creep.moveTo(Game.rooms[creep.memory.targetRoomName].controller)
+                return
+            }
+            
             const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName, {
                 maxRooms: 1,
             });

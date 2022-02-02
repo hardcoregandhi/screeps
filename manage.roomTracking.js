@@ -14,7 +14,7 @@ roomTracking = function () {
             return;
         }
 
-        console.log(`Refreshing ${r.name}`);
+        // console.log(`Refreshing ${r.name}`);
 
         const terrain = r.getTerrain();
 
@@ -196,31 +196,42 @@ roomTracking = function () {
                 }
 
                 // setup external sources
+                if (Memory.rooms[r.name].externalSources == undefined) {
+                    Memory.rooms[r.name].externalSources = [];
+                }
                 if (Memory.rooms[r.name].neighbouringRooms == undefined) {
+                    console.log(`${r.name} has no neighbouring rooms. setting up now`)
                     exits = Game.map.describeExits(r.name);
                     Memory.rooms[r.name].neighbouringRooms = Object.values(exits);
                 } else {
+                    // console.log(`${r.name} has neighbouring rooms: ${Memory.rooms[r.name].neighbouringRooms}`)
                     if (
                         _.every(Memory.rooms[r.name].neighbouringRooms, (roomName) => {
                             return Memory.rooms[roomName] != null;
                         })
                     ) {
+                        // console.log(`every room valid`)
                         _.forEach(Memory.rooms[r.name].neighbouringRooms, (roomName) => {
                             // Get the neighbours, neighbours
                             if (Memory.rooms[roomName].neighbouringRooms == undefined) {
                                 exits = Game.map.describeExits(roomName);
                                 Memory.rooms[roomName].neighbouringRooms = Object.values(exits);
                                 _.pull(Memory.rooms[roomName].neighbouringRooms, r.name); // Remove r.name so no circular searching
+                                console.log(`retrieved ${roomName} neighbouringRooms: ${Memory.rooms[roomName].neighbouringRooms}`)
                             }
                             if (Memory.rooms[roomName].parentRoom == undefined) {
                                 Memory.rooms[roomName].parentRoom = r.name;
                             }
                             // Add Neighbours sources
+                            // console.log(`adding ${roomName} sources`)
+
                             _.forEach(Object.keys(Memory.rooms[roomName].sources), (s) => {
                                 if (Memory.rooms[r.name].externalSources.lastIndexOf(s) != -1) {
                                     return;
                                 }
                                 source = Game.getObjectById(s);
+                                // console.log(`source: ${source}`)
+
                                 // console.log(source)
                                 if (source != null) {
                                     // console.log(source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)))
@@ -234,8 +245,12 @@ roomTracking = function () {
                                     }
                                 }
                             });
+                            // console.log(`adding ${roomName} neighbours sources`)
+
                             // Add Neighbours Neighbours sources
-                            _.forEach(Object.keys(Memory.rooms[roomName].neighbouringRooms), (nn) => {
+                            _.forEach(Memory.rooms[roomName].neighbouringRooms, (nn) => {
+                                // console.log(`${r.name} neighbour ${roomName} neighbour: ${nn}`)
+
                                 if (Memory.rooms[nn] == undefined) {
                                     return
                                 }
@@ -248,6 +263,7 @@ roomTracking = function () {
                                     }
                                     ssource = Game.getObjectById(ss);
                                     if (ssource != null) {
+                                        setupSourceTracking(ssource);
                                         if (PathFinder.search(ssource.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 100) {
                                             if (Memory.rooms[r.name].externalSources == undefined) {
                                                 Memory.rooms[r.name].externalSources = [];
@@ -280,6 +296,18 @@ roomTracking = function () {
             //elapsed = Game.cpu.getUsed() - startCpu;
             //console.log("eenergy calc has used " + elapsed + " CPU time");
             //startCpu = Game.cpu.getUsed();
+            
+            if (Memory.rooms[r.name].mineral == undefined) {
+                mineral = r.find(FIND_MINERALS)[0]
+                Memory.rooms[r.name].mineral = {};
+                Memory.rooms[r.name].mineral.id = mineral.id;
+                Memory.rooms[r.name].mineral.extractor = false;
+            } else {
+                // console.log(r)
+                if (Game.getObjectById(Memory.rooms[r.name].mineral.id).pos.lookFor(STRUCTURE_EXTRACTOR).length) {
+                    Memory.rooms[r.name].mineral.extractor = true;
+                }
+            }
 
             if (Memory.rooms[r.name] == undefined) {
                 Memory.rooms[r.name] = {};
@@ -298,33 +326,7 @@ roomTracking = function () {
 
             // //console.log(i)
             // //console.log(s.id)
-            if (Memory.rooms[r.name].sources[s.id] == undefined) {
-                console.log("adding new source ", r.name, " ", s.id);
-                Memory.rooms[r.name].sources[s.id] = {};
-                Memory.rooms[r.name].sources[s.id].id = s.id;
-            }
-
-            if (Memory.rooms[r.name].sources[s.id].targettedBy == undefined) {
-                Memory.rooms[r.name].sources[s.id].targettedBy = 0;
-            }
-
-            // get valid mining spots
-            if (Memory.rooms[r.name].totalMiningSpots == undefined) {
-                Memory.rooms[r.name].totalMiningSpots = 0;
-            }
-            if (Memory.rooms[r.name].sources[s.id].miningSpots == undefined) {
-                localMiningSpots = 0;
-                totalMiningSpots = 0;
-                for (var i = s.pos.x - 1; i <= s.pos.x + 1; i++) {
-                    for (var j = s.pos.y - 1; j <= s.pos.y + 1; j++) {
-                        if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
-                            localMiningSpots++;
-                        }
-                    }
-                }
-                Memory.rooms[r.name].sources[s.id].miningSpots = localMiningSpots;
-                Memory.rooms[r.name].totalMiningSpots += localMiningSpots;
-            }
+            setupSourceTracking(s);
 
             if (Memory.rooms[r.name].sources[s.id].container == undefined) {
                 containers = s.pos.findInRange(FIND_STRUCTURES, 2).filter((r) => r.structureType == STRUCTURE_CONTAINER);
@@ -361,24 +363,105 @@ roomTracking = function () {
                     new RoomVisual(r.name).text(Memory.rooms[r.name].sources[s.id].container.targettedBy, cont.pos.x - 0.17, cont.pos.y + 0.2, { align: "left", font: 0.6 });
                 }
             }
+
+            if (s.room.controller.reservation != undefined &&
+                s.room.controller.reservation.username == 'Invader' &&
+                s.room.controller.reservation.ticksToEnd > 1000
+            ) {
+                console.log(`Memory.rooms[\'${r.name}\'].sources[\'${s.id}\']`)
+                _.forEach(Memory.rooms[r.name].sources[s.id].targettedByList, (c) => {
+                    console.log(`killing ${c} due to invader core reservation`)
+                    Memory.creeps[c].DIE = true;
+                })
+                if (Memory.rooms[r.name].parentRoom != undefined) {
+                    requestGunner(Memory.rooms[r.name].parentRoom, r.name);
+                    requestSoldier(Memory.rooms[r.name].parentRoom, r.name);
+                } else {
+                    console.log(`${r.name} does not have a parentRoom`)
+                }
+                console.log(`Memory.rooms[\'${r.name}\'].sources[\'${s.id}\'].container`)
+                if (Memory.rooms[r.name].sources[s.id].container != undefined) {
+                    console.log("hello")
+                    _.forEach(Memory.rooms[r.name].sources[s.id].container.targettedByList, (c) => {
+                        console.log(`killing ${c} due to invader core reservation`)
+                        Memory.creeps[c].DIE = true;
+                    })
+                }
+                return
+            }
+            
+            
         });
 
         // links
         try {
             if (myRooms[Game.shard.name].includes(r.name)) {
-                if (links.length >= 2 && Memory.rooms[r.name].link_storage == undefined && Memory.rooms[r.name].link_controller == undefined && Memory.rooms[r.name].mainStorage != undefined) {
+                if (links.length >= 2 && Memory.rooms[r.name].link_storage == undefined && Memory.rooms[r.name].mainStorage != undefined) {
                     var link_storage = Game.getObjectById(Memory.rooms[r.name].mainStorage).pos.findInRange(links, 2);
-                    if (link_storage.length) link_storage = link_storage[0];
+                    if (link_storage.length) {
+                        link_storage = link_storage[0];
+                        Memory.rooms[r.name].link_storage = link_storage.id;
+                    }
+                }
+                if (links.length >= 2 && Memory.rooms[r.name].link_controller == undefined && Memory.rooms[r.name].mainStorage != undefined) {
                     var link_controller = r.controller.pos.findInRange(links, 3);
-                    if (link_controller.length) link_controller = link_controller[0];
-
-                    Memory.rooms[r.name].link_storage = link_storage.id;
-                    Memory.rooms[r.name].link_controller = link_controller.id;
+                    if (link_controller.length) {
+                        link_controller = link_controller[0];
+                        Memory.rooms[r.name].link_controller = link_controller.id;
+                    }
                 }
             }
         } catch (e) {
             console.log(`link setup failed in ${r.name}: ${e}`);
         }
+        
+        if (isHighwayRoom(r.name)) {
+            var powerBanks = r.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
+            var deposits = r.find(FIND_DEPOSITS);
+            if (powerBanks.length) {
+                // TODO: do something with found power bank
+                console.log("found power bank in " + powerBanks[0].room.name);
+            }
+            if (deposits.length) {
+                for (var d of deposits) {
+                    console.log(`found ${d.depositType} in ${d.room.name}`);
+                    if (Memory.rooms[r.name].deposits == undefined) {
+                        Memory.rooms[r.name].deposits = {};
+                    }
+                    if (Memory.rooms[r.name].deposits[d.id] == undefined) {
+                        Memory.rooms[r.name].deposits[d.id] = {};
+                    }
+                    Memory.rooms[r.name].deposits[d.id].expiresAt = Game.time + d.ticksToDecay;
+                    Memory.rooms[r.name].deposits[d.id].id = d.id;
+                    Memory.rooms[r.name].deposits[d.id].type = d.depositType;
+                    Memory.rooms[r.name].deposits[d.id].room = d.room.name;
+                    Memory.rooms[r.name].deposits[d.id].lastCooldown = d.lastCooldown;
+
+                    // get valid mining spots
+                    // Memory.rooms[r.name].totalMiningSpots = 0;
+                    if (Memory.rooms[r.name].deposits[d.id].miningSpots == undefined) {
+                        const terrain = r.getTerrain();
+                        localMiningSpots = 0;
+                        totalMiningSpots = 0;
+                        for (var i = d.pos.x - 1; i <= d.pos.x + 1; i++) {
+                            for (var j = d.pos.y - 1; j <= d.pos.y + 1; j++) {
+                                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                                    localMiningSpots++;
+                                }
+                            }
+                        }
+                        Memory.rooms[r.name].deposits[d.id].miningSpots = localMiningSpots;
+                    }
+
+                    if (Memory.rooms[r.name].deposits[d.id].creeps == undefined) {
+                        Memory.rooms[r.name].deposits[d.id].creeps = {};
+                        Memory.rooms[r.name].deposits[d.id].creepsUntracked = [];
+                    }
+                }
+            }
+        }
+        
+        
 
         try {
             creepReduction(r);
@@ -401,6 +484,39 @@ roomTracking = function () {
     });
 };
 
+// Setup any missing memory for a source
+setupSourceTracking = function(source) {
+    const terrain = source.room.getTerrain();
+    
+    if (Memory.rooms[source.room.name].sources[source.id] == undefined) {
+        console.log("adding new source ", r.name, " ", source.id);
+        Memory.rooms[source.room.name].sources[source.id] = {};
+        Memory.rooms[source.room.name].sources[source.id].id = source.id;
+    }
+
+    if (Memory.rooms[source.room.name].sources[source.id].targettedBy == undefined) {
+        Memory.rooms[source.room.name].sources[source.id].targettedBy = 0;
+    }
+
+    // get valid mining spots
+    if (Memory.rooms[source.room.name].totalMiningSpots == undefined) {
+        Memory.rooms[source.room.name].totalMiningSpots = 0;
+    }
+    if (Memory.rooms[source.room.name].sources[source.id].miningSpots == undefined) {
+        localMiningSpots = 0;
+        totalMiningSpots = 0;
+        for (var i = source.pos.x - 1; i <= source.pos.x + 1; i++) {
+            for (var j = source.pos.y - 1; j <= source.pos.y + 1; j++) {
+                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                    localMiningSpots++;
+                }
+            }
+        }
+        Memory.rooms[source.room.name].sources[source.id].miningSpots = localMiningSpots;
+        Memory.rooms[source.room.name].totalMiningSpots += localMiningSpots;
+    }
+}
+
 resetSourceContainerTracking = function () {
     _.forEach(Game.rooms, (r) => {
         _.forEach(Memory.rooms[r.name].sources, (s) => {
@@ -411,6 +527,11 @@ resetSourceContainerTracking = function () {
                 s.container.targettedByList = [];
             }
         });
+        if (Memory.rooms[r.name].mineral != undefined &&
+            Memory.rooms[r.name].mineral.container != undefined) {
+            Memory.rooms[r.name].mineral.container.targettedBy = 0;
+            Memory.rooms[r.name].mineral.container.targettedByList = [];
+        }
     });
 
     _.forEach(Game.creeps, (c) => {
@@ -430,6 +551,9 @@ resetSourceContainerTracking = function () {
             } else if (c.memory.role == "harvSup") {
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
+            } else if (c.memory.role == "harvDepositSup") {
+                Memory.rooms[c.memory.baseRoomName].mineral.container.targettedBy += 1;
+                Memory.rooms[c.memory.baseRoomName].mineral.container.targettedByList.push(c.name);
             } else if (c.memory.role == "moverExt") {
                 Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
                 Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);

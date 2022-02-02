@@ -92,25 +92,32 @@ global.roleBuilderExt = {
                 }
             } else {
                 creep.say("no targets");
-                roleBuilder.run(creep);
+                creep.memory.DIE = true;
+                console.log(`${creep.name} has completed their work. Retiring.`)
+                return;
+                // roleBuilder.run(creep);
             }
         } else {
             Log(creep, 7);
-            var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
-                return structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 500;
-            });
-
-            if (containers.length) {
-                Log(creep, 71);
-                var closest = creep.pos.findClosestByPath(containers);
-                if (closest == null) {
-                    // not in room cant look for closest yet
-                    closest = containers[0];
+            
+            if (Game.rooms[creep.memory.targetRoomName] != null) {
+            
+                var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
+                    return structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 500;
+                });
+    
+                if (containers.length) {
+                    Log(creep, 71);
+                    var closest = creep.pos.findClosestByPath(containers);
+                    if (closest == null) {
+                        // not in room cant look for closest yet
+                        closest = containers[0];
+                    }
+                    if (creep.withdraw(closest, RESOURCE_ENERGY) != OK) {
+                        moveToMultiRoomTarget(creep, closest);
+                    }
+                    return;
                 }
-                if (creep.withdraw(closest, RESOURCE_ENERGY) != OK) {
-                    moveToMultiRoomTarget(creep, closest);
-                }
-                return;
             }
 
             Log(creep, 8);
