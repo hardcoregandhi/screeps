@@ -58,13 +58,15 @@ global.roleMover = {
             delete Memory.rooms[creep.room.name].mainStorage;
             resetMainStorage(creep.room.name);
         }
-        for (const resourceType in creep.store) {
-            if (resourceType != RESOURCE_ENERGY) {
-                Log(creep, 3);
-                if (creep.transfer(mainStorage, resourceType) != OK) {
-                    // console.log(creep.transfer(storage, resourceType) )
-                    creep.moveTo(mainStorage);
-                    return;
+        if (creep.memory.transitioning == undefined) {
+            for (const resourceType in creep.store) {
+                if (resourceType != RESOURCE_ENERGY) {
+                    Log(creep, 3);
+                    if (creep.transfer(mainStorage, resourceType) != OK) {
+                        // console.log(creep.transfer(storage, resourceType) )
+                        creep.moveTo(mainStorage);
+                        return;
+                    }
                 }
             }
         }
@@ -115,6 +117,16 @@ global.roleMover = {
                     // transitioning
                     Log(creep, "transitioning");
                     creep.memory.transitioning = true;
+                    if (mainStorage.store.getUsedCapacity() == 0) {
+                        roomRefreshMap[creep.room.name] = Game.time -1
+                    }
+                    for (const resourceType in mainStorage.store) {
+                        if (creep.withdraw(mainStorage, resourceType) != OK) {
+                            Log(creep, creep.withdraw(mainStorage, resourceType));
+                            creep.moveTo(mainStorage);
+                        }
+                        return;
+                    }
                 }
                 Log(creep, "using mainStorage");
                 if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
@@ -148,12 +160,14 @@ global.roleMover = {
             // transition from container to storage
             if (storage.length && mainStorage && mainStorage.structureType == STRUCTURE_CONTAINER) {
                 Log(creep, storage[0]);
-                if (creep.transfer(storage[0], RESOURCE_ENERGY) != OK) {
-                    Log(creep, creep.transfer(storage[0], RESOURCE_ENERGY));
-                    Log(creep, "dropping in storage");
-                    creep.moveTo(storage[0]);
+                for (const resourceType in creep.store) {
+                    if (creep.transfer(storage[0], resourceType) != OK) {
+                        Log(creep, creep.transfer(storage[0], resourceType));
+                        Log(creep, "dropping in storage");
+                        creep.moveTo(storage[0]);
+                    }
+                    return;
                 }
-                return;
             }
 
             // repair if mainStorage is container

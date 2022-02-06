@@ -133,16 +133,21 @@ profiler.enable();
 // Game.profiler.profile(10)
 
 try {
-    runBaseBuilder = profiler.registerFN(runBaseBuilder, "runBaseBuilder");
-    runRenew = profiler.registerFN(runRenew, "renew");
-    runRoads = profiler.registerFN(runRoads, "roads");
-    runStructs = profiler.registerFN(runStructs, "structs");
-    runTowers = profiler.registerFN(runTowers, "towers");
-    runSpawns = profiler.registerFN(runSpawns, "spawns");
-    creepTracking = profiler.registerFN(creepTracking, "creepTracking");
-    roomTracking = profiler.registerFN(roomTracking, "roomTracking");
-    creepReduction = profiler.registerFN(creepReduction, "creepReduction");
-    resetSourceContainerTracking = profiler.registerFN(resetSourceContainerTracking, "resetSourceContainerTracking");
+    // runBaseBuilder = profiler.registerFN(runBaseBuilder, "runBaseBuilder");
+    // runRenew = profiler.registerFN(runRenew, "renew");
+    // runRoads = profiler.registerFN(runRoads, "roads");
+    // runStructs = profiler.registerFN(runStructs, "structs");
+    // runTowers = profiler.registerFN(runTowers, "towers");
+    // runCreeps = profiler.registerFN(runCreeps, "runCreeps");
+    // runSpawns = profiler.registerFN(runSpawns, "spawns");
+    // spawnCreep = profiler.registerFN(spawnCreep, "spawnCreep");
+    // cloneCreep = profiler.registerFN(cloneCreep, "cloneCreep");
+    // upgradeCreep = profiler.registerFN(upgradeCreep, "upgradeCreep");
+    // creepTracking = profiler.registerFN(creepTracking, "creepTracking");
+    // roomTracking = profiler.registerFN(roomTracking, "roomTracking");
+    // creepReduction = profiler.registerFN(creepReduction, "creepReduction");
+    // runRenew = profiler.registerFN(runRenew, "runRenew");
+    // resetSourceContainerTracking = profiler.registerFN(resetSourceContainerTracking, "resetSourceContainerTracking");
 
     profiler.registerObject(roleHarvester, "roleHarvester");
     profiler.registerObject(roleHarvSup, "roleHarvSup");
@@ -153,6 +158,7 @@ try {
     profiler.registerObject(roleClaimer, "roleClaimer");
     profiler.registerObject(roleMover, "roleMover");
     profiler.registerObject(roleMoverExt, "roleMoverExt");
+    profiler.registerObject(roleMoverLink, "roleMoverLink");
     profiler.registerObject(roleDefence, "roleDefence");
     profiler.registerObject(roleScavenger, "roleScavenger");
     profiler.registerObject(roleTraveller, "roleTraveller");

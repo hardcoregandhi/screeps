@@ -41,3 +41,10 @@ isHighwayRoom = function(roomName) {
     let parsed = /^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName);
     return (parsed[1] % 10 === 0) || (parsed[2] % 10 === 0);
 }
+
+RemoveFromList = function(list, entry) {
+    const index = list.indexOf(entry);
+    if (index > -1) {
+        list.splice(index, 1); // 2nd parameter means remove one item only
+    }
+}

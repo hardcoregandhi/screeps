@@ -14,7 +14,7 @@ roomTracking = function () {
             return;
         }
 
-        // console.log(`Refreshing ${r.name}`);
+        console.log(`Refreshing ${r.name}`);
 
         const terrain = r.getTerrain();
 
@@ -235,12 +235,16 @@ roomTracking = function () {
                                 // console.log(source)
                                 if (source != null) {
                                     // console.log(source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)))
-                                    if (PathFinder.search(source.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 100) {
-                                        if (Memory.rooms[r.name].externalSources == undefined) {
-                                            Memory.rooms[r.name].externalSources = [];
-                                        }
-                                        if (Memory.rooms[r.name].externalSources.lastIndexOf(source.id) === -1) {
-                                            Memory.rooms[r.name].externalSources.push(source.id);
+                                    if (Memory.rooms[roomName].reservation && Memory.rooms[roomName].reservation.username != 'hardcoregandhi') {
+                                        return;
+                                    } else {
+                                        if (PathFinder.search(source.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 100) {
+                                            if (Memory.rooms[r.name].externalSources == undefined) {
+                                                Memory.rooms[r.name].externalSources = [];
+                                            }
+                                            if (Memory.rooms[r.name].externalSources.lastIndexOf(source.id) === -1) {
+                                                Memory.rooms[r.name].externalSources.push(source.id);
+                                            }
                                         }
                                     }
                                 }
@@ -461,6 +465,16 @@ roomTracking = function () {
             }
         }
         
+        if (r.controller && r.controller.reservation) {
+            console.log(`room ${r.name} is enemy controlled`)
+            Memory.rooms[r.name].reservation = {}
+            Memory.rooms[r.name].reservation.username = r.controller.reservation.username;
+            Memory.rooms[r.name].reservation.ticksToEnd = r.controller.reservation.ticksToEnd;
+            Memory.rooms[r.name].reservation.expiresAt = Game.time + r.controller.reservation.ticksToEnd;
+        }
+        if (Memory.rooms[r.name].reservation && Memory.rooms[r.name].reservation.expiresAt < Game.time) {
+            delete Memory.rooms[r.name].reservation;
+        }
         
 
         try {

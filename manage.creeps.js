@@ -62,6 +62,7 @@ global.runCreeps = function () {
                 if (creep.spawning) {
                     // if this creep was copied from a another, it may have DIE set from the memory clone
                     console.log("spawning dying creep");
+                    creep.memory.DIE = false;
                     delete creep.memory.DIE;
                 } else {
                     spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
@@ -184,7 +185,7 @@ global.runCreeps = function () {
                 roleHealerChase.run(creep);
             }
             if (creep.memory.role == "mover") {
-                if (creep.room.energyAvailable > 300 && Memory.rooms[creep.room.name].scav == true) {
+                if (creep.room.energyAvailable > 600 && Memory.rooms[creep.room.name].scav == true) {
                     roleScavenger.run(creep);
                     // console.log(creep.name, "scav")
                 } else {

@@ -150,6 +150,11 @@ global.interShardMove = function (creep) {
 };
 
 global.EnemyCheckFleeRequestBackup = function(creep) {
+    
+    if (isHighwayRoom(creep.room.name)) {
+        return
+    }
+    
     var invaderCore = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((structure) => {
             return structure.structureType == STRUCTURE_INVADER_CORE;
         });

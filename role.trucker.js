@@ -13,6 +13,8 @@ global.roleTrucker = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        // creep.memory.DIE = true
+        Log(creep, "run()")
         if (creep.memory.returning == undefined) {
             creep.memory.returning = true;
         }
@@ -34,6 +36,7 @@ global.roleTrucker = {
         }
 
         if (!creep.memory.returning) {
+            Log(creep, "!returning")
             
             // if (creep.room.name != creep.memory.targetRoomName) {
             //     creep.moveTo(creep.memory.targetRoomName)
@@ -46,32 +49,59 @@ global.roleTrucker = {
                         visualizePathStyle: { stroke: "#ffaa00" },
                     });
                 }
-            } else if (creep.memory.dumper != undefined || creep.memory.dumper == true) {
-                var target = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].mainSpawn.id);
+            } else {
                 if (creep.room.name != creep.memory.targetRoomName) {
-                    moveToTarget(creep, target)
+                    moveToMultiRoomTargetAvoidCreep(creep, new RoomPosition(25,25,creep.memory.targetRoomName))
                     return
                 }
-                if (creep.room.controller.level < 2 ) {
-                creeps = creep.room.find(FIND_MY_CREEPS).filter((c) => {
-                    return c.memory.role == 'harvester';
-                })
-                } else {
-                    creeps = creep.room.find(FIND_MY_CREEPS).filter((c) => {
-                    return c.memory.role == 'upgrader';
-                })
-                }
-                if (creeps.length) {
-                    targetCreep = creep.pos.findClosestByRange(creeps)
-                    // console.log(targetCreep)
-                    if (creep.transfer(targetCreep, RESOURCE_ENERGY) != OK) {
-                        creep.moveTo(targetCreep)
+                if (creep.memory.targetCreep == undefined) {
+                    creeps = []
+                    allCreep = creep.room.find(FIND_MY_CREEPS)
+                    Log(creep, "l4upgrader")
+                    creeps = allCreep.filter((c) => {
+                        return c.memory.role == 'upgrader';
+                    })
+                    
+                    if (!creeps.length) {
+                        Log(creep, "l4harvester")
+    
+                        creeps = allCreep.filter((c) => {
+                            return c.memory.role == 'builder';
+                        })
+                    }
+                    if (!creeps.length) {
+                        Log(creep, "l4harvester")
+    
+                        creeps = allCreep.filter((c) => {
+                            return c.memory.role == 'harvester';
+                        })
+                    }
+                    if (!creeps.length) {
+                        Log(creep, "l4all")
+                        creeps = allCreep.filter((c) => {
+                            return c.memory.role != 'trucker';
+                        })
+                    }
+                    if (creeps.length) {
+                        targetCreep = creep.pos.findClosestByRange(creeps)
+                        creep.memory.targetCreep = targetCreep.id
                     }
                 }
                 
-                
+                targetCreep = Game.getObjectById(creep.memory.targetCreep)
+                if (targetCreep == null) {
+                    delete creep.memory.targetCreep;
+                    return
+                }
+                Log(creep, targetCreep)
+                // console.log(targetCreep)
+                if (creep.transfer(targetCreep, RESOURCE_ENERGY) != OK) {
+                    creep.moveTo(targetCreep)
+                }
             }
         } else {
+            Log(creep, "returning")
+
             var target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {

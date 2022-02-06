@@ -2,41 +2,46 @@ global.moveToTarget = function (creep, target, canUseSwamp = true) {
     // if(creep.fatigue != 0) return -1
     canUseSwamp = true;
     if (canUseSwamp) {
-        spawnMemoryObject = Memory.rooms[creep.memory.baseRoomName].mainSpawn
-        distanceToSpawn = creep.pos.getRangeTo(spawnMemoryObject.pos.x, spawnMemoryObject.pos.y)
-        if (creep.room.name != creep.memory.baseRoomName)
-            distanceToSpawn = Infinity
-        distanceToTarget = creep.pos.getRangeTo(target)
-        Log(creep, `distanceToSpawn: ${distanceToSpawn} `)
-        Log(creep, `distanceToTarget: ${distanceToTarget} `)
-        if ((distanceToSpawn == Infinity || distanceToTarget == Infinity) && (distanceToSpawn > 8 && distanceToTarget > 3) ) {
-            Log(creep, "moveToTarget: ignoringCreeps")
-            ret = creep.moveTo(target, {
-                visualizePathStyle: { stroke: "#ffffff" },
-                maxRooms: 0,
-                ignoreCreeps: true,
-                maxOps: 100000,
-            });
-            Log(creep, `${ret}`)
-            if (ret == OK) {
-                if(creep.memory.prevPos == undefined) {
-                    creep.memory.prevPos = {}
-                    creep.memory.prevPos.pos = creep.pos
-                    creep.memory.prevPos.time = Game.time
-                } else {
-                    if(creep.pos == creep.memory.prevPos.pos.x &&
-                            creep.pos == creep.memory.prevPos.pos.y &&
-                            Game.time + 5 > creep.memory.prevPos.time
-                    ) {
-                        ret = moveToMultiRoomTargetAvoidCreep(creep, target)
-                        if (ret == OK) {
-                            delete creep.memory.prevPos
-                        }
-                   }
+        try {
+            spawnMemoryObject = Memory.rooms[creep.memory.baseRoomName].mainSpawn
+            distanceToSpawn = creep.pos.getRangeTo(spawnMemoryObject.pos.x, spawnMemoryObject.pos.y)
+            if (creep.room.name != creep.memory.baseRoomName)
+                distanceToSpawn = Infinity
+            distanceToTarget = creep.pos.getRangeTo(target)
+            Log(creep, `distanceToSpawn: ${distanceToSpawn} `)
+            Log(creep, `distanceToTarget: ${distanceToTarget} `)
+            if ((distanceToSpawn == Infinity || distanceToTarget == Infinity) && (distanceToSpawn > 8 && distanceToTarget > 3) ) {
+                Log(creep, "moveToTarget: ignoringCreeps")
+                ret = creep.moveTo(target, {
+                    visualizePathStyle: { stroke: "#ffffff" },
+                    maxRooms: 0,
+                    ignoreCreeps: true,
+                    maxOps: 100000,
+                    reusePath: 10,
+                });
+                Log(creep, `${ret}`)
+                if (ret == OK) {
+                    if(creep.memory.prevPos == undefined) {
+                        creep.memory.prevPos = {}
+                        creep.memory.prevPos.pos = creep.pos
+                        creep.memory.prevPos.time = Game.time
+                    } else {
+                        if(creep.pos == creep.memory.prevPos.pos.x &&
+                                creep.pos == creep.memory.prevPos.pos.y &&
+                                Game.time + 5 > creep.memory.prevPos.time
+                        ) {
+                            ret = moveToMultiRoomTargetAvoidCreep(creep, target)
+                            if (ret == OK) {
+                                delete creep.memory.prevPos
+                            }
+                       }
+                    }
+                    
                 }
-                
+                return
             }
-            return
+        } catch(e) {
+            
         }
         
         creep.moveTo(target, {
@@ -84,42 +89,47 @@ global.moveToMultiRoomTarget = function (creep, target, canUseSwamp = true) {
         }
     }
     
-    spawnMemoryObject = Memory.rooms[creep.memory.baseRoomName].mainSpawn
-    distanceToSpawn = creep.pos.getRangeTo(spawnMemoryObject.pos.x, spawnMemoryObject.pos.y)
-    distanceToTarget = creep.pos.getRangeTo(target)
-    Log(creep, `distanceToSpawn: ${distanceToSpawn} `)
-    Log(creep, `distanceToTarget: ${distanceToTarget} `)
-    if ((distanceToSpawn == Infinity || distanceToTarget == Infinity) || (distanceToSpawn > 8 && distanceToTarget > 3) ) {
-        Log(creep, "moveToMultiRoomTarget: ignoringCreeps")
-        ret = creep.moveTo(target, {
-            visualizePathStyle: { stroke: "#ffffff" },
-            maxRooms: 16,
-            ignoreCreeps: true,
-            maxOps: 100000,
-        });
-        Log(creep, `${ret}`)
-        if (ret == OK) {
-            if(creep.memory.prevPos == undefined) {
-                creep.memory.prevPos = {}
-                creep.memory.prevPos.pos = creep.pos
-                creep.memory.prevPos.time = Game.time
-            } else {
-                if(creep.pos.x == creep.memory.prevPos.pos.x &&
-                        creep.pos.y == creep.memory.prevPos.pos.y &&
-                        Game.time + 5 > creep.memory.prevPos.time
-                ) {
-                    if (creep.memory.prevPos.unstuckAttempt == undefined) {
-                        Log(creep, `stuck.`)
-                        creep.memory.prevPos.unstuckAttempt = true
-                        ret = moveToMultiRoomTargetAvoidCreep(creep, target)
-                    } else {
-                        creep.move(Math.round(Math.random() * 10))
-                    }
-               }
+    try {
+        spawnMemoryObject = Memory.rooms[creep.memory.baseRoomName].mainSpawn
+        distanceToSpawn = creep.pos.getRangeTo(spawnMemoryObject.pos.x, spawnMemoryObject.pos.y)
+        distanceToTarget = creep.pos.getRangeTo(target)
+        Log(creep, `distanceToSpawn: ${distanceToSpawn} `)
+        Log(creep, `distanceToTarget: ${distanceToTarget} `)
+        if ((distanceToSpawn == Infinity || distanceToTarget == Infinity) || (distanceToSpawn > 8 && distanceToTarget > 3) ) {
+            Log(creep, "moveToMultiRoomTarget: ignoringCreeps")
+            ret = creep.moveTo(target, {
+                visualizePathStyle: { stroke: "#ffffff" },
+                maxRooms: 16,
+                ignoreCreeps: true,
+                maxOps: 100000,
+                reusePath: 10,
+            });
+            Log(creep, `${ret}`)
+            if (ret == OK) {
+                if(creep.memory.prevPos == undefined) {
+                    creep.memory.prevPos = {}
+                    creep.memory.prevPos.pos = creep.pos
+                    creep.memory.prevPos.time = Game.time
+                } else {
+                    if(creep.pos.x == creep.memory.prevPos.pos.x &&
+                            creep.pos.y == creep.memory.prevPos.pos.y &&
+                            Game.time + 5 > creep.memory.prevPos.time
+                    ) {
+                        if (creep.memory.prevPos.unstuckAttempt == undefined) {
+                            Log(creep, `stuck.`)
+                            creep.memory.prevPos.unstuckAttempt = true
+                            ret = moveToMultiRoomTargetAvoidCreep(creep, target)
+                        } else {
+                            creep.move(Math.round(Math.random() * 10))
+                        }
+                   }
+                }
+                
             }
-            
+            return
         }
-        return
+    } catch(e) {
+    
     }
     ret = creep.moveTo(target, {
         visualizePathStyle: { stroke: "#ffffff" },

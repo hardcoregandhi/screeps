@@ -79,14 +79,6 @@ global.roleHarvesterExt = {
             }
         }
 
-        var csites = Game.rooms[creep.memory.targetRoomName].find(FIND_CONSTRUCTION_SITES, {
-            filter: (site) => {
-                return creep.pos.inRangeTo(site, 3); //; && site.structureType == STRUCTURE_CONTAINER;
-            },
-        });
-        var containersNearToSource = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
-            return structure.structureType == STRUCTURE_CONTAINER && Game.getObjectById(creep.memory.targetSource).pos.inRangeTo(structure, 2);
-        });
         Log(creep, 2);
 
         EnemyCheckFleeRequestBackup(creep);
@@ -172,13 +164,7 @@ global.roleHarvesterExt = {
             Log(creep, "dropping");
 
             //Build any nearby container or road
-            if (csites.length) {
-                Log(creep, "building");
-                if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
-                    moveToMultiRoomTargetAvoidCreep(creep, csites[0]);
-                }
-                return;
-            }
+            var container;
             try {
                 if (Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container == undefined) {
                     var containersNearToSource = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
@@ -187,9 +173,12 @@ global.roleHarvesterExt = {
                     if (containersNearToSource.length) {
                         Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container = {};
                         Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id = containersNearToSource[0].id;
+                        container = containersNearToSource[0];
                     }
+                } else {
+                    container = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id)
                 }
-                var container = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id);
+                
                 if (container == null) {
                     delete Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container;
                 } else {
@@ -203,32 +192,39 @@ global.roleHarvesterExt = {
             }
             if (container == undefined) {
                 // console.log(666)
-                Log(creep, "no exts, spawn, or container found");
-                creep.say("makin con");
-                if (targetSource.pos.inRangeTo(creep.pos, 2)) {
-                    creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER);
-                } else {
-                    moveToMultiRoomTarget(creep, targetSource.pos);
+                var targetSite = null;
+                
+                if (creep.memory.containerConstructionSite == undefined) {
+                    var csites = Game.rooms[creep.memory.targetRoomName].find(FIND_CONSTRUCTION_SITES, {
+                        filter: (site) => {
+                            return creep.pos.inRangeTo(site, 3) && site.structureType == STRUCTURE_CONTAINER;
+                        },
+                    });
+                    if (csites.length) {
+                        creep.memory.containerConstructionSite = csites[0].id;
+                    } else {
+                        if (targetSource.pos.inRangeTo(creep.pos, 2)) {
+                            creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER);
+                        } else {
+                            moveToMultiRoomTarget(creep, targetSource.pos);
+                        }
+                    }
+
+                    Log(creep, "no exts, spawn, or container found");
+                    creep.say("makin con");
                 }
+                
+                targetSite = Game.getObjectById(creep.memory.containerConstructionSite)
+                if (targetSite == null) {
+                    delete creep.memory.containerConstructionSite;
+                    return;
+                }
+                Log(creep, "building");
+                if (creep.build(targetSite) == ERR_NOT_IN_RANGE) {
+                    moveToMultiRoomTargetAvoidCreep(creep, targetSite);
+                }
+                return
             } else {
-                if (container.store.getFreeCapacity() == 0) {
-                    // TODO: Bug: when a harvester dies, it does not carry over the moverLimit increase to the next harvester
-                    //            This should be stored as source information
-                    if (creep.memory.containerFilledTimestamp == undefined) {
-                        creep.memory.containerFilledTimestamp = Game.time;
-                    }
-                    if (Game.time > creep.memory.containerFilledTimestamp + 60) {
-                        if (creep.memory.moverLimitIncreaseCooldownTimestamp == undefined) {
-                            creep.memory.moverLimitIncreaseCooldownTimestamp = Game.time;
-                        }
-                        if (Game.time > creep.memory.moverLimitIncreaseCooldownTimestamp + 10000) {
-                            creep.memory.moverLimit = creep.memory.moverLimit + 1;
-                            creep.memory.containerFilledTimestamp = undefined;
-                            creep.memory.moverLimitIncreaseCooldownTimestamp = Game.time;
-                        }
-                    }
-                }
-                creep.memory.containerFilledTimestamp = undefined;
                 if (container != null && container.hits < 200000) {
                     Log(creep, `healing ${container}`);
                     if (creep.repair(container) != OK) {
