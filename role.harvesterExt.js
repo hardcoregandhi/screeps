@@ -84,7 +84,7 @@ global.roleHarvesterExt = {
         EnemyCheckFleeRequestBackup(creep);
         if (creep.memory.fleeing > 0) {
             creep.memory.fleeing -= 1;
-            moveToTarget(creep, creep.room.controller, true);
+            moveToTarget(creep, creep.room.controller);
             return;
         }
 

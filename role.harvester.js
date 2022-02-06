@@ -329,7 +329,7 @@ global.roleHarvester = {
                 Log(creep, `target: ${target}`);
 
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    moveToTarget(creep, target.pos, false);
+                    moveToTarget(creep, target.pos);
                 }
             } else {
                 fallbackToOtherRoles(creep);

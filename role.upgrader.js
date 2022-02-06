@@ -117,7 +117,7 @@ global.roleUpgrader = {
                         creep.memory.sweetSpot = intersectionSpots[0];
                     }
                 } else {
-                    moveToTarget(creep, creep.memory.sweetSpot, false);
+                    moveToTarget(creep, creep.memory.sweetSpot);
                 }
 
                 if (creep.room.controller.ticksToDowngrade >= 200000) {

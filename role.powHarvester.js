@@ -43,7 +43,7 @@ global.rolePowHarvester = {
             });
             if (route.length > 0) {
                 const exit = creep.pos.findClosestByRange(route[0].exit);
-                moveToTarget(creep, exit, true);
+                moveToTarget(creep, exit);
             }
         } else {
             // creep.moveTo(creep.room.controller);

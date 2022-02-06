@@ -20,7 +20,7 @@ global.roleTraveller = {
                 const route = Game.map.findRoute(creep.room, targetRoom);
                 if (route.length > 0) {
                     const exit = creep.pos.findClosestByRange(route[0].exit);
-                    moveToTarget(creep, exit, true);
+                    moveToTarget(creep, exit);
                 }
             } else {
                 var sources = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);

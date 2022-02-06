@@ -134,7 +134,7 @@ global.roleBuilder = {
                 creep.memory.currentTarget = closest.id;
 
                 if (creep.build(closest) == ERR_NOT_IN_RANGE) {
-                    // moveToTarget(creep, closest, false)
+                    // moveToTarget(creep, closest)
                     creep.moveTo(closest, {
                         visualizePathStyle: { stroke: "#ffffff" },
                     });
@@ -180,7 +180,7 @@ global.roleBuilder = {
                         // console.trace();
                     }
 
-                    moveToTarget(creep, creep.room.controller.pos, false);
+                    moveToTarget(creep, creep.room.controller.pos);
                     return;
                 }
                 mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
@@ -197,7 +197,7 @@ global.roleBuilder = {
                             });
                         }
                     } else {
-                        moveToTarget(creep, creep.room.controller.pos, false);
+                        moveToTarget(creep, creep.room.controller.pos);
                         return;
                     }
                     return;
@@ -219,12 +219,12 @@ global.roleBuilder = {
                 if (sources.length > 0) {
                     target = creep.pos.findClosestByPath(sources);
                     if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
-                        if (moveToTarget(creep, target, true) == ERR_NO_PATH) {
+                        if (moveToTarget(creep, target) == ERR_NO_PATH) {
                             creep.say("no path");
                         }
                     }
                 } else {
-                    moveToTarget(creep, creep.room.controller.pos, false);
+                    moveToTarget(creep, creep.room.controller.pos);
                 }
             }
         }

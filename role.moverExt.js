@@ -102,7 +102,7 @@ global.roleMoverExt = {
 
         if (creep.memory.fleeing > 0) {
             creep.memory.fleeing -= 1;
-            moveToTarget(creep, creep.room.controller, true);
+            moveToTarget(creep, creep.room.controller);
             return;
         }
 
@@ -172,7 +172,7 @@ global.roleMoverExt = {
         //     if (route.length > 0) {
         //         creep.say("Headin oot");
         //         const exit = creep.pos.findClosestByRange(route[0].exit);
-        //         moveToTarget(creep, exit, true);
+        //         moveToTarget(creep, exit);
         //     } else {
         //         creep.say("No route found");
         //     }
