@@ -38,9 +38,3 @@ deadCreepCleanup = function () {
     }
 };
 
-function RemoveFromList(list, entry) {
-    const index = list.indexOf(entry);
-    if (index > -1) {
-        list.splice(index, 1); // 2nd parameter means remove one item only
-    }
-}
