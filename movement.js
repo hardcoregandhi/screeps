@@ -1,82 +1,66 @@
-global.moveToTarget = function (creep, target, canUseSwamp = true) {
+global.moveToTarget = function (creep, target, extraOptions = null) {
     // if(creep.fatigue != 0) return -1
-    canUseSwamp = true;
-    if (canUseSwamp) {
-        try {
-            spawnMemoryObject = Memory.rooms[creep.memory.baseRoomName].mainSpawn
-            distanceToSpawn = creep.pos.getRangeTo(spawnMemoryObject.pos.x, spawnMemoryObject.pos.y)
-            if (creep.room.name != creep.memory.baseRoomName)
-                distanceToSpawn = Infinity
-            distanceToTarget = creep.pos.getRangeTo(target)
-            Log(creep, `distanceToSpawn: ${distanceToSpawn} `)
-            Log(creep, `distanceToTarget: ${distanceToTarget} `)
-            if ((distanceToSpawn == Infinity || distanceToTarget == Infinity) && (distanceToSpawn > 8 && distanceToTarget > 3) ) {
-                Log(creep, "moveToTarget: ignoringCreeps")
-                ret = creep.moveTo(target, {
-                    visualizePathStyle: { stroke: "#ffffff" },
-                    maxRooms: 0,
-                    ignoreCreeps: true,
-                    maxOps: 100000,
-                    reusePath: 10,
-                });
-                Log(creep, `${ret}`)
-                if (ret == OK) {
-                    if(creep.memory.prevPos == undefined) {
-                        creep.memory.prevPos = {}
-                        creep.memory.prevPos.pos = creep.pos
-                        creep.memory.prevPos.time = Game.time
-                    } else {
-                        if(creep.pos == creep.memory.prevPos.pos.x &&
-                                creep.pos == creep.memory.prevPos.pos.y &&
-                                Game.time + 5 > creep.memory.prevPos.time
-                        ) {
-                            ret = moveToMultiRoomTargetAvoidCreep(creep, target)
-                            if (ret == OK) {
-                                delete creep.memory.prevPos
-                            }
-                       }
+    try {
+        spawnMemoryObject = Memory.rooms[creep.memory.baseRoomName].mainSpawn
+        distanceToSpawn = creep.pos.getRangeTo(spawnMemoryObject.pos.x, spawnMemoryObject.pos.y)
+        if (creep.room.name != creep.memory.baseRoomName)
+            distanceToSpawn = Infinity
+        distanceToTarget = creep.pos.getRangeTo(target)
+        Log(creep, `distanceToSpawn: ${distanceToSpawn} `)
+        Log(creep, `distanceToTarget: ${distanceToTarget} `)
+        if ((distanceToSpawn == Infinity || distanceToTarget == Infinity) && (distanceToSpawn > 8 && distanceToTarget > 3) ) {
+            Log(creep, "moveToTarget: ignoringCreeps")
+            ret = creep.moveTo(target, 
+                _.merge(
+                    {
+                        visualizePathStyle: { stroke: "#ffffff" },
+                        maxRooms: 0,
+                        ignoreCreeps: true,
+                        maxOps: 100000,
+                        reusePath: 10,
+                    },
+                    extraOptions
+                )
+            );
+            Log(creep, `${ret}`)
+            if (ret == OK) {
+                if(creep.memory.prevPos == undefined) {
+                    creep.memory.prevPos = {}
+                    creep.memory.prevPos.pos = creep.pos
+                    creep.memory.prevPos.time = Game.time
+                } else {
+                    if(creep.pos == creep.memory.prevPos.pos.x &&
+                            creep.pos == creep.memory.prevPos.pos.y &&
+                            Game.time + 5 > creep.memory.prevPos.time
+                    ) {
+                        ret = moveToMultiRoomTargetAvoidCreep(creep, target)
+                        if (ret == OK) {
+                            delete creep.memory.prevPos
+                        }
                     }
-                    
                 }
-                return
+                
             }
-        } catch(e) {
-            
+            return
         }
+    } catch(e) {
         
-        creep.moveTo(target, {
-            visualizePathStyle: { stroke: "#ffffff" },
-            maxRooms: 0,
-            maxOps: 100000,
-            reusePath: 1,
-        });
-    } else {
-        const path = creep.room.findPath(creep.pos, target, {
-            ignoreCreeps: false,
-            maxRooms: 0,
-        });
-        if (path.length) {
-            roomPos = new RoomPosition(path[0].x, path[0].y, creep.room.name);
-            isSwamp = new Room.Terrain(creep.room.name).get(path[0].x, path[0].y) == TERRAIN_MASK_SWAMP;
-            isPath = roomPos.lookFor(LOOK_STRUCTURES).length != 0;
-            for (var pathStep of path) {
-                if (!isSwamp || (isSwamp && isPath)) {
-                    creep.room.visual.circle(pathStep, { fill: "red" });
-                }
-            }
-            if (!isSwamp || (isSwamp && isPath)) {
-                return creep.moveTo(path[0].x, path[0].y, {
-                    visualizePathStyle: { stroke: "#ffffff" },
-                    maxRooms: 1,
-                });
-            }
-        } else {
-            return -1;
-        }
     }
+    
+    creep.moveTo(target, 
+        _.merge(
+            {
+                visualizePathStyle: { stroke: "#ffffff" },
+                maxRooms: 0,
+                maxOps: 100000,
+                reusePath: 1,
+            },
+            extraOptions
+        )
+    );
 };
 
-global.moveToMultiRoomTarget = function (creep, target, canUseSwamp = true) {
+global.moveToMultiRoomTarget = function (creep, target, extraOptions = null) {
     
     if (creep.memory.prevPos != undefined) {
         if(
@@ -97,13 +81,18 @@ global.moveToMultiRoomTarget = function (creep, target, canUseSwamp = true) {
         Log(creep, `distanceToTarget: ${distanceToTarget} `)
         if ((distanceToSpawn == Infinity || distanceToTarget == Infinity) || (distanceToSpawn > 8 && distanceToTarget > 3) ) {
             Log(creep, "moveToMultiRoomTarget: ignoringCreeps")
-            ret = creep.moveTo(target, {
-                visualizePathStyle: { stroke: "#ffffff" },
-                maxRooms: 16,
-                ignoreCreeps: true,
-                maxOps: 100000,
-                reusePath: 10,
-            });
+            ret = creep.moveTo(target, 
+                _.merge(
+                    {
+                        visualizePathStyle: { stroke: "#ffffff" },
+                        maxRooms: 16,
+                        ignoreCreeps: true,
+                        maxOps: 100000,
+                        reusePath: 10,
+                    },
+                    extraOptions
+                )
+            );
             Log(creep, `${ret}`)
             if (ret == OK) {
                 if(creep.memory.prevPos == undefined) {
@@ -131,23 +120,31 @@ global.moveToMultiRoomTarget = function (creep, target, canUseSwamp = true) {
     } catch(e) {
     
     }
-    ret = creep.moveTo(target, {
-        visualizePathStyle: { stroke: "#ffffff" },
-        maxOps: 100000,
-        maxRooms: 16,
-        reusePath: 0,
-    });
+    ret = creep.moveTo(target, 
+        _.merge(
+            {
+                visualizePathStyle: { stroke: "#ffffff" },
+                maxRooms: 16,
+                maxOps: 100000,
+                reusePath: 10,
+            },
+            extraOptions
+        )
+    );
     // console.log(target)
 
 };
 
-global.moveToMultiRoomTargetAvoidCreep = function (creep, target) {
-    return creep.moveTo(target, {
-        visualizePathStyle: { stroke: "#ffffff" },
-        maxOps: 100000,
-        maxRooms: 16,
-        reusePath: 0,
-    });
+global.moveToMultiRoomTargetAvoidCreep = function (creep, target, extraOptions = null) {
+    return creep.moveTo(target, _.merge(
+        {
+            visualizePathStyle: { stroke: "#ffffff" },
+            maxRooms: 16,
+            maxOps: 100000,
+            reusePath: 10,
+        },
+        extraOptions
+    ));
 };
 
 global.moveToRoomIgnoreStructures = function (creep, targetRoom) {
