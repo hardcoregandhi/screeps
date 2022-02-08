@@ -43,12 +43,13 @@ global.roleTrucker = {
             //     return
             // }
             var target = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].mainStorage);
-            if (target != undefined && target.store.getFreeCapacity > 50) {
+            if (target != undefined && target.store.getFreeCapacity() > 50) {
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target, {
                         visualizePathStyle: { stroke: "#ffaa00" },
                     });
                 }
+                return
             } else {
                 if (creep.room.name != creep.memory.targetRoomName) {
                     moveToMultiRoomTargetAvoidCreep(creep, new RoomPosition(25,25,creep.memory.targetRoomName))
