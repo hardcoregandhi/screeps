@@ -142,7 +142,6 @@ global.roleMoverLink = {
                     }
                 }
             }
-            return;
         }
 
         // SELL excess energy if storage is almost full
@@ -316,6 +315,18 @@ global.roleMoverLink = {
         } else {
             Log(creep, "!moving");
             try {
+                // do default behaviour first so other creeps aren't blocked
+                if (link_storage.store.getUsedCapacity(RESOURCE_ENERGY)) {
+                    ret = creep.withdraw(link_storage, RESOURCE_ENERGY);
+                    if (ret == ERR_NOT_IN_RANGE) {
+                        Log(creep, creep.withdraw(link_storage, RESOURCE_ENERGY));
+                        Log(creep, "moving to " + link_storage);
+                        creep.moveTo(link_storage);
+                    } else if (ret == OK) {
+                        return;
+                    }
+                }
+                
                 if (creep.memory.firesale != undefined && creep.memory.firesale == true) {
                     Log(creep, "firesale, withdrawing from mainStorage");
                     var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
@@ -383,15 +394,6 @@ global.roleMoverLink = {
                             return;
                         }
                     }
-                }
-
-                ret = creep.withdraw(link_storage, RESOURCE_ENERGY);
-                if (ret == ERR_NOT_IN_RANGE) {
-                    Log(creep, creep.withdraw(link_storage, RESOURCE_ENERGY));
-                    Log(creep, "moving to " + link_storage);
-                    creep.moveTo(link_storage);
-                } else if (ret == OK) {
-                    return;
                 }
 
                 // } else {
