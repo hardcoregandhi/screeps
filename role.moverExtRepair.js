@@ -3,5 +3,7 @@ roleMoverExtRepair.name = 'moverExtRepair'
 roleMoverExtRepair.BodyParts = [
     WORK,
     CARRY, CARRY, CARRY,
+    CARRY, CARRY, CARRY,
+    CARRY, CARRY, CARRY,
     MOVE, MOVE, MOVE, MOVE, MOVE,
     ];

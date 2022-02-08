@@ -77,7 +77,8 @@ global.roleMoverExt = {
     name: "moverExt",
     roleMemory: { memory: {} },
     // prettier-ignore
-    BodyParts: [
+    BodyParts: [ // 2:1 carry:move with 1/1 movement on roads
+        CARRY, CARRY, CARRY, CARRY, CARRY,
         CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
@@ -102,7 +103,7 @@ global.roleMoverExt = {
 
         if (creep.memory.fleeing > 0) {
             creep.memory.fleeing -= 1;
-            moveToTarget(creep, creep.room.controller);
+            moveToTarget(creep, Game.rooms[creep.memory.baseRoomName].controller);
             return;
         }
 
