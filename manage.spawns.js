@@ -75,7 +75,11 @@ global.runSpawns = function () {
             continue;
         } else if (creepRoomMap.get(r.name + "csites") > 5) {
             continue;
+        } else if (spawnMineralHarvester(r)) {
+            continue
         } else if (spawnExternalHarvester(r.name)) {
+            continue;
+        } else if (spawnBuilderExt(r.name)) {
             continue;
         } else if (spawnExternalMover(r.name)) {
             continue;
@@ -204,7 +208,7 @@ function spawnExternalMover(roomName) {
                         totalCarryParts += creepCarryParts;
                     }
                 });
-                if (creepRoomMap.get(`${parentRoom}moverExtRepairTarget${s.id}`) != undefined) {
+                if (creepRoomMap.get(`${parentRoom}moverExtRepairTarget${source.id}`) != undefined) {
                     totalCarryParts += roleMoverExtRepair.BodyParts.reduce((previous, p) => {
                         return p == CARRY ? (previous += 1) : previous;
                     }, 0);
@@ -307,21 +311,37 @@ function scoutNeighbouringRooms(room) {
     return ret;
 }
 
-function spawnBuilderExt(room) {
-    if (Memory.rooms[room.name].parentRoom == undefined) {
-        return;
-    }
-    parentRoom = Memory.rooms[room.name].parentRoom
-    if (
-        creepRoomMap.get(room.name + "csites") != undefined && 
-        creepRoomMap.get(room.name + "csites") > 0
-    ) {
-        if (
-            creepRoomMap.get(parentRoom + "builderExtTarget" + room.name) == undefined ||
-            creepRoomMap.get(parentRoom + "builderExtTarget" + room.name) > 1
-        ) {
-            spawnCreep(roleBuilderExt, "auto", {memory:{targetRoomName:room.name}}, parentRoom)
-        }
+function spawnBuilderExt(roomName) {
+    ret = false;
+    if (Memory.rooms[roomName].externalSources != undefined && Memory.rooms[roomName].externalSources.length) {
+        Memory.rooms[roomName].externalSources.forEach((sourceId) => {
+            // console.log(sourceId)
+            source = Game.getObjectById(sourceId);
+            if (source == undefined || source == null) {
+                return;
+            }
+            // console.log(roomName + "harvesterExtTarget" + source.id)
+            if (source.room.controller.reservation != undefined &&
+                source.room.controller.reservation.username != 'hardcoregandhi') {
+                return
+            }
+            
+            if (
+                creepRoomMap.get(source.room.name + "csites") != undefined && 
+                creepRoomMap.get(source.room.name + "csites") > 3
+            ) {
+                if (
+                    creepRoomMap.get(roomName + "builderExtTarget" + source.room.name) == undefined ||
+                    creepRoomMap.get(roomName + "builderExtTarget" + source.room.name) > 1
+                ) {
+                    ret = spawnCreep(roleBuilderExt, "auto", { memory: { targetRoomName: source.room.name }}, roomName)
+                    if (ret == OK) {
+                        ret = true
+                        return false; //early escape
+                    }
+                }
+            }
+        })
     }
     return ret;
 }
@@ -362,6 +382,26 @@ function spawnDepositHarvester(r) {
             displaySpawnFailMessage(spawn.room.name, _role.name, 0, "[Spawning]");
         }
     }
+}
+
+function spawnMineralHarvester(room) {
+    // console.log(`spawnMineralHarvester(${room.name})`)
+    // console.log(`Memory.rooms[room.name].mineral ${Memory.rooms[room.name].mineral}`)
+    // console.log(`Memory.rooms[room.name].mineral.extractor ${Memory.rooms[room.name].mineral.extractor}`)
+    // console.log(`mineral.mineralAmount ${Game.getObjectById(Memory.rooms[room.name].mineral.id).mineralAmount}`)
+    // console.log(`creepRoomMap.get(room.name+"harvesterMineral") ${creepRoomMap.get(room.name+"harvesterMineral")}`)
+    if (Memory.rooms[room.name].mineral != undefined &&
+        Memory.rooms[room.name].mineral.extractor &&
+        Game.getObjectById(Memory.rooms[room.name].mineral.id).mineralAmount && 
+        (
+            creepRoomMap.get(room.name+"harvesterMineral") == undefined ||
+            creepRoomMap.get(room.name+"harvesterMineral") == 0
+        )
+    ) {
+        spawnCreep(roleHarvesterMineral, null, { memory: { targetSource: Memory.rooms[room.name].mineral.id }}, room.name);
+        return true;
+    }
+    return false;
 }
 
 
