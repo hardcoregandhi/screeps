@@ -308,7 +308,7 @@ roomTracking = function () {
                 Memory.rooms[r.name].mineral.extractor = false;
             } else {
                 // console.log(r)
-                if (Game.getObjectById(Memory.rooms[r.name].mineral.id).pos.lookFor(STRUCTURE_EXTRACTOR).length) {
+                if (Game.getObjectById(Memory.rooms[r.name].mineral.id).pos.lookFor(LOOK_STRUCTURES).length) {
                     Memory.rooms[r.name].mineral.extractor = true;
                 }
             }
