@@ -127,9 +127,9 @@ global.roleUpgrader = {
             Log(creep, "upgrading controller")
             if (creep.upgradeController(creep.room.controller) != OK) {
                 if (!creep.pos.inRangeTo(creep.room.controller, 4))
-                    moveToMultiRoomTarget(creep, creep.room.controller.pos);
+                    moveToMultiRoomTarget(creep, creep.room.controller.pos, {range: 3});
                 else
-                    moveToMultiRoomTargetAvoidCreep(creep, creep.room.controller.pos);
+                    moveToMultiRoomTargetAvoidCreep(creep, creep.room.controller.pos, {range: 3});
 
             }
         } else {
