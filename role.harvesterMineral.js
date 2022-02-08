@@ -24,6 +24,10 @@ global.roleHarvesterMineral = {
             // console.log(creep.name, scoopSize)
             creep.memory.scoopSize = scoopSize;
         }
+        
+        if (creep.memory.targetSource == undefined) {
+            console.log(`${creep.name} is awaiting a targetSource`)
+        }
 
         if (creep.memory.mining && creep.store.getFreeCapacity() < creep.memory.scoopSize) {
             creep.memory.mining = false;
@@ -80,10 +84,12 @@ global.roleHarvesterMineral = {
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (mainStorage != undefined) {
                 Log(creep, "mainStorage found");
-                if (creep.transfer(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    moveToMultiRoomTarget(creep, mainStorage.pos);
+                for (var type in creep.store) {
+                    if (creep.transfer(mainStorage, type) == ERR_NOT_IN_RANGE) {
+                        moveToMultiRoomTarget(creep, mainStorage);
+                    }
+                    return
                 }
-                return;
             }
             Log(creep, "mainStorage not found");
             console.log(`${creep.name} can't find mainStorage`)
