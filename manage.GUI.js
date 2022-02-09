@@ -44,11 +44,13 @@ drawGUI = function () {
         new RoomVisual().text("MoverExt    : " + creepRoomMap.get(r.name + "moverExt"), 1, listOffset + inc(), { align: "left", font: fontSize });
         // new RoomVisual().text("HarvestExtTarget    : " + creepRoomMap.get(r.name + "harvesterExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
         // new RoomVisual().text("MoverExtTarget    : " + creepRoomMap.get(r.name + "moverExtTarget"), 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("ExternalHarvesting    : ", 1, listOffset + inc(), { align: "left", font: fontSize });
-        _.forEach(Memory.rooms[r.name].externalSources, (s) => {
-            source = Game.getObjectById(s)
+        new RoomVisual().text("Harvesting    : ", 1, listOffset + inc(), { align: "left", font: fontSize });
+        _.forEach(Memory.rooms[r.name].sources, (s) => {
+            source = Game.getObjectById(s.id)
             if (source == undefined) return;
-            text = `    ${source.room.name}:${source.id.substr(-3)}: H: ${creepRoomMap.get(r.name + "harvesterExtTarget" + source.id) || 0} M: ${creepRoomMap.get(r.name + "moverExtTarget" + source.id) || 0}`
+            text = `    ${source.room.name}:${source.id.substr(-3)}: H: ${creepRoomMap.get(r.name + "harvesterTarget" + source.id) || 0} ` +
+                    `${Memory.rooms[source.room.name].sources[source.id].currentMiningParts || 0}/${Memory.rooms[source.room.name].sources[source.id].targetMiningParts || 0} ` +
+                    `M: ${Memory.rooms[source.room.name].sources[source.id].link != undefined || creepRoomMap.get(r.name + "harvSupTarget" + source.id) || 0}`
             if(Memory.rooms[source.room.name].sources[source.id].container != undefined) {
                 text += ` ${Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts || 0}/${Memory.rooms[source.room.name].sources[source.id].container.targetCarryParts || 0}`
                 container = Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id)
@@ -56,7 +58,24 @@ drawGUI = function () {
                     text += ` ${container.store.getUsedCapacity()} / ${container.store.getCapacity()}`
                 }
             }
-            new RoomVisual().text(text, 1, listOffset + inc(), { align: "left", font: fontSize });
+            new RoomVisual().text(text, 1, listOffset + inc(), { align: "left", font: '0.3 Lucida Console' });
+
+        });
+        new RoomVisual().text("ExternalHarvesting    : ", 1, listOffset + inc(), { align: "left", font: fontSize });
+        _.forEach(Memory.rooms[r.name].externalSources, (s) => {
+            source = Game.getObjectById(s)
+            if (source == undefined) return;
+            text = `    ${source.room.name}:${source.id.substr(-3)}: H: ${creepRoomMap.get(r.name + "harvesterExtTarget" + source.id) || 0} ` +
+                    `${Memory.rooms[source.room.name].sources[source.id].currentMiningParts || 0}/${Memory.rooms[source.room.name].sources[source.id].targetMiningParts || 0} ` +
+                    `M: ${creepRoomMap.get(r.name + "moverExtTarget" + source.id) || 0}`
+            if(Memory.rooms[source.room.name].sources[source.id].container != undefined) {
+                text += ` ${Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts || 0}/${Memory.rooms[source.room.name].sources[source.id].container.targetCarryParts || 0}`
+                container = Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id)
+                if (container != undefined) {
+                    text += ` ${container.store.getUsedCapacity()} / ${container.store.getCapacity()}`
+                }
+            }
+            new RoomVisual().text(text, 1, listOffset + inc(), { align: "left", font: '0.3 Lucida Console' });
 
         });
 
