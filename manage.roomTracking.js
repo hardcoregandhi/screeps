@@ -312,6 +312,10 @@ roomTracking = function () {
                     Memory.rooms[r.name].mineral.extractor = true;
                 }
             }
+            
+            if (Memory.rooms[r.name].deposits == undefined) {
+                Memory.rooms[r.name].deposits = [];
+            }
 
             if (Memory.rooms[r.name] == undefined) {
                 Memory.rooms[r.name] = {};
@@ -536,9 +540,11 @@ resetSourceContainerTracking = function () {
         _.forEach(Memory.rooms[r.name].sources, (s) => {
             s.targettedBy = 0;
             s.targettedByList = [];
+            s.currentMiningParts = 0;
             if (s.container != undefined) {
                 s.container.targettedBy = 0;
                 s.container.targettedByList = [];
+                s.container.currentCarryParts = 0;
             }
         });
         if (Memory.rooms[r.name].mineral != undefined &&
@@ -559,18 +565,40 @@ resetSourceContainerTracking = function () {
             if (c.memory.role == "harvester") {
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].targettedBy += 1;
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].targettedByList.push(c.name);
+                creepMiningParts = Game.creeps[c.name].body.reduce((previous, p) => {
+                        return p.type == WORK ? (previous += 1) : previous;
+                }, 0);
+                Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].currentMiningParts += creepMiningParts;
             } else if (c.memory.role == "harvesterExt") {
-                Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].targettedBy += 1;
-                Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].targettedByList.push(c.name);
+                if (Memory.creeps[c.name].DIE == undefined) {
+                    creepMiningParts = Game.creeps[c.name].body.reduce((previous, p) => {
+                        return p.type == WORK ? (previous += 1) : previous;
+                    }, 0);
+                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].targettedBy += 1;
+                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].targettedByList.push(c.name);
+                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].currentMiningParts += creepMiningParts;
+                }
             } else if (c.memory.role == "harvSup") {
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
+                creepCarryParts = Game.creeps[c.name].body.reduce((previous, p) => {
+                        return p.type == CARRY ? (previous += 1) : previous;
+                    }, 0);
+                Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].container.currentCarryParts += creepCarryParts;
             } else if (c.memory.role == "harvDepositSup") {
                 Memory.rooms[c.memory.baseRoomName].mineral.container.targettedBy += 1;
                 Memory.rooms[c.memory.baseRoomName].mineral.container.targettedByList.push(c.name);
-            } else if (c.memory.role == "moverExt") {
-                Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
-                Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
+            } else if (c.memory.role == "moverExt" || c.memory.role == "moverExtRepair") {
+                if (Memory.creeps[c.name].DIE == undefined) {
+                    creepCarryParts = Game.creeps[c.name].body.reduce((previous, p) => {
+                        return p.type == CARRY ? (previous += 1) : previous;
+                    }, 0);
+                    if (c.memory.role == "moverExt") {
+                        Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
+                        Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
+                    }
+                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.currentCarryParts += creepCarryParts;
+                }
             }
 
             if (c.memory.role == "soldier" || c.memory.role == "gunner") {
