@@ -48,3 +48,15 @@ RemoveFromList = function(list, entry) {
         list.splice(index, 1); // 2nd parameter means remove one item only
     }
 }
+
+AddToList = function(list, entry) {
+    if (list == undefined) {
+        console.log("can't add to undefined list")
+        return
+    }
+    const index = list.indexOf(entry);
+    if (index == -1) {
+        list.push(entry); // 2nd parameter means remove one item only
+    }
+}
+
