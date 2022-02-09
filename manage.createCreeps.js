@@ -252,6 +252,9 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
             Memory.rooms[spawn.room.name].spawns[spawn.name].spawnRequested = true
             refreshCreepTrackingNextTick = true;
             roomRefreshMap[spawn.room.name] = Game.time;
+            if (customMemory && customMemory.targetRoomName != undefined) {
+                roomRefreshMap[customMemory.targetRoomName] = Game.time;
+            }
         } else if (ret != 0) {
             console.log("Spawn failed: ", ret);
         }
