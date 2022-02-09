@@ -69,6 +69,12 @@ global.roleWanderer = {
         }
         
         if (creep.room.name == creep.memory.targetRooms[creep.memory.currentTargetRoom]) {
+            var deposits = creep.room.find(FIND_DEPOSITS);
+            if (deposits.length) {
+                for(var d of deposits) {
+                    AddToList(Memory.rooms[creep.memory.baseRoomName].deposits, d)
+                }
+            }
             if (creep.memory.reverse) {
                 if (creep.memory.currentTargetRoom <= 0) {
                     creep.memory.reverse = !creep.memory.reverse
