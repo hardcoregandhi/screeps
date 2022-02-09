@@ -43,7 +43,7 @@ creepReduction = function (r) {
             }
         });
         // for (var i = creepMiningPartsMap.length; i > 0; i-=1) {
-        while (totalMiningParts > 7 && totalMiningParts - creepMiningPartsMap[creepMiningPartsMap.length - 1][1] > 7) {
+        while (totalMiningParts > 7 && totalMiningParts - creepMiningPartsMap[creepMiningPartsMap.length - 1][1] >= 7) {
             // kill some excess
             if (totalMiningParts - creepMiningPartsMap[creepMiningPartsMap.length - 1][1] >= 7 && creepMiningPartsMap.length) {
                 console.log(`${r.name} ${s.id.substr(-3)} has tar:7 act:${totalMiningParts} reducing totalMiningParts to ${totalMiningParts - creepMiningPartsMap[creepMiningPartsMap.length - 1][1]} by killing ${creepMiningPartsMap[creepMiningPartsMap.length - 1][0]}`);
