@@ -83,6 +83,8 @@ global.runSpawns = function () {
             continue;
         } else if (spawnExternalMover(r.name)) {
             continue;
+        } else if (spawnHarvesterDeposit(r.name)) {
+            continue;
         } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 1 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8) {
             spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
@@ -250,6 +252,7 @@ function spawnHarvester(room) {
     ret = false;
     _.forEach(Memory.rooms[room.name].sources, (s) => {
         if (s.currentMiningParts != undefined && s.currentMiningParts < 7 && s.targettedBy < s.miningSpots) {
+            console.log()
             if (r.energyAvailable <= 400) {
                 BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
                 // console.log(1)
@@ -400,6 +403,21 @@ function spawnMineralHarvester(room) {
     ) {
         spawnCreep(roleHarvesterMineral, null, { memory: { targetSource: Memory.rooms[room.name].mineral.id }}, room.name);
         return true;
+    }
+    return false;
+}
+
+function spawnHarvesterDeposit(roomName) {
+    for(var deposit of Memory.rooms[roomName].deposits) {
+        if (
+            creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) == undefined ||
+            creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) == 0
+        ) {
+            ret = spawnCreep(roleHarvesterDeposit, null, { memory: { targetRoomName: deposit.room.name, targetSource: deposit.id }}, roomName);
+            if (ret == 0) {
+                return true;
+            }
+        }
     }
     return false;
 }
