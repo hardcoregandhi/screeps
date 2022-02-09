@@ -34,7 +34,7 @@ global.roleClaimer = {
         } else {
             if (creep.memory.claim != undefined) {
                 if (creep.claimController(Game.rooms[creep.memory.targetRoomName].controller) != OK) {
-                    moveToMultiRoomTarget(creep, Game.rooms[creep.memory.targetRoomName].controller, true);
+                    moveToMultiRoomTarget(creep, Game.rooms[creep.memory.targetRoomName].controller);
                 }
             }
             // if(!creep.room.controller.my) {
@@ -42,7 +42,7 @@ global.roleClaimer = {
             // }
             // console.log(creep.claimController(creep.room.controller));
             if (creep.reserveController(Game.rooms[creep.memory.targetRoomName].controller) != OK) {
-                moveToMultiRoomTargetAvoidCreep(creep, Game.rooms[creep.memory.targetRoomName].controller, true);
+                moveToMultiRoomTargetAvoidCreep(creep, Game.rooms[creep.memory.targetRoomName].controller);
             }
         }
     },

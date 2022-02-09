@@ -80,12 +80,12 @@ global.roleBuilderExt = {
                 var closest = creep.pos.findClosestByPath(targets);
                 if (closest == null) {
                     // not in the correct room so can't figure out closest
-                    moveToMultiRoomTarget(creep, targets[0], false);
+                    moveToMultiRoomTarget(creep, targets[0]);
                     return;
                 }
                 creep.memory.currentTarget = closest.id;
                 if (creep.build(closest) != OK) {
-                    moveToMultiRoomTarget(creep, closest, false);
+                    moveToMultiRoomTarget(creep, closest);
                     // creep.moveTo(closest, {
                     //     visualizePathStyle: { stroke: "#ffffff" },
                     // });
