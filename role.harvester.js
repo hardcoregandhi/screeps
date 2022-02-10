@@ -8,7 +8,8 @@ global.roleHarvester = {
     baseBodyParts: [],
     bodyLoop: [WORK, WORK, WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
-    run: function (creep, focusHealing) {
+    run: function (creep) {
+        creep.memory.noHeal = true;
         var sources = creep.room.find(FIND_SOURCES);
         if (creep.memory.targetSource == undefined) {
             var lowestSource = 99;
