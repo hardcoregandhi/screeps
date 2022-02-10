@@ -58,11 +58,19 @@ Object.assign(exports, {
 */
 
 asdf = function() {
-    for (c of Object.keys(COMMODITY_SCORE)) {
+    mainStorage = Game.getObjectById(Memory.rooms["W17N1"].mainStorage)
+    for (c of Object.keys(COMMODITY_SCORE).reverse()) {
         console.log(c);
         console.log(JSON.stringify(COMMODITIES[c].components))
+        var ret = true;
         for (subC in COMMODITIES[c].components) {
-            console.log(subC);
+            console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
+            if (mainStorage.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC]) {
+                ret = false;
+            }
+        }
+        if (ret) {
+            console.log(`${c} is possible to make`)
         }
     }
 }
