@@ -265,6 +265,11 @@ global.roleMover = {
                 return;
             }
             target = creep.pos.findClosestByPath(targets);
+            if (target == null) {
+                //no path found
+                creep.moveTo(mainStorage);
+                return;
+            }
 
             creep.memory.currentTarget = target.id;
             if (target.structureType == STRUCTURE_SPAWN) Memory.rooms[creep.room.name].mainSpawn.refilling = creep.name;
