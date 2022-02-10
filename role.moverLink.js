@@ -120,29 +120,6 @@ global.roleMoverLink = {
         }
         
         Log(creep, "creep.room.controller.ticksToDowngrade: " + creep.room.controller.ticksToDowngrade);
-        if (link_controller != null && link_storage.cooldown == 0) {
-            Log(creep, `${link_controller}: mainStorage:${mainStorage.store.getUsedCapacity(RESOURCE_ENERGY)} linkController:${link_controller.store.getUsedCapacity(RESOURCE_ENERGY)}`)
-            if ((mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000 && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) || creep.room.controller.ticksToDowngrade < 1000) {
-                Log(creep, "controller empty, filling ", link_controller);
-                if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    Log(creep, "moving to mainStorage");
-                    creep.moveTo(mainStorage);
-                    return;
-                }
-                if (creep.transfer(link_storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    Log(creep, "moving to link_storage");
-                    creep.moveTo(link_storage);
-                    return;
-                }
-                if (link_storage.cooldown == 0) {
-                    ret = link_storage.transferEnergy(link_controller, link_storage.store.getUsedCapacity(RESOURCE_ENERGY));
-                    Log(creep, ret);
-                    if (ret == OK) {
-                        return;
-                    }
-                }
-            }
-        }
 
         // SELL excess energy if storage is almost full
         if (terminal != null) {
@@ -263,6 +240,26 @@ global.roleMoverLink = {
             if (mainStorage == undefined) {
                 Log(creep, "mainStorage could not be found");
             } else {
+                
+                if (link_controller != null && link_storage.cooldown == 0) {
+                    Log(creep, `${link_controller}: mainStorage:${mainStorage.store.getUsedCapacity(RESOURCE_ENERGY)} linkController:${link_controller.store.getUsedCapacity(RESOURCE_ENERGY)}`)
+                    if ((mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000 && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) || creep.room.controller.ticksToDowngrade < 1000) {
+                        if (creep.transfer(link_storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                            Log(creep, "moving to link_storage");
+                            creep.moveTo(link_storage);
+                            return;
+                        }
+                        if (link_storage.cooldown == 0) {
+                            ret = link_storage.transferEnergy(link_controller, link_storage.store.getUsedCapacity(RESOURCE_ENERGY));
+                            Log(creep, ret);
+                            if (ret == OK) {
+                                return;
+                            }
+                        }
+                        return;
+                    }
+                }
+                
                 if (creep.memory.firesale != undefined && creep.memory.firesale == true) {
                     Log(creep, "firesale, transferring to terminal");
                     var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
@@ -316,6 +313,18 @@ global.roleMoverLink = {
             Log(creep, "!moving");
             try {
                 // do default behaviour first so other creeps aren't blocked
+                
+                if (link_controller != null && link_storage.cooldown == 0) {
+                    Log(creep, `${link_controller}: mainStorage:${mainStorage.store.getUsedCapacity(RESOURCE_ENERGY)} linkController:${link_controller.store.getUsedCapacity(RESOURCE_ENERGY)}`)
+                    if ((mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000 && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) || creep.room.controller.ticksToDowngrade < 1000) {
+                        if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                            Log(creep, "moving to mainStorage");
+                            creep.moveTo(mainStorage);
+                            return;
+                        }
+                        return;
+                    }
+                }
                 if (link_storage.store.getUsedCapacity(RESOURCE_ENERGY)) {
                     ret = creep.withdraw(link_storage, RESOURCE_ENERGY);
                     if (ret == ERR_NOT_IN_RANGE) {
@@ -326,6 +335,7 @@ global.roleMoverLink = {
                         return;
                     }
                 }
+                
                 
                 if (creep.memory.firesale != undefined && creep.memory.firesale == true) {
                     Log(creep, "firesale, withdrawing from mainStorage");
