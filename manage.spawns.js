@@ -421,14 +421,16 @@ function spawnMineralHarvester(room) {
 }
 
 function spawnHarvesterDeposit(roomName) {
-    for(var deposit of Memory.rooms[roomName].deposits) {
-        if (
-            creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) == undefined ||
-            creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) == 0
-        ) {
-            ret = spawnCreep(roleHarvesterDeposit, null, { memory: { targetRoomName: deposit.room.name, targetSource: deposit.id }}, roomName);
-            if (ret == 0) {
-                return true;
+    if (creepRoomMap.get(roomName+"eenergy") < 200000) {
+        for(var deposit of Memory.rooms[roomName].deposits) {
+            if (
+                creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) == undefined ||
+                creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) == 0
+            ) {
+                ret = spawnCreep(roleHarvesterDeposit, null, { memory: { targetRoomName: deposit.room.name, targetSource: deposit.id }}, roomName);
+                if (ret == 0) {
+                    return true;
+                }
             }
         }
     }
