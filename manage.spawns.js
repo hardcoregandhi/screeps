@@ -25,6 +25,19 @@ global.runSpawns = function () {
             return Memory.rooms[roomName] == undefined;
         });
         // console.log(unsearchedNeighbouringRooms)
+        
+        if (Memory.rooms[r.name].spawnQueue != undefined && Memory.rooms[r.name].spawnQueue.length) {
+            var ret = spawnCreep(
+                eval(Memory.rooms[r.name].spawnQueue[0][0]),
+                Memory.rooms[r.name].spawnQueue[0][1],
+                Memory.rooms[r.name].spawnQueue[0][2],
+                Memory.rooms[r.name].spawnQueue[0][3]
+                )
+            if (ret == 0) {
+                _.drop(Memory.rooms[r.name].spawnQueue)
+                continue;
+            }
+        }
 
         if (Memory.createClaimer) {
             if (spawnCreep(roleClaimer, null, { memory: { baseRoomName: r.name } }, r.name) == 0) {

@@ -152,6 +152,18 @@ upgradeCreep = function (sourceCreepName) {
     }
 };
 
+queueSpawnCreep = function(_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
+    if (_spawnRoom == null) {
+        console.log("queueSpawnCreep requires a spawnRoom")
+        return -1
+    }
+    if (Memory.rooms[_spawnRoom].spawnQueue == undefined) {
+        Memory.rooms[_spawnRoom].spawnQueue = [];
+    }
+    Memory.rooms[_spawnRoom].spawnQueue.push(["role" + _.capitalize(_role.name), customBodyParts, customMemory, _spawnRoom]);
+    return;
+}
+
 spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
     // console.log(`spawnCreep ${_role.name} ${customBodyParts} ${customMemory} ${_spawnRoom}`)
     var ret = -1;
