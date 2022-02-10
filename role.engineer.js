@@ -14,15 +14,14 @@ global.roleEngineer = {
         LOADING: 3,
     },
     name: "engineer",
-    roleMemory: { memory: {} },
+    roleMemory: { memory: { currentTarget: {} } },
     // prettier-ignore
     BodyParts: [
         CARRY, CARRY, CARRY, CARRY, CARRY,
         CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE,
-        MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
-    bodyLoop: [CARRY, MOVE],
+    bodyLoop: [CARRY, CARRY, MOVE],
     bodyPartsMaxCount: 17,
 
     /** @param {Creep} creep **/
@@ -74,101 +73,90 @@ global.roleEngineer = {
         var factory = Game.getObjectById(Memory.rooms[creep.room.name].structs.factory.id);
         var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
 
-        // if (creep.memory.moving) {
-        //     Log(creep, "moving");
-
-        //     if (factory == undefined) {
-        //         Log(creep, "factory could not be found");
-        //     } else {
-        //         Log(creep, "using factory");
-        //         if (creep.transfer(factory, RESOURCE_ENERGY) != OK) {
-        //             // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-        //             creep.moveTo(factory);
-        //         }
-        //         factory.produce(RESOURCE_BATTERY)
-        //     }
-        //     return;
-        // } else {
-        //     Log(creep, "!moving");
-        //         if (creepRoomMap.get(creep.room.name + "eenergy") > 20000) {
-        //             if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
-        //                 creep.moveTo(mainStorage);
-        //             }
-        //         } else {
-        //             creep.moveTo(factory);
-        //         }
-
-        //         return;
-        // }
-
-        if (terminal.store.getUsedCapacity(RESOURCE_BATTERY)) {
-            sortedOrders = Game.market.getAllOrders({ type: ORDER_BUY, resourceType: RESOURCE_BATTERY }).sort((o1, o2) => {
-                return (
-                    o2.price * Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o2.remainingAmount) - Game.market.calcTransactionCost(Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o2.remainingAmount), "W6S1", o2.roomName) <
-                    o1.price * Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o1.remainingAmount) - Game.market.calcTransactionCost(Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), o1.remainingAmount), "W6S1", o1.roomName)
-                );
-            });
-            ret = Game.market.deal(sortedOrders[0].id, Math.min(terminal.store.getUsedCapacity(RESOURCE_BATTERY), sortedOrders[0].remainingAmount), creep.room.name);
-            if (ret == OK) {
-                msg = `Market Transaction completed: ${Game.market.outgoingTransactions[0].transactionId} ${Game.market.outgoingTransactions[0].amount} ${Game.market.outgoingTransactions[0].resourceType} for ${
-                    Game.market.outgoingTransactions[0].order.price
-                } : ${Game.market.outgoingTransactions[0].amount * Game.market.outgoingTransactions[0].order.price}`;
-                console.log(msg);
-                Game.notify(msg);
-            } else if (ret == ERR_NOT_ENOUGH_RESOURCES) {
-                if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000 && terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 50000) {
-                    if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        Log(creep, "moving to mainStorage");
-                        creep.moveTo(mainStorage);
-                        return;
-                    }
-                    if (creep.transfer(terminal, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        Log(creep, "moving to terminal");
-                        creep.moveTo(terminal);
-                        return;
-                    }
-                }
-            }
-        } else {
-            if (creep.store.getUsedCapacity(RESOURCE_BATTERY)) {
-                if (creep.transfer(terminal, RESOURCE_BATTERY) != OK) {
-                    creep.moveTo(terminal);
-                    return;
-                }
-            } else {
-                if (factory.store.getUsedCapacity(RESOURCE_BATTERY)) {
-                    if (creep.withdraw(factory, RESOURCE_BATTERY) != OK) {
-                        if (creep.transfer(factory, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(factory);
-                        }
-                        if (creep.transfer(factory, RESOURCE_ENERGY) == ERR_FULL) {
-                            if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
-                                creep.moveTo(mainStorage);
-                            }
-                        }
-                        creep.moveTo(factory);
-                        return;
-                    }
-                } else {
-                    // Make battery
-                    if (factory.produce(RESOURCE_BATTERY) != OK) {
-                        if (creep.store.getUsedCapacity(RESOURCE_ENERGY)) {
-                            if (creep.transfer(factory, RESOURCE_ENERGY) != OK) {
-                                creep.moveTo(factory);
-                                return;
-                            }
-                        } else {
-                            if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
-                                creep.moveTo(mainStorage);
-                                return;
-                            }
-                        }
-                    }
-                }
+        if (creep.memory.currentTarget == undefined) {
+            if (!findTargetResource(creep, mainStorage)) {
+                return;
             }
         }
+        
+        var factoryIsSupplied = true;
+        for(subC in creep.memory.currentTarget.resourceSubcomponents) {
+            if (factory.store.getUsedCapacity(subC) < COMMODITIES[creep.memory.currentTarget.resource].components[subC]) {
+                factoryIsSupplied = false;
+                Log(creep, `factoryIsSupplied: ${factoryIsSupplied} needs ${subC}`)
+                if (creep.store.getUsedCapacity(subC) < COMMODITIES[creep.memory.currentTarget.resource].components[subC]) {
+                    WithdrawResourceFromStorage(creep, mainStorage, subC);
+                } else {
+                    DeliverResourceToFactory(creep, factory, subC);
+                }
+                break;
+            }
+        }
+        
+        if (factoryIsSupplied) {
+            ret = factory.produce(creep.memory.currentTarget.resource)
+            if (ret == OK) {
+                creep.memory.currentTarget = null;
+            } else {
+                Log(creep, `Factory@${factory.pos} failed to produce ${creep.memory.currentTarget.resource}: ${ret}`)
+            }
+        }
+        
     },
 };
+
+function findTargetResource(creep, storage) {
+    var ret = false
+    for (c of Object.keys(COMMODITY_SCORE).reverse()) { //reverse so we make the most valuable first
+        var possible = true;
+        for (subC in COMMODITIES[c].components) {
+            // console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
+            // console.log(storage.store.getUsedCapacity(subC));
+            if (storage.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC]) {
+                possible = false;
+                break;
+            }
+        }
+        if (possible) {
+            console.log(`${c} is possible to make`)
+            creep.memory.currentTarget = {}
+            creep.memory.currentTarget.resource = c
+            creep.memory.currentTarget.resourceSubcomponents = COMMODITIES[c].components
+            ret = true
+        }
+    }
+    return ret;
+}
+
+function DumpNonTargetInStorage(creep, storage, target) {
+    Log(creep, "DumpNonTargetInStorage")
+    for (const resourceType in creep.store) {
+        if (resourceType != target){
+            if (creep.transfer(storage, resourceType) != OK) {
+                creep.moveTo(storage);
+            }
+            break;
+        }
+    }
+    return;
+}
+
+function WithdrawResourceFromStorage(creep, storage, resource, amount = null) {
+    Log(creep, "WithdrawResourceFromStorage")
+    if (creep.store.getUsedCapacity(resource) == 0 && creep.store.getFreeCapacity() == 0) { // or less than amount
+        DumpNonTargetInStorage(creep, storage, resource);
+    } else if (creep.withdraw(storage, resource) != OK) {
+        creep.moveTo(storage);
+    }
+    return;
+}
+
+function DeliverResourceToFactory(creep, factory, resource) {
+    Log(creep, "DeliverResourceToFactory")
+    if (creep.transfer(factory, resource) != OK) {
+        creep.moveTo(factory);
+    }
+}
 
 // MakeBattery(factory) {
 
