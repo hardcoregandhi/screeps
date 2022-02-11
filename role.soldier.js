@@ -20,8 +20,6 @@ global.roleSoldier = {
     /** @param {Creep} creep **/
     run: function (creep) {
         // creep.say('🏳️');
-        if (creep.memory.targetRoomName == undefined) creep.memory.targetRoomName = "W9S3";
-
         // creep.memory.return = true;
 
         var enemyTowers = [];
@@ -138,6 +136,11 @@ global.roleSoldier = {
             }
             
             if (Game.rooms[creep.memory.targetRoomName] != undefined) {
+                var enemyTargets = Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_CREEPS);
+                if (enemyTargets.length) {
+                    moveToMultiRoomTarget(creep, enemyTargets[0])
+                    return;
+                }
                 creep.moveTo(Game.rooms[creep.memory.targetRoomName].controller)
                 return
             }
