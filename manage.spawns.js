@@ -34,7 +34,7 @@ global.runSpawns = function () {
                 Memory.rooms[r.name].spawnQueue[0][3]
                 )
             if (ret == 0) {
-                _.drop(Memory.rooms[r.name].spawnQueue)
+                Memory.rooms[r.name].spawnQueue = _.drop(Memory.rooms[r.name].spawnQueue)
                 continue;
             }
         }
