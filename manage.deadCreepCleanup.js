@@ -21,7 +21,6 @@ deadCreepCleanup = function () {
                         Memory.rooms[c.targetRoomName].sources[c.targetSource].container.targettedBy -= 1;
                         RemoveFromList(Memory.rooms[c.targetRoomName].sources[c.targetSource].container.targettedByList, i)
                     }
-                    Memory.Debug.push(JSON.stringify(Memory.creeps[i]));
                 } else if (c.role == "gunner" || c.role == "soldier") {
                     if (Memory.rooms[c.baseRoomName].defenders.soldier == c.id) {
                         Memory.rooms[c.baseRoomName].defenders.soldier = undefined;
