@@ -50,13 +50,20 @@ RemoveFromList = function(list, entry) {
 }
 
 AddToList = function(list, entry) {
+    var ret = true
     if (list == undefined) {
         console.log("can't add to undefined list")
         return
     }
-    const index = list.indexOf(entry);
-    if (index == -1) {
-        list.push(entry); // 2nd parameter means remove one item only
+    for(var i of list) {
+        if (i.id === entry.id) {
+            console.log("already exists in list")
+            ret = false
+        }
     }
+    if (ret == true) {
+        list.push(entry);
+    }
+    return ret;
 }
 
