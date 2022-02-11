@@ -14,19 +14,6 @@ global.roleHarvesterDeposit = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        if (creep.memory.targetSource == undefined) {
-            console.log(creep.name);
-            console.log(Memory.rooms[creep.memory.targetRoomName].sources);
-            var lowestSource = 99;
-            _.forEach(Memory.rooms[creep.memory.targetRoomName].sources, (s) => {
-                if (s.targettedBy < lowestSource) {
-                    lowestSource = s.targettedBy;
-                    creep.memory.targetSource = s.id;
-                }
-            });
-            Memory.rooms[creep.memory.targetRoomName].sources[s.id].targettedBy += 1;
-        }
-
         Log(creep, 1);
         if (creep.ticksToLive > 1400) {
             creep.memory.healing = false;
