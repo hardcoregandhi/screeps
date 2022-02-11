@@ -1,6 +1,6 @@
 global.rolePowHarvester = {
     name: "powHarvester",
-    roleMemory: { memory: {} },
+    roleMemory: { memory: { } },
     // prettier-ignore
     BodyParts: [ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
     baseBodyParts: [],
@@ -19,36 +19,41 @@ global.rolePowHarvester = {
         //     return;
         // }
 
-        var powerBanks = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
+        if (Game.rooms[creep.memory.targetRoomName] == undefined) {
+            Log(creep, creep.memory.targetRoomName);
+            if (creep.room.name != creep.memory.targetRoomName) {
+                Log(creep, "finding route to " + creep.memory.targetRoomName);
+                const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName);
+                if (route.length > 0) {
+                    creep.say("Headin oot");
+                    const exit = creep.pos.findClosestByRange(route[0].exit);
+                    moveToMultiRoomTarget(creep, exit);
+                } else {
+                    creep.say("No route found");
+                    Log(creep, "no route to target room");
+                }
+                return;
+            }
+        }
+        
+        powerBank = Game.getObjectById(creep.memory.targetSource)
+
         try {
-            if (Memory.prevPowerBankHealth != powerBanks[0].hits) {
-                console.log(powerBanks[0].hits / (Memory.prevPowerBankHealth - powerBanks[0].hits));
-                Memory.prevPowerBankHealth = powerBanks[0].hits;
+            if (creep.memory.prevPowerBankHealth == undefined || creep.memory.prevPowerBankHealth != powerBank.hits) {
+                console.log(powerBank.hits / (creep.memory.prevPowerBankHealth - powerBank.hits));
+                creep.memory.prevPowerBankHealth = powerBank.hits;
             }
         } catch (e) {
             console.log(`${creep}: ${e}`);
         }
-        if (powerBanks.length) {
-            if (creep.attack(powerBanks[0]) != OK) {
-                ret = creep.moveTo(powerBanks[0], {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                });
-            }
-            return;
-        }
-
-        if (creep.room.name != targetRoom) {
-            const route = Game.map.findRoute(creep.room, targetRoom, {
-                maxRooms: 1,
+        
+        if (creep.attack(powerBank) != OK) {
+            ret = creep.moveTo(powerBank, {
+                visualizePathStyle: { stroke: "#ffaa00" },
             });
-            if (route.length > 0) {
-                const exit = creep.pos.findClosestByRange(route[0].exit);
-                moveToTarget(creep, exit);
-            }
-        } else {
-            // creep.moveTo(creep.room.controller);
-            // creep.attack(creep.room.controller)
         }
+        return;
+        
     },
 };
 
