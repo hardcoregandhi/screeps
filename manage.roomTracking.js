@@ -476,6 +476,16 @@ roomTracking = function () {
             }
         })
 
+        if (Memory.rooms[r.name].powerBanks == undefined) {
+            Memory.rooms[r.name].powerBanks = [];
+        }
+        powerBanks = Memory.rooms[r.name].powerBanks
+        _.forEach(powerBanks, (powerBank) => {
+            if (powerBank.expirationTime == undefined || powerBank.expirationTime <= Game.time) {
+                _.remove(Memory.rooms[r.name].powerBanks, (p) => { return p.id == powerBank.id }) 
+            }
+        })
+        
         if (r.controller && r.controller.reservation) {
             console.log(`room ${r.name} is enemy controlled`)
             Memory.rooms[r.name].reservation = {}
