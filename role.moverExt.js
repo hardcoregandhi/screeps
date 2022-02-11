@@ -1,5 +1,6 @@
 function findReplacementTarget(creep) {
-    
+    Log(creep, "findReplacementTarget")
+
     ret = false;
     //copied from spawnMoverExt
     _.forEach(Memory.rooms[creep.memory.baseRoomName].externalSources, (sourceId) => {
@@ -88,6 +89,7 @@ global.roleMoverExt = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        Log(creep, "roleMoverExt")
         creep.memory.noHeal = true
         
         if (creep.isSpawning) {
@@ -116,6 +118,7 @@ global.roleMoverExt = {
         }
 
         if (creep.memory.banking && creep.store.getUsedCapacity() == 0) {
+            Log(creep, "setting banking false")
             creep.memory.banking = false;
             if (creep.ticksToLive < Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.distanceToSpawn * 2) {
                 console.log(`${creep.name} is too old for another loop. Retiring.`)
@@ -126,6 +129,7 @@ global.roleMoverExt = {
             creep.say("m2harvester");
         }
         if (!creep.memory.banking && creep.store.getFreeCapacity() == 0) {
+            Log(creep, "setting banking true")
             creep.memory.banking = true;
             creep.memory.fakeBaseRoomName = creep.memory.baseRoomName;
             creep.say("m2storage");
