@@ -192,7 +192,30 @@ global.roleHarvester = {
                             } else {
                                 targetSource = Game.getObjectById(creep.memory.targetSource);
                                 if (targetSource.pos.inRangeTo(creep.pos, 2)) {
-                                    creep.room.createConstructionSite(creep.pos, STRUCTURE_LINK);
+                                    var csites = Game.rooms[creep.memory.baseRoomName].find(FIND_CONSTRUCTION_SITES, {
+                                        filter: (site) => {
+                                            return targetSource.pos.inRangeTo(site, 3); //; && site.structureType == STRUCTURE_CONTAINER;
+                                        },
+                                    });
+                                    if (csites.length == 0) {
+                                        const terrain = creep.room.getTerrain();
+                                        for (var i = targetSource.pos.x - 1; i <= targetSource.pos.x + 1; i++) {
+                                            for (var j = targetSource.pos.y - 1; j <= targetSource.pos.y + 1; j++) {
+                                                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                                                    for (var ii = i - 1; ii <= i + 1; ii++) {
+                                                        for (var jj = j - 1; jj <= j + 1; jj++) {
+                                                            if (terrain.get(ii, jj) != TERRAIN_MASK_WALL) {
+                                                                if(creep.room.createConstructionSite(ii, jj, STRUCTURE_LINK) == OK)
+                                                                    return;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    moveToMultiRoomTarget(creep, targetSource);
                                 }
                             }
                         }
@@ -249,7 +272,7 @@ global.roleHarvester = {
                                             for (var ii = i - 1; ii <= i + 1; ii++) {
                                                 for (var jj = j - 1; jj <= j + 1; jj++) {
                                                     if (terrain.get(ii, jj) != TERRAIN_MASK_WALL) {
-                                                        if(creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER) == OK)
+                                                        if(creep.room.createConstructionSite(ii, jj, STRUCTURE_CONTAINER) == OK)
                                                             return;
                                                     }
                                                 }
