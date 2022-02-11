@@ -16,6 +16,7 @@ global.roleBuilder = {
     roleMemory: { memory: {} },
     /** @param {Creep} creep **/
     run: function (creep) {
+        Log(creep, "roleBuilder")
         if (creep.memory.interShard) {
             interShardMove(creep);
             return;
@@ -32,6 +33,7 @@ global.roleBuilder = {
         }
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
+            Log(creep, "returning home.")
             moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
@@ -76,16 +78,23 @@ global.roleBuilder = {
         if (creep.memory.building && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.building = false;
             creep.say("🔄 harvest");
+            Log(creep, "setting building false")
         }
         if (!creep.memory.building && creep.store.getFreeCapacity() == 0) {
             creep.memory.building = true;
             creep.say("🚧 build");
+            Log(creep, "setting building true")
         }
 
         if (creep.memory.building) {
+            Log(creep, "building")
+
             if (creep.memory.currentTarget != null) {
+                Log(creep, `currentTarget ${creep.memory.currentTarget}`)
                 target = Game.getObjectById(creep.memory.currentTarget);
-                if (target != undefined) {
+                if (target != null) {
+                    Log(creep, `building ${target}@${target.pos}`)
+
                     if (creep.build(target) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, {
                             visualizePathStyle: { stroke: "#ffffff" },
@@ -93,6 +102,7 @@ global.roleBuilder = {
                     }
                     return;
                 } else {
+                    Log(creep, `currentTarget is now null`)
                     creep.memory.currentTarget = null;
                     roomRefreshMap[creep.room.name] = Game.time;
                     // refreshRoomTrackingNextTick = true;
@@ -149,6 +159,8 @@ global.roleBuilder = {
                 }
             }
         } else {
+            Log(creep, "!building")
+
             Log(creep, 8);
             if (Game.flags.DISMANTLE && creep.memory.baseRoomName == Game.flags.DISMANTLE.room.name) {
                 var dismantle = Game.flags.DISMANTLE.pos.lookFor(LOOK_STRUCTURES)[0];
