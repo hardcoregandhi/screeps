@@ -72,6 +72,7 @@ global.roleWanderer = {
             var deposits = creep.room.find(FIND_DEPOSITS);
             if (deposits.length) {
                 for(var d of deposits) {
+                    d.expirationTime = Game.time + d.ticksToDecay;
                     AddToList(Memory.rooms[creep.memory.baseRoomName].deposits, d)
                 }
             }

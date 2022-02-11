@@ -468,7 +468,14 @@ roomTracking = function () {
                 }
             }
         }
-        
+
+        deposits = Memory.rooms[r.name].deposits
+        _.forEach(deposits, (deposit) => {
+            if (deposit.expirationTime == undefined || deposit.expirationTime <= Game.time) {
+                _.remove(Memory.rooms[r.name].deposits, (d) => { return d.id == deposit.id }) 
+            }
+        })
+
         if (r.controller && r.controller.reservation) {
             console.log(`room ${r.name} is enemy controlled`)
             Memory.rooms[r.name].reservation = {}
