@@ -508,6 +508,14 @@ global.baseRawData = `
             ],
             [
                 {
+                    "buildingType": "spawn",
+                    "pos": [
+                        { "x": 2, "y": 1 }
+                    ]
+                }
+            ],
+            [
+                {
                     "buildingType": "lab",
                     "pos": [
                         { "x": 4, "y": 1 },
