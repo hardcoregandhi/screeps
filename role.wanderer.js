@@ -76,6 +76,13 @@ global.roleWanderer = {
                     AddToList(Memory.rooms[creep.memory.baseRoomName].deposits, d)
                 }
             }
+            var powerBanks = r.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
+            if (powerBanks.length) {
+                for(var p of powerBanks) {
+                    p.expirationTime = Game.time + p.ticksToDecay;
+                    AddToList(Memory.rooms[creep.memory.baseRoomName].powerBanks, p)
+                }
+            }
             if (creep.memory.reverse) {
                 if (creep.memory.currentTargetRoom <= 0) {
                     creep.memory.reverse = !creep.memory.reverse
