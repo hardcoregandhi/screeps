@@ -163,21 +163,36 @@ global.EnemyCheckFleeRequestBackup = function(creep) {
         var invaderCore = Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_STRUCTURES).filter((structure) => {
                 return structure.structureType == STRUCTURE_INVADER_CORE;
             });
-        var hostileCreeps = Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_CREEPS).filter((c) => {
+        var hostileCreeps = Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_CREEPS)
+        var hostileAttackCreeps = hostileCreeps.filter((c) => {
                 return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
             });
         rangedCount = 0;
         meleeCount = 0;
-        if (hostileCreeps.length) {
+        if (hostileAttackCreeps.length) {
             console.log(hostileCreeps);
             _.forEach(hostileCreeps, (c) => {
                 _.forEach(c.body, (part) => {
                     switch (part.type) {
                         case ATTACK:
                             meleeCount++;
+                            if (part.boost != undefined) {
+                                meleeCount++;
+                            }
                             break;
                         case RANGED_ATTACK:
                             rangedCount++;
+                            if (part.boost != undefined) {
+                                rangedCount++;
+                            }
+                            break;
+                        case HEAL:
+                            meleeCount++;
+                            rangedCount++;
+                            if (part.boost != undefined) {
+                                meleeCount++;
+                                rangedCount++;
+                            }
                             break;
                     }
                 });
@@ -185,12 +200,12 @@ global.EnemyCheckFleeRequestBackup = function(creep) {
         }
         
 
-        if (hostileCreeps.length && hostileCreeps[0].owner.username != "Tigga" || invaderCore.length ) {
+        if (hostileAttackCreeps.length && hostileCreeps[0].owner.username != "Tigga" || invaderCore.length ) {
             try {
                 if (meleeCount > rangedCount || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) < 1) {
-                    requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName);
+                    requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount);
                 } else if (meleeCount < rangedCount || creepRoomMap.get(creep.memory.baseRoomName + "gunnerTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "gunnerTarget" + creep.memory.targetRoomName) < 1) {
-                    requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName);
+                    requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName, rangedCount);
                 }
             } catch (e) {
                 console.log(`${creep}: ${e}`);
