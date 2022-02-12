@@ -324,6 +324,20 @@ function scoutNeighbouringRooms(room) {
             }
         }
     });
+    if (ret == false && Memory.rooms[room.name].extraRooms != undefined) {
+        _.forEach(Memory.rooms[room.name].extraRooms, (n) => {
+            if (Memory.rooms[n].reservation && Memory.rooms[n].reservation.username != "hardcoregandhi") { //do this in the if so it will still scout neghbouring neghbour rooms
+                // This room is reserved by someone else, just ignore it
+                return;
+            }
+            if (creepRoomMap.get(room.name + "explorerTarget" + n) == undefined || creepRoomMap.get(room.name + "explorerTarget" + n) < 1) {
+                spawnCreep(roleExplorer, null, { memory: { targetRoomName: n } }, room.name);
+                ret = true;
+                return false; //early escape
+            }
+        });
+        
+    }
     return ret;
 }
 
