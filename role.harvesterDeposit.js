@@ -34,6 +34,10 @@ global.roleHarvesterDeposit = {
             Log(creep, "switching to dropping");
         }
         if (!creep.memory.mining && creep.store.getUsedCapacity() == 0) {
+            if (creep.memory.toDIE) {
+                creep.memory.DIE = true;
+                return;
+            }
             creep.memory.healing = false;
             creep.memory.mining = true;
             creep.say("⛏️ mining");
@@ -103,6 +107,10 @@ global.roleHarvesterDeposit = {
             var targetSource = Game.getObjectById(creep.memory.targetSource);
             if (targetSource == undefined) {
                 log.error("source not found");
+            }
+            if (targetSource.lastCooldown >= 120) {
+                creep.memory.toDIE = true;
+                creep.memory.mining = false;
             }
             // Log(creep, targetSource);
 
