@@ -421,7 +421,7 @@ function spawnMineralHarvester(room) {
 }
 
 function spawnHarvesterDeposit(roomName) {
-    if (creepRoomMap.get(roomName+"eenergy") < 200000) {
+    if (creepRoomMap.get(roomName+"eenergy") > 500000) {
         for(var deposit of Memory.rooms[roomName].deposits) {
             if (
                 creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) == undefined ||
