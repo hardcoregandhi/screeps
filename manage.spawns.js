@@ -188,6 +188,7 @@ function spawnExternalHarvester(roomName) {
 
 function spawnExternalMover(roomName) {
     // console.log(`spawnExternalMover(${roomName}))`)
+    var potentialSources = [];
     if (Memory.rooms[roomName].externalSources != undefined && Memory.rooms[roomName].externalSources.length) {
         _.forEach(Memory.rooms[roomName].externalSources, (sourceId) => {
             // console.log(sourceId)
