@@ -244,16 +244,27 @@ function spawnExternalMover(roomName) {
                 Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id).store.getUsedCapacity() > 0
                 
             ) {
+                potentialSources.push(source)
                 // console.log(`creepRoomMap.get(${roomName}+"moverExtTarget"+${source.id}) ${creepRoomMap.get(roomName+"moverExtTarget"+source.id)}`)
                 // console.log(`s: ${source.id.substr(-3)} r: ${source.room.name} curParts: ${Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts} tarBy: ${Memory.rooms[source.room.name].sources[source.id].container.targetCarryParts}`)
-                if (creepRoomMap.get(`${roomName}moverExtRepairTarget${source.id}`) == undefined || creepRoomMap.get(`${roomName}moverExtRepairTarget${source.id}`) == 0) {
-                    spawnCreep(roleMoverExtRepair, null, { memory: { targetRoomName: source.room.name, targetSource: source.id, targetContainer: container.id, noHeal: true } }, roomName); 
-                } else {
-                    spawnCreep(roleMoverExt, null, { memory: { targetRoomName: source.room.name, targetSource: source.id, targetContainer: container.id, noHeal: true } }, roomName); 
-                }
-                return true;
             }
         });
+        
+        if (potentialSources.length) {
+            potentialSources = potentialSources.sort(function(s1, s2){
+                if (Memory.rooms[s1.room.name].sources[s1.id].container.currentCarryParts == Memory.rooms[s2.room.name].sources[s2.id].container.currentCarryParts) {
+                    return Game.getObjectById(Memory.rooms[s1.room.name].sources[s1.id].container.id).store.getUsedCapacity() - Game.getObjectById(Memory.rooms[s2.room.name].sources[s2.id].container.id).store.getUsedCapacity()
+                } else {
+                    return Memory.rooms[s1.room.name].sources[s1.id].container.currentCarryParts - Memory.rooms[s2.room.name].sources[s2.id].container.currentCarryParts
+                }
+            })
+            if (creepRoomMap.get(`${roomName}moverExtRepairTarget${potentialSources[0].id}`) == undefined || creepRoomMap.get(`${roomName}moverExtRepairTarget${potentialSources[0].id}`) == 0) {
+                spawnCreep(roleMoverExtRepair, null, { memory: { targetRoomName: potentialSources[0].room.name, targetSource: potentialSources[0].id, targetContainer: Memory.rooms[potentialSources[0].room.name].sources[potentialSources[0].id].container.id, noHeal: true } }, roomName); 
+            } else {
+                spawnCreep(roleMoverExt, null, { memory: { targetRoomName: potentialSources[0].room.name, targetSource: potentialSources[0].id, targetContainer: Memory.rooms[potentialSources[0].room.name].sources[potentialSources[0].id].container.id, noHeal: true } }, roomName); 
+            }
+            return true;
+        }
     }
 
     return false;
