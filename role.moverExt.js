@@ -105,7 +105,7 @@ global.roleMoverExt = {
 
         if (creep.memory.fleeing > 0) {
             creep.memory.fleeing -= 1;
-            moveToTarget(creep, Game.rooms[creep.memory.baseRoomName].controller);
+            moveToMultiRoomTarget(creep, Game.rooms[creep.memory.baseRoomName].controller);
             return;
         }
 
@@ -247,7 +247,7 @@ global.roleMoverExt = {
                     console.log(`${creep.name} has no container, killing.`)
                     // creep.memory.DIE = true;
                     targetSource = Game.getObjectById(creep.memory.targetSource);
-                    if (!creep.pos.inRangeTo(targetSource.pos, 1)) moveToTarget(creep, targetSource.pos);
+                    if (!creep.pos.inRangeTo(targetSource.pos, 1)) moveToMultiRoomTarget(creep, targetSource.pos);
                 }
             }
         } else {
@@ -285,7 +285,7 @@ global.roleMoverExt = {
 
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (mainStorage != undefined) {
-                if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
+                if (trackedTransferToStorage(creep, mainStorage) != OK) {
                     moveToMultiRoomTarget(creep, mainStorage);
                 }
                 return;
