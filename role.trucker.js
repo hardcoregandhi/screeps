@@ -8,7 +8,7 @@ global.roleTrucker = {
     // prettier-ignore
     BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
     baseBodyParts: [],
-    bodyLoop: [CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
+    bodyLoop: [CARRY, MOVE],
     bodyPartsMaxCount: 30,
 
     /** @param {Creep} creep **/
