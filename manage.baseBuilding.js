@@ -52,9 +52,6 @@ global.runBaseBuilder = function () {
             Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage++;
             if (Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage > baseData[r.controller.level].stages.length) {
                 // this will only be hit once on the pass that all building is completed
-                if (r.controller.level == 4) {
-                    buildControllerSurroundings(r);
-                }
                 if (r.controller.level == 5) {
                     buildControllerRampartSurroundings(r);
                     buildRampartSurroundings(r);
@@ -68,33 +65,6 @@ global.runBaseBuilder = function () {
         }
     }
 };
-
-function buildControllerSurroundings(r) {
-    // controller surroundings
-    const terrain = r.getTerrain();
-    for (var i = r.controller.pos.x - 4; i <= r.controller.pos.x + 4; i++) {
-        for (var j = r.controller.pos.y - 4; j <= r.controller.pos.y + 4; j++) {
-            // r.visual.circle(i, j, { fill: "red", lineStyle: "dashed" , radius: 0.55 });
-            if (
-                // any edges
-                i == r.controller.pos.x - 4 ||
-                i == r.controller.pos.x + 4 ||
-                j == r.controller.pos.y - 4 ||
-                (j == r.controller.pos.y + 4 &&
-                    // but not the corners (diagonal movement)
-                    (!(i == r.controller.pos.x - 4 && i == r.controller.pos.y - 4) ||
-                        !(i == r.controller.pos.x - 4 && i == r.controller.pos.y + 4) ||
-                        !(i == r.controller.pos.x + 4 && i == r.controller.pos.y - 4) ||
-                        !(i == r.controller.pos.x + 4 && i == r.controller.pos.y + 4)))
-            ) {
-                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
-                    // r.visual.circle(i, j, { fill: "green", lineStyle: "dashed", radius: 0.55 });
-                    r.createConstructionSite(i, j, "road");
-                }
-            }
-        }
-    }
-}
 
 function buildControllerRampartSurroundings(r) {
     // controller surroundings
