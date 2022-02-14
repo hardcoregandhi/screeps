@@ -92,6 +92,16 @@ global.roleHarvSup = {
             }
 
             target = Game.getObjectById(creep.memory.targetContainer);
+            if (target == null) {
+                delete creep.memory.targetContainer
+                if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
+                    creep.memory.targetContainer = Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id
+                    target = Game.getObjectById(creep.memory.targetContainer);
+                } else {
+                    console.log(`${creep} has lost it's target container. retiring.`)
+                    creep.memory.DIE = true
+                }
+            }
             if (creep.memory.targetSource == undefined) {
                 creep.memory.targetSource = target.pos.findClosestByRange(FIND_SOURCES).id;
             }

@@ -12,6 +12,7 @@ require("manage.roads");
 require("manage.utilityFunctions");
 require("manage.creepTracking");
 require("manage.roomTracking");
+require("manage.energyTracking");
 require("manage.roomExpansion");
 require("manage.creepReduction");
 require("manage.market");

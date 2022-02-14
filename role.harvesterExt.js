@@ -155,7 +155,7 @@ global.roleHarvesterExt = {
             pickupNearby(creep);
 
             Log(creep, targetSource);
-            if (creep.harvest(targetSource) != OK) {
+            if (trackedHarvest(creep, targetSource) != OK) {
                 // console.log(creep.harvest(targetSource))
                 moveToMultiRoomTargetAvoidCreep(creep, targetSource);
             }

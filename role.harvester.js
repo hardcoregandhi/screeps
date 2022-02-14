@@ -82,7 +82,7 @@ global.roleHarvester = {
             pickupNearby(creep);
 
             targetSource = Game.getObjectById(creep.memory.targetSource);
-            if (creep.harvest(targetSource) != OK) {
+            if (trackedHarvest(creep, targetSource) != OK) {
                 creep.moveTo(targetSource, {
                     visualizePathStyle: { stroke: "#ffaa00" },
                 });
@@ -235,7 +235,14 @@ global.roleHarvester = {
                             Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined
                         ) {
                             Log(creep, "spawning harvSup")
-                            spawnCreep(roleHarvSup, "auto", { memory: { targetContainer: target.id } }, creep.memory.baseRoomName);
+                            customBody = [];
+                            if (Memory.rooms[creep.memory.baseRoomName].mainTower != undefined) {
+                                customBody.push(WORK);
+                            }
+                            customBody.concat(Array(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts).fill(CARRY));
+                            customBody.concat(Array(Memory.ceil(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts/2)).fill(MOVE));
+                            
+                            spawnCreep(roleHarvSup, customBody, { memory: { targetSource: creep.memory.targetSource, targetContainer: creep.memory.targetContainer } }, creep.memory.baseRoomName);
                         }
 
                         if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy == 0) {
