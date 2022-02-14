@@ -203,9 +203,9 @@ global.EnemyCheckFleeRequestBackup = function(creep) {
         if (hostileAttackCreeps.length && hostileCreeps[0].owner.username != "Tigga" || invaderCore.length ) {
             try {
                 if (meleeCount > rangedCount || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) < 1) {
-                    requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount);
+                    requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount+rangedCount);
                 } else if (meleeCount < rangedCount || creepRoomMap.get(creep.memory.baseRoomName + "gunnerTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "gunnerTarget" + creep.memory.targetRoomName) < 1) {
-                    requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName, rangedCount);
+                    requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount+rangedCount);
                 }
             } catch (e) {
                 console.log(`${creep}: ${e}`);
