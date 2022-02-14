@@ -17,29 +17,26 @@ global.moveToTarget = function (creep, target, extraOptions = null) {
                         maxRooms: 0,
                         ignoreCreeps: true,
                         maxOps: 100000,
-                        reusePath: 10,
+                        reusePath: 200,
                     },
                     extraOptions
                 )
             );
             Log(creep, `${ret}`)
-            if (ret == OK) {
-                if(creep.memory.prevPos == undefined) {
-                    creep.memory.prevPos = {}
-                    creep.memory.prevPos.pos = creep.pos
-                    creep.memory.prevPos.time = Game.time
-                } else {
-                    if(creep.pos == creep.memory.prevPos.pos.x &&
-                            creep.pos == creep.memory.prevPos.pos.y &&
-                            Game.time + 5 > creep.memory.prevPos.time
-                    ) {
-                        ret = moveToMultiRoomTargetAvoidCreep(creep, target)
-                        if (ret == OK) {
-                            delete creep.memory.prevPos
-                        }
+            if(creep.memory.prevPos == undefined) {
+                creep.memory.prevPos = {}
+                creep.memory.prevPos.pos = creep.pos
+                creep.memory.prevPos.time = Game.time
+            } else {
+                if(creep.pos == creep.memory.prevPos.pos.x &&
+                    creep.pos == creep.memory.prevPos.pos.y &&
+                    Game.time + 5 > creep.memory.prevPos.time
+                ) {
+                    ret = moveToMultiRoomTargetAvoidCreep(creep, target)
+                    if (ret == OK) {
+                        delete creep.memory.prevPos
                     }
                 }
-                
             }
             return
         }
@@ -61,6 +58,9 @@ global.moveToTarget = function (creep, target, extraOptions = null) {
 };
 
 global.moveToMultiRoomTarget = function (creep, target, extraOptions = null) {
+    
+    if(creep.fatigue != 0)
+        return;
     
     if (creep.memory.prevPos != undefined) {
         if(
@@ -88,32 +88,29 @@ global.moveToMultiRoomTarget = function (creep, target, extraOptions = null) {
                         maxRooms: 16,
                         ignoreCreeps: true,
                         maxOps: 100000,
-                        reusePath: 10,
+                        reusePath: 200,
                     },
                     extraOptions
                 )
             );
             Log(creep, `${ret}`)
-            if (ret == OK) {
-                if(creep.memory.prevPos == undefined) {
-                    creep.memory.prevPos = {}
-                    creep.memory.prevPos.pos = creep.pos
-                    creep.memory.prevPos.time = Game.time
-                } else {
-                    if(creep.pos.x == creep.memory.prevPos.pos.x &&
-                            creep.pos.y == creep.memory.prevPos.pos.y &&
-                            Game.time + 5 > creep.memory.prevPos.time
-                    ) {
-                        if (creep.memory.prevPos.unstuckAttempt == undefined) {
-                            Log(creep, `stuck.`)
-                            creep.memory.prevPos.unstuckAttempt = true
-                            ret = moveToMultiRoomTargetAvoidCreep(creep, target)
-                        } else {
-                            creep.move(Math.round(Math.random() * 10))
-                        }
-                   }
-                }
-                
+            if(creep.memory.prevPos == undefined) {
+                creep.memory.prevPos = {}
+                creep.memory.prevPos.pos = creep.pos
+                creep.memory.prevPos.time = Game.time
+            } else {
+                if(creep.pos.x == creep.memory.prevPos.pos.x &&
+                        creep.pos.y == creep.memory.prevPos.pos.y &&
+                        Game.time + 5 > creep.memory.prevPos.time
+                ) {
+                    if (creep.memory.prevPos.unstuckAttempt == undefined) {
+                        Log(creep, `stuck.`)
+                        creep.memory.prevPos.unstuckAttempt = true
+                        ret = moveToMultiRoomTargetAvoidCreep(creep, target)
+                    } else {
+                        creep.move(Math.round(Math.random() * 10))
+                    }
+               }
             }
             return
         }
