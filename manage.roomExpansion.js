@@ -2,18 +2,24 @@ roomExpansion = function(myRoom) {
     if (Memory.rooms[myRoom].roomExpansion != undefined) {
         if (Memory.rooms[myRoom].roomExpansion.targetRoomName != undefined) {
             targetRoomName = Memory.rooms[myRoom].roomExpansion.targetRoomName
+            for (const i in Game.spawns) {
+                if (Memory.myRooms.indexOf(Game.spawns[i].room.name) === -1) {
+                    Memory.myRooms.push(Game.spawns[i].room.name);
+                    myRooms[Game.shard.name].push(Game.spawns[i].room.name)
+                }
+            }
             // if (Memory.myRooms.lastIndexOf(targetRoomName) == -1) {
             //     Memory.myRooms.push(targetRoomName);
             //     myRooms[Game.shard.name].push(targetRoomName)
             // }
-            // console.log(`roomExpansion: ${myRoom} -> ${targetRoomName}`)
+            console.log(`roomExpansion: ${myRoom} -> ${targetRoomName}`)
             if (Game.rooms[targetRoomName] == undefined && creepRoomMap.get(`${myRoom}explorerTarget${targetRoomName}`) == undefined || creepRoomMap.get(`${myRoom}explorerTarget${targetRoomName}`) <1 ) {
                 console.log(`roomExpansion: ${myRoom} targetting ${targetRoomName} spawning explorer`)
                 spawnCreep(roleExplorer, null, {memory:{targetRoomName:targetRoomName}}, myRoom);
                 return true;
             }
             
-            if (Game.rooms[targetRoomName] != undefined && Game.rooms[targetRoomName].controller != null && Game.rooms[targetRoomName].controller.my == undefined &&
+            if (Game.rooms[targetRoomName] != undefined && Game.rooms[targetRoomName].controller != null && Game.rooms[targetRoomName].controller.my == false &&
                 creepRoomMap.get(`${myRoom}claimerTarget${targetRoomName}`) == undefined || creepRoomMap.get(`${myRoom}claimerTarget${targetRoomName}`) <1) {
                 console.log(`roomExpansion: ${myRoom} targetting ${targetRoomName} spawning roleClaimer`)
                 spawnCreep(roleClaimer, [CLAIM, MOVE, MOVE, MOVE, MOVE, MOVE], {memory:{targetRoomName:targetRoomName, claim: true}}, myRoom);
@@ -44,7 +50,7 @@ roomExpansion = function(myRoom) {
                     }
                 
                 // } else {
-                    if (creepRoomMap.get(`${myRoom}truckerTarget${targetRoomName}`) == undefined || creepRoomMap.get(`${myRoom}truckerTarget${targetRoomName}`) < 3) {
+                    if (creepRoomMap.get(`${myRoom}truckerTarget${targetRoomName}`) == undefined || creepRoomMap.get(`${myRoom}truckerTarget${targetRoomName}`) < 4) {
                         console.log(`roomExpansion: ${myRoom} targetting ${targetRoomName} spawning roleTrucker`)
                         spawnCreep(roleTrucker, "auto", {memory:{targetRoomName:targetRoomName}}, myRoom);
                         return true;
