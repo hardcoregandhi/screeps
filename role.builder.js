@@ -200,7 +200,7 @@ global.roleBuilder = {
                     Log(creep, "mainStorage could not be found");
                 } else {
                     Log(creep, "using mainStorage");
-                    if (mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity() * 0.01) {
+                    if (mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity() * 0.001) {
                         if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
                             // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
                             creep.moveTo(mainStorage, {
