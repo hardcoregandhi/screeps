@@ -1,6 +1,22 @@
 require("movement");
 require("role.common");
 
+getRepairerStructureHealLimit = function (room, structure) {
+    var wallHealPercent = room.controller.level * 0.1;
+
+    switch (structure.structureType) {
+        case STRUCTURE_ROAD:
+            return (structure.hits / structure.hitsMax) * 100 < 50;
+        case STRUCTURE_CONTAINER:
+            return (structure.hits / structure.hitsMax) * 100 < 50;
+        case STRUCTURE_RAMPART:
+            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent;
+        case STRUCTURE_WALL:
+            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent;
+    }
+};
+
+
 global.roleRepairer = {
     name: "repairer",
     // prettier-ignore
@@ -56,8 +72,8 @@ global.roleRepairer = {
             if (creep.memory.currentTarget != null) {
                 target = Game.getObjectById(creep.memory.currentTarget);
                 Log(creep, `currentTarget ${creep.memory.currentTarget}: ${target}`)
-                Log(creep, `target.hits: ${target.hits}: getStructureHealLimit: ${getStructureHealLimit(creep.room, target)}`)
-                if (target != undefined && getStructureHealLimit(creep.room, target)) {
+                Log(creep, `target.hits: ${target.hits}: getRepairerStructureHealLimit: ${getRepairerStructureHealLimit(creep.room, target)}`)
+                if (target != undefined && getRepairerStructureHealLimit(creep.room, target)) {
                     if (creep.repair(target) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
                     }
@@ -68,9 +84,11 @@ global.roleRepairer = {
             }
             if (creep.memory.currentTarget == null) {
                 var customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-                    return getStructureHealLimit(creep.room, structure) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos));
+                    return getRepairerStructureHealLimit(creep.room, structure) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos));
                 });
+                Log(creep, customStructureSpecificPercentLimits)
                 if (customStructureSpecificPercentLimits.length) {
+                    Log(creep, "repair targets found:" + customStructureSpecificPercentLimits)
                     creep.memory.currentTarget = creep.pos.findClosestByRange(customStructureSpecificPercentLimits).id
                 }
             }
