@@ -63,7 +63,7 @@ global.runSpawns = function () {
         } else if (creepRoomMap.get(r.name + "upgrader") < 3 && creepRoomMap.get(r.name+"eenergy") > 200000 && (r.controller.level < 8 || (r.controller.level == 8 && r.controller.ticksToDowngrade < 10000))) {
             spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } else if ( room.energyAvailable == room.energyCapacityAvailable && Game.getObjectById(Memory.rooms[r.name].mainStorage).store.getFreeCapacity() <= 50) {
+        } else if ( room.energyAvailable == room.energyCapacityAvailable && Game.getObjectById(Memory.rooms[r.name].mainStorage).store.getFreeCapacity() <= 50 && Game.getObjectById(Memory.rooms[r.name].mainStorage).structureType == STRUCTURE_STORAGE) {
             spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name);
             continue
         } else if (r.controller.level < 3) {
@@ -147,8 +147,12 @@ function spawnExternalHarvester(roomName) {
                 return;
             }
             // console.log(roomName + "harvesterExtTarget" + source.id)
-            if (source.room.controller.reservation != undefined &&
-                source.room.controller.reservation.username != 'hardcoregandhi') {
+            if (source.room.controller == undefined ||
+                (source.room.controller &&
+                source.room.controller.reservation != undefined &&
+                source.room.controller.reservation.username != 'hardcoregandhi') ||
+                (Memory.rooms[source.room.name].reservation &&
+                Memory.rooms[source.room.name].reservation.username != 'hardcoregandhi')) {
                 return
             }
             
@@ -198,8 +202,10 @@ function spawnExternalMover(roomName) {
             }
             // console.log(roomName + "harvesterExtTarget" + source.id)
             
-            if (source.room.controller.reservation != undefined &&
-                source.room.controller.reservation.username != 'hardcoregandhi') {
+            if (source.room.controller &&
+                source.room.controller.reservation != undefined &&
+                source.room.controller.reservation.username != 'hardcoregandhi' &&
+                Memory.rooms[source.room.name].reservation.username != 'hardcoregandhi') {
                 return
             }
 
@@ -308,7 +314,7 @@ function scoutNeighbouringRooms(room) {
             }
         }
         if (Game.rooms[n] == undefined) {
-            if (Memory.rooms[n].reservation && Memory.rooms[n].reservation.username != "hardcoregandhi") { //do this in the if so it will still scout neghbouring neghbour rooms
+            if (Memory.rooms[n] && Memory.rooms[n].reservation != undefined && Memory.rooms[n].reservation.username != "hardcoregandhi") { //do this in the if so it will still scout neghbouring neghbour rooms
                 // This room is reserved by someone else, just ignore it
                 return;
             }
@@ -319,7 +325,7 @@ function scoutNeighbouringRooms(room) {
             }
         } else {
             _.forEach(Memory.rooms[n].neighbouringRooms, (nn) => {
-                if (Memory.rooms[nn].reservation && Memory.rooms[nn].reservation.username != "hardcoregandhi") {
+                if (Memory.rooms[nn] && Memory.rooms[nn].reservation != undefined && Memory.rooms[nn].reservation.username != "hardcoregandhi") {
                     // This room is reserved by someone else, just ignore it
                     return;
                 }
@@ -338,7 +344,7 @@ function scoutNeighbouringRooms(room) {
     });
     if (ret == false && Memory.rooms[room.name].extraRooms != undefined) {
         _.forEach(Memory.rooms[room.name].extraRooms, (n) => {
-            if (Memory.rooms[n].reservation && Memory.rooms[n].reservation.username != "hardcoregandhi") { //do this in the if so it will still scout neghbouring neghbour rooms
+            if (Memory.rooms[n] && Memory.rooms[n].reservation != undefined && Memory.rooms[n].reservation.username != "hardcoregandhi") { //do this in the if so it will still scout neghbouring neghbour rooms
                 // This room is reserved by someone else, just ignore it
                 return;
             }
@@ -363,7 +369,8 @@ function spawnBuilderExt(roomName) {
                 return;
             }
             // console.log(roomName + "harvesterExtTarget" + source.id)
-            if (source.room.controller.reservation != undefined &&
+            if (source.room.controller &&
+                source.room.controller.reservation != undefined &&
                 source.room.controller.reservation.username != 'hardcoregandhi') {
                 return
             }
