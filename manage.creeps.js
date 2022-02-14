@@ -41,6 +41,10 @@ global.runCreeps = function () {
                     Memory.rooms[creep.memory.baseRoomName].mainTower.healRequested = true;
                 }
             }
+            
+            if (creep.spawning) {
+                trackedSpawn(creep)
+            }
 
             if (creep.pos.x == 49) creep.move(7);
             if (creep.pos.y == 49) creep.move(1);
