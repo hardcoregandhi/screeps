@@ -349,7 +349,7 @@ roomTracking = function () {
                 }
             }
 
-            if (Memory.rooms[r.name].sources[s.id].link == undefined && r.controller.level >= 6 && links.length) {
+            if (Memory.rooms[r.name].sources[s.id].link == undefined && r.controller && r.controller.level >= 6 && links.length) {
                 for (link of links) {
                     if (link.pos.inRangeTo(s, 2)) {
                         console.log("adding new link ", r.name, " ", link.id);
@@ -372,8 +372,10 @@ roomTracking = function () {
                 }
             }
 
-            if (s.room.controller.reservation != undefined &&
-                s.room.controller.reservation.username == 'Invader' &&
+            if (s.room.controller == undefined ||
+                s.room.controller &&
+                s.room.controller.reservation != undefined &&
+                s.room.controller.reservation.username != 'hardcoregandhi' &&
                 s.room.controller.reservation.ticksToEnd > 1000
             ) {
                 console.log(`Memory.rooms[\'${r.name}\'].sources[\'${s.id}\']`)
@@ -492,6 +494,16 @@ roomTracking = function () {
             Memory.rooms[r.name].reservation.username = r.controller.reservation.username;
             Memory.rooms[r.name].reservation.ticksToEnd = r.controller.reservation.ticksToEnd;
             Memory.rooms[r.name].reservation.expiresAt = Game.time + r.controller.reservation.ticksToEnd;
+        } else if(r.controller && r.controller.owner != undefined) {
+            Memory.rooms[r.name].reservation = {}
+            Memory.rooms[r.name].reservation.username = r.controller.owner.username
+            Memory.rooms[r.name].reservation.ticksToEnd = 999999999;
+            Memory.rooms[r.name].reservation.expiresAt = 999999999;
+        } else if(r.find(FIND_HOSTILE_STRUCTURES).length) {
+            Memory.rooms[r.name].reservation = {}
+            Memory.rooms[r.name].reservation.username = SYSTEM_USERNAME
+            Memory.rooms[r.name].reservation.ticksToEnd = 999999999;
+            Memory.rooms[r.name].reservation.expiresAt = 999999999;
         }
         if (Memory.rooms[r.name].reservation && Memory.rooms[r.name].reservation.expiresAt < Game.time) {
             delete Memory.rooms[r.name].reservation;
