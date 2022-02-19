@@ -14,7 +14,7 @@ getStructureHealLimit = function (room, structure) {
 };
 
 getEmergencyStructureHealLimit = function (room, structure) {
-    var wallHealPercent = 0.001;
+    var wallHealPercent = 0.005;
     
 
     switch (structure.structureType) {
@@ -148,7 +148,6 @@ heal = function (room, towers) {
 
 repair = function (room, towers) {
     // console.log(`repair ${room.name}`)
-    if (room.energyAvailable <= room.energyCapacityAvailable / 2) return 0;
 
     var wallHealPercent = room.controller.level * 0.001;
 
@@ -181,6 +180,7 @@ repair = function (room, towers) {
             return 1;
         }
     }
+    if (room.energyAvailable <= room.energyCapacityAvailable / 2) return 0;
 
     // first check cached target
     for (var tower of towers) {

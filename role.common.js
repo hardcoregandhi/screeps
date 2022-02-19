@@ -224,3 +224,14 @@ global.EnemyCheckFleeRequestBackup = function(creep) {
         }
     }
 }
+
+global.TransferAll = function(creep, storage) {
+    Log(creep, "TransferAll");
+    for (const resourceType in creep.store) {
+        if (creep.transfer(storage, resourceType) != OK) {
+            // console.log(creep.transfer(storage, resourceType) )
+            creep.moveTo(storage);
+            return;
+        }
+    }
+}

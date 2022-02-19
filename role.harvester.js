@@ -160,20 +160,16 @@ global.roleHarvester = {
 
                             try {
                                 link_storage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_storage);
-                                mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
-                                if (link_storage.cooldown > 0 && mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 950000) {
-                                    link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
-                                    if (link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
-                                        link.transferEnergy(link_controller, link_controller.store.getFreeCapacity(RESOURCE_ENERGY));
-                                        return;
-                                    }
-                                }
-                                if (link_storage.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                                link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
+                                if (link_controller && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
+                                    link.transferEnergy(link_controller, link_controller.store.getFreeCapacity(RESOURCE_ENERGY));
+                                    return;
+                                } else if (link_storage){
                                     link.transferEnergy(link_storage, link_storage.store.getFreeCapacity(RESOURCE_ENERGY));
                                     return;
                                 }
                             } catch (e) {
-                                console.log(`${creep.name} failed to use ${link}, ${e}`);
+                                console.log(`${creep.name}@${creep.pos} failed to use ${link}, ${e}`);
                             }
                         }
                         return;
@@ -240,7 +236,7 @@ global.roleHarvester = {
                                 customBody.push(WORK);
                             }
                             customBody.concat(Array(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts).fill(CARRY));
-                            customBody.concat(Array(Memory.ceil(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts/2)).fill(MOVE));
+                            customBody.concat(Array(Math.ceil(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts/2)).fill(MOVE));
                             
                             spawnCreep(roleHarvSup, customBody, { memory: { targetSource: creep.memory.targetSource, targetContainer: creep.memory.targetContainer } }, creep.memory.baseRoomName);
                         }

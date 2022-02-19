@@ -147,14 +147,16 @@ global.roleMover = {
 
             // console.log(closestHostile)
             if (creep.room.memory.mainTower != undefined && creep.room.memory.mainTower.enemyInRoom == true) {
-                var towers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-                    return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                var towers = creep.pos.findClosestByRange(FIND_STRUCTURES).filter((structure) => {
+                    return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 200 && !Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.includes(structure.id);
                 });
                 Log(creep, 6);
+                Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.push(towers[0].id)
                 if (creep.transfer(towers[0], RESOURCE_ENERGY) != OK) {
                     creep.moveTo(towers[0]);
                 }
-                return;
+                if (towers.length)
+                    return;
             }
 
             // transition from container to storage
@@ -181,10 +183,11 @@ global.roleMover = {
 
             if (creep.memory.currentTarget != null) {
                 currentTarget = Game.getObjectById(creep.memory.currentTarget);
-                if (currentTarget == null || currentTarget.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+                if (currentTarget == null || currentTarget.store.getFreeCapacity(RESOURCE_ENERGY) == 0 || Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.includes(creep.memory.currentTarget) ) {
                     creep.memory.currentTarget = null;
                 } else {
-                    if (currentTarget.structureType == STRUCTURE_SPAWN && Memory.rooms[creep.room.name].mainSpawn.refilling != false && Memory.rooms[creep.room.name].mainSpawn.refilling != creep.name) {
+                    Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.push(creep.memory.currentTarget)
+                    if (currentTarget.structureType == STRUCTURE_SPAWN && Memory.rooms[creep.room.name].mainSpawn.refilling != false && Memory.rooms[creep.room.name].mainSpawn.refilling != creep.name) { // should be removed if room.creeps.movers.currentTargets works
                         creep.memory.currentTarget = null;
                     } else {
                         for (const resourceType in creep.store) {
@@ -203,7 +206,8 @@ global.roleMover = {
                     ((structure.structureType == STRUCTURE_TOWER && Math.round((structure.store[RESOURCE_ENERGY] / structure.store.getCapacity([RESOURCE_ENERGY])) * 100) < 70) ||
                         structure.structureType == STRUCTURE_EXTENSION ||
                         structure.structureType == STRUCTURE_SPAWN) &&
-                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
+                    !Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.includes(structure.id)
                 );
             });
             Log(creep, targets);
@@ -217,7 +221,7 @@ global.roleMover = {
             if (!targets.length) {
                 // creep.say('m2Tower');
                 targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
-                    return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                    return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 && !Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.includes(structure.id);
                 });
             }
 

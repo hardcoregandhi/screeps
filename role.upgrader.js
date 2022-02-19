@@ -17,17 +17,8 @@ global.roleUpgrader = {
         Log(creep, "run");
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
-            const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
-            if (route.length > 0) {
-                creep.say("Headin oot");
-                const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit, {
-                    visualizePathStyle: { stroke: "#ffffff" },
-                });
-            } else {
-                creep.say("No route found");
-            }
-            return;
+            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName))
+            return
         }
 
         if (creep.memory.upgrading == undefined) {

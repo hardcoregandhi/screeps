@@ -13,13 +13,18 @@ global.roleRaider = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        Log(creep, "raidin");
         creep.say("raidin");
         if (creep.memory.scav == undefined) {
             creep.memory.scav = false;
         }
+        
+        Log(creep, creep.ticksToLive < 300 || creep.memory.healing == true);
+        Log(creep, creep.memory.noHeal == undefined || creep.memory.noHeal != true);
 
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
+            Log(creep, "healing");
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
@@ -34,6 +39,7 @@ global.roleRaider = {
         }
 
         if (!creep.memory.scav) {
+            Log(creep, "emptyin");
             creep.say("emptyin");
 
             //no storage, just grab energy
@@ -51,6 +57,8 @@ global.roleRaider = {
                 return;
             }
         } else {
+            Log(creep, "scavin");
+
             if (creep.room.name != creep.memory.targetRoomName) {
                 // const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName, {
                 //     maxRooms: 16,
@@ -60,19 +68,50 @@ global.roleRaider = {
                 //     creep.moveTo(exit);
                 //     return;
                 // }
-                if (Game.rooms[creep.memory.targetRoomName] == undefined) moveToRoom(creep, creep.memory.targetRoomName);
-                else creep.moveTo(new RoomPosition(25, 25, creep.memory.targetRoomName));
+                // if (Game.rooms[creep.memory.targetRoomName] == undefined) 
+                    moveToRoom(creep, creep.memory.targetRoomName);
+                // else 
+                    // creep.moveTo(new RoomPosition(25, 25, creep.memory.targetRoomName));
             } else {
-                if (creep.memory.currentTarget == null) {
-                    var resourceFilledStructs = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
-                        filter: (r) => r.store != undefined && r.store.getUsedCapacity() >= 150,
-                    });
-                    creep.memory.currentTarget = resourceFilledStructs.id;
+                
+                
+                var droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+                
+                if (creep.memory.power != undefined && creep.memory.power == true) {
+                    var powerBanks = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
+                    if (!powerBanks.length && droppedResource == null) {
+                        creep.memory.DIEcountdown = (creep.memory.DIEcountdown || 0) + 1;
+                        if (creep.memory.DIEcountdown > 10) {
+                            creep.memory.DIE = true;
+                        }
+                    }
+                
                 }
+                
+                
+                if (creep.pickup(droppedResource) != OK) {
+                    creep.moveTo(droppedResource)
+                }
+                return
+                // if (creep.memory.currentTarget == null) {
+                    
+                    // var resourceFilledStructs = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
+                    //     filter: (r) => r.store != undefined && r.store.getUsedCapacity()
+                    // });
+                    
+                    // if (creep.memory.currentTarget == null && resourceFilledStructs)
+                    //     creep.memory.currentTarget = resourceFilledStructs.id;
+                    // } 
+                    
+                    // if (creep.memory.currentTarget == null && droppedResource)
+                    //     creep.memory.currentTarget = droppedResource.id
+                    // if (creep.memory.currentTarget == null && creep.memory.power == undefined)
+                    //     creep.memory.DIE = true
+                // }
 
                 resourceFilledStructs = Game.getObjectById(creep.memory.currentTarget);
 
-                if (resourceFilledStructs == null || resourceFilledStructs.store.getUsedCapacity() < 150) {
+                if (resourceFilledStructs == null || resourceFilledStructs.store.getUsedCapacity()) {
                     creep.memory.currentTarget = null;
                 }
 

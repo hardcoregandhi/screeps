@@ -1,5 +1,5 @@
 findNewHealTarget = function (_creep) {
-    newTargetCandidates = _creep.room.find(FIND_MY_CREEPS).filter((c) => c.memory.role == "soldier");
+    newTargetCandidates = _creep.room.find(FIND_MY_CREEPS).filter((c) => c.memory.role != "healer" && c.memory.role != "healerChase");
     if (newTargetCandidates.length == 0) {
         console.log(`${_creep} has no other soldiers to heal. returning'`);
         _creep.memory.healing == true;
@@ -24,6 +24,7 @@ global.roleHealerChase = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+
         // creep.say('🏳️');
         // creep.memory.return = true;
 
@@ -31,7 +32,7 @@ global.roleHealerChase = {
             creep.heal(creep);
         }
 
-        if (creep.ticksToLive < 300 || creep.memory.healing) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
@@ -50,7 +51,7 @@ global.roleHealerChase = {
             }
         }
 
-        targetCreep = Game.getObjectById(creep.memory.targetCreep);
+        targetCreep = Game.creeps[creep.memory.targetCreep];
         if (targetCreep == null) {
             console.log(creep + "'s targetCreep is dead");
             if (findNewHealTarget(creep) == 1) {
@@ -60,7 +61,7 @@ global.roleHealerChase = {
             targetCreep = Game.getObjectById(creep.memory.targetCreep);
         }
 
-        if (creep.pos.isNearTo("targetCreep")) {
+        if (creep.pos.isNearTo(targetCreep)) {
             creep.heal(targetCreep);
         } else {
             creep.rangedHeal(targetCreep);

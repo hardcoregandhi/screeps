@@ -114,6 +114,10 @@ global.roleMoverLink = {
         var link_storage = Game.getObjectById(Memory.rooms[creep.room.name].link_storage);
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
         var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
+        Log(creep, `link_controller: ${link_controller}`)
+        Log(creep, `link_storage: ${link_storage}`)
+        Log(creep, `mainStorage: ${mainStorage}`)
+        Log(creep, `terminal: ${terminal}`)
 
         } catch(e) {
             
@@ -122,7 +126,7 @@ global.roleMoverLink = {
         Log(creep, "creep.room.controller.ticksToDowngrade: " + creep.room.controller.ticksToDowngrade);
 
         // SELL excess energy if storage is almost full
-        if (terminal != null) {
+        if (terminal != null && 0) {
             if (mainStorage.store.getUsedCapacity() > 950000 && creep.room.controller.level == 8) {
                 Log(creep, "marketting");
     
@@ -236,6 +240,12 @@ global.roleMoverLink = {
         
         if (creep.memory.moving) {
             Log(creep, "moving");
+            
+            if (creep.memory.powerMover == true) {
+               rolePowMover.run(creep);
+               creep.memory.powerMover = false;
+               return;
+            }
 
             if (mainStorage == undefined) {
                 Log(creep, "mainStorage could not be found");
@@ -256,6 +266,20 @@ global.roleMoverLink = {
                                 return;
                             }
                         }
+                        return;
+                    }
+                }
+                
+                if (Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom != undefined) {
+                    ret = creep.transfer(terminal, RESOURCE_ENERGY);
+                    if (terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 10000) {
+                        Log(creep, terminal.send(RESOURCE_ENERGY, terminal.store.getUsedCapacity(RESOURCE_ENERGY) - Game.market.calcTransactionCost(terminal.store.getUsedCapacity(RESOURCE_ENERGY), creep.room.name, Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom), Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom))
+                    }
+                    if (ret == ERR_NOT_IN_RANGE) {
+                        Log(creep, ret);
+                        Log(creep, "moving to " + terminal);
+                        creep.moveTo(terminal);
+                    } else if (ret == OK) {
                         return;
                     }
                 }
@@ -317,6 +341,7 @@ global.roleMoverLink = {
                 if (link_controller != null && link_storage.cooldown == 0) {
                     Log(creep, `${link_controller}: mainStorage:${mainStorage.store.getUsedCapacity(RESOURCE_ENERGY)} linkController:${link_controller.store.getUsedCapacity(RESOURCE_ENERGY)}`)
                     if ((mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 100000 && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) || creep.room.controller.ticksToDowngrade < 1000) {
+                        Log(creep, "doing default behaviour")
                         if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                             Log(creep, "moving to mainStorage");
                             creep.moveTo(mainStorage);
@@ -325,14 +350,33 @@ global.roleMoverLink = {
                         return;
                     }
                 }
+                
                 if (link_storage.store.getUsedCapacity(RESOURCE_ENERGY)) {
+                    Log(creep, "withdrawing from link_storage")
+
                     ret = creep.withdraw(link_storage, RESOURCE_ENERGY);
                     if (ret == ERR_NOT_IN_RANGE) {
-                        Log(creep, creep.withdraw(link_storage, RESOURCE_ENERGY));
+                        Log(creep, ret);
                         Log(creep, "moving to " + link_storage);
                         creep.moveTo(link_storage);
                     } else if (ret == OK) {
                         return;
+                    }
+                }
+                
+                
+                if (Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom != undefined) {
+                    Log(creep, `supportRoom: ${Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom}`)
+                    if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 250000) {
+                        Log(creep, "storage > 200000, sending to supportRoom")
+                        ret = creep.withdraw(mainStorage, RESOURCE_ENERGY);
+                        if (ret == ERR_NOT_IN_RANGE) {
+                            Log(creep, creep.withdraw(mainStorage, RESOURCE_ENERGY));
+                            Log(creep, "moving to " + mainStorage);
+                            creep.moveTo(mainStorage);
+                        } else if (ret == OK) {
+                            return;
+                        }
                     }
                 }
                 
@@ -404,6 +448,22 @@ global.roleMoverLink = {
                             return;
                         }
                     }
+                }
+                
+                if (Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom === undefined && mainStorage.store.getFreeCapacity() > 50000) {
+                    Log(creep, `supportRoom: ${Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom}`)
+                    ret = creep.withdraw(terminal, RESOURCE_ENERGY);
+                    Log(creep, ret);
+                    if (ret == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(terminal);
+                    } else if (ret == OK) {
+                        return;
+                    }
+                }
+                Log(creep, "did nothing.")
+                if (Memory.rooms[creep.memory.baseRoomName].structs.pspawn) {
+                    rolePowMover.run(creep);
+                    creep.memory.powerMover = true;
                 }
 
                 // } else {

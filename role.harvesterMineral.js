@@ -79,6 +79,8 @@ global.roleHarvesterMineral = {
                     }
                     return
                 }
+            } else {
+                
             }
 
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);

@@ -237,10 +237,10 @@ global.moveToRoom = function (creep, targetRoom) {
         // Use `findRoute` to calculate a high-level plan for this path,
         // prioritizing highways and owned rooms
         let allowedRooms = { [from.roomName]: true };
-        log.log("moveToRoom");
-        log.log(creep.name);
-        log.log(from.toString());
-        log.log(to.pos.toString());
+        // log.log("moveToRoom");
+        // log.log(creep.name);
+        // log.log(from.toString());
+        // log.log(to.pos.toString());
         Game.map
             .findRoute(from.roomName, to.pos.roomName, {
                 routeCallback(roomName) {
@@ -262,7 +262,7 @@ global.moveToRoom = function (creep, targetRoom) {
             // console.log(i)
         });
 
-        console.log("finding path between these rooms");
+        // console.log("finding path between these rooms");
 
         // Invoke PathFinder, allowing access only to rooms from `findRoute`
         creep.memory.pathfinderPath = PathFinder.search(from, to, {
@@ -302,7 +302,7 @@ global.moveToRoom = function (creep, targetRoom) {
                 return costs;
             },
         });
-        console.log(creep.memory.pathfinderPath.path);
+        // console.log(creep.memory.pathfinderPath.path);
     }
 
     if (creep.memory.pathfinderPath != undefined && creep.memory.pathfinderPath.path.length) {
@@ -319,7 +319,7 @@ global.moveToRoom = function (creep, targetRoom) {
                     !creep.pos.isNearTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)
                 ) {
                     //red flag, reset
-                    log.log("resetting path");
+                    // log.log("resetting path");
                     creep.memory.pathfinderPath = undefined;
                 }
             } else {

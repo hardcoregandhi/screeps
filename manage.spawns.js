@@ -19,7 +19,10 @@ global.runSpawns = function () {
         //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name } }, "W6S1");
         //     continue
         // }
-
+        
+        // if (Memory.rooms[room].structs.terminal && r.name != "W17N1")
+            // delete Memory.rooms[room].structs.terminal.supportRoom
+        
         // Neighbouring room investigations
         unsearchedNeighbouringRooms = _.filter(Memory.rooms[r.name].neighbouringRooms, (roomName) => {
             return Memory.rooms[roomName] == undefined;
@@ -57,10 +60,10 @@ global.runSpawns = function () {
         } else if (creepRoomMap.get(r.name + "upgrader") < 1 && (r.controller.level < 8 || (r.controller.level == 8 && r.controller.ticksToDowngrade < 10000))) {
             spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } else if (creepRoomMap.get(r.name + "builder") < creepRoomMap.get(r.name + "csites") / 2 && creepRoomMap.get(r.name + "builder") < 1) {
+        } else if (creepRoomMap.get(r.name + "builder") < creepRoomMap.get(r.name + "csites") / 2) {
             spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } else if (creepRoomMap.get(r.name + "upgrader") < 3 && creepRoomMap.get(r.name+"eenergy") > 200000 && (r.controller.level < 8 || (r.controller.level == 8 && r.controller.ticksToDowngrade < 10000))) {
+        } else if (creepRoomMap.get(r.name + "upgrader") < 3 && creepRoomMap.get(r.name+"eenergy") > 50000 && (r.controller.level < 8 || (r.controller.level == 8 && r.controller.ticksToDowngrade < 10000)) && !Memory.rooms[r.name].pauseGrowth) {
             spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if ( room.energyAvailable == room.energyCapacityAvailable && Game.getObjectById(Memory.rooms[r.name].mainStorage).store.getFreeCapacity() <= 50 && Game.getObjectById(Memory.rooms[r.name].mainStorage).structureType == STRUCTURE_STORAGE) {
@@ -70,12 +73,14 @@ global.runSpawns = function () {
             continue;
         } else if (r.controller.level < 4) {
             continue;
+        } else if (r.controller.level < 5) {
+            continue;
+        } else if ( creepRoomMap.get(r.name + "repairer")  == undefined || creepRoomMap.get(r.name + "repairer") < 1) {
+            spawnCreep(roleRepairer, null, null, r.name);
+            continue;
         } else if (scoutNeighbouringRooms(r)) {
             continue;
         } else if (roomExpansion(r.name)) {
-            continue;
-        } else if ( creepRoomMap.get(r.name+"eenergy") > 750000 ) {
-            spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name); //spawn builders to upgrade which will then use the storage annd not the link 
             continue;
         } else if (creepRoomMap.get(r.name + "mover") < 2 && r.energyCapacityAvailable > 1000) {
             spawnCreep(roleMover, null, { memory: { baseRoomName: r.name } }, r.name);
@@ -83,10 +88,15 @@ global.runSpawns = function () {
         } else if (creepRoomMap.get(r.name + "mover") < 3 && r.energyCapacityAvailable > 1000 && r.controller.level >= 7) {
             spawnCreep(roleMover, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
+        } else if ( creepRoomMap.get(r.name+"eenergy") > 750000 && r.controller.level < 8) {
+            spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name); //spawn builders to upgrade which will then use the storage annd not the link 
+            continue;
         } else if (creepRoomMap.get(r.name + "moverLink") < 1 && r.memory.link_storage != undefined) {
             spawnCreep(roleMoverLink, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "csites") > 5) {
+            continue;
+        } else if (r.controller.level == 8 && spawnPowerHarvester(r.name)) {
             continue;
         } else if (spawnMineralHarvester(r)) {
             continue
@@ -96,9 +106,9 @@ global.runSpawns = function () {
             continue;
         } else if (spawnExternalMover(r.name)) {
             continue;
-        } else if (spawnHarvesterDeposit(r.name)) {
-            continue;
-        } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 1 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8) {
+        // } else if (spawnHarvesterDeposit(r.name)) {
+        //     continue;
+        } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 1 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8 && !Memory.rooms[r.name].pauseGrowth) {
             spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
         }
@@ -307,8 +317,27 @@ function scoutNeighbouringRooms(room) {
     ret = false;
     _.forEach(Memory.rooms[room.name].neighbouringRooms, (n) => {
         if (room.controller.level >= 7 && isHighwayRoom(n)) {
-            if (creepRoomMap.get(room.name + "wandererTarget" + n) == undefined || creepRoomMap.get(room.name + "wandererTarget" + n) < 1) {
-                spawnCreep(roleWanderer, null, { memory: { targetRoomName: n } }, room.name);
+            if (creepRoomMap.get(room.name + "wandererTarget" + n) == undefined || 
+                room.controller.level == 7 && creepRoomMap.get(room.name + "wandererTarget" + n) < 1 ||
+                room.controller.level == 8 && creepRoomMap.get(room.name + "wandererTarget" + n) < 10) {
+                spawnRet = spawnCreep(roleWanderer, null, { memory: { targetRoomName: n, currentTargetRoom: Memory.rooms[room.name].creeps.wanderers.nextTargetRoomIndex || undefined} }, room.name);
+                if (spawnRet == 0) {
+                    if (Memory.rooms[room.name].creeps.wanderers.nextTargetRoomReverse) {
+                        if (Memory.rooms[room.name].creeps.wanderers.nextTargetRoomIndex <= 0) {
+                            Memory.rooms[room.name].creeps.wanderers.nextTargetRoomReverse = !Memory.rooms[room.name].creeps.wanderers.nextTargetRoomReverse
+                            Memory.rooms[room.name].creeps.wanderers.nextTargetRoomIndex++
+                        } else {
+                            Memory.rooms[room.name].creeps.wanderers.nextTargetRoomIndex--;
+                        }
+                    } else {
+                        if (Memory.rooms[room.name].creeps.wanderers.nextTargetRoomIndex >= 10) {
+                            Memory.rooms[room.name].creeps.wanderers.nextTargetRoomReverse = !Memory.rooms[room.name].creeps.wanderers.nextTargetRoomReverse;
+                            Memory.rooms[room.name].creeps.wanderers.nextTargetRoomIndex--;
+                        } else {
+                            Memory.rooms[room.name].creeps.wanderers.nextTargetRoomIndex++
+                        }
+                    }
+                }
                 ret = true;
                 return false; //early escape
             }
@@ -468,6 +497,33 @@ function spawnHarvesterDeposit(roomName) {
         }
     }
     return false;
+}
+
+function spawnPowerHarvester(roomName) {
+    // console.log("spawnPowerHarvester")
+    if (creepRoomMap.get(roomName+"eenergy") > 100000) {
+        // console.log("spawnPowerHarvester > 1000000")
+        for(var pBank of Object.values(Memory.rooms[roomName].powerBanks)) {
+            // console.log(JSON.stringify(pBank))
+            if (pBank.miningSpots >= 3) {
+                // console.log("pBank.miningSpots >= 3")
+                if (pBank.ticksToDecay > 2500 && pBank.initialSpawns == undefined || pBank.initialSpawns == false) {
+                    // console.log(pBank.miningSpots)
+
+                    for(var i in _.range(pBank.miningSpots)) {
+                        // console.log(i)
+                        queueSpawnCreep(rolePowHarvester, null, {memory:{targetRoomName:pBank.room.name, targetSource:pBank.id, noHeal:true}}, roomName);
+                        queueSpawnCreep(rolePowHealer, Array(19).fill(HEAL).concat(Array(19).fill(MOVE)), {memory:{targetRoomName:pBank.room.name, targetSource:pBank.id, noHeal:true}}, roomName);
+                        pBank.initialSpawns = true;
+                        
+                    }
+                    if (pBank.targettedByList == undefined) {
+                        pBank.targettedByList = []
+                    }
+                }
+            }
+        }
+    }
 }
 
 
