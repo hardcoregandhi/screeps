@@ -70,6 +70,11 @@ function findReplacementTarget(creep) {
         }
     });
     
+    if (creep.memory.targetContainer == null && creep.memory.targetRoomName == null && creep.memory.targetSource == null) {
+        console.log(`${creep.name}@${creep.pos} could not find a valid target. Retiring.`)
+        creep.memory.DIE = true;
+    }
+    
     return ret;
 }
 
@@ -140,6 +145,10 @@ global.roleMoverExt = {
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
+        
+        if (creep.memory.targetContainer == null && creep.memory.targetRoomName == null && creep.memory.targetSource == null) {
+            creep.memory.DIE = true;
+        }
 
         if (Game.rooms[creep.memory.targetRoomName] == undefined) {
             if (creep.room.name != creep.memory.targetRoomName) {
@@ -151,7 +160,7 @@ global.roleMoverExt = {
                     moveToMultiRoomTarget(creep, exit);
                 } else {
                     creep.say("No route found");
-                    Log(creep, "no route to target room");
+                    Log(creep, "no route to target room ", creep.memory.targetRoomName);
                 }
                 return;
             }
@@ -207,12 +216,21 @@ global.roleMoverExt = {
                                 creep.memory.targetContainer = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id
                                 targetContainer = Game.getObjectById(creep.memory.targetContainer)
                         } else if(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id != creep.memory.targetContainer) {
-                            console.log(`container is dead`)
+                            console.log(`container was changed`)
+                            creep.memory.targetContainer = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id
                             findReplacementTarget(creep);
+                            
                             return;
+                        } else if(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container == undefined) {
+                            throw 'no container';
+                        } else {
+                            console.log(`moverExt has an unknown error`)
                         }
                     } catch (e) {
                         console.log(`container is dead`)
+                        // creep.memory.targetContainer = null;
+                        // creep.memory.targetRoomName = null;
+                        // creep.memory.targetSource = null;
                         findReplacementTarget(creep);
                         return;
                     }
@@ -285,8 +303,14 @@ global.roleMoverExt = {
 
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (mainStorage != undefined) {
-                if (trackedTransferToStorage(creep, mainStorage) != OK) {
-                    moveToMultiRoomTarget(creep, mainStorage);
+                if (mainStorage.store.getFreeCapacity() != 0) {
+                    ret = trackedTransferToStorage(creep, mainStorage)
+                    if (ret != OK) {
+                        TransferAll(creep, mainStorage)
+                    }
+                } else {
+                    roleMover.run(creep)
+                    return;
                 }
                 return;
             }

@@ -33,10 +33,10 @@ global.rolePowMover.run = function (creep) {
 
     power_spawn.processPower();
 
-    if (mainStorage.store.getUsedCapacity(RESOURCE_POWER) == 0 && power_spawn.store.getUsedCapacity(RESOURCE_POWER) == 0) {
-        creep.memory.DIE = true;
-        return;
-    }
+    // if (mainStorage.store.getUsedCapacity(RESOURCE_POWER) == 0 && power_spawn.store.getUsedCapacity(RESOURCE_POWER) == 0) {
+    //     creep.memory.DIE = true;
+    //     return;
+    // }
 
     if (power_spawn_pow) {
         creep.memory.job = job.MOVING_POWER;

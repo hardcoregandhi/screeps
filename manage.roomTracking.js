@@ -308,8 +308,15 @@ roomTracking = function () {
                 Memory.rooms[r.name].mineral.extractor = false;
             } else {
                 // console.log(r)
-                if (Game.getObjectById(Memory.rooms[r.name].mineral.id).pos.lookFor(LOOK_STRUCTURES).length) {
+                if (Memory.rooms[r.name].mineral.extractor == false && Game.getObjectById(Memory.rooms[r.name].mineral.id).pos.lookFor(LOOK_STRUCTURES).length) {
                     Memory.rooms[r.name].mineral.extractor = true;
+                }
+                if (Memory.rooms[r.name].mineral.container == undefined) {
+                    containers = Game.getObjectById(Memory.rooms[r.name].mineral.id).pos.findInRange(FIND_STRUCTURES, 2).filter((r) => r.structureType == STRUCTURE_CONTAINER)
+                    if (containers.length) {
+                        Memory.rooms[r.name].mineral.container = {}
+                        Memory.rooms[r.name].mineral.container.id = containers[0].id
+                    }
                 }
             }
             
@@ -319,6 +326,20 @@ roomTracking = function () {
 
             if (Memory.rooms[r.name] == undefined) {
                 Memory.rooms[r.name] = {};
+            }
+            
+            if (Memory.rooms[r.name].creeps == undefined) {
+                Memory.rooms[r.name].creeps = {};
+            }
+            if (Memory.rooms[r.name].creeps.movers) {
+                Memory.rooms[r.name].creeps.movers = {};
+                Memory.rooms[r.name].creeps.movers.currentTargets = [];
+            }
+            
+            if (Memory.rooms[r.name].creeps.wanderers == undefined) {
+                Memory.rooms[r.name].creeps.wanderers = {};
+                Memory.rooms[r.name].creeps.wanderers.nextTargetRoomIndex = 0;
+                Memory.rooms[r.name].creeps.wanderers.nextTargetRoomReverse = false;
             }
         }
 
@@ -431,6 +452,25 @@ roomTracking = function () {
             if (powerBanks.length) {
                 // TODO: do something with found power bank
                 console.log("found power bank in " + powerBanks[0].room.name);
+                for(var p of powerBanks) {
+                    if (Memory.rooms[r.name].powerBanks == undefined) {
+                        Memory.rooms[r.name].powerBanks = {};
+                    }
+                    if (Memory.rooms[r.name].powerBanks[p.id] == undefined) {
+                        localMiningSpots = 0;
+                        for (var i = p.pos.x - 1; i <= p.pos.x + 1; i++) {
+                            for (var j = p.pos.y - 1; j <= p.pos.y + 1; j++) {
+                                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                                    localMiningSpots++;
+                                }
+                            }
+                        }
+                        p.miningSpots = localMiningSpots;
+                        p.expirationTime = Game.time + p.ticksToDecay;
+                        
+                        Memory.rooms[r.name].powerBanks[p.id] = p;
+                    }
+                }
             }
             if (deposits.length) {
                 for (var d of deposits) {
@@ -479,14 +519,14 @@ roomTracking = function () {
         })
 
         if (Memory.rooms[r.name].powerBanks == undefined) {
-            Memory.rooms[r.name].powerBanks = [];
+            Memory.rooms[r.name].powerBanks = {};
         }
         powerBanks = Memory.rooms[r.name].powerBanks
-        _.forEach(powerBanks, (powerBank) => {
-            if (powerBank.expirationTime == undefined || powerBank.expirationTime <= Game.time) {
-                _.remove(Memory.rooms[r.name].powerBanks, (p) => { return p.id == powerBank.id }) 
+        for(var p of Object.values(Memory.rooms[r.name].powerBanks)) {
+            if (p.expirationTime == undefined || p.expirationTime <= Game.time) {
+                delete Memory.rooms[r.name].powerBanks[p.id];
             }
-        })
+        }
         
         if (r.controller && r.controller.reservation) {
             console.log(`room ${r.name} is enemy controlled`)
@@ -566,6 +606,9 @@ setupSourceTracking = function(source) {
 
 resetSourceContainerTracking = function () {
     _.forEach(Game.rooms, (r) => {
+        try {
+        Memory.rooms[r.name].creeps.movers.currentTargets = [];
+        } catch {};
         _.forEach(Memory.rooms[r.name].sources, (s) => {
             s.targettedBy = 0;
             s.targettedByList = [];
@@ -576,11 +619,11 @@ resetSourceContainerTracking = function () {
                 s.container.currentCarryParts = 0;
             }
         });
-        if (Memory.rooms[r.name].mineral != undefined &&
-            Memory.rooms[r.name].mineral.container != undefined) {
-            Memory.rooms[r.name].mineral.container.targettedBy = 0;
-            Memory.rooms[r.name].mineral.container.targettedByList = [];
-        }
+        _.forEach(Memory.rooms[r.name].powerBanks, (p) => {
+            p.targettedBy = 0;
+            p.targettedByList = [];
+        });
+        
     });
 
     _.forEach(Game.creeps, (c) => {
@@ -588,6 +631,10 @@ resetSourceContainerTracking = function () {
 
         if (c.memory.baseRoomName == undefined) {
             console.log(c.name, c.pos, "no baseRoomName");
+        }
+        
+        if (c.memory.DIE == true) {
+            return;
         }
 
         try {
@@ -628,6 +675,9 @@ resetSourceContainerTracking = function () {
                     }
                     Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.currentCarryParts += creepCarryParts;
                 }
+            } else if (c.memory.role == "powHarvester") {
+                Memory.rooms[c.memory.baseRoomName].powerBanks[c.memory.targetSource].targettedBy += 1;
+                Memory.rooms[c.memory.baseRoomName].powerBanks[c.memory.targetSource].targettedByList.push(c.name);
             }
 
             if (c.memory.role == "soldier" || c.memory.role == "gunner") {

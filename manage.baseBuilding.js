@@ -55,6 +55,7 @@ global.runBaseBuilder = function () {
                 if (r.controller.level == 5) {
                     buildControllerRampartSurroundings(r);
                     buildRampartSurroundings(r);
+                    queueSpawnCreep(roleRepairer, null, null, roomName)
                 }
                 if (r.controller.level == 6) {
                     buildExtractor(r);

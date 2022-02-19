@@ -12,15 +12,12 @@ global.roleHealer = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        // creep.say('🏳️');
-        if (creep.memory.targetRoomName == undefined) creep.memory.targetRoomName = "W8S2";
-        // creep.memory.return = true;
 
         if (creep.hits < creep.hitsMax) {
             creep.heal(creep);
         }
 
-        if (creep.ticksToLive < 300 || creep.memory.healing) {
+        if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
@@ -30,27 +27,34 @@ global.roleHealer = {
             creep.moveTo(Game.flags.holding.pos);
             return;
         }
+        
+        if (creep.memory.healSize == undefined) {
+            var healSize = 0;
+            _.forEach(creep.body, (b) => {
+                if (b.type == HEAL) {
+                    healSize += 12;
+                }
+            });
+            creep.memory.healSize = healSize;
+        }
 
         var allHurtCreeps = creep.room.find(FIND_MY_CREEPS).filter((c) => {
-            return c.hits < c.hitsMax;
+            return c.hits < c.hitsMax - creep.memory.healSize;
         });
-        var closestHurtCreep = creep.pos.findClosestByRange(allHurtCreeps);
+        if (allHurtCreeps) {
+            var closestHurtCreep = creep.pos.findClosestByRange(allHurtCreeps);
+        }
 
         if (creep.memory.passiveTravel == undefined || creep.memory.passiveTravel == false) {
-            // var allHostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS)
-            // var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS, {filter: (c) => {return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)}})
+            var allHostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS)
+            var hostileCreeps = allHostileCreeps.filter((c) => {return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)})
             // if (hostileCreeps.length > 2 || allHostileCreeps.length > 4) {
             //     cloneCreep(creep.name)
             // }
 
-            var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
 
-            if (closestHostile)
-                closestHostile = closestHostile.filter((c) => {
-                    return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
-                });
-
-            if (closestHostile) {
+            if (hostileCreeps) {
+                var closestHostile = creep.pos.findClosestByRange(hostileCreeps);
                 if (creep.pos.isNearTo(closestHostile)) {
                     creep.moveTo((creep.pos.x - closestHostile.pos.x) * -1, (creep.pos.y - closestHostile.pos.y) * -1);
                 }
@@ -58,7 +62,7 @@ global.roleHealer = {
 
             // console.log(closestHostile)
             if (closestHurtCreep) {
-                creep.room.visual.circle(closestHostile.pos, {
+                creep.room.visual.circle(closestHurtCreep.pos, {
                     color: "red",
                     radius: 1,
                 });
@@ -66,7 +70,7 @@ global.roleHealer = {
                     creep.rangedHeal(closestHurtCreep);
                 } else {
                     if (creep.heal(closestHurtCreep) != OK) {
-                        creep.moveTo(closestHostile, { maxRooms: 1 });
+                        creep.moveTo(closestHurtCreep, { maxRooms: 1 });
                     }
                 }
                 return;

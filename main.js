@@ -26,6 +26,7 @@ var roleHarvesterExt = require("role.harvesterExt");
 var roleHarvesterDeposit = require("role.harvesterDeposit");
 var roleHarvesterMineral = require("role.harvesterMineral");
 var roleUpgrader = require("role.upgrader");
+var roleUpgraderSupport = require("role.upgraderSupport");
 var roleBuilder = require("role.builder");
 var roleBuilderExt = require("role.builderExt");
 var roleTower = require("tower");
@@ -46,6 +47,7 @@ var rolePowMover = require("role.powMover");
 var roleDoctor = require("role.doctor");
 var roleHealer = require("role.healer");
 var roleHealerChase = require("role.healerChase");
+var rolePowHealer = require("role.powHealer");
 var roleInvader = require("role.invader");
 var roleExplorer = require("role.explorer");
 var roleCleaner = require("role.cleaner");
@@ -54,6 +56,7 @@ var roleRaider = require("role.raider");
 var roleWanderer = require("role.wanderer");
 var roleRepairer = require("role.repairer");
 var roleCourier = require("role.courier");
+var roleCaravanChaser = require("role.caravanChase");
 
 PathFinder.use(true);
 

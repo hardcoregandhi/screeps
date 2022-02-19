@@ -157,6 +157,12 @@ global.runStructs = function () {
                 });
             });
         }
+        
+        if (Memory.rooms[room.name].structs.pspawn != undefined) {
+            var powerSpawn = Game.getObjectById(Memory.rooms[room.name].structs.pspawn.id);
+            if (powerSpawn)
+                powerSpawn.processPower();
+        }
 
         // var ramparts = room.find(FIND_STRUCTURES, {
         //     filter: (structure) => {

@@ -31,7 +31,7 @@ creepTracking = function () {
         creepRoomMap.set(r.name + "harvesterExt", 0);
         creepRoomMap.set(r.name + "moverExt", 0);
         creepRoomMap.set(r.name + "moverLink", 0);
-        creepRoomMap.set(r.name + "csites", r.find(FIND_CONSTRUCTION_SITES).length);
+        creepRoomMap.set(r.name + "csites", r.find(FIND_MY_CONSTRUCTION_SITES).length);
     });
 
     _.forEach(Game.creeps, (c) => {
