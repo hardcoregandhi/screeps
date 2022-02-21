@@ -18,7 +18,7 @@ global.roleHarvSup = {
         if (creep.memory.returning == undefined) {
             creep.memory.returning = true;
         }
-
+        
         mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
         if (mainStorage == null) {
             console.log(`${creep}: mainStorage could not be found`);
@@ -94,7 +94,7 @@ global.roleHarvSup = {
             target = Game.getObjectById(creep.memory.targetContainer);
             if (target == null) {
                 delete creep.memory.targetContainer
-                if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
+                if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource] != undefined && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
                     creep.memory.targetContainer = Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id
                     target = Game.getObjectById(creep.memory.targetContainer);
                 } else {
@@ -106,7 +106,9 @@ global.roleHarvSup = {
                 creep.memory.targetSource = target.pos.findClosestByRange(FIND_SOURCES).id;
             }
 
-            if (creep.room.controller.level >= 6 && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined && target.store.getUsedCapacity() == 0) {
+            if (creep.room.controller.level >= 6 &&
+                (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource] != undefined && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined) && // mineral sources won't have a sources entry or link
+            target.store.getUsedCapacity() == 0) {
                 creep.memory.DIE = {};
             }
 

@@ -3,10 +3,13 @@ global.roleCaravanChaser = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        
+        Log(creep, "caravanChaser.run()")
         caravan = Game.getObjectById(creep.memory.targetCaravan)
+        Log(creep, `caravan: ${caravan}`)
         if (caravan == null) {
-            if (creep.room.name != creep.memory.nextTargetRoom) {
+            Log(creep, `nextTargetRoom: ${creep.memory.nextTargetRoom}`)
+
+            if (creep.memory.nextTargetRoom != undefined && creep.room.name != creep.memory.nextTargetRoom) {
                 creep.moveTo(new RoomPosition(25, 25, creep.memory.nextTargetRoom))
                 return;
             } else {

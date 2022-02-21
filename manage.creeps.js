@@ -145,31 +145,42 @@ global.runCreeps = function () {
                 return;
             }
             
+            if (creep.memory.sweetSpot == undefined) {
+                ps = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.pspawn.id);
+                creep.memory.sweetSpot = new RoomPosition(ps.pos.x +1, ps.pos.y -1, ps.room.name);
+            }
+            creep.moveTo(creep.memory.sweetSpot.x, creep.memory.sweetSpot.y);
+            
             if (creep.usePower(PWR_GENERATE_OPS) == OK) {
                 return;
             }
             
-            if (mainStorage.store.getUsedCapacity(RESOURCE_OPS) + creep.store.getUsedCapacity(RESOURCE_OPS) > 100) {
-                if (factory != null && creep.powers[PWR_OPERATE_FACTORY] != undefined) {
-                    if (creep.powers[PWR_OPERATE_FACTORY].level || 0 > factory.level || 0) {
-                        if (creep.store.getUsedCapacity(RESOURCE_OPS) < 100) {
-                            creep.withdraw(mainStorage, RESOURCE_OPS);
-                        } else {
-                            ret = creep.usePower(PWR_OPERATE_FACTORY, factory);
-                            if (ret == ERR_NOT_IN_RANGE) {
-                                creep.moveTo(factory);
+            if (0) {
+                if (mainStorage.store.getUsedCapacity(RESOURCE_OPS) + creep.store.getUsedCapacity(RESOURCE_OPS) > 100) {
+                    if (factory != null && creep.powers[PWR_OPERATE_FACTORY] != undefined) {
+                        if (creep.powers[PWR_OPERATE_FACTORY].level || 0 > factory.level || 0) {
+                            if (creep.store.getUsedCapacity(RESOURCE_OPS) < 100) {
+                                creep.withdraw(mainStorage, RESOURCE_OPS);
+                            } else {
+                                ret = creep.usePower(PWR_OPERATE_FACTORY, factory);
+                                if (ret == ERR_NOT_IN_RANGE) {
+                                    creep.moveTo(factory);
+                                }
                             }
+                            return;
                         }
-                        return;
                     }
                 }
             }
             
-            if (creep.transfer(mainStorage, RESOURCE_OPS) != OK) {
-                creep.moveTo(mainStorage)
-            } else {
+            if (creep.store.getFreeCapacity() == 0) {
+                if (creep.transfer(mainStorage, RESOURCE_OPS) != OK) {
+                    creep.moveTo(mainStorage)
+                }
                 return;
             }
+            
+            
 
             // if (creep.usePower(PWR_OPERATE_SPAWN, mainSpawn) != OK) {
             //     creep.moveTo(mainSpawn);

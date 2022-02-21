@@ -230,7 +230,8 @@ global.moveToRoomIgnoreStructures = function (creep, targetRoom) {
 };
 
 global.moveToRoom = function (creep, targetRoom) {
-    if (creep.memory.pathfinderPath == undefined || creep.memory.pathfinderPath.length == 0) {
+    Log(creep, `moveToRoom(${creep}, ${targetRoom})`)
+    // if (creep.memory.pathfinderPath == undefined || creep.memory.pathfinderPath.length == 0) {
         let from = creep.pos;
         let to = { pos: new RoomPosition(25, 25, targetRoom), range: 1 };
 
@@ -258,8 +259,9 @@ global.moveToRoom = function (creep, targetRoom) {
                 allowedRooms[info.room] = true;
             });
 
+
         _.forEach(allowedRooms, (a, i) => {
-            // console.log(i)
+            Log(creep, i)
         });
 
         // console.log("finding path between these rooms");
@@ -303,7 +305,7 @@ global.moveToRoom = function (creep, targetRoom) {
             },
         });
         // console.log(creep.memory.pathfinderPath.path);
-    }
+    // }
 
     if (creep.memory.pathfinderPath != undefined && creep.memory.pathfinderPath.path.length) {
         if (creep.fatigue == 0) {

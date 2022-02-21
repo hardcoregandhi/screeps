@@ -33,7 +33,7 @@ drawGUI = function () {
         }
         // Creep info
         new RoomVisual().text(`${r.name} L:${r.controller.level} ${Math.round(r.controller.progress / 1000)}K/${r.controller.progressTotal / 1000}K`, 1, listOffset + inc(), { align: "left", font: fontSize });
-        new RoomVisual().text("🔋  ExcessEnergy: " + creepRoomMap.get(r.name + "eenergy"), 1, listOffset + inc(), { align: "left", font: fontSize });
+        new RoomVisual().text(`🔋  ExcessEnergy: ${creepRoomMap.get(r.name + "eenergy")}  Average: ${Memory.rooms[r.name].stats.energyLevels.average}`, 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text("⚡️ Energy      : " + r.energyAvailable + "/" + r.energyCapacityAvailable, 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text("⛏️ Harvesters  : " + creepRoomMap.get(r.name + "harvester"), 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text("🚚 Movers      : " + creepRoomMap.get(r.name + "mover"), 1, listOffset + inc(), { align: "left", font: fontSize });

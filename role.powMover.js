@@ -14,6 +14,7 @@ const job = {
 
 global.rolePowMover.name = "powMover";
 global.rolePowMover.run = function (creep) {
+    Log(creep, "rolePowMover.run()")
     // Lost creeps return home
     if (creep.room.name != creep.memory.baseRoomName) {
         const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
@@ -68,6 +69,9 @@ global.rolePowMover.run = function (creep) {
                 }
                 break;
         }
+    }
+    if (mainStorage.store.getUsedCapacity() < 200000) {
+        return;
     }
 
     if (creep.memory.moving && creep.store.getUsedCapacity() == 0) {

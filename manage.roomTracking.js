@@ -341,6 +341,30 @@ roomTracking = function () {
                 Memory.rooms[r.name].creeps.wanderers.nextTargetRoomIndex = 0;
                 Memory.rooms[r.name].creeps.wanderers.nextTargetRoomReverse = false;
             }
+            
+            // energy tracking
+            if (Memory.rooms[r.name].stats == undefined) {
+                Memory.rooms[r.name].stats = {};
+                Memory.rooms[r.name].stats.energyLevels = {}
+                Memory.rooms[r.name].stats.energyLevels.data = []
+                Memory.rooms[r.name].stats.energyLevels.average = 0;
+            }
+            if (Memory.rooms[r.name].mainStorage != undefined) {
+                Memory.rooms[r.name].stats.energyLevels.data.push(Game.getObjectById(Memory.rooms[r.name].mainStorage).store.getUsedCapacity(RESOURCE_ENERGY))
+            }
+            var energyTotal = 0;
+            for(var d of Memory.rooms[r.name].stats.energyLevels.data) {
+                energyTotal += d;
+            }
+            Memory.rooms[r.name].stats.energyLevels.average = Math.round(energyTotal / Memory.rooms[r.name].stats.energyLevels.data.length)
+            
+            if (Memory.rooms[r.name].stats.energyLevels.data.length > 5) {
+                recentTotal = 0
+                for (var i = Memory.rooms[r.name].stats.energyLevels.data.length - 5; i <= Memory.rooms[r.name].stats.energyLevels.data.length; i++) {
+                    recentTotal += Memory.rooms[r.name].stats.energyLevels.data[i]
+                }
+                Memory.rooms[r.name].stats.energyLevels.averageRecent = Math.round(recentTotal / 5)
+            }
         }
 
         var sources = r.find(FIND_SOURCES);
