@@ -104,7 +104,7 @@ global.roleEngineer = {
                 creep.memory.emyptingFactory = true;
                 return;
             } else {
-                if (!findTargetResource(creep, mainStorage)) {
+                if (!findTargetResource(creep, mainStorage, factory)) {
                     return;
                 }
             }
@@ -115,7 +115,8 @@ global.roleEngineer = {
             if (factory.store.getUsedCapacity(subC) < COMMODITIES[creep.memory.currentTarget.resource].components[subC]) {
                 factoryIsSupplied = false;
                 Log(creep, `factoryIsSupplied: ${factoryIsSupplied} needs ${subC}`)
-                if (creep.store.getUsedCapacity(subC) < COMMODITIES[creep.memory.currentTarget.resource].components[subC]) {
+                // if (creep.store.getUsedCapacity(subC) < COMMODITIES[creep.memory.currentTarget.resource].components[subC]) {
+                if (creep.store.getUsedCapacity(subC) == 0) {
                     WithdrawResourceFromStorage(creep, mainStorage, subC);
                 } else {
                     DeliverResourceToFactory(creep, factory, subC);
@@ -136,14 +137,18 @@ global.roleEngineer = {
     },
 };
 
-function findTargetResource(creep, storage) {
+function findTargetResource(creep, storage, factory) {
     var ret = false
     for (c of Object.keys(COMMODITY_SCORE).reverse()) { //reverse so we make the most valuable first
         var possible = true;
         for (subC in COMMODITIES[c].components) {
             // console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
             // console.log(storage.store.getUsedCapacity(subC));
-            if (storage.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC]) {
+            if (
+                mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
+                ( (COMMODITIES[c].level || 0) > (factory.level || 0) ) ||
+                ( COMMODITIES[c].level != undefined && factory.effects.length >= 1 )
+            ) {
                 possible = false;
                 break;
             }
@@ -154,6 +159,7 @@ function findTargetResource(creep, storage) {
             creep.memory.currentTarget.resource = c
             creep.memory.currentTarget.resourceSubcomponents = COMMODITIES[c].components
             ret = true
+            break;
         }
     }
     return ret;

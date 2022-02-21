@@ -116,7 +116,9 @@ global.roleWanderer = {
         caravanCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter(function(c) {return c.owner.username == SYSTEM_USERNAME})
         
         if (caravanCreeps.length) {
-            var homeFactory = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.factory.id);
+            var factory = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.factory.id);
+            var mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
+            var terminal = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.terminal.id);
             if (Memory.rooms[creep.memory.baseRoomName].caravan == undefined)
                 Memory.rooms[creep.memory.baseRoomName].caravan = {};
             if (Memory.rooms[creep.memory.baseRoomName].caravan.targetRoomName == undefined)
@@ -124,7 +126,10 @@ global.roleWanderer = {
             Memory.rooms[creep.memory.baseRoomName].caravan.targetRoomName[creep.room.name] = {};
             Memory.rooms[creep.memory.baseRoomName].caravan.targetRoomName[creep.room.name].creeps = {};
             _.forEach(caravanCreeps, (c) => {
-                if (homeFactory.store.getUsedCapacity(Object.keys(c.store)[0]) > 0) {
+                if (factory.store.getUsedCapacity(Object.keys(c.store)[0]) > 0 ||
+                    mainStorage.store.getUsedCapacity(Object.keys(c.store)[0]) > 0 ||
+                    terminal.store.getUsedCapacity(Object.keys(c.store)[0]) > 0
+                ) {
                     creep.memory.targetResource = Object.keys(c.store)[0]
                 }
                 Memory.rooms[creep.memory.baseRoomName].caravan.targetRoomName[creep.room.name].creeps[c.id] = {};
@@ -135,8 +140,8 @@ global.roleWanderer = {
             creep.memory.role = "caravanChaser"
             creep.memory.targetCaravan = caravanCreeps[0].id
             if (creep.memory.targetResource != undefined) {
-                queueSpawnCreep(roleCourier, null, {memory:{targetCaravanChaser:creep.id, resourceType:creep.memory.targetResource}}, creep.memory.baseRoomName);
-                queueSpawnCreep(roleCourier, null, {memory:{targetCaravanChaser:creep.id, resourceType:creep.memory.targetResource}}, creep.memory.baseRoomName);
+                queueSpawnCreep(roleCourier, null, {memory:{targetCaravanChaser:creep.id, resourceType:creep.memory.targetResource, targetRoomName:creep.room.name}}, creep.memory.baseRoomName);
+                queueSpawnCreep(roleCourier, null, {memory:{targetCaravanChaser:creep.id, resourceType:creep.memory.targetResource, targetRoomName:creep.room.name}}, creep.memory.baseRoomName);
             }
             
             Game.notify(`Memory.rooms[${creep.memory.baseRoomName}].caravan.targetRoomName[${creep.room.name}]: ${JSON.stringify(Memory.rooms[creep.memory.baseRoomName].caravan.targetRoomName[creep.room.name])}`)

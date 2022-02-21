@@ -360,7 +360,7 @@ roomTracking = function () {
             
             if (Memory.rooms[r.name].stats.energyLevels.data.length > 5) {
                 recentTotal = 0
-                for (var i = Memory.rooms[r.name].stats.energyLevels.data.length - 5; i <= Memory.rooms[r.name].stats.energyLevels.data.length; i++) {
+                for (var i = Memory.rooms[r.name].stats.energyLevels.data.length - 5; i < Memory.rooms[r.name].stats.energyLevels.data.length; i++) {
                     recentTotal += Memory.rooms[r.name].stats.energyLevels.data[i]
                 }
                 Memory.rooms[r.name].stats.energyLevels.averageRecent = Math.round(recentTotal / 5)

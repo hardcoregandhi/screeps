@@ -14,6 +14,7 @@ global.roleCourier = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        console.log("roleCourier.run()")
         // creep.memory.DIE = true
         Log(creep, "run()")
         if (creep.memory.returning == undefined) {
@@ -37,6 +38,8 @@ global.roleCourier = {
         }
         
         caravanChaser = Game.getObjectById(creep.memory.targetCaravanChaser);
+        console.log("roleCourier: ", caravanChaser)
+
         if (caravanChaser == null) {
             creep.memory.retire = true;
         } else if (caravanChaser.memory.role != "caravanChase") {
@@ -83,14 +86,49 @@ global.roleCourier = {
         } else {
             Log(creep, "returning")
 
-            var target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.factory.id);
-            Log(creep, target)
+            var factory = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.factory.id);
+            var mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
+            var terminal = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.terminal.id);
+            Log(creep, factory)
             Log(creep, creep.memory.resourceType)
-            if (creep.withdraw(target, creep.memory.resourceType) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target, {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                });
+            if (factory.store.getUsedCapacity(creep.memory.resourceType) == 0 ||
+                mainStorage.store.getUsedCapacity(creep.memory.resourceType) == 0 ||
+                terminal.store.getUsedCapacity(creep.memory.resourceType) == 0) {
+                    if (creep.store.getUsedCapacity(creep.memory.resourceType) > 0) {
+                        creep.memory.returning = false;
+                        return;
+                    } else {
+                        console.log(`${creep} could not find resource ${creep.memory.resourceType}, retiring`)
+                        creep.memory.DIE = true;
+                        return;
+                    }
+                }
+
+            if (factory.store.getUsedCapacity(creep.memory.resourceType) > 0) {
+                if (creep.withdraw(factory, creep.memory.resourceType) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(factory, {
+                        visualizePathStyle: { stroke: "#ffaa00" },
+                    });
+                }
+                return;
             }
+            if (mainStorage.store.getUsedCapacity(creep.memory.resourceType) > 0) {
+                if (creep.withdraw(mainStorage, creep.memory.resourceType) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(mainStorage, {
+                        visualizePathStyle: { stroke: "#ffaa00" },
+                    });
+                }
+                return;
+            }
+            if (terminal.store.getUsedCapacity(creep.memory.resourceType) > 0) {
+                if (creep.withdraw(terminal, creep.memory.resourceType) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(terminal, {
+                        visualizePathStyle: { stroke: "#ffaa00" },
+                    });
+                }
+                return;
+            }
+            
         }
     },
 };
@@ -107,7 +145,7 @@ function retire(creep) {
             });
         }
     } else {
-        creep.memory.DIE = true;
+        // creep.memory.DIE = true;
     }
     return;
 }
