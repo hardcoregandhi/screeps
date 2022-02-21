@@ -29,8 +29,8 @@ global.roleMover = {
         MOVE, MOVE, MOVE, MOVE, MOVE,
         MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
-    baseBodyParts: [WORK],
-    bodyLoop: [CARRY, MOVE],
+    baseBodyParts: [],
+    bodyLoop: [CARRY, CARRY, MOVE],
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -265,7 +265,12 @@ global.roleMover = {
                 return;
             }
             if (targets.length == 0) {
-                creep.moveTo(mainStorage);
+                if (creep.store.getFreeCapacity()) {
+                    creep.memory.moving = false;
+                } else {
+                    creep.moveTo(mainStorage.pos.x - 7, mainStorage.pos.y);
+                }
+                // creep.moveTo(mainStorage);
                 return;
             }
             target = creep.pos.findClosestByPath(targets);

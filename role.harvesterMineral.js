@@ -69,8 +69,8 @@ global.roleHarvesterMineral = {
                 Log(creep, "local ccont found");
                 Log(creep, target);
                 
-                if (target.store.getFreeCapacity() == 0 && Memory.rooms[creep.memory.baseRoomName].mineral.container.targettedBy == 0) {
-                    spawnCreep(roleHarvSup, "auto", { memory: { targetContainer: target.id, noHeal: true } }, creep.memory.baseRoomName);
+                if (target.store.getFreeCapacity() == 0 && Memory.rooms[creep.memory.baseRoomName].mineral.container.targettedBy == 0 && creepRoomMap.get(creep.memory.baseRoomName+"harvesterMineralSupportTarget"+creep.memory.targetSource) == undefined) {
+                    spawnCreep(roleHarvesterMineralSupport, "auto", { memory: { targetContainer: target.id, noHeal: true, targetSource: creep.memory.targetSource } }, creep.memory.baseRoomName);
                 }
                 
                 for (var type in creep.store) {

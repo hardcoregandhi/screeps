@@ -47,6 +47,13 @@ global.rolePowHarvester = {
         
         if (powerBank == null) {
             creep.memory.DIE = true;
+            if (creep.memory.healer != undefined || creep.memory.healer != null) {
+                try {
+                    Memory.creeps[creep.memory.healer].DIE = true;
+                } catch {
+                    
+                }
+            }
             return;
         }
         try {
@@ -90,9 +97,9 @@ global.rolePowHarvester = {
         }
         
         try {
-            if (creep.memory.ETA < creep.memory.distanceToSpawn + (roleRaider.BodyParts.length*3) && Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].raidersSpawned == undefined || Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].raidersSpawned == false) {
+            if (creep.memory.ETA < creep.memory.distanceToSpawn + (roleRaider.BodyParts.length*3) && (Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].raidersSpawned == undefined || Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].raidersSpawned == false)) {
                 for( var i in _.range( Math.ceil(powerBank.power / 50) / 10 ) ) {
-                    queueSpawnCreep(roleRaider, null, {memory:{targetRoomName:creep.memory.targetRoomName, power:true}}, creep.memory.baseRoomName);
+                    queueSpawnCreep(roleRaider, null, {memory:{targetRoomName:creep.memory.targetRoomName, power:true, targetSource:creep.memory.targetSource}}, creep.memory.baseRoomName);
                 }
                 Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].raidersSpawned = true;
             }

@@ -30,6 +30,10 @@ global.roleRaider = {
         }
 
         if (!creep.memory.scav && creep.store.getUsedCapacity() == 0) {
+            if (creep.memory.toDIE == true) {
+                creep.memory.DIE = true;
+                return;
+            }
             creep.memory.scav = true;
             creep.say("🔄 scav");
         }
@@ -77,12 +81,21 @@ global.roleRaider = {
                 
                 var droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
                 
+                if (Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource] == undefined || Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].finished == true) {
+                    creep.memory.toDIE = true;
+                    creep.memory.scav = false;
+                    return;
+                }
+                
                 if (creep.memory.power != undefined && creep.memory.power == true) {
                     var powerBanks = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
                     if (!powerBanks.length && droppedResource == null) {
                         creep.memory.DIEcountdown = (creep.memory.DIEcountdown || 0) + 1;
                         if (creep.memory.DIEcountdown > 10) {
-                            creep.memory.DIE = true;
+                            Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].finished = true;
+                            creep.memory.toDIE = true;
+                            creep.memory.scav = false;
+                            return;
                         }
                     }
                 

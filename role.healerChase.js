@@ -30,6 +30,7 @@ global.roleHealerChase = {
 
         if (creep.hits < creep.hitsMax) {
             creep.heal(creep);
+            return;
         }
 
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {

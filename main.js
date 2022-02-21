@@ -25,6 +25,7 @@ var roleHarvSup = require("role.harvesterSup");
 var roleHarvesterExt = require("role.harvesterExt");
 var roleHarvesterDeposit = require("role.harvesterDeposit");
 var roleHarvesterMineral = require("role.harvesterMineral");
+var roleHarvesterMineralSupport = require("role.harvesterMineralSupport");
 var roleUpgrader = require("role.upgrader");
 var roleUpgraderSupport = require("role.upgraderSupport");
 var roleBuilder = require("role.builder");
@@ -184,7 +185,12 @@ try {
 module.exports.loop = function () {
     profiler.wrap(function () {
         // Cleanup
-        deadCreepCleanup();
+        
+        try {
+            deadCreepCleanup();
+        } catch (e) {
+            console.log(`deadCreepCleanup(); failed: ${e}`);
+        }
 
         // Event logging
         // _.forEach(Game.rooms, (room) => {

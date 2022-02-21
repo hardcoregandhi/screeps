@@ -72,10 +72,41 @@ global.roleEngineer = {
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
         var factory = Game.getObjectById(Memory.rooms[creep.room.name].structs.factory.id);
         var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
+        
+        if (factory.store.getUsedCapacity() <= 1000) {
+            creep.memory.emyptingFactory = false;
+        }
+        if (creep.memory.emyptingFactory == true) {
+            if(creep.memory.moving) {
+                for(const r in creep.store) {
+                Log(creep, "transferring " + r)
+                    if (creep.transfer(terminal, r) == ERR_NOT_IN_RANGE){
+                        Log(creep, "moving to terminal")
+                        creep.moveTo(terminal);
+                    }
+                    return;
+                }
+            } else {
+                for(const r in factory.store) {
+                Log(creep, "withdrawing " + r)
+                    if (creep.withdraw(factory, r) == ERR_NOT_IN_RANGE){
+                        Log(creep, "moving to factory")
+                        creep.moveTo(factory);
+                    }
+                    return;
+                }
+            }
+            return;
+        }
 
         if (creep.memory.currentTarget == undefined) {
-            if (!findTargetResource(creep, mainStorage)) {
+            if (factory.store.getUsedCapacity() > 40000) {
+                creep.memory.emyptingFactory = true;
                 return;
+            } else {
+                if (!findTargetResource(creep, mainStorage)) {
+                    return;
+                }
             }
         }
         
