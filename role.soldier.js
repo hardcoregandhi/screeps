@@ -76,7 +76,7 @@ global.roleSoldier = {
                 creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) ||
                 creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
                     filter: (s) => {
-                        return s.structureType != STRUCTURE_CONTROLLER;
+                        return s.structureType != STRUCTURE_CONTROLLER && s.structureType != STRUCTURE_POWER_BANK;
                     },
                 });
             // console.log(closestHostile)

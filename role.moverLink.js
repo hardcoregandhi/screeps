@@ -278,13 +278,23 @@ global.roleMoverLink = {
             }
 
             Log(creep, `creep.memory.transferringToMainRoom: ${creep.memory.transferringToMainRoom}`)
-            if (creep.memory.transferringToMainRoom == true || creep.memory.withdrawFromTerminal == true) {
+            if (creep.memory.transferringToMainRoom == true ) {
                 Log(creep, `Memory.mainRoom: ${Memory.mainRoom}`)
                 Log(creep, `creep.memory.baseRoomName: ${creep.memory.baseRoomName}`)
                 for (const resourceType in creep.store) {
                     if (resourceType != "energy") {
                         if (creep.transfer(terminal, resourceType) == OK) {
                             creep.memory.transferringToMainRoom = false;
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            if (creep.memory.withdrawFromTerminal == true) {
+                for (const resourceType in creep.store) {
+                    if (resourceType != "energy") {
+                        if (creep.transfer(mainStorage, resourceType) == OK) {
                             creep.memory.withdrawFromTerminal = false;
                             return;
                         }
@@ -309,10 +319,8 @@ global.roleMoverLink = {
                 if (link_storage.cooldown == 0) {
                     ret = link_storage.transferEnergy(link_controller, link_storage.store.getUsedCapacity(RESOURCE_ENERGY));
                     Log(creep, ret);
-                    if (ret == OK) {
-                        return;
-                    }
                 }
+                creep.memory.supplyController = false
                 return;
             }
             
@@ -537,7 +545,7 @@ global.roleMoverLink = {
                 
                 
                 Log(creep, "did nothing.")
-                if (Memory.rooms[creep.memory.baseRoomName].structs.pspawn != undefined) {
+                if (Memory.rooms[creep.memory.baseRoomName].structs.pspawn != undefined && mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 250000) {
                     rolePowMover.run(creep);
                     creep.memory.powerMover = true;
                 }

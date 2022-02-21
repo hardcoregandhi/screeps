@@ -88,7 +88,6 @@ global.runSpawns = function () {
             spawnCreep(roleRepairer, null, null, r.name);
             continue;
         } else if (scoutNeighbouringRooms(r)) {
-            console.log(r, "scoutNeighbouringRooms")
             continue;
         } else if (roomExpansion(r.name)) {
             continue;

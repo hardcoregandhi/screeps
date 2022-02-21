@@ -59,13 +59,18 @@ Object.assign(exports, {
 
 asdf = function() {
     mainStorage = Game.getObjectById(Memory.rooms["W17N1"].mainStorage)
+    factory = Game.getObjectById(Memory.rooms["W17N1"].structs.factory.id)
     for (c of Object.keys(COMMODITY_SCORE).reverse()) {
-        console.log(c);
-        console.log(JSON.stringify(COMMODITIES[c].components))
+        // console.log(c);
+        // console.log(JSON.stringify(COMMODITIES[c].components))
         var ret = true;
         for (subC in COMMODITIES[c].components) {
-            console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
-            if (mainStorage.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC]) {
+            // console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
+            if (
+                mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
+                ( (COMMODITIES[c].level || 0) > (factory.level || 0) ) ||
+                ( COMMODITIES[c].level != undefined && factory.effects.length >= 1 )
+            ) {
                 ret = false;
             }
         }
@@ -73,4 +78,31 @@ asdf = function() {
             console.log(`${c} is possible to make`)
         }
     }
+}
+
+zxcv = function() {
+    mainStorage = Game.getObjectById(Memory.rooms["W17N1"].mainStorage)
+    factory = Game.getObjectById(Memory.rooms["W17N1"].structs.factory.id)
+    for (c of Object.keys(COMMODITY_SCORE).reverse()) { //reverse so we make the most valuable first
+        var possible = true;
+        for (subC in COMMODITIES[c].components) {
+            console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
+            console.log(mainStorage.store.getUsedCapacity(subC));
+            console.log(factory.store.getUsedCapacity(subC));
+            if (
+                mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
+                ( (COMMODITIES[c].level || 0) > (factory.level || 0) ) ||
+                ( (COMMODITIES[c].level || 0) > factory.effects.length )
+            ) {
+                possible = false;
+                break;
+            }
+        }
+        if (possible) {
+            console.log(`${c} is possible to make`)
+            ret = true
+            break;
+        }
+    }
+    return ret;
 }
