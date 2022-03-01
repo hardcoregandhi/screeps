@@ -42,6 +42,19 @@ isHighwayRoom = function(roomName) {
     return (parsed[1] % 10 === 0) || (parsed[2] % 10 === 0);
 }
 
+getMiningSpots = function(spot) {
+    var terrain = spot.room.getTerrain();
+    var localMiningSpots = 0;
+    for (var i = spot.pos.x - 1; i <= spot.pos.x + 1; i++) {
+        for (var j = spot.pos.y - 1; j <= spot.pos.y + 1; j++) {
+            if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                localMiningSpots++;
+            }
+        }
+    }
+    return localMiningSpots;
+}
+
 RemoveFromList = function(list, entry) {
     const index = list.indexOf(entry);
     if (index > -1) {

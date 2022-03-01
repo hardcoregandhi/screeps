@@ -69,7 +69,7 @@ asdf = function() {
             if (
                 mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
                 ( (COMMODITIES[c].level || 0) > (factory.level || 0) ) ||
-                ( COMMODITIES[c].level != undefined && factory.effects.length >= 1 )
+                ( COMMODITIES[c].level != undefined && factory.effects.length == 0 )
             ) {
                 ret = false;
             }
@@ -86,13 +86,13 @@ zxcv = function() {
     for (c of Object.keys(COMMODITY_SCORE).reverse()) { //reverse so we make the most valuable first
         var possible = true;
         for (subC in COMMODITIES[c].components) {
-            console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
-            console.log(mainStorage.store.getUsedCapacity(subC));
-            console.log(factory.store.getUsedCapacity(subC));
+            // console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
+            // console.log(mainStorage.store.getUsedCapacity(subC));
+            // console.log(factory.store.getUsedCapacity(subC));
             if (
                 mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
                 ( (COMMODITIES[c].level || 0) > (factory.level || 0) ) ||
-                ( (COMMODITIES[c].level || 0) > factory.effects.length )
+                ( COMMODITIES[c].level != undefined && factory.effects.length == 0 )
             ) {
                 possible = false;
                 break;
@@ -102,6 +102,31 @@ zxcv = function() {
             console.log(`${c} is possible to make`)
             ret = true
             break;
+        }
+    }
+    return ret;
+}
+
+factoryPossIgnoreEffects = function() {
+    mainStorage = Game.getObjectById(Memory.rooms["W17N1"].mainStorage)
+    factory = Game.getObjectById(Memory.rooms["W17N1"].structs.factory.id)
+    for (c of Object.keys(COMMODITY_SCORE).reverse()) { //reverse so we make the most valuable first
+        var possible = true;
+        for (subC in COMMODITIES[c].components) {
+            // console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
+            // console.log(mainStorage.store.getUsedCapacity(subC));
+            // console.log(factory.store.getUsedCapacity(subC));
+            if (
+                mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
+                ( (COMMODITIES[c].level || 0) > (factory.level || 0) )
+            ) {
+                possible = false;
+                break;
+            }
+        }
+        if (possible) {
+            console.log(`${c} is possible to make`)
+            ret = true
         }
     }
     return ret;

@@ -27,7 +27,7 @@ roomExpansion = function(myRoom) {
             }
             
             if (Game.rooms[targetRoomName] && Game.rooms[targetRoomName].controller.my) {
-                // if (Game.rooms[targetRoomName].controller.level < 3) {
+                if (Game.rooms[targetRoomName].controller.level < 4) {
                     if (Game.rooms[targetRoomName] != undefined && Game.rooms[targetRoomName].controller.my == true /* && Memory.rooms[targetRoomName].mainSpawn == undefined*/ &&
                         creepRoomMap.get(`${targetRoomName}harvester`) == undefined || creepRoomMap.get(`${targetRoomName}harvester`) < Memory.rooms[targetRoomName].totalMiningSpots) {
                         console.log(`roomExpansion: ${myRoom} targetting ${targetRoomName} spawning roleHarvester`)
@@ -49,13 +49,13 @@ roomExpansion = function(myRoom) {
                         return true;
                     }
                 
-                // } else {
+                } else {
                     if (creepRoomMap.get(`${myRoom}truckerTarget${targetRoomName}`) == undefined || creepRoomMap.get(`${myRoom}truckerTarget${targetRoomName}`) < 4) {
                         console.log(`roomExpansion: ${myRoom} targetting ${targetRoomName} spawning roleTrucker`)
                         spawnCreep(roleTrucker, "auto", {memory:{targetRoomName:targetRoomName}}, myRoom);
                         return true;
                     }
-                // }
+                }
             }
         }
    }

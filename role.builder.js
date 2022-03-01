@@ -120,7 +120,7 @@ global.roleBuilder = {
                 //         }
                 //     });
                 // }
-                if (creepRoomMap.get(creep.room.name + "harvester") < 1 && (creepRoomMap.get(creep.room.name + "eenergy") == undefined || creepRoomMap.get(creep.room.name + "eenergy") < 200)) {
+                if (creepRoomMap.get(creep.room.name + "harvester") < 1 && (creepRoomMap.get(creep.room.name + "eenergy") == undefined || creepRoomMap.get(creep.room.name + "eenergy") < 200) && creep.memory.role != "harvester") {
                     // console.log("Defauling to Harvester")
                     roleHarvester.run(creep);
                     return;

@@ -99,7 +99,7 @@ global.roleEngineer = {
             return;
         }
 
-        if (creep.memory.currentTarget == undefined) {
+        if (creep.memory.currentTarget == null) {
             if (factory.store.getUsedCapacity() > 40000) {
                 creep.memory.emyptingFactory = true;
                 return;
@@ -117,7 +117,11 @@ global.roleEngineer = {
                 Log(creep, `factoryIsSupplied: ${factoryIsSupplied} needs ${subC}`)
                 // if (creep.store.getUsedCapacity(subC) < COMMODITIES[creep.memory.currentTarget.resource].components[subC]) {
                 if (creep.store.getUsedCapacity(subC) == 0) {
-                    WithdrawResourceFromStorage(creep, mainStorage, subC);
+                    if (mainStorage.store.getUsedCapacity(subC) != 0) {
+                        WithdrawResourceFromStorage(creep, mainStorage, subC);
+                    } else {
+                        creep.memory.currentTarget = null;
+                    }
                 } else {
                     DeliverResourceToFactory(creep, factory, subC);
                 }
@@ -137,6 +141,23 @@ global.roleEngineer = {
     },
 };
 
+function resourceIsPossible(creep, storage, factory, resource) {
+    var possible = true;
+    for (subC in COMMODITIES[resource].components) {
+        // console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
+        // console.log(storage.store.getUsedCapacity(subC));
+        if (
+            mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[resource].components[subC] ||
+            ( (COMMODITIES[resource].level || 0) > (factory.level || 0) ) ||
+            ( COMMODITIES[resource].level != undefined && factory.effects.length == 0 )
+        ) {
+            possible = false;
+            break;
+        }
+    }
+    return possible;
+}
+
 function findTargetResource(creep, storage, factory) {
     var ret = false
     for (c of Object.keys(COMMODITY_SCORE).reverse()) { //reverse so we make the most valuable first
@@ -147,14 +168,14 @@ function findTargetResource(creep, storage, factory) {
             if (
                 mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
                 ( (COMMODITIES[c].level || 0) > (factory.level || 0) ) ||
-                ( COMMODITIES[c].level != undefined && factory.effects.length >= 1 )
+                ( COMMODITIES[c].level != undefined && factory.effects.length == 0 )
             ) {
                 possible = false;
                 break;
             }
         }
         if (possible) {
-            console.log(`${c} is possible to make`)
+            console.log(`${creep.room.name}: ${c} is possible to make`)
             creep.memory.currentTarget = {}
             creep.memory.currentTarget.resource = c
             creep.memory.currentTarget.resourceSubcomponents = COMMODITIES[c].components

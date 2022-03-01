@@ -58,7 +58,7 @@ global.roleMover = {
             delete Memory.rooms[creep.room.name].mainStorage;
             resetMainStorage(creep.room.name);
         }
-        if (creep.memory.transitioning == undefined) {
+        if (creep.memory.transitioning == undefined || creep.memory.transitioning == false) {
             for (const resourceType in creep.store) {
                 if (resourceType != RESOURCE_ENERGY) {
                     Log(creep, 3);
@@ -127,6 +127,9 @@ global.roleMover = {
                         }
                         return;
                     }
+                }
+                if (mainStorage.structureType == STRUCTURE_STORAGE) {
+                    creep.memory.transitioning = false;
                 }
                 Log(creep, "using mainStorage");
                 if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
@@ -258,7 +261,11 @@ global.roleMover = {
                 creep.say("no targets");
                 try {
                     Log(creep, 8);
-                    creep.moveTo(mainStorage);
+                    if (creep.store.getFreeCapacity()) {
+                        creep.memory.moving = false;
+                    } else {
+                        creep.moveTo(mainStorage.pos.x - 7, mainStorage.pos.y);
+                    }
                 } catch (e) {
                     console.log(`${creep}: ${e}`);
                 }

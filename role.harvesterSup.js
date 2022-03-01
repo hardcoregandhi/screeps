@@ -73,7 +73,7 @@ global.roleHarvSup = {
                 }
             } else {
                 Log(creep, `${creep.name} falling back to other roles`)
-                if (creep.memory.noFallback == undefined || creep.memory.noFallback != true) {
+                if ((creep.memory.noFallback == undefined || creep.memory.noFallback != true) && creep.body.includes(WORK)) {
                     fallbackToOtherRoles(creep);
                 }
             }

@@ -19,6 +19,8 @@ global.roleRaider = {
             creep.memory.scav = false;
         }
         
+        creep.memory.noHeal = true;
+        
         Log(creep, creep.ticksToLive < 300 || creep.memory.healing == true);
         Log(creep, creep.memory.noHeal == undefined || creep.memory.noHeal != true);
 
@@ -30,16 +32,17 @@ global.roleRaider = {
         }
 
         if (!creep.memory.scav && creep.store.getUsedCapacity() == 0) {
-            if (creep.memory.toDIE == true) {
-                creep.memory.DIE = true;
-                return;
-            }
             creep.memory.scav = true;
             creep.say("🔄 scav");
         }
         if (creep.memory.scav && creep.store.getFreeCapacity() == 0) {
             creep.memory.scav = false;
             creep.say("dropping");
+        }
+        
+        if (creep.memory.toDIE == true && creep.store.getUsedCapacity() == 0) {
+            creep.memory.DIE = true;
+            return;
         }
 
         if (!creep.memory.scav) {
@@ -62,6 +65,12 @@ global.roleRaider = {
             }
         } else {
             Log(creep, "scavin");
+            
+            if (Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource] == undefined || Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].finished == true) {
+                creep.memory.toDIE = true;
+                creep.memory.scav = false;
+                return;
+            }
 
             if (creep.room.name != creep.memory.targetRoomName) {
                 // const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName, {
@@ -80,12 +89,6 @@ global.roleRaider = {
                 
                 
                 var droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
-                
-                if (Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource] == undefined || Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].finished == true) {
-                    creep.memory.toDIE = true;
-                    creep.memory.scav = false;
-                    return;
-                }
                 
                 if (creep.memory.power != undefined && creep.memory.power == true) {
                     var powerBanks = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);

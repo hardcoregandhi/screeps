@@ -62,7 +62,7 @@ global.roleMoverLink = {
         ],
     baseBodyParts: [MOVE],
     bodyLoop: [CARRY],
-    bodyPartsMaxCount: 17,
+    // bodyPartsMaxCount: 17,
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -129,6 +129,7 @@ global.roleMoverLink = {
         var link_storage = Game.getObjectById(Memory.rooms[creep.room.name].link_storage);
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
         var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
+        var powerSpawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.pspawn.id);
         Log(creep, `link_controller: ${link_controller}`)
         Log(creep, `link_storage: ${link_storage}`)
         Log(creep, `mainStorage: ${mainStorage}`)
@@ -276,18 +277,29 @@ global.roleMoverLink = {
                 Log(creep, "mainStorage could not be found");
                 return;
             }
+            
+            if (creep.memory.overflow == true) {
+                if (creep.transfer(terminal, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    Log(creep, "moving to mainStorage");
+                    creep.moveTo(terminal);
+                    return;
+                }
+                creep.memory.overflow = false;
+                return;
+            }
 
             Log(creep, `creep.memory.transferringToMainRoom: ${creep.memory.transferringToMainRoom}`)
             if (creep.memory.transferringToMainRoom == true ) {
                 Log(creep, `Memory.mainRoom: ${Memory.mainRoom}`)
                 Log(creep, `creep.memory.baseRoomName: ${creep.memory.baseRoomName}`)
                 for (const resourceType in creep.store) {
-                    if (resourceType != "energy") {
                         if (creep.transfer(terminal, resourceType) == OK) {
                             creep.memory.transferringToMainRoom = false;
-                            return;
+                        } else {
+                            creep.moveTo(terminal)
                         }
-                    }
+                        creep.memory.transferringToMainRoom = false
+                        return;
                 }
             }
             
@@ -296,16 +308,22 @@ global.roleMoverLink = {
                     if (resourceType != "energy") {
                         if (creep.transfer(mainStorage, resourceType) == OK) {
                             creep.memory.withdrawFromTerminal = false;
-                            return;
+                        } else {
+                            creep.moveTo(mainStorage)
                         }
+                        return;
                     }
                 }
             }
             
             if (creep.memory.topUpTerminal == true) {
                 Log(creep, `creep.memory.topUpTerminal: ${creep.memory.topUpTerminal}`)
-                creep.transfer(terminal, RESOURCE_ENERGY);
-                creep.memory.topUpTerminal = false;
+                ret = creep.transfer(terminal, RESOURCE_ENERGY);
+                if (ret == OK) {
+                    creep.memory.topUpTerminal = false;
+                } else {
+                    creep.moveTo(terminal)
+                }
                 return;
             }
             
@@ -325,7 +343,7 @@ global.roleMoverLink = {
             }
             
             
-            if (Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom != undefined) {
+            if (creep.memory.sendingToSupportRoom == true) {
                 ret = creep.transfer(terminal, RESOURCE_ENERGY);
                 if (terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 10000) {
                     Log(creep, terminal.send(RESOURCE_ENERGY, terminal.store.getUsedCapacity(RESOURCE_ENERGY) - Game.market.calcTransactionCost(terminal.store.getUsedCapacity(RESOURCE_ENERGY), creep.room.name, Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom), Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom))
@@ -335,6 +353,7 @@ global.roleMoverLink = {
                     Log(creep, "moving to " + terminal);
                     creep.moveTo(terminal);
                 } else if (ret == OK) {
+                    creep.memory.sendingToSupportRoom = false;
                     return;
                 }
             }
@@ -343,9 +362,12 @@ global.roleMoverLink = {
                 Log(creep, "firesale, transferring to terminal");
                 var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
                 for (const resourceType in creep.store) {
-                    if (creep.transfer(terminal, resourceType)) {
-                        return;
+                    if (creep.transfer(terminal, resourceType) == OK) {
+                    
+                    } else {
+                        creep.moveTo(terminal)
                     }
+                    return;
                 }
             }
             if (creep.memory.prepareBuyOrder != undefined && creep.memory.prepareBuyOrder == true) {
@@ -391,6 +413,16 @@ global.roleMoverLink = {
         } else {
             Log(creep, "!moving");
             try {
+                
+                if (mainStorage.store.getUsedCapacity()  > 950000) {
+                    if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        Log(creep, "moving to mainStorage");
+                        creep.moveTo(mainStorage);
+                        return;
+                    }
+                    creep.memory.overflow = true;
+                    return;
+                }
                 // do default behaviour first so other creeps aren't blocked
                 
                 if (link_controller != null && link_storage.cooldown == 0) {
@@ -424,14 +456,15 @@ global.roleMoverLink = {
                 
                 if (Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom != undefined) {
                     Log(creep, `supportRoom: ${Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom}`)
-                    if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 250000) {
-                        Log(creep, "storage > 200000, sending to supportRoom")
+                    if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) + terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 500000) {
+                        Log(creep, "storage > 500000, sending to supportRoom")
                         ret = creep.withdraw(mainStorage, RESOURCE_ENERGY);
                         if (ret == ERR_NOT_IN_RANGE) {
                             Log(creep, creep.withdraw(mainStorage, RESOURCE_ENERGY));
                             Log(creep, "moving to " + mainStorage);
                             creep.moveTo(mainStorage);
                         } else if (ret == OK) {
+                            creep.memory.sendingToSupportRoom = true;
                             return;
                         }
                     }
@@ -453,7 +486,10 @@ global.roleMoverLink = {
                     // no energy, but can still store what is already withdrawn
                     Log(creep, "link_storage empty, setting move to true");
                     // var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
-                    creep.withdraw(terminal, RESOURCE_ENERGY);
+                    ret = creep.withdraw(terminal, RESOURCE_ENERGY);
+                    if (ret == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(terminal)
+                    }
                     return;
                 }
 
@@ -504,20 +540,40 @@ global.roleMoverLink = {
                 
                 if (Memory.mainRoom != undefined && creep.memory.baseRoomName != Memory.mainRoom) {
                     for (const resourceType in mainStorage.store) {
-                        if (resourceType != "energy") {
+                        if (resourceType != "energy" && terminal.store.getFreeCapacity()) {
                             if (creep.withdraw(mainStorage, resourceType) == OK) {
                                 Log(creep, "setting transferringToMainRoom to true")
                                 creep.memory.transferringToMainRoom = true;
                                 creep.memory.moving = true;
-                                return;
+                            } else {
+                                creep.moveTo(mainStorage);
                             }
+                            return
                         }
                     }
                 }
                 
-                if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 200000 && terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 10000) {
-                    creep.withdraw(mainStorage, RESOURCE_ENERGY);
-                    creep.memory.topUpTerminal = true;
+                if (Memory.mainRoom != undefined && creep.memory.baseRoomName == Memory.mainRoom) {
+                    for (const resourceType in mainStorage.store) {
+                        if (resourceType != "energy") {
+                            if (creep.withdraw(terminal, resourceType) == OK) {
+                                Log(creep, "setting withdrawFromTerminal to true")
+                                creep.memory.withdrawFromTerminal = true;
+                                creep.memory.moving = true;
+                            } else {
+                                creep.moveTo(terminal);
+                            }
+                            return
+                        }
+                    }
+                }
+                
+                if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 200000 && terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 10000 && terminal.store.getFreeCapacity()) {
+                    if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(mainStorage);
+                    } else {
+                        creep.memory.topUpTerminal = true;
+                    }
                     return;
                 }
                 
@@ -531,13 +587,15 @@ global.roleMoverLink = {
                 //     }
                 // }
                 
-                if (Memory.mainRoom == creep.memory.baseRoomName && terminal.store.getUsedCapacity() > 10000) {
+                if (terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 11000 && mainStorage.store.getUsedCapacity() < 900000) {
                     for (const resourceType in terminal.store) {
-                        if (resourceType != 'energy') {
+                        if (resourceType == 'energy') {
                             if (creep.withdraw(terminal, resourceType) == OK) {
                                 creep.memory.withdrawFromTerminal = true;
-                                return;
+                            } else {
+                                creep.moveTo(terminal)
                             }
+                            return;
                         }
                     }
                 }

@@ -5,7 +5,7 @@ findNewHealTarget = function (_creep) {
         _creep.memory.healing == true;
         return 1;
     } else {
-        _creep.memory.targetCreep = _creep.pos.findClosestByRange(newTargetCandidates).id;
+        _creep.memory.targetCreep = _creep.pos.findClosestByRange(newTargetCandidates).name;
         return 0;
     }
 };

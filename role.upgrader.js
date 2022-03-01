@@ -14,6 +14,8 @@ global.roleUpgrader = {
     bodyLoop: [WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
     run: function (creep) {
+        Log(creep, "roleUpgrader")
+
         Log(creep, "run");
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
