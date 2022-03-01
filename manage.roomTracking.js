@@ -260,6 +260,9 @@ roomTracking = function () {
                             if (Memory.rooms[roomName].parentRoom == undefined) {
                                 Memory.rooms[roomName].parentRoom = r.name;
                             }
+                            if (Memory.rooms[roomName].parentRoom != r.name) {
+                                return; // skip rooms owned by other rooms
+                            }
                             // Add Neighbours sources
                             Debug(r.name, `adding ${roomName} sources`)
 
@@ -293,6 +296,12 @@ roomTracking = function () {
                                 }
                                 if (Memory.rooms[nn].sources == undefined) {
                                     return;
+                                }
+                                if (Memory.rooms[nn].parentRoom == undefined) {
+                                    Memory.rooms[nn].parentRoom = r.name;
+                                }
+                                if (Memory.rooms[nn].parentRoom != r.name) {
+                                    return; // skip rooms owned by other rooms
                                 }
                                 _.forEach(Object.keys(Memory.rooms[nn].sources), (ss) => {
                                     if (Memory.rooms[r.name].externalSources.includes(ss)) {
