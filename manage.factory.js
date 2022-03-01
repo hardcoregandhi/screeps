@@ -131,3 +131,37 @@ factoryPossIgnoreEffects = function() {
     }
     return ret;
 }
+
+getPossibleScore = function() {
+    total = 0; 
+    for (r of myRooms[Game.shard.name]) {
+        console.log(r)
+        for (s in Game.rooms[r].storage.store) {
+            console.log(s)
+            if (COMMODITY_SCORE[s]) {
+                console.log(`${s} is worth ${COMMODITY_SCORE[s]}`)
+                total += COMMODITY_SCORE[s] * Game.rooms[r].storage.store.getUsedCapacity(s); 
+            } 
+        }
+        if (Game.rooms[r].factory) {
+            for (s in Game.rooms[r].factory.store) {
+                console.log(s)
+                if (COMMODITY_SCORE[s]) {
+                    console.log(`${s} is worth ${COMMODITY_SCORE[s]}`)
+                    total += COMMODITY_SCORE[s] * Game.rooms[r].factory.store.getUsedCapacity(s); 
+                } 
+            } 
+        }
+        if (Game.rooms[r].terminal) {
+
+            for (s in Game.rooms[r].terminal.store) {
+                console.log(s)
+                if (COMMODITY_SCORE[s]) {
+                    console.log(`${s} is worth ${COMMODITY_SCORE[s]}`)
+                    total += COMMODITY_SCORE[s] * Game.rooms[r].terminal.store.getUsedCapacity(s); 
+                } 
+            } 
+        }
+    };
+    console.log(total)
+}
