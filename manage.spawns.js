@@ -85,7 +85,7 @@ global.runSpawns = function () {
         } else if (r.controller.level < 5) {
             continue;
         } else if ( creepRoomMap.get(r.name + "repairer")  == undefined || creepRoomMap.get(r.name + "repairer") < 1) {
-            spawnCreep(roleRepairer, null, null, r.name);
+            spawnCreep(roleRepairer, "auto", null, r.name);
             continue;
         } else if (scoutNeighbouringRooms(r)) {
             continue;
@@ -501,11 +501,11 @@ function spawnMineralHarvester(room) {
 }
 
 function spawnHarvesterDeposit(roomName) {
-    if (creepRoomMap.get(roomName+"eenergy") > 500000) {
+    if (0 && creepRoomMap.get(roomName+"eenergy") > 500000) {
         for(var deposit of Memory.rooms[roomName].deposits) {
             if (
                 creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) == undefined ||
-                creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) < 3
+                creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) < deposit.miningSpots
             ) {
                 ret = spawnCreep(roleHarvesterDeposit, null, { memory: { targetRoomName: deposit.room.name, targetSource: deposit.id }}, roomName);
                 if (ret == 0) {
@@ -519,7 +519,7 @@ function spawnHarvesterDeposit(roomName) {
 
 function spawnPowerHarvester(roomName) {
     // console.log("spawnPowerHarvester")
-    if (1 && creepRoomMap.get(roomName+"eenergy") > 300000 && Game.getObjectById(Memory.rooms[roomName].mainStorage).store.getUsedCapacity(RESOURCE_POWER) < 20000) {
+    if (0 && creepRoomMap.get(roomName+"eenergy") > 300000 && Game.getObjectById(Memory.rooms[roomName].mainStorage).store.getUsedCapacity(RESOURCE_POWER) < 20000) {
         // console.log("spawnPowerHarvester > 1000000")
         for(var pBank of Object.values(Memory.rooms[roomName].powerBanks)) {
             // console.log(JSON.stringify(pBank))
