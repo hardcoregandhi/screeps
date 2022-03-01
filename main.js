@@ -58,6 +58,7 @@ var roleWanderer = require("role.wanderer");
 var roleRepairer = require("role.repairer");
 var roleCourier = require("role.courier");
 var roleCaravanChaser = require("role.caravanChase");
+var roleDeliverer = require("role.deliverer");
 
 PathFinder.use(true);
 
