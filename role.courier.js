@@ -30,7 +30,6 @@ global.roleCourier = {
         }
         if (!creep.memory.returning && creep.store.getUsedCapacity() == 0) {
             creep.memory.returning = true;
-            creep.memory.healing = true;
             creep.say("m2home");
         }
 
