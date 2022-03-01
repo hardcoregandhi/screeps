@@ -60,6 +60,10 @@ global.returnToHeal = function (creep, room) {
         return false;
     }
     
+    if (Memory.rooms[creep.memory.baseRoomName].mainSpawn == undefined) {
+        return false;
+    }
+    
     if (creep.memory.timeStartingRenew == undefined) {
         creep.memory.timeStartingRenew = Game.time
     }

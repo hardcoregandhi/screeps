@@ -14,7 +14,10 @@ global.roleCourier = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        creep.memory.debug = 0;
         console.log("roleCourier.run()")
+        // Memory.caravanLog.push(`${creep} roleCourier.run()`)
+
         // creep.memory.DIE = true
         Log(creep, "run()")
         if (creep.memory.returning == undefined) {
@@ -39,13 +42,18 @@ global.roleCourier = {
         
         caravanChaser = Game.getObjectById(creep.memory.targetCaravanChaser);
         console.log("roleCourier: ", caravanChaser)
+        // Memory.caravanLog.push(`roleCourier: ${caravanChaser}`)
 
         if (caravanChaser == null) {
             creep.memory.retire = true;
-        } else if (caravanChaser.memory.role != "caravanChase") {
-            console.log(`${creep.name} targetCaravanChaser is no longer chasing. Retiring.`)
-            delete creep.memory.targetCaravanChaser
-            creep.memory.retire = true;
+            // Memory.caravanLog.push(`${creep} retiring`)
+
+        } else if (caravanChaser.memory.role != "caravanChaser") {
+            console.log(`${creep.name} targetCaravanChaser (${caravanChaser}) is no longer role caravanChase. Retiring.`)
+            // Memory.caravanLog.push(`${creep.name} targetCaravanChaser (${caravanChaser}) is no longer role caravanChase. Retiring.`)
+
+            // delete creep.memory.targetCaravanChaser
+            // creep.memory.retire = true;
         }
         if (creep.memory.retire != undefined && creep.memory.retire == true) {
             retire(creep);
@@ -81,6 +89,7 @@ global.roleCourier = {
                     
                 } else {
                     console.log(`${creep}@${creep.pos} is in targetroom but can't find caravan`)
+                    // Memory.caravanLog.push(`${creep}@${creep.pos} is in targetroom but can't find caravan`)
                 }
             }
         } else {
@@ -91,14 +100,15 @@ global.roleCourier = {
             var terminal = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.terminal.id);
             Log(creep, factory)
             Log(creep, creep.memory.resourceType)
-            if (factory.store.getUsedCapacity(creep.memory.resourceType) == 0 ||
-                mainStorage.store.getUsedCapacity(creep.memory.resourceType) == 0 ||
+            if (factory.store.getUsedCapacity(creep.memory.resourceType) == 0 &&
+                mainStorage.store.getUsedCapacity(creep.memory.resourceType) == 0 &&
                 terminal.store.getUsedCapacity(creep.memory.resourceType) == 0) {
                     if (creep.store.getUsedCapacity(creep.memory.resourceType) > 0) {
                         creep.memory.returning = false;
                         return;
                     } else {
                         console.log(`${creep} could not find resource ${creep.memory.resourceType}, retiring`)
+                        // Memory.caravanLog.push(`${creep} could not find resource ${creep.memory.resourceType}, retiring`)
                         creep.memory.DIE = true;
                         return;
                     }
@@ -145,7 +155,7 @@ function retire(creep) {
             });
         }
     } else {
-        // creep.memory.DIE = true;
+        creep.memory.DIE = true;
     }
     return;
 }

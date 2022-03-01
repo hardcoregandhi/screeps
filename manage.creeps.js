@@ -155,9 +155,9 @@ global.runCreeps = function () {
             Log(creep, creep.powers[PWR_OPERATE_FACTORY].level)
             Log(creep, factory.level)
             
-            if (1) {
+            if (creep.memory.opFactory == true) {
                 if (mainStorage.store.getUsedCapacity(RESOURCE_OPS) + creep.store.getUsedCapacity(RESOURCE_OPS) > 100) {
-                    if (factory != null && creep.powers[PWR_OPERATE_FACTORY] != undefined && (creep.powers[PWR_OPERATE_FACTORY].level == undefined || creep.powers[PWR_OPERATE_FACTORY].level == factory.level)) {
+                    if (factory != null && creep.powers[PWR_OPERATE_FACTORY] != undefined && (creep.powers[PWR_OPERATE_FACTORY].level == undefined || creep.powers[PWR_OPERATE_FACTORY].level == factory.level) && factory.effects.length == 0) {
                         if (creep.powers[PWR_OPERATE_FACTORY].level || 0 > factory.level || 0) {
                             if (creep.store.getUsedCapacity(RESOURCE_OPS) < 100) {
                                 if (creep.withdraw(mainStorage, RESOURCE_OPS) == ERR_NOT_IN_RANGE) {

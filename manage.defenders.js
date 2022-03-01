@@ -8,7 +8,7 @@ requestGunner = function (_baseRoomName, _targetRoomName, rangedCount) {
     }
     if (rangedCount > 25) {
         console.log("requestGunner rangedCount too high, halfing");
-        rangedCount=rangedCount/2;
+        rangedCount=Math.round(rangedCount/2);
     }
     
     if (Memory.rooms[_baseRoomName].defenders.gunner == undefined) {
@@ -35,7 +35,7 @@ requestSoldier = function (_baseRoomName, _targetRoomName, meleeCount) {
     }
     if (meleeCount > 25) {
         console.log("requestSoldier melee count too high, halfing");
-        meleeCount=meleeCount/2;
+        meleeCount=Math.round(meleeCount/2);
     }
         
     if (Memory.rooms[_baseRoomName].defenders.soldier == undefined) {

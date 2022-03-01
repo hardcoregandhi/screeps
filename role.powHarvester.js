@@ -63,8 +63,8 @@ global.rolePowHarvester = {
             }
             creep.memory.ticksToReplacement = creep.ticksToLive - creep.memory.distanceToSpawn - (rolePowHarvester.BodyParts.length*3)
             if (creep.memory.replacementOrdered == undefined && creep.ticksToLive < creep.memory.ETA && creep.ticksToLive - creep.memory.distanceToSpawn - (rolePowHarvester.BodyParts.length*3) <= 10) {
-                queueSpawnCreep(rolePowHarvester, null, {memory:{targetRoomName:creep.memory.targetRoomName, targetSource:creep.memory.targetSource, noHeal:true}}, creep.memory.baseRoomName);
-                queueSpawnCreep(rolePowHealer, Array(19).fill(HEAL).concat(Array(19).fill(MOVE)), {memory:{targetRoomName:creep.memory.targetRoomName, targetSource:creep.memory.targetSource, noHeal:true}}, creep.memory.baseRoomName);
+                queuePrioritySpawnCreep(rolePowHarvester, null, {memory:{targetRoomName:creep.memory.targetRoomName, targetSource:creep.memory.targetSource, noHeal:true}}, creep.memory.baseRoomName);
+                queuePrioritySpawnCreep(rolePowHealer, Array(19).fill(HEAL).concat(Array(19).fill(MOVE)), {memory:{targetRoomName:creep.memory.targetRoomName, targetSource:creep.memory.targetSource, noHeal:true}}, creep.memory.baseRoomName);
                 creep.memory.replacementOrdered = true;
             }
         }catch {console.log("error calcing replacement")}

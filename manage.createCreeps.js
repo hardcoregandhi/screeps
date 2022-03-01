@@ -108,6 +108,7 @@ upgradeCreep = function (sourceCreepName) {
     if (sourceCreep === null) return -1;
     var spawnRoom = Game.rooms[sourceCreep.memory.baseRoomName];
     if (spawnRoom === null) return -1;
+    if (spawnRoom.memory.mainSpawn == undefined) return -1;
     var roomSpawner = Game.getObjectById(spawnRoom.memory.mainSpawn.id);
     if (roomSpawner == null) return -1;
     var newName = _.capitalize(sourceCreep.memory.role) + "_" + getRandomInt();
@@ -164,6 +165,18 @@ queueSpawnCreep = function(_role, customBodyParts = null, customMemory = null, _
     return;
 }
 
+queuePrioritySpawnCreep = function(_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
+    if (_spawnRoom == null) {
+        console.log("queuePrioritySpawnCreep requires a spawnRoom")
+        return -1
+    }
+    if (Memory.rooms[_spawnRoom].spawnQueue == undefined) {
+        Memory.rooms[_spawnRoom].spawnQueue = [];
+    }
+    Memory.rooms[_spawnRoom].spawnQueue.unshift(["role" + _.capitalize(_role.name), customBodyParts, customMemory, _spawnRoom]);
+    return;
+}
+
 spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
     // console.log(`spawnCreep ${_role.name} ${customBodyParts} ${customMemory} ${_spawnRoom}`)
     var ret = -1;
@@ -206,7 +219,19 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
         displaySpawnFailMessage(spawn.room.name, _role.name, 0, "[Renewing]", customMemory);
         return -1;
     }
-
+    
+    myCreeps = spawn.room.find(FIND_MY_CREEPS).filter((c) => {
+        return (
+            spawn.pos.inRangeTo(c, 1) &&
+            c.ticksToLive < 155 && //150 is the highest spawn time for a 50 part creep
+            c.memory.healing
+        );
+    });
+    if (myCreeps.length) {
+        displaySpawnFailMessage(spawn.room.name, _role.name, cost, "[Healing]");
+        return -1;
+    }
+    
     if (customBodyParts) {
         // console.log(customBodyParts)
         // console.log("customActivated")
@@ -225,19 +250,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
     }
 
     cost = getBodyCost(_role.BodyParts);
-
-    myCreeps = spawn.room.find(FIND_MY_CREEPS).filter((c) => {
-        return (
-            spawn.pos.inRangeTo(c, 1) &&
-            c.ticksToLive < 155 && //150 is the highest spawn time for a 50 part creep
-            c.memory.healing
-        );
-    });
-
-    if (myCreeps.length) {
-        displaySpawnFailMessage(spawn.room.name, _role.name, cost, "[Healing]");
-        return -1;
-    }
+    
     // console.log("energy available", spawn.room.energyAvailable)
     // console.log("cost", cost)
 

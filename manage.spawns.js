@@ -107,6 +107,8 @@ global.runSpawns = function () {
             continue;
         } else if (r.controller.level == 8 && spawnPowerHarvester(r.name)) {
             continue;
+        } else if (r.controller.level == 8 && spawnHarvesterDeposit(r.name)) {
+            continue;
         } else if (spawnMineralHarvester(r)) {
             continue
         } else if (spawnExternalHarvester(r.name)) {
@@ -115,8 +117,6 @@ global.runSpawns = function () {
             continue;
         } else if (spawnExternalMover(r.name)) {
             continue;
-        // } else if (spawnHarvesterDeposit(r.name)) {
-        //     continue;
         } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 1 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8 && !Memory.rooms[r.name].pauseGrowth) {
             spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
@@ -505,7 +505,7 @@ function spawnHarvesterDeposit(roomName) {
         for(var deposit of Memory.rooms[roomName].deposits) {
             if (
                 creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) == undefined ||
-                creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) == 0
+                creepRoomMap.get(roomName+"harvesterDepositTarget"+deposit.id) < 3
             ) {
                 ret = spawnCreep(roleHarvesterDeposit, null, { memory: { targetRoomName: deposit.room.name, targetSource: deposit.id }}, roomName);
                 if (ret == 0) {
@@ -519,13 +519,13 @@ function spawnHarvesterDeposit(roomName) {
 
 function spawnPowerHarvester(roomName) {
     // console.log("spawnPowerHarvester")
-    if (creepRoomMap.get(roomName+"eenergy") > 300000) {
+    if (1 && creepRoomMap.get(roomName+"eenergy") > 300000 && Game.getObjectById(Memory.rooms[roomName].mainStorage).store.getUsedCapacity(RESOURCE_POWER) < 20000) {
         // console.log("spawnPowerHarvester > 1000000")
         for(var pBank of Object.values(Memory.rooms[roomName].powerBanks)) {
             // console.log(JSON.stringify(pBank))
             if (pBank.miningSpots >= 3) {
                 // console.log("pBank.miningSpots >= 3")
-                if (pBank.ticksToDecay > 2500 && pBank.initialSpawns == undefined || pBank.initialSpawns == false) {
+                if (pBank.expirationTime - Game.time > 2500 && pBank.initialSpawns == undefined || pBank.initialSpawns == false) {
                     // console.log(pBank.miningSpots)
 
                     for(var i in _.range(pBank.miningSpots)) {
