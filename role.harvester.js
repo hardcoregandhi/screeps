@@ -5,8 +5,9 @@ global.roleHarvester = {
     roleMemory: { memory: {} },
     // prettier-ignore
     BodyParts: [WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE],
-    baseBodyParts: [],
+    baseBodyParts: [WORK,WORK,CARRY,MOVE],
     bodyLoop: [WORK, WORK, WORK, CARRY, MOVE],
+    bodyPartsMaxCount: 13,
     /** @param {Creep} creep **/
     run: function (creep) {
         Log(creep, "roleHarvester")
@@ -252,7 +253,7 @@ global.roleHarvester = {
                             customBody = customBody.concat(Array(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts).fill(CARRY));
                             customBody = customBody.concat(Array(Math.ceil(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts/2)).fill(MOVE));
                             // console.log(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts)
-                            // console.log(customBody)
+                            console.log(customBody)
                             
                             spawnCreep(roleHarvSup, customBody, { memory: { targetSource: creep.memory.targetSource, targetContainer: creep.memory.targetContainer } }, creep.memory.baseRoomName);
                         }

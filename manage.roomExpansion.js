@@ -1,5 +1,5 @@
 roomExpansion = function(myRoom) {
-    if (Memory.rooms[myRoom].roomExpansion != undefined) {
+    if (Memory.rooms[myRoom].roomExpansion != undefined && Memory.rooms[myRoom].roomExpansion.active == true) {
         if (Memory.rooms[myRoom].roomExpansion.targetRoomName != undefined) {
             targetRoomName = Memory.rooms[myRoom].roomExpansion.targetRoomName
             for (const i in Game.spawns) {

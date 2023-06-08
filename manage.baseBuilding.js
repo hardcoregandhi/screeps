@@ -52,6 +52,9 @@ global.runBaseBuilder = function () {
             Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage++;
             if (Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage > baseData[r.controller.level].stages.length) {
                 // this will only be hit once on the pass that all building is completed
+                if (r.controller.level == 3) {
+                    buildRoadsToSources(r);
+                }
                 if (r.controller.level == 5) {
                     buildControllerRampartSurroundings(r);
                     buildRampartSurroundings(r);
@@ -135,16 +138,72 @@ function buildExtractor(r) {
     }
 }
 
-buildRoadsToSources = function (r) {
+setRoomCostMatrix = function (r) {
     if (_.isString(r)) {
         r = Game.rooms[r];
         if (r == undefined) {
             return false;
         }
     }
+    const terrain = new Room.Terrain(r.name);
+    const matrix = new PathFinder.CostMatrix;
+    const visual = new RoomVisual(r.name);
+    
+    // Fill CostMatrix with default terrain costs for future analysis:
+    for(let y = 0; y < 50; y++) {
+        for(let x = 0; x < 50; x++) {
+            const tile = terrain.get(x, y);
+            weight =
+                tile === TERRAIN_MASK_WALL  ? 255 : // wall  => unwalkable
+                tile === TERRAIN_MASK_SWAMP ?   5 : // swamp => weight:  5
+                                                3 ; // plain => weight:  3
+            var struct = r.lookForAt(LOOK_STRUCTURES, x, y)
+            if (struct.length) {
+                if (struct[0].structureType == STRUCTURE_ROAD) {
+                    weight = 0;
+                } else {
+                    weight = 255;
+                }
+            }
+            matrix.set(x, y, weight);
+        }
+    }
+    for (var l in baseData) { 
+        for (var s in baseData[l].stages) { 
+            for (var sub_s in baseData[l].stages[s]) { 
+                baseData[l].stages[s].forEach((subStageBuildingTypeSet) => { 
+                    subStageBuildingTypeSet.pos.forEach((offsetPos) => {
+                        baseCenter = Memory.rooms[r.name].mainSpawn.pos;
+                        var realX = baseCenter.x + offsetPos.x;
+                        var realY = baseCenter.y + offsetPos.y;
+                        if (subStageBuildingTypeSet.buildingType == "road") { 
+                            matrix.set(realX, realY, 0)
+                        } else {
+                            matrix.set(realX, realY, 255)
+                        }
+                    }) 
+                }) 
+            } 
+        } 
+    };
+    for(let y = 0; y < 50; y++) {
+        for(let x = 0; x < 50; x++) {
+            visual.text(matrix.get(x, y), x, y);
+        }
+    }
+    Memory.rooms[r.name].costMatrix = matrix.serialize();
+}
+
+buildRoadsToSources = function (r, debug = false) {
+    if (_.isString(r)) {
+        r = Game.rooms[r];
+        if (r == undefined) {
+            return false;
+        }
+    }
+    setRoomCostMatrix(r)
     mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
 
-    console.log(mainSpawn.pos);
     new RoomVisual().circle(mainSpawn, { fill: "transparent", radius: 0.55, stroke: "red" });
 
     _.forEach(Memory.rooms[r.name].sources, (source) => {
@@ -152,16 +211,21 @@ buildRoadsToSources = function (r) {
         if (s == undefined) {
             return;
         }
-        pathTo = mainSpawn.pos.findPathTo(s, { ignoreCreeps: true });
-        _.forEach(pathTo, (step) => {
-            r.createConstructionSite(step.x, step.y, "road");
-        });
+        pathTo = mainSpawn.pos.findPathTo(s, { ignoreCreeps: true, range: 1,
+            costCallback: function(roomName, costMatrix) {
+                return PathFinder.CostMatrix.deserialize(Memory.rooms[roomName].costMatrix);
+            }});
+        if (!debug) {
+            _.forEach(pathTo, (step) => {
+                r.createConstructionSite(step.x, step.y, "road");
+            });
+        }
         console.log(JSON.stringify(pathTo));
         new RoomVisual().poly(pathTo);
     });
 };
 
-buildRoadsToExtSources = function (r) {
+buildRoadsToExtSources = function (r, debug = false) {
     if (_.isString(r)) {
         r = Game.rooms[r];
         if (r == undefined) {
@@ -180,15 +244,46 @@ buildRoadsToExtSources = function (r) {
         }
         // pathTo = mainSpawn.pos.findPathTo(s, { ignoreCreeps: true, maxRooms: 3 });
         pathTo = PathfinderSearchUsePathsIgnoreCreeps(mainSpawn.pos, s.pos)
-        _.forEach(pathTo.path, (step) => {
-            const terrain = Game.rooms[step.roomName].getTerrain();
-            if (terrain.get(step.x, step.y) != TERRAIN_MASK_WALL) {
-                Game.rooms[step.roomName].createConstructionSite(step.x, step.y, "road");
-            }
-        });
+        if (!debug) {
+            _.forEach(pathTo.path, (step) => {
+                const terrain = Game.rooms[step.roomName].getTerrain();
+                if (terrain.get(step.x, step.y) != TERRAIN_MASK_WALL) {
+                    Game.rooms[step.roomName].createConstructionSite(step.x, step.y, "road");
+                }
+            });
+        }
         console.log(JSON.stringify(pathTo));
         new RoomVisual().poly(pathTo);
         return;
+    });
+};
+
+buildWalls = function (r, debug = false) {
+    if (_.isString(r)) {
+        r = Game.rooms[r];
+        if (r == undefined) {
+            return false;
+        }
+    }
+    mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
+
+    new RoomVisual().circle(mainSpawn, { fill: "transparent", radius: 0.55, stroke: "red" });
+
+    _.forEach(wallData.constructedWall, (w) => {
+        if (r.lookAt(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y).length == 1 ) {
+            r.visual.circle(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y);
+            if (!debug) {
+                r.createConstructionSite(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, "constructedWall");
+            }
+        }
+    });
+    _.forEach(wallData.rampart, (w) => {
+        if (r.getTerrain().get(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y) != 1 ) {
+            r.visual.circle(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y);
+            if (!debug) {
+                r.createConstructionSite(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, "rampart");
+            }
+        }
     });
 };
 
@@ -592,3 +687,7 @@ global.baseRawData = `
 
 global.baseData = JSON.parse(baseRawData);
 Memory.buildingPlan = baseData;
+
+wallRawData = `{"constructedWall":[{"x":-8,"y":7},{"x":-6,"y":7},{"x":-4,"y":7},{"x":-2,"y":7},{"x":-1,"y":7},{"x":0,"y":7},{"x":1,"y":7},{"x":2,"y":7},{"x":3,"y":7},{"x":4,"y":7},{"x":4,"y":6},{"x":5,"y":6},{"x":5,"y":5},{"x":6,"y":5},{"x":6,"y":4},{"x":7,"y":4},{"x":7,"y":3},{"x":7,"y":2},{"x":7,"y":1},{"x":7,"y":0},{"x":7,"y":-1},{"x":6,"y":-2},{"x":5,"y":-3},{"x":4,"y":-4},{"x":3,"y":-5},{"x":2,"y":-6},{"x":1,"y":-7},{"x":1,"y":-8},{"x":2,"y":-7},{"x":3,"y":-6},{"x":4,"y":-5},{"x":5,"y":-4},{"x":6,"y":-3},{"x":7,"y":-2},{"x":-10,"y":-1},{"x":-10,"y":-2},{"x":-10,"y":-3},{"x":-10,"y":-4},{"x":-10,"y":-5},{"x":-10,"y":-6},{"x":-9,"y":-6},{"x":-8,"y":-7},{"x":-8,"y":-8},{"x":-7,"y":-8},{"x":-10,"y":0},{"x":-10,"y":1},{"x":-10,"y":2},{"x":-10,"y":3},{"x":-10,"y":4},{"x":-10,"y":5},{"x":-10,"y":6},{"x":-10,"y":7},{"x":-4,"y":-8},{"x":-3,"y":-8},{"x":-2,"y":-8},{"x":-1,"y":-8}],"rampart":[{"x":-9,"y":7},{"x":-7,"y":7},{"x":-5,"y":7},{"x":-3,"y":7},{"x":0,"y":-8},{
+    "x":-8,"y":-6}]}`
+global.wallData = JSON.parse(wallRawData);

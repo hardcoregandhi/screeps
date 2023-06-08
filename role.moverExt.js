@@ -2,6 +2,9 @@ function findReplacementTarget(creep) {
     Log(creep, "findReplacementTarget")
 
     ret = false;
+    creep.memory.targetContainer = null
+    creep.memory.targetRoomName = null
+    creep.memory.targetSource = null
     //copied from spawnMoverExt
     _.forEach(Memory.rooms[creep.memory.baseRoomName].externalSources, (sourceId) => {
         // console.log(sourceId)
@@ -88,7 +91,7 @@ global.roleMoverExt = {
         CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
-    baseBodyParts: [WORK, MOVE],
+    baseBodyParts: [WORK, MOVE, MOVE, MOVE, CARRY, CARRY],
     bodyLoop: [MOVE, CARRY, CARRY],
     bodyPartsMaxCount: 21,
 

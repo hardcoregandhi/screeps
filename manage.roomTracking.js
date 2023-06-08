@@ -239,8 +239,11 @@ roomTracking = function () {
                     Debug(r.name, `defining neighbouringRooms`)
                     console.log(`${r.name} has no neighbouring rooms. setting up now`)
                     exits = Game.map.describeExits(r.name);
-                    exits = exits.filter((e) => { !myRooms[Game.shard.name].includes(e) })
-                    Memory.rooms[r.name].neighbouringRooms = Object.values(exits);
+                    if (exits == null) {
+                        return;
+                    }
+                    exits = Object.values(exits).filter((e) => { return !myRooms[Game.shard.name].includes(e) })
+                    Memory.rooms[r.name].neighbouringRooms = exits;
                 } else {
                     Debug(r.name, `${r.name} has neighbouring rooms: ${Memory.rooms[r.name].neighbouringRooms}`)
                     if (
@@ -281,6 +284,7 @@ roomTracking = function () {
                                     } else {
                                         if (PathFinder.search(source.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 100) {
                                             addExternalSource(r.name, source)
+                                            
                                         }
                                     }
                                 }
@@ -429,6 +433,16 @@ roomTracking = function () {
                         Memory.rooms[r.name].sources[s.id].container.moversNeeded = 2;
                     }
                 }
+            } else {
+                if (Memory.rooms[r.name].sources[s.id].container.targetCarryParts == undefined) {
+                    console.log("Container found without targetCarryParts, calculating now")
+                    ret =  calcTargetCarryParts(Game.getObjectById(Memory.rooms[r.name].sources[s.id].container.id), Game.getObjectById(Memory.rooms[Memory.rooms[r.name].parentRoom].mainSpawn.id), Memory.rooms[r.name].sources[s.id].container)
+                    if (ret != -1) {
+                        Memory.rooms[r.name].sources[s.id].container.targetCarryParts = ret
+                    } else {
+                        console.log(`failed to calc targetCarryParts for ${s.id.substr(-3)}, cant continue`)
+                    }
+                }
             }
 
             if (Memory.rooms[r.name].sources[s.id].link == undefined && r.controller && r.controller.level >= 6 && links.length) {
@@ -441,7 +455,7 @@ roomTracking = function () {
                 }
             }
 
-            // resetSourceContainerTracking(r.name)
+            resetSourceContainerTracking(r.name)
 
             new RoomVisual(r.name).text(Memory.rooms[r.name].sources[s.id].targettedBy, s.pos.x - 0.17, s.pos.y + 0.2, { align: "left", font: 0.6 });
 
@@ -589,7 +603,7 @@ roomTracking = function () {
             }
         }
         
-        if (r.controller && r.controller.reservation) {
+        if (r.controller && r.controller.reservation && r.controller.reservation.username != "hardcoregandhi") {
             console.log(`room ${r.name} is enemy controlled`)
             Memory.rooms[r.name].reservation = {}
             Memory.rooms[r.name].reservation.username = r.controller.reservation.username;
@@ -612,7 +626,7 @@ roomTracking = function () {
         
 
         try {
-            creepReduction(r);
+            // creepReduction(r);
         } catch (e) {
             console.log(`creepReduction() failed: ${e}`);
             for (var b in e) {
@@ -678,8 +692,14 @@ function addExternalSource(roomName, source) {
 resetSourceContainerTracking = function () {
     _.forEach(Game.rooms, (r) => {
         try {
-        Memory.rooms[r.name].creeps.movers.currentTargets = [];
-        } catch {};
+            if (Memory.rooms[r.name].creeps) {
+                if (Memory.rooms[r.name].creeps.movers) {
+                    if (Memory.rooms[r.name].creeps.movers.currentTargets) {
+                        Memory.rooms[r.name].creeps.movers.currentTargets = [];
+                    }
+                }
+            }
+        
         _.forEach(Memory.rooms[r.name].sources, (s) => {
             s.targettedBy = 0;
             s.targettedByList = [];
@@ -694,6 +714,9 @@ resetSourceContainerTracking = function () {
             p.targettedBy = 0;
             p.targettedByList = [];
         });
+        } catch(e) {
+            console.log(`${r.name} Failure in resetSourceContainerTracking: ${e}`)
+        };
         
     });
 
@@ -740,10 +763,8 @@ resetSourceContainerTracking = function () {
                     creepCarryParts = Game.creeps[c.name].body.reduce((previous, p) => {
                         return p.type == CARRY ? (previous += 1) : previous;
                     }, 0);
-                    if (c.memory.role == "moverExt") {
-                        Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
-                        Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
-                    }
+                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
+                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
                     Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.currentCarryParts += creepCarryParts;
                 }
             } else if (c.memory.role == "powHarvester") {

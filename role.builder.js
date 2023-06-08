@@ -23,10 +23,11 @@ global.roleBuilder = {
             interShardMove(creep);
             return;
         }
-
         if (!creep.memory.currentSource == null) {
             creep.memory.currentSource = 0;
         }
+        
+        // creep.memory.DIE = 1
 
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");

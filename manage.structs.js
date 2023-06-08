@@ -180,6 +180,7 @@ global.runStructs = function () {
         }
         if (hostileCreeps.length > 1 && room.controller.level <= 3 /* && towers.length == 0*/) {
             if (room.controller != undefined && room.controller.my && room.controller.safeModeAvailable) {
+                Game.notify("attacker in " + room.name + ". Activated Safe Mode.");
                 room.controller.activateSafeMode();
             }
         }
