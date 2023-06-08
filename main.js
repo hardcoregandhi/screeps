@@ -135,7 +135,7 @@ Avg: 88.59	Total: 708.72	Ticks: 8
 global.profiler = require("screeps-profiler");
 
 // This line monkey patches the global prototypes.
-profiler.enable();
+// profiler.enable();
 
 // Line to run profiling from: https://github.com/screepers/screeps-profiler
 // Game.profiler.profile(10)
@@ -225,6 +225,7 @@ module.exports.loop = function () {
             resetSourceContainerTracking();
             nextCreepRoomMapRefreshTime = Game.time + nextCreepRoomMapRefreshInterval;
         }
+        resetSourceContainerTracking()
 
         if (refreshRoomTrackingNextTick) {
             console.log("refreshRoomTrackingNextTick is true. Refreshing forced.");

@@ -67,7 +67,7 @@ drawGUI = function () {
             if (source == undefined) return;
             text = `    ${source.room.name}:${source.id.substr(-3)}: H: ${creepRoomMap.get(r.name + "harvesterExtTarget" + source.id) || 0} ` +
                     `${Memory.rooms[source.room.name].sources[source.id].currentMiningParts || 0}/${Memory.rooms[source.room.name].sources[source.id].targetMiningParts || 0} ` +
-                    `M: ${creepRoomMap.get(r.name + "moverExtTarget" + source.id) || 0}`
+                    `M: ${(creepRoomMap.get(r.name + "moverExtTarget" + source.id) || 0) + (creepRoomMap.get(r.name + "moverExtRepairTarget" + source.id) || 0)}`
             if(Memory.rooms[source.room.name].sources[source.id].container != undefined) {
                 text += ` ${Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts || 0}/${Memory.rooms[source.room.name].sources[source.id].container.targetCarryParts || 0}`
                 container = Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id)
@@ -81,6 +81,34 @@ drawGUI = function () {
 
         textOffset;
         inc();
+        
+        baseCenter = Memory.rooms[r.name].mainSpawn.pos;
+        var currentRoomBuildingLevel = Memory.rooms[r.name].currentRoomBuildingLevel;
+        var currentStage = Memory.rooms[r.name].building[currentRoomBuildingLevel].currentStage;
+        if (baseData[currentRoomBuildingLevel] == undefined || baseData[currentRoomBuildingLevel].stages == undefined) continue;
+
+        for (var l in baseData) {
+            for (var s in baseData[l].stages) {
+                for (var sub_s in baseData[l].stages[s]) {
+                    baseData[l].stages[s].forEach((subStageBuildingTypeSet) => {
+                        subStageBuildingTypeSet.pos.forEach((offsetPos) => {
+                            var realX = baseCenter.x + offsetPos.x;
+                            var realY = baseCenter.y + offsetPos.y;
+                            var color = "green"
+                            if (subStageBuildingTypeSet.buildingType == "extension") {
+                                color = "blue"
+                            } else if (subStageBuildingTypeSet.buildingType == "road") {
+                                color = "gray"
+                            } else if (subStageBuildingTypeSet.buildingType == "tower") {
+                                color = "red"
+                            }
+                            r.visual.circle(realX, realY, { fill: color, lineStyle: "dashed" });
+                        })
+                    })
+                }
+            }
+        }
+                    
 
     }
 };

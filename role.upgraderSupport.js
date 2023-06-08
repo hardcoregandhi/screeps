@@ -4,7 +4,7 @@ global.roleUpgraderSupport = {
     // prettier-ignore
     BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ],
     baseBodyParts: [],
-    bodyLoop: [CARRY, MOVE],
+    bodyLoop: [MOVE, CARRY],
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -51,15 +51,15 @@ global.roleUpgraderSupport = {
             if (creep.memory.targetCreep == undefined) {
                 creeps = []
                 allCreep = creep.room.find(FIND_MY_CREEPS)
-                Log(creep, "l4builder")
+                Log(creep, "l4upgrader")
                 
                 creeps = allCreep.filter((c) => {
-                        return c.memory.role == 'builder' && c.store.getFreeCapacity() > 100;})
+                        return c.memory.role == 'upgrader' && c.store.getFreeCapacity() > Math.min(100, creep.store.getUsedCapacity());})
                     
                 if (!creeps.length) {
-                    Log(creep, "l4upgrader")
+                    Log(creep, "l4builder")
                     creeps = allCreep.filter((c) => {
-                        return c.memory.role == 'upgrader' && c.store.getFreeCapacity() > 100;})
+                        return c.memory.role == 'builder' && c.store.getFreeCapacity() > Math.min(100, creep.store.getUsedCapacity());})
                 }
                 
                 if (creeps.length) {

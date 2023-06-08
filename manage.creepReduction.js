@@ -115,7 +115,7 @@ creepReduction = function (r) {
     });
 };
 
-calcTargetCarryParts = function(container, mainSpawn, containerMemory) {
+global.calcTargetCarryParts = function(container, mainSpawn, containerMemory) {
     try {
         pathLength = PathFinder.search(container.pos, mainSpawn.pos).path.length;
         containerMemory.distanceToSpawn = pathLength;

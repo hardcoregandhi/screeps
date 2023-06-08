@@ -49,7 +49,7 @@ global.roleUpgrader = {
         // pickupNearby(creep);
 
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
-        if (mainStorage == null && creep.room.controller.level > 1) {
+        if (mainStorage == null && creep.room.controller.level > 1 && creep.room.find(FIND_CONSTRUCTION_SITES).length != 0) {
             roleBuilder.run(creep);
             return;
         }

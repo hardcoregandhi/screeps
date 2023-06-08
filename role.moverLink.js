@@ -455,7 +455,7 @@ global.roleMoverLink = {
                 }
                 
                 
-                if (Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom != undefined) {
+                if (Memory.rooms[creep.memory.baseRoomName].structs.terminal != undefined && Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom != undefined) {
                     Log(creep, `supportRoom: ${Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom}`)
                     destinationTerminal = Game.getObjectById(Memory.rooms[Memory.rooms[creep.memory.baseRoomName].structs.terminal.supportRoom].structs.terminal.id)
                     if (destinationTerminal.store.getUsedCapacity() < 250000 && destinationTerminal.store.getUsedCapacity(RESOURCE_ENERGY) < 250000) {
@@ -558,7 +558,7 @@ global.roleMoverLink = {
                     }
                 }
                 
-                if (Memory.mainRoom != undefined && creep.memory.baseRoomName == Memory.mainRoom) {
+                if (Memory.mainRoom != undefined && creep.memory.baseRoomName == Memory.mainRoom && terminal) {
                     Log(creep, "in mainRoom")
                     for (const resourceType in terminal.store) {
                         if (resourceType != "energy") {
@@ -579,7 +579,7 @@ global.roleMoverLink = {
                 }
                 Log(creep, 456)
                 
-                if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 200000 && terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 10000 && terminal.store.getFreeCapacity()) {
+                if (terminal && mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 200000 && terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 10000 && terminal.store.getFreeCapacity()) {
                     Log(creep, "topping up terminal")
                     if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(mainStorage);
@@ -599,7 +599,7 @@ global.roleMoverLink = {
                 //     }
                 // }
                 
-                if (terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 11000 && mainStorage.store.getUsedCapacity() < 900000) {
+                if (terminal && terminal.store.getUsedCapacity(RESOURCE_ENERGY) > 11000 && mainStorage.store.getUsedCapacity() < 900000) {
                     Log(creep, "withdrawing from terminal")
                     for (const resourceType in terminal.store) {
                         if (resourceType == 'energy') {

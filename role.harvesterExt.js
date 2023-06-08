@@ -6,9 +6,9 @@ global.roleHarvesterExt = {
 
     // prettier-ignore
     BodyParts: [WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE],
-    baseBodyParts: [],
-    bodyLoop: [WORK, WORK, CARRY, MOVE, MOVE],
-
+    baseBodyParts: [CARRY, MOVE, WORK, WORK],
+    bodyLoop: [MOVE, WORK, WORK],
+    bodyPartsMaxCount: 20,
     /** @param {Creep} creep **/
     run: function (creep) {
         if (creep.memory.targetSource == undefined) {
@@ -108,7 +108,7 @@ global.roleHarvesterExt = {
                     creep.memory.noClaimSpawn != true &&
                     (Game.rooms[creep.memory.targetRoomName].controller.reservation == undefined || Game.rooms[creep.memory.targetRoomName].controller.reservation.ticksToEnd < 1000) &&
                     (creepRoomMap.get(creep.memory.baseRoomName + "claimerTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "claimerTarget" + creep.memory.targetRoomName) < 1) &&
-                    Game.rooms[creep.memory.baseRoomName].energyCapacityAvailable >= 1250
+                    Game.rooms[creep.memory.baseRoomName].energyCapacityAvailable >= 500
                 ) {
                     //TODO FIX THIS
                     spawnCreep(roleClaimer, "auto", { memory: { targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
@@ -120,7 +120,7 @@ global.roleHarvesterExt = {
                 ) {
                     if (
                         creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) == undefined ||
-                        creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) > 1
+                        creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) < 1
                     ) {
                         spawnCreep(roleBuilderExt, "auto", { memory: { targetRoomName:creep.memory.targetRoomName } }, creep.memory.baseRoomName)
                     }

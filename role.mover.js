@@ -186,7 +186,7 @@ global.roleMover = {
 
             if (creep.memory.currentTarget != null) {
                 currentTarget = Game.getObjectById(creep.memory.currentTarget);
-                if (currentTarget == null || currentTarget.store.getFreeCapacity(RESOURCE_ENERGY) == 0 || Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.includes(creep.memory.currentTarget) ) {
+                if (currentTarget == null || currentTarget.store.getFreeCapacity(RESOURCE_ENERGY) == 0 ) {
                     creep.memory.currentTarget = null;
                 } else {
                     Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.push(creep.memory.currentTarget)
