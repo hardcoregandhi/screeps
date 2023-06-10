@@ -150,16 +150,17 @@ global.roleMover = {
 
             // console.log(closestHostile)
             if (creep.room.memory.mainTower != undefined && creep.room.memory.mainTower.enemyInRoom == true) {
-                var towers = creep.pos.findClosestByRange(FIND_STRUCTURES).filter((structure) => {
+                var towers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
                     return structure.structureType == STRUCTURE_TOWER && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 200 && !Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.includes(structure.id);
                 });
-                Log(creep, 6);
-                Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.push(towers[0].id)
-                if (creep.transfer(towers[0], RESOURCE_ENERGY) != OK) {
-                    creep.moveTo(towers[0]);
-                }
-                if (towers.length)
+                if (towers.length) {
+                    Log(creep, 6);
+                    Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.push(towers[0].id)
+                    if (creep.transfer(towers[0], RESOURCE_ENERGY) != OK) {
+                        creep.moveTo(towers[0]);
+                    }
                     return;
+                }
             }
 
             // transition from container to storage
