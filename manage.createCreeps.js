@@ -162,6 +162,7 @@ queueSpawnCreep = function(_role, customBodyParts = null, customMemory = null, _
         Memory.rooms[_spawnRoom].spawnQueue = [];
     }
     Memory.rooms[_spawnRoom].spawnQueue.push(["role" + _.capitalize(_role.name), customBodyParts, customMemory, _spawnRoom]);
+    console.log(`Queueing creep spawn: ${["role" + _.capitalize(_role.name), customBodyParts, customMemory, _spawnRoom]}`)
     return;
 }
 
