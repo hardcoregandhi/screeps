@@ -64,8 +64,15 @@ global.roleGunner = {
                     color: "red",
                     radius: 1,
                 });
-                if (creep.rangedAttack(closestHostile) != OK) {
-                    creep.moveTo(closestHostile, { maxRooms: 1 });
+                if(creep.pos.inRangeTo(target, 2)) {
+                    var direction = creep.pos.getDirectionTo(target)
+                    direction = direction >= 5 ? direction - 4 : direction + 4
+                    creep.move(direction)
+                    creep.rangedAttack(closestHostile)
+                } else {
+                    if (creep.rangedAttack(closestHostile) != OK) {
+                        creep.moveTo(closestHostile, { maxRooms: 1 });
+                    }
                 }
                 return;
             }
