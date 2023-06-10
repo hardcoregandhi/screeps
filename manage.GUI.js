@@ -32,7 +32,12 @@ drawGUI = function () {
             continue;
         }
         // Creep info
-        new RoomVisual().text(`${r.name} L:${r.controller.level} ${Math.round(r.controller.progress / 1000)}K/${r.controller.progressTotal / 1000}K`, 1, listOffset + inc(), { align: "left", font: fontSize });
+        spawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)
+        var spawnInfo = "";
+        if (spawn.spawning) {
+            spawnInfo = `Spawning: ${spawn.spawning.name}`
+        }
+        new RoomVisual().text(`${r.name} L:${r.controller.level} ${Math.round(r.controller.progress / 1000)}K/${r.controller.progressTotal / 1000}K ${spawnInfo}`, 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text(`🔋  ExcessEnergy: ${creepRoomMap.get(r.name + "eenergy")}  Recent: ${Memory.rooms[r.name].stats.energyLevels.averageRecent} Average: ${Memory.rooms[r.name].stats.energyLevels.average} ${Memory.rooms[r.name].stats.energyLevels.averageRecent > creepRoomMap.get(r.name + "eenergy") ? "❌": "✅"}`, 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text("⚡️ Energy      : " + r.energyAvailable + "/" + r.energyCapacityAvailable, 1, listOffset + inc(), { align: "left", font: fontSize });
         new RoomVisual().text("⛏️ Harvesters  : " + creepRoomMap.get(r.name + "harvester"), 1, listOffset + inc(), { align: "left", font: fontSize });
