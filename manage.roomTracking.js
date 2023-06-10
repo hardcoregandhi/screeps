@@ -341,25 +341,28 @@ roomTracking = function () {
             //elapsed = Game.cpu.getUsed() - startCpu;
             //console.log("eenergy calc has used " + elapsed + " CPU time");
             //startCpu = Game.cpu.getUsed();
-            
+            minerals = r.find(FIND_MINERALS)
             if (Memory.rooms[r.name].mineral == undefined) {
-                mineral = r.find(FIND_MINERALS)[0]
-                Memory.rooms[r.name].mineral = {};
-                Memory.rooms[r.name].mineral.id = mineral.id;
-                Memory.rooms[r.name].mineral.extractor = false;
-            } else {
+                Memory.rooms[r.name].mineral = {}
+                _.forEach(minerals, (mineral) => {
+                    Memory.rooms[r.name].mineral[mineral.id] = {};
+                    Memory.rooms[r.name].mineral[mineral.id].id = mineral.id;
+                    Memory.rooms[r.name].mineral[mineral.id].extractor = false;
+                })
+            }
+            _.forEach(minerals, (mineral) => {
                 // console.log(r)
-                if (Memory.rooms[r.name].mineral.extractor == false && Game.getObjectById(Memory.rooms[r.name].mineral.id).pos.lookFor(LOOK_STRUCTURES).length) {
-                    Memory.rooms[r.name].mineral.extractor = true;
+                if (Memory.rooms[r.name].mineral[mineral.id].extractor == false && mineral.pos.lookFor(LOOK_STRUCTURES).length) {
+                    Memory.rooms[r.name].mineral[mineral.id].extractor = true;
                 }
-                if (Memory.rooms[r.name].mineral.container == undefined) {
-                    containers = Game.getObjectById(Memory.rooms[r.name].mineral.id).pos.findInRange(FIND_STRUCTURES, 2).filter((r) => r.structureType == STRUCTURE_CONTAINER)
+                if (Memory.rooms[r.name].mineral[mineral.id].container == undefined) {
+                    containers = mineral.pos.findInRange(FIND_STRUCTURES, 2).filter((r) => r.structureType == STRUCTURE_CONTAINER)
                     if (containers.length) {
-                        Memory.rooms[r.name].mineral.container = {}
-                        Memory.rooms[r.name].mineral.container.id = containers[0].id
+                        Memory.rooms[r.name].mineral[mineral.id].container = {}
+                        Memory.rooms[r.name].mineral[mineral.id].container.id = containers[0].id
                     }
                 }
-            }
+            })
             
             if (Memory.rooms[r.name].deposits == undefined) {
                 Memory.rooms[r.name].deposits = [];

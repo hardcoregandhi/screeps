@@ -86,6 +86,10 @@ global.runSpawns = function () {
             continue;
         } else if (scoutNeighbouringRooms(r)) {
             continue;
+        } else if (r.controller.level >= 6 && creepRoomMap.get(r.name+"eenergy") > 150000 && spawnHarvesterMineralSupport(r.name)) {
+            continue;
+        } else if (r.controller.level >= 6 && spawnHarvesterMineral(r)) {
+            continue
         } else if (spawnExternalMover(r.name)) {
             continue;
         } else if (spawnExternalHarvester(r.name)) {
@@ -113,10 +117,8 @@ global.runSpawns = function () {
             continue;
         } else if (r.controller.level == 8 && spawnPowerHarvester(r.name)) {
             continue;
-        } else if (r.controller.level == 8 && spawnHarvesterDeposit(r.name)) {
+        } else if (creepRoomMap.get(r.name+"eenergy") > 150000 && spawnHarvesterDeposit(r.name)) {
             continue;
-        } else if (spawnMineralHarvester(r)) {
-            continue
         } else if (spawnBuilderExt(r.name)) {
             continue;
         } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 1 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8 && !Memory.rooms[r.name].pauseGrowth) {
@@ -487,7 +489,7 @@ function spawnDepositHarvester(r) {
     }
 }
 
-function spawnMineralHarvester(room) {
+function spawnHarvesterMineral(room) {
     // console.log(`spawnMineralHarvester(${room.name})`)
     // console.log(`Memory.rooms[room.name].mineral ${Memory.rooms[room.name].mineral}`)
     // console.log(`Memory.rooms[room.name].mineral.extractor ${Memory.rooms[room.name].mineral.extractor}`)
@@ -521,6 +523,28 @@ function spawnHarvesterDeposit(roomName) {
             }
         }
     }
+    return false;
+}
+
+function spawnHarvesterMineralSupport(roomName) {
+    _.forEach(Memory.rooms[roomName].mineral, mineral => {
+        // try {
+        // console.log(mineral)
+        // console.log(mineral.container)
+        // console.log(mineral.container.id)
+        // console.log(Game.getObjectById(mineral.container.id))
+        // console.log(Game.getObjectById(mineral.container.id).store.getUsedCapacity())
+        // console.log(creepRoomMap.get(roomName+"harvesterMineralSupportTarget"+mineral.id))
+        // } catch {}
+        if ( mineral.container && mineral.container.id &&
+            Game.getObjectById(mineral.container.id).store.getUsedCapacity() > 1750 &&
+            creepRoomMap.get(roomName+"harvesterMineralSupportTarget"+mineral.id) == undefined
+        ) {
+            ret = spawnCreep(roleHarvesterMineralSupport, "auto", { memory: { targetSource: mineral.id }}, roomName);
+            return true;
+        }
+    })
+    
     return false;
 }
 
