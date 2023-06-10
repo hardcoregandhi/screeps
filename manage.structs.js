@@ -172,11 +172,33 @@ global.runStructs = function () {
         // for (var r of ramparts) {
         //     r.setPublic(false)
         // }
+        
 
-        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS).filter((c) => c.body.find((part) => part.type == ATTACK));
+
+        //This should probably be part of it's own defense code
+        if (Memory.rooms[room.name].defence == undefined) {
+            Memory.rooms[room.name].defence = {}
+        }
+        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS).filter((c) => c.body.find((part) => part.type == ATTACK || part.type == RANGED_ATTACK));
+        if (!hostileCreeps.length && Memory.rooms[room.name].defence.timerInvasionStarted != undefined) {
+            delete Memory.rooms[room.name].defence.timerInvasionStarted;
+            return;
+        }
+        Memory.rooms[room.name].defence.timerInvasionStarted = Game.time
         if (hostileCreeps.length > 2) {
-            if (room.controller.my && room.controller.safeModeAvailable) room.controller.activateSafeMode();
-            Game.notify(">2 attackers in " + room.name + ". Activated Safe Mode.");
+            var {meleeCount, rangedCount} = getAttackPartCounts(room.name)
+            requestHealer(Memory.rooms[r.name].parentRoom, r.name);
+            if (meleeCount > rangedCount) {
+                requestSoldier(Memory.rooms[r.name].parentRoom, r.name);
+            } else {
+                requestGunner(Memory.rooms[r.name].parentRoom, r.name);
+            }
+        }
+        if (hostileCreeps.length > 2 && (Game.rooms.W22S29.find(FIND_STRUCTURES).filter(s => ["rampart", "constructedWall"].includes(s.structureType) && s.hits > 500).length || room.controller.ticksToDecay < 500)) {
+            if (room.controller.my && room.controller.safeModeAvailable) {
+                room.controller.activateSafeMode();
+                Game.notify(">2 attackers in " + room.name + ". Activated Safe Mode.");
+            }
         }
         if (hostileCreeps.length > 1 && room.controller.level <= 3 /* && towers.length == 0*/) {
             if (room.controller != undefined && room.controller.my && room.controller.safeModeAvailable) {

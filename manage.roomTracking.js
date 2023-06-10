@@ -775,7 +775,7 @@ resetSourceContainerTracking = function () {
                 Memory.rooms[c.memory.baseRoomName].powerBanks[c.memory.targetSource].targettedByList.push(c.name);
             }
 
-            if (c.memory.role == "soldier" || c.memory.role == "gunner") {
+            if (c.memory.role == "soldier" || c.memory.role == "gunner" || c.memory.role == "healerChase") {
                 // protects against claimers which will have baseRoomNames which dont have defenders
                 if (Memory.rooms[c.memory.baseRoomName].defenders.soldier == null) {
                     if (c.memory.role == "soldier") {
@@ -785,6 +785,11 @@ resetSourceContainerTracking = function () {
                 if (Memory.rooms[c.memory.baseRoomName].defenders.gunner == null) {
                     if (c.memory.role == "gunner") {
                         Memory.rooms[c.memory.baseRoomName].defenders.gunner = c.id;
+                    }
+                }
+                if (Memory.rooms[c.memory.baseRoomName].defenders.healer == null) {
+                    if (c.memory.role == "healerChase") {
+                        Memory.rooms[c.memory.baseRoomName].defenders.healer = c.id;
                     }
                 }
             }

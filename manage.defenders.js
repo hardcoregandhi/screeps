@@ -1,3 +1,5 @@
+global.defenderSpawnTimeDelay = 120;
+
 requestGunner = function (_baseRoomName, _targetRoomName, rangedCount) {
     if (Memory.rooms[_baseRoomName].defenders == undefined) {
         Memory.rooms[_baseRoomName].defenders = {}
@@ -10,18 +12,18 @@ requestGunner = function (_baseRoomName, _targetRoomName, rangedCount) {
         console.log("requestGunner rangedCount too high, halfing");
         rangedCount=Math.round(rangedCount/2);
     }
-    
-    if (Memory.rooms[_baseRoomName].defenders.gunner == undefined) {
-        spawnCreep(roleGunner, Array(rangedCount+1).fill(RANGED_ATTACK).concat(Array(rangedCount+1).fill(MOVE)), { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
-        return;
-    }
-    
+
     gunner = Game.getObjectById(Memory.rooms[_baseRoomName].defenders.gunner);
-    if (gunner == null) {
-        Memory.rooms[_baseRoomName].defenders.gunner = null;
-        spawnCreep(roleGunner, Array(rangedCount+1).fill(RANGED_ATTACK).concat(Array(rangedCount+1).fill(MOVE)), { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
+    if (Memory.rooms[_baseRoomName].defenders.gunner == undefined || Game.getObjectById(Memory.rooms[_baseRoomName].defenders.gunner) == null) {
+        Memory.rooms[_baseRoomName].defenders.gunner = null
+        if (Memory.rooms[_baseRoomName].defenders.gunnerSpawnTime == undefined || Memory.rooms[_baseRoomName].defenders.gunnerSpawnTime >= Game.time + defenderSpawnTimeDelay) {
+            Memory.rooms[_baseRoomName].defenders.gunnerSpawnTime = Game.time
+            queueSpawnCreep(roleGunner, Array(rangedCount).fill(TOUGH).concat(Array(rangedCount+1).fill(MOVE)).concat(Array(rangedCount+1).fill(RANGED_ATTACK)), { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
+            return;
+        }
+    } else {
+        requestDefender(_baseRoomName, _targetRoomName, gunner);
     }
-    requestDefender(_baseRoomName, _targetRoomName, gunner);
 };
 
 requestSoldier = function (_baseRoomName, _targetRoomName, meleeCount) {
@@ -37,18 +39,50 @@ requestSoldier = function (_baseRoomName, _targetRoomName, meleeCount) {
         console.log("requestSoldier melee count too high, halfing");
         meleeCount=Math.round(meleeCount/2);
     }
-        
-    if (Memory.rooms[_baseRoomName].defenders.soldier == undefined) {
-        spawnCreep(roleSoldier, Array(meleeCount+1).fill(ATTACK).concat(Array(meleeCount+1).fill(MOVE)), { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
-        return;
-    }
+    
     soldier = Game.getObjectById(Memory.rooms[_baseRoomName].defenders.soldier);
-    if (soldier == null) {
-        Memory.rooms[_baseRoomName].defenders.soldier = null;
-        spawnCreep(roleSoldier, Array(meleeCount+1).fill(ATTACK).concat(Array(meleeCount+1).fill(MOVE)), { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
-        return;
+    if (Memory.rooms[_baseRoomName].defenders.soldier == undefined || Game.getObjectById(Memory.rooms[_baseRoomName].defenders.soldier) == null) {
+        Memory.rooms[_baseRoomName].defenders.soldier = null
+        if (Memory.rooms[_baseRoomName].defenders.soldierSpawnTime == undefined || Memory.rooms[_baseRoomName].defenders.soldierSpawnTime >= Game.time + defenderSpawnTimeDelay) {
+            Memory.rooms[_baseRoomName].defenders.soldierSpawnTime = Game.time
+            queueSpawnCreep(roleSoldier, Array(meleeCount).fill(TOUGH).concat(Array(meleeCount+1).fill(MOVE)).concat(Array(meleeCount+1).fill(ATTACK)), { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
+            return;
+        }
+    } else {
+        requestDefender(_baseRoomName, _targetRoomName, soldier);
     }
-    requestDefender(_baseRoomName, _targetRoomName, soldier);
+};
+
+requestHealer = function (_baseRoomName, _targetRoomName, attackPartCount) {
+    console.log(`requestSoldier _baseRoomName${_baseRoomName}, _targetRoomName${_targetRoomName}, attackPartCount${attackPartCount}`)
+    if (Memory.rooms[_baseRoomName].defenders == undefined) {
+        Memory.rooms[_baseRoomName].defenders = {}
+    }
+
+    //heal amount per part is 12
+    //possible attack amount is 30 per part
+    //so we want 3x the amount of heal parts as attack parts
+    healPartCount = attackPartCount * 3
+    if (healPartCount == 0){
+        console.log("requestHealer melee count == 0; defaulting to 5")
+        healPartCount = 5
+    }
+    if (healPartCount > 25) {
+        console.log("requestHealer melee count too high, halfing");
+        healPartCount=Math.round(attackPartCount/2);
+    }
+    
+    healer = Game.getObjectById(Memory.rooms[_baseRoomName].defenders.healer);
+    if (Memory.rooms[_baseRoomName].defenders.healer == undefined || Game.getObjectById(Memory.rooms[_baseRoomName].defenders.healer) == null) {
+        Memory.rooms[_baseRoomName].defenders.healer = null
+        if (Memory.rooms[_baseRoomName].defenders.healerSpawnTime == undefined || Memory.rooms[_baseRoomName].defenders.healerSpawnTime >= Game.time + defenderSpawnTimeDelay) {
+            Memory.rooms[_baseRoomName].defenders.healerSpawnTime = Game.time
+            queueSpawnCreep(roleHealerChase, Array(healPartCount+1).fill(MOVE).concat(Array(healPartCount).fill(HEAL)), { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal:true } }, _baseRoomName);
+            return;
+        }
+    } else {
+        requestDefender(_baseRoomName, _targetRoomName, healer);
+    }
 };
 
 requestDefender = function (_baseRoomName, _targetRoomName, defender) {

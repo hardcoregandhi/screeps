@@ -167,48 +167,16 @@ global.EnemyCheckFleeRequestBackup = function(creep) {
         var invaderCore = Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_STRUCTURES).filter((structure) => {
                 return structure.structureType == STRUCTURE_INVADER_CORE;
             });
-        var hostileCreeps = Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_CREEPS)
-        var hostileAttackCreeps = hostileCreeps.filter((c) => {
-                return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
-            });
-        rangedCount = 0;
-        meleeCount = 0;
-        if (hostileAttackCreeps.length) {
-            console.log(hostileCreeps);
-            _.forEach(hostileCreeps, (c) => {
-                _.forEach(c.body, (part) => {
-                    switch (part.type) {
-                        case ATTACK:
-                            meleeCount++;
-                            if (part.boost != undefined) {
-                                meleeCount++;
-                            }
-                            break;
-                        case RANGED_ATTACK:
-                            rangedCount++;
-                            if (part.boost != undefined) {
-                                rangedCount++;
-                            }
-                            break;
-                        case HEAL:
-                            meleeCount++;
-                            rangedCount++;
-                            if (part.boost != undefined) {
-                                meleeCount++;
-                                rangedCount++;
-                            }
-                            break;
-                    }
-                });
-            });
-        }
         
-
-        if (hostileAttackCreeps.length && hostileCreeps[0].owner.username != "Tigga" || invaderCore.length ) {
+        var {meleeCount, rangedCount} = getAttackPartCounts(Game.rooms[creep.memory.targetRoomName])
+        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS)
+        console.log("awioudh" + hostileCreeps)
+        if ((meleeCount || rangedCount) && hostileCreeps.length && hostileCreeps[0].owner.username != "Tigga" || invaderCore.length ) {
+            console.log("awioudh")
             try {
                 if (meleeCount > rangedCount || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) < 1) {
                     requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount+rangedCount);
-                } else if (meleeCount < rangedCount || creepRoomMap.get(creep.memory.baseRoomName + "gunnerTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "gunnerTarget" + creep.memory.targetRoomName) < 1) {
+                } else {
                     requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount+rangedCount);
                 }
             } catch (e) {
@@ -226,6 +194,48 @@ global.EnemyCheckFleeRequestBackup = function(creep) {
         } else {
             creep.memory.fleeing = false;
         }
+    }
+}
+
+global.getAttackPartCounts = function(room) {
+    var hostileCreeps = room.find(FIND_HOSTILE_CREEPS)
+    var hostileAttackCreeps = hostileCreeps.filter((c) => {
+            return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
+        });
+    rangedCount = 0;
+    meleeCount = 0;
+    if (hostileAttackCreeps.length) {
+        console.log(hostileCreeps);
+        _.forEach(hostileCreeps, (c) => {
+            _.forEach(c.body, (part) => {
+                switch (part.type) {
+                    case ATTACK:
+                        meleeCount++;
+                        if (part.boost != undefined) {
+                            meleeCount++;
+                        }
+                        break;
+                    case RANGED_ATTACK:
+                        rangedCount++;
+                        if (part.boost != undefined) {
+                            rangedCount++;
+                        }
+                        break;
+                    case HEAL:
+                        meleeCount++;
+                        rangedCount++;
+                        if (part.boost != undefined) {
+                            meleeCount++;
+                            rangedCount++;
+                        }
+                        break;
+                }
+            });
+        });
+    }
+    return {
+        meleeCount: meleeCount,
+        rangedCount: rangedCount,
     }
 }
 
