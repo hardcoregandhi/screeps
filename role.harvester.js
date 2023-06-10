@@ -137,6 +137,16 @@ global.roleHarvester = {
 
                     if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined) {
                         Log(creep, "local link found");
+                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
+                            if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id != undefined) {
+                                old_container = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id)
+                                if (old_container != undefined) {
+                                    old_container.destroy()
+                                    delete Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container
+                                }
+                            }
+                        }
+
 
                         var link = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link);
                         if (link == null) {
