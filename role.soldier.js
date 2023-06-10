@@ -143,15 +143,8 @@ global.roleSoldier = {
                 }
                 creep.moveTo(Game.rooms[creep.memory.targetRoomName].controller)
                 return
-            }
-            
-            const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName, {
-                maxRooms: 1,
-            });
-            if (route.length > 0) {
-                const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit);
-                return;
+            } else {
+                moveToRoom(creep, creep.memory.targetRoomName);
             }
             // }
         } else {

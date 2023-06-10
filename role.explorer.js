@@ -23,7 +23,12 @@ global.roleExplorer = {
             console.log(`creeps.${creep.name} is waiting for a targetRoomName`);
             return;
         }
-        moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.targetRoomName));
+        if (creep.memory.experimentalMovement != undefined) {
+            moveToRoom(creep, creep.memory.baseRoomName);
+            return;
+        } else {
+            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.targetRoomName));
+        }
     },
 };
 

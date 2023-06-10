@@ -20,7 +20,7 @@ global.roleGunner = {
     /** @param {Creep} creep **/
     run: function (creep) {
         // creep.say('🏳️');
-        if (creep.memory.targetRoomName == undefined) creep.memory.targetRoomName = "W9S3";
+        // if (creep.memory.targetRoomName == undefined) creep.memory.targetRoomName = "W9S3";
 
         // creep.memory.return = true;
 
@@ -94,14 +94,7 @@ global.roleGunner = {
             //     usePathfinder(creep, { pos: new RoomPosition(25,25,creep.memory.targetRoomName), range: 1 })
             // }
             // else {
-            const route = Game.map.findRoute(creep.room, creep.memory.targetRoomName, {
-                maxRooms: 1,
-            });
-            if (route.length > 0) {
-                const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit);
-                return;
-            }
+            moveToRoom(creep, creep.memory.targetRoomName);
             // }
         } else {
             // if (creep.room.controller.safeMode != undefined && enemyTowers.length == 0) {
