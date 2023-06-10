@@ -37,7 +37,7 @@ global.roleRepairer = {
             return;
         }
         if (creep.memory.wallHealPercent == undefined) {
-            creep.memory.wallHealPercent = Game.rooms[creep.memory.baseRoomName].controller.level * 0.1;
+            creep.memory.wallHealPercent = Game.rooms[creep.memory.baseRoomName].controller.level * 0.01;
         }
 
         if (!creep.memory.currentSource == null) {
