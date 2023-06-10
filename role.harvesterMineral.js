@@ -63,13 +63,13 @@ global.roleHarvesterMineral = {
         } else {
             var target = null;
 
-            if (Memory.rooms[creep.memory.baseRoomName].mineral.container != undefined) {
-                target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mineral.container.id);
+            if (Memory.rooms[creep.memory.baseRoomName].mineral[creep.memory.targetSource].container != undefined) {
+                target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mineral[creep.memory.targetSource].container.id);
                 creep.memory.targetContainer = target.id;
                 Log(creep, "local ccont found");
                 Log(creep, target);
                 
-                if (target.store.getFreeCapacity() == 0 && Memory.rooms[creep.memory.baseRoomName].mineral.container.targettedBy == 0 && creepRoomMap.get(creep.memory.baseRoomName+"harvesterMineralSupportTarget"+creep.memory.targetSource) == undefined) {
+                if (target.store.getFreeCapacity() == 0 && Memory.rooms[creep.memory.baseRoomName].mineral[creep.memory.targetSource].container.targettedBy == 0 && creepRoomMap.get(creep.memory.baseRoomName+"harvesterMineralSupportTarget"+creep.memory.targetSource) == undefined) {
                     spawnCreep(roleHarvesterMineralSupport, "auto", { memory: { targetContainer: target.id, noHeal: true, targetSource: creep.memory.targetSource } }, creep.memory.baseRoomName);
                 }
                 
