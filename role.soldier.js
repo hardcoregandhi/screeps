@@ -13,8 +13,8 @@ global.roleSoldier = {
         MOVE,MOVE,MOVE,MOVE,MOVE,
         HEAL,
     ],
-    baseBodyParts: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE],
-    subBodyParts: [HEAL, HEAL, MOVE],
+    baseBodyParts: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+    subBodyParts: [HEAL, HEAL, MOVE, MOVE],
     bodyLoop: [MOVE,ATTACK],
 
     /** @param {Creep} creep **/
@@ -65,46 +65,49 @@ global.roleSoldier = {
 
         if (creep.memory.passiveTravel == undefined || creep.memory.passiveTravel == false) {
             var allHostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);
-            var hostileCreeps = allHostileCreeps.filter((c) => {
-                return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
-            });
-            if (hostileCreeps.length > 2 || allHostileCreeps.length > 4) {
-                cloneCreep(creep.name);
+            if (allHostileCreeps.length) {
+                var hostileCreeps = allHostileCreeps.filter((c) => creep.owner.username != "KyberPrizrak" && (c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)));
+                if (hostileCreeps.length) {
+                    if (hostileCreeps.length > 2 || allHostileCreeps.length > 4) {
+                        cloneCreep(creep.name);
+                    }
+        
+                    var closestHostile = creep.pos.findClosestByRange(hostileCreeps);
+                    // console.log(closestHostile)
+                    if (closestHostile) {
+                        creep.room.visual.circle(closestHostile.pos, {
+                            color: "red",
+                            radius: 1,
+                        });
+                        if(creep.pos.inRangeTo(target, 2)) {
+                            var direction = creep.pos.getDirectionTo(target)
+                            direction = direction >= 5 ? direction - 4 : direction + 4
+                            creep.move(direction)
+                            creep.attack(closestHostile)
+                        } else {
+                            if (creep.attack(closestHostile) != OK) {
+                                creep.moveTo(closestHostile, { maxRooms: 1 });
+                            }
+                        }
+                        return;
+                    }
+                }
             }
-
-            var closestHostile =
-                creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) ||
-                creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
+        }
+        
+        var invaderCore =
+                Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_STRUCTURES, {
                     filter: (s) => {
-                        return s.structureType != STRUCTURE_CONTROLLER && s.structureType != STRUCTURE_POWER_BANK;
+                        return s.structureType == STRUCTURE_INVADER_CORE;
                     },
                 });
-            // console.log(closestHostile)
-            if (closestHostile) {
-                creep.room.visual.circle(closestHostile.pos, {
-                    color: "red",
-                    radius: 1,
-                });
-                if (creep.attack(closestHostile) != OK) {
-                    creep.moveTo(closestHostile, { maxRooms: 1 });
-                }
-                return;
+                
+        if (invaderCore.length) {
+            if (creep.attack(invaderCore[0]) != OK) {
+                creep.heal(creep);
+                if (!creep.pos.inRangeTo(invaderCore[0], 2)) creep.moveTo(invaderCore[0], { maxRooms: 1 });
             }
-            var closestSite = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES, {
-                filter: (s) => {
-                    return !s.my;
-                },
-            });
-            if (closestSite) {
-                creep.room.visual.circle(closestSite.pos, {
-                    color: "red",
-                    radius: 1,
-                });
-                if (creep.attack(closestSite) != OK) {
-                    creep.moveTo(closestSite, { maxRooms: 1 });
-                }
-                return;
-            }
+            return
         }
 
         // if (creep.ticksToLive < 500) {
@@ -136,7 +139,7 @@ global.roleSoldier = {
             }
             
             if (Game.rooms[creep.memory.targetRoomName] != undefined) {
-                var enemyTargets = Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_CREEPS);
+                var enemyTargets = Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_CREEPS).filter((c) => creep.owner.username != "KyberPrizrak" && (c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)));
                 if (enemyTargets.length) {
                     moveToMultiRoomTarget(creep, enemyTargets[0])
                     return;

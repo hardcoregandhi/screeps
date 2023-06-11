@@ -104,6 +104,16 @@ roomTracking = function () {
                         break;
                 }
             }
+            
+            if (Memory.rooms[r.name].mainSpawn && Memory.rooms[r.name].mainSpawn.id && Game.getObjectById(Memory.rooms[r.name].mainSpawn.id) == null) {
+                // room may have been lost
+                if (spawns.length == 0 && stores.length == 0 && towers.length == 0 && !r.controller.safeModeAvailable) {
+                    console.log(`Room is LOST! Removing ${r.name} from myRooms`)
+                    RemoveFromList(Memory.myRooms, r.name)
+                    RemoveFromList(myRooms[Game.shard.name], r.name)
+                    delete Memory.rooms[r.name]
+                }
+            }
 
             //elapsed = Game.cpu.getUsed() - startCpu;
             //console.log("allStructures find has used " + elapsed + " CPU time");
@@ -448,7 +458,7 @@ roomTracking = function () {
                 }
             }
 
-            if (Memory.rooms[r.name].sources[s.id].link == undefined && r.controller && r.controller.level >= 6 && links.length) {
+            if (myRooms[Game.shard.name].includes(r.name) && Memory.rooms[r.name].sources[s.id].link == undefined && r.controller && r.controller.level >= 6 && links.length) {
                 for (link of links) {
                     if (link.pos.inRangeTo(s, 2)) {
                         console.log("adding new link ", r.name, " ", link.id);

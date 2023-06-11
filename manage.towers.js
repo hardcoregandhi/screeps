@@ -61,13 +61,15 @@ global.runTowers = function (room) {
     // console.log("heal has used " + elapsed + " CPU time");
 
     // startCpu = Game.cpu.getUsed();
+    // if (room.name != "W22S29") {
     if (repair(room, towers)) return;
+    // }
     // elapsed = Game.cpu.getUsed() - startCpu;
     // console.log(room.name + " repair has used " + elapsed + " CPU time");
 };
 
 attack = function (room, towers) {
-    var allHostiles = room.find(FIND_HOSTILE_CREEPS);
+    var allHostiles = room.find(FIND_HOSTILE_CREEPS).filter(creep => creep.owner.username != "KyberPrizrak");
     if (!allHostiles.length) {
         Memory.rooms[room.name].mainTower.enemyInRoom = false;
         return 0;

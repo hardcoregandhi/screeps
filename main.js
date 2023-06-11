@@ -261,7 +261,9 @@ module.exports.loop = function () {
             // Must be ran after creeps that will have set healingRequested
             myRooms[Game.shard.name].forEach((r) => {
                 room = Game.rooms[r];
+                try{
                 runTowers(room);
+                } catch {}
             });
         } catch (e) {
             console.log(`runTowers() failed: ${e}`);

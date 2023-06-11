@@ -13,9 +13,9 @@ global.roleGunner = {
         MOVE,MOVE,MOVE,MOVE,MOVE,
         HEAL,
     ],
-    baseBodyParts: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH],
-    subBodyParts: [HEAL, HEAL],
-    bodyLoop: [RANGED_ATTACK, MOVE],
+    baseBodyParts: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+    subBodyParts: [HEAL, HEAL, MOVE, MOVE],
+    bodyLoop: [MOVE, RANGED_ATTACK],
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -52,30 +52,49 @@ global.roleGunner = {
 
         if (creep.memory.passiveTravel == undefined || creep.memory.passiveTravel == false) {
             var allHostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);
-            var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter((c) => c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK));
-            if (hostileCreeps.length > 2 || allHostileCreeps.length > 4) {
-                cloneCreep(creep.name);
-            }
-
-            var closestHostile = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) || creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
-            // console.log(closestHostile)
-            if (closestHostile) {
-                creep.room.visual.circle(closestHostile.pos, {
-                    color: "red",
-                    radius: 1,
-                });
-                if(creep.pos.inRangeTo(target, 2)) {
-                    var direction = creep.pos.getDirectionTo(target)
-                    direction = direction >= 5 ? direction - 4 : direction + 4
-                    creep.move(direction)
-                    creep.rangedAttack(closestHostile)
-                } else {
-                    if (creep.rangedAttack(closestHostile) != OK) {
-                        creep.moveTo(closestHostile, { maxRooms: 1 });
+            if (allHostileCreeps.length) {
+                var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS).filter((c) => c.owner.username != "KyberPrizrak" && (c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)));
+                if (hostileCreeps.length) {
+                    if (hostileCreeps.length > 2 || allHostileCreeps.length > 4) {
+                        cloneCreep(creep.name);
+                    }
+        
+                    var closestHostile = creep.pos.findClosestByRange(hostileCreeps);
+                    // console.log(closestHostile)
+                    if (closestHostile) {
+                        creep.room.visual.circle(closestHostile.pos, {
+                            color: "red",
+                            radius: 1,
+                        });
+                        if(creep.pos.inRangeTo(target, 2)) {
+                            var direction = creep.pos.getDirectionTo(target)
+                            direction = direction >= 5 ? direction - 4 : direction + 4
+                            creep.move(direction)
+                            creep.rangedAttack(closestHostile)
+                        } else {
+                            if (creep.rangedAttack(closestHostile) != OK) {
+                                creep.moveTo(closestHostile, { maxRooms: 1 });
+                            }
+                        }
+                        return;
                     }
                 }
-                return;
             }
+        }
+        
+        var invaderCore =
+                creep.room.find(FIND_HOSTILE_STRUCTURES, {
+                    filter: (s) => {
+                        return s.structureType == STRUCTURE_INVADER_CORE;
+                    },
+                });
+                
+        if (invaderCore.length) {
+            if (creep.rangedAttack(invaderCore[0]) != OK) {
+                creep.heal(creep);
+                if (!creep.pos.inRangeTo(invaderCore[0], 2)) creep.moveTo(invaderCore[0], { maxRooms: 1 });
+            }
+            return
         }
 
         // if (creep.ticksToLive < 500) {

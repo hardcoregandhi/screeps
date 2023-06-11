@@ -90,6 +90,8 @@ global.runSpawns = function () {
             continue;
         } else if (r.controller.level >= 6 && spawnHarvesterMineral(r)) {
             continue
+        } else if (roomExpansion(r.name)) {
+            continue;
         } else if (spawnExternalMover(r.name)) {
             continue;
         } else if (spawnExternalHarvester(r.name)) {

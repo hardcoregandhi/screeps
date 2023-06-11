@@ -34,7 +34,7 @@ global.roleTrucker = {
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
-
+delete creep.memory.targetCreep 
         if (!creep.memory.returning) {
             Log(creep, "!returning")
             
@@ -77,12 +77,7 @@ global.roleTrucker = {
                             return c.memory.role == 'harvester';
                         })
                     }
-                    if (!creeps.length) {
-                        Log(creep, "l4all")
-                        creeps = allCreep.filter((c) => {
-                            return c.memory.role != 'trucker';
-                        })
-                    }
+
                     if (creeps.length) {
                         targetCreep = creep.pos.findClosestByRange(creeps)
                         creep.memory.targetCreep = targetCreep.id
@@ -104,6 +99,9 @@ global.roleTrucker = {
             Log(creep, "returning")
 
             var target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
+            if (target.store.getUsedCapacity(RESOURCE_ENERGY) <= 50000) {
+                creep.memory.DIE = true
+            }
             if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {
                     visualizePathStyle: { stroke: "#ffaa00" },

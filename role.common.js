@@ -170,7 +170,7 @@ global.EnemyCheckFleeRequestBackup = function(creep) {
         
         var {meleeCount, rangedCount} = getAttackPartCounts(Game.rooms[creep.memory.targetRoomName])
         var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS)
-        if ((meleeCount || rangedCount) && hostileCreeps.length && hostileCreeps[0].owner.username != "Tigga" || invaderCore.length ) {
+        if ((meleeCount || rangedCount) && hostileCreeps.length && hostileCreeps[0].owner.username != "KyberPrizrak" || invaderCore.length ) {
             try {
                 if (meleeCount > rangedCount || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) < 1) {
                     requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount+rangedCount);

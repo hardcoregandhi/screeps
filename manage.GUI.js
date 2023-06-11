@@ -11,6 +11,7 @@ drawGUI = function () {
     roomOffset = 0;
     textOffset = 0;
     for (var room in Game.rooms) {
+        try{
         r = Game.rooms[room];
 
         if (1) {
@@ -113,6 +114,7 @@ drawGUI = function () {
                 }
             }
         }
+        }catch(e) {}
                     
 
     }

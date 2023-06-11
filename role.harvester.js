@@ -46,6 +46,7 @@ global.roleHarvester = {
 
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
+            creep.memory.experimentalMovement = true
             if (creep.memory.experimentalMovement != undefined) {
                 moveToRoom(creep, creep.memory.baseRoomName);
                 return;
@@ -105,7 +106,7 @@ global.roleHarvester = {
                             structure.structureType == STRUCTURE_SPAWN ||
                             structure.structureType == STRUCTURE_TOWER ||
                             structure.structureType == STRUCTURE_STORAGE) &&
-                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > structure.store.getCapacity(RESOURCE_ENERGY) / 2
                     );
                 },
             });

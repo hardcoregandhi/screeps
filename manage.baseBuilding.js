@@ -1,5 +1,5 @@
 global.runBaseBuilder = function () {
-    for (var roomName of myRooms[Game.shard.name]) {
+    for (var roomName of myRooms[Game.shard.name]) { try{
         r = Game.rooms[roomName];
         if (r == undefined) {
             log.error("runBaseBuilder: Couldn't retrieve room to upgrade it");
@@ -67,7 +67,7 @@ global.runBaseBuilder = function () {
                 Memory.rooms[roomName].currentRoomBuildingLevel++;
             }
         }
-    }
+    } catch {} }
 };
 
 function buildControllerRampartSurroundings(r) {
@@ -524,24 +524,6 @@ global.baseRawData = `
                     "buildingType": "link",
                     "pos": [
                         { "x": 3, "y": -2 }
-                    ]
-                }
-            ],
-            [
-                {
-                    "buildingType": "terminal",
-                    "pos": [
-                        { "x": 3, "y": 0 }
-                    ]
-                }
-            ],
-            [
-                {
-                    "buildingType": "lab",
-                    "pos": [
-                        { "x": 3, "y": 2 },
-                        { "x": 3, "y": 3 },
-                        { "x": 4, "y": 3 }
                     ]
                 }
             ]
