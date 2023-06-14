@@ -61,9 +61,7 @@ global.runTowers = function (room) {
     // console.log("heal has used " + elapsed + " CPU time");
 
     // startCpu = Game.cpu.getUsed();
-    // if (room.name != "W22S29") {
     if (repair(room, towers)) return;
-    // }
     // elapsed = Game.cpu.getUsed() - startCpu;
     // console.log(room.name + " repair has used " + elapsed + " CPU time");
 };
