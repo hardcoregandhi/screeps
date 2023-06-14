@@ -95,19 +95,21 @@ global.roleSoldier = {
             }
         }
         
-        var invaderCore =
-                Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_STRUCTURES, {
-                    filter: (s) => {
-                        return s.structureType == STRUCTURE_INVADER_CORE;
-                    },
-                });
-                
-        if (invaderCore.length) {
-            if (creep.attack(invaderCore[0]) != OK) {
-                creep.heal(creep);
-                if (!creep.pos.inRangeTo(invaderCore[0], 2)) creep.moveTo(invaderCore[0], { maxRooms: 1 });
+        if (Game.rooms[creep.memory.targetRoomName] != undefined) {
+            var invaderCore =
+                    Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_STRUCTURES, {
+                        filter: (s) => {
+                            return s.structureType == STRUCTURE_INVADER_CORE;
+                        },
+                    });
+                    
+            if (invaderCore.length) {
+                if (creep.attack(invaderCore[0]) != OK) {
+                    creep.heal(creep);
+                    if (!creep.pos.inRangeTo(invaderCore[0], 2)) creep.moveTo(invaderCore[0], { maxRooms: 1 });
+                }
+                return
             }
-            return
         }
 
         // if (creep.ticksToLive < 500) {
