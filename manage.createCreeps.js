@@ -181,7 +181,7 @@ queuePrioritySpawnCreep = function(_role, customBodyParts = null, customMemory =
 spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
     // console.log(`spawnCreep ${_role.name} ${customBodyParts} ${customMemory} ${_spawnRoom}`)
     var ret = -1;
-
+    var cost = 6969
     if (_spawnRoom != null) {
         room = Game.rooms[_spawnRoom];
         if (room == null) {
