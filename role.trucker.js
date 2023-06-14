@@ -34,7 +34,7 @@ global.roleTrucker = {
             creep.memory.healing = true;
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
-delete creep.memory.targetCreep 
+
         if (!creep.memory.returning) {
             Log(creep, "!returning")
             
@@ -77,7 +77,12 @@ delete creep.memory.targetCreep
                             return c.memory.role == 'harvester';
                         })
                     }
-
+                    if (!creeps.length) {
+                        Log(creep, "l4all")
+                        creeps = allCreep.filter((c) => {
+                            return c.memory.role != 'trucker';
+                        })
+                    }
                     if (creeps.length) {
                         targetCreep = creep.pos.findClosestByRange(creeps)
                         creep.memory.targetCreep = targetCreep.id
