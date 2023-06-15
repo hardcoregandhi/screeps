@@ -8,18 +8,18 @@ deadCreepCleanup = function () {
                     // console.log("s.id:", s.id)
                     // console.log("c.memory.targetSource:", c.memory.targetSource)
                     Memory.rooms[c.baseRoomName].sources[c.targetSource].targettedBy -= 1;
-                    RemoveFromList(Memory.rooms[c.baseRoomName].sources[c.targetSource].targettedByList, i)
+                    RemoveFromList(Memory.rooms[c.baseRoomName].sources[c.targetSource].targettedByList, i);
                     // console.log(Memory.rooms[r.name].sources[i].targettedBy)
                 } else if (c.role == "harvSup") {
                     Memory.rooms[c.baseRoomName].sources[c.targetSource].container.targettedBy -= 1;
-                    RemoveFromList(Memory.rooms[c.baseRoomName].sources[c.targetSource].targettedByList, i)
+                    RemoveFromList(Memory.rooms[c.baseRoomName].sources[c.targetSource].targettedByList, i);
                 } else if (c.role == "harvesterExt") {
                     Memory.rooms[c.targetRoomName].sources[c.targetSource].targettedBy -= 1;
-                    RemoveFromList(Memory.rooms[c.targetRoomName].sources[c.targetSource].targettedByList, i)
+                    RemoveFromList(Memory.rooms[c.targetRoomName].sources[c.targetSource].targettedByList, i);
                 } else if (c.role == "moverExt") {
                     if (c.targetContainer == Memory.rooms[c.targetRoomName].sources[c.targetSource].container.id) {
                         Memory.rooms[c.targetRoomName].sources[c.targetSource].container.targettedBy -= 1;
-                        RemoveFromList(Memory.rooms[c.targetRoomName].sources[c.targetSource].container.targettedByList, i)
+                        RemoveFromList(Memory.rooms[c.targetRoomName].sources[c.targetSource].container.targettedByList, i);
                     }
                 } else if (c.role == "gunner" || c.role == "soldier") {
                     if (Memory.rooms[c.baseRoomName].defenders.soldier == c.id) {
@@ -37,4 +37,3 @@ deadCreepCleanup = function () {
         }
     }
 };
-

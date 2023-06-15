@@ -157,11 +157,10 @@ global.runStructs = function () {
                 });
             });
         }
-        
+
         if (Memory.rooms[room.name].structs.pspawn != undefined) {
             var powerSpawn = Game.getObjectById(Memory.rooms[room.name].structs.pspawn.id);
-            if (powerSpawn)
-                powerSpawn.processPower();
+            if (powerSpawn) powerSpawn.processPower();
         }
 
         // var ramparts = room.find(FIND_STRUCTURES, {
@@ -172,27 +171,25 @@ global.runStructs = function () {
         // for (var r of ramparts) {
         //     r.setPublic(false)
         // }
-        
-
 
         //This should probably be part of it's own defense code
         if (Memory.rooms[room.name].defence == undefined) {
-            Memory.rooms[room.name].defence = {}
+            Memory.rooms[room.name].defence = {};
         }
         var hostileCreeps = room.find(FIND_HOSTILE_CREEPS).filter((c) => c.owner.username != "KyberPrizrak" && c.body.find((part) => part.type == ATTACK || part.type == RANGED_ATTACK));
         if (!hostileCreeps.length && Memory.rooms[room.name].defence.timerInvasionStarted != undefined) {
             delete Memory.rooms[room.name].defence.timerInvasionStarted;
             return;
-        } else if(hostileCreeps.length && Memory.rooms[room.name].defence.timerInvasionStarted == undefined) {
-            Memory.rooms[room.name].defence.timerInvasionStarted = Game.time
-        } else if(hostileCreeps.length && Memory.rooms[room.name].defence.timerInvasionStarted != undefined) {
+        } else if (hostileCreeps.length && Memory.rooms[room.name].defence.timerInvasionStarted == undefined) {
+            Memory.rooms[room.name].defence.timerInvasionStarted = Game.time;
+        } else if (hostileCreeps.length && Memory.rooms[room.name].defence.timerInvasionStarted != undefined) {
             if (Game.time >= Memory.rooms[room.name].defence.timerInvasionStarted + 100) {
                 room.controller.activateSafeMode();
             }
         }
-        
+
         if (hostileCreeps.length > 2) {
-            var {meleeCount, rangedCount} = getAttackPartCounts(room)
+            var { meleeCount, rangedCount } = getAttackPartCounts(room);
             requestHealer(Memory.rooms[room.name].parentRoom, r.name);
             if (meleeCount > rangedCount) {
                 requestSoldier(Memory.rooms[room.name].parentRoom, r.name);

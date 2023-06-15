@@ -41,9 +41,9 @@ global.runCreeps = function () {
                     Memory.rooms[creep.memory.baseRoomName].mainTower.healRequested = true;
                 }
             }
-            
+
             if (creep.spawning) {
-                trackedSpawn(creep)
+                trackedSpawn(creep);
             }
 
             if (creep.pos.x == 49) creep.move(7);
@@ -80,14 +80,14 @@ global.runCreeps = function () {
 
             switch (creep.memory.role) {
                 case "mover":
-                    if (creep.room.energyAvailable > creep.room.energyCapacityAvailable /2 && Memory.rooms[creep.room.name].scav == true && creep.room.memory.mainTower.enemyInRoom == false) {
+                    if (creep.room.energyAvailable > creep.room.energyCapacityAvailable / 2 && Memory.rooms[creep.room.name].scav == true && creep.room.memory.mainTower.enemyInRoom == false) {
                         roleScavenger.run(creep);
                         // console.log(creep.name, "scav")
                     } else {
                         roleMover.run(creep);
                         // console.log(creep.name, "mover")
                     }
-                    break
+                    break;
                 case "moverExt":
                 case "moverExtRepair":
                     roleMoverExt.run(creep);
@@ -110,18 +110,17 @@ global.runCreeps = function () {
                 creep.spawn(ps);
                 return;
             }
-            
+
             // if (creep.room.name != creep.memory.baseRoomName) {
             //     console.log("returning to room ", creep.memory.baseRoomName)
             //     moveToRoom(creep, creep.memory.baseRoomName);
             //     return
             // }
-            mainSpawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn)
+            mainSpawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn);
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             factory = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.factory.id);
 
             if (creep.ticksToLive < 50) {
-                
                 if (creep.transfer(mainStorage, RESOURCE_OPS) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(mainStorage);
                 }
@@ -144,59 +143,51 @@ global.runCreeps = function () {
                 }
                 return;
             }
-            
-            
-            
+
             if (creep.usePower(PWR_GENERATE_OPS) == OK) {
                 return;
             }
-            Log(creep, mainStorage.store.getUsedCapacity(RESOURCE_OPS))
-            Log(creep, creep.store.getUsedCapacity(RESOURCE_OPS))
-            Log(creep, creep.powers[PWR_OPERATE_FACTORY].level)
-            Log(creep, factory.level)
-            
+            Log(creep, mainStorage.store.getUsedCapacity(RESOURCE_OPS));
+            Log(creep, creep.store.getUsedCapacity(RESOURCE_OPS));
+            Log(creep, creep.powers[PWR_OPERATE_FACTORY].level);
+            Log(creep, factory.level);
+
             if (creep.memory.opFactory == true) {
                 if (mainStorage.store.getUsedCapacity(RESOURCE_OPS) + creep.store.getUsedCapacity(RESOURCE_OPS) > 100) {
                     if (factory != null && creep.powers[PWR_OPERATE_FACTORY] != undefined && (creep.powers[PWR_OPERATE_FACTORY].level == undefined || creep.powers[PWR_OPERATE_FACTORY].level == factory.level) && factory.effects.length == 0) {
                         if (creep.powers[PWR_OPERATE_FACTORY].level || 0 > factory.level || 0) {
                             if (creep.store.getUsedCapacity(RESOURCE_OPS) < 100) {
                                 if (creep.withdraw(mainStorage, RESOURCE_OPS) == ERR_NOT_IN_RANGE) {
-                                    creep.moveTo(mainStorage)
+                                    creep.moveTo(mainStorage);
                                 }
                             } else {
-                                if (creep.pos.isNearTo(factory))
-                                    ret = creep.usePower(PWR_OPERATE_FACTORY, factory);
-                                else 
-                                    creep.moveTo(factory);
-                                
+                                if (creep.pos.isNearTo(factory)) ret = creep.usePower(PWR_OPERATE_FACTORY, factory);
+                                else creep.moveTo(factory);
                             }
                             return;
                         }
                     }
                 }
             }
-            
+
             if (creep.memory.sweetSpot == undefined) {
                 ps = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.pspawn.id);
-                creep.memory.sweetSpot = new RoomPosition(ps.pos.x +1, ps.pos.y -1, ps.room.name);
+                creep.memory.sweetSpot = new RoomPosition(ps.pos.x + 1, ps.pos.y - 1, ps.room.name);
             }
             creep.moveTo(creep.memory.sweetSpot.x, creep.memory.sweetSpot.y);
-            
+
             if (creep.store.getFreeCapacity() == 0) {
                 if (creep.transfer(mainStorage, RESOURCE_OPS) != OK) {
-                    creep.moveTo(mainStorage)
+                    creep.moveTo(mainStorage);
                 }
                 return;
             }
-            
-            
 
             // if (creep.usePower(PWR_OPERATE_SPAWN, mainSpawn) != OK) {
             //     creep.moveTo(mainSpawn);
             //     creep.usePower(PWR_GENERATE_OPS);
             // }
             creep.usePower(PWR_GENERATE_OPS);
-            
         } catch (e) {
             console.log(`${e}`);
             console.log(creep, " failed to run");

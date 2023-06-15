@@ -37,12 +37,12 @@ findStructureType = function (room, type) {
     return room.find(FIND_STRUCTURES).filter((s) => s.structureType == type);
 };
 
-isHighwayRoom = function(roomName) {
+isHighwayRoom = function (roomName) {
     let parsed = /^[WE]([0-9]+)[NS]([0-9]+)$/.exec(roomName);
-    return (parsed[1] % 10 === 0) || (parsed[2] % 10 === 0);
-}
+    return parsed[1] % 10 === 0 || parsed[2] % 10 === 0;
+};
 
-getMiningSpots = function(spot) {
+getMiningSpots = function (spot) {
     var terrain = spot.room.getTerrain();
     var localMiningSpots = 0;
     for (var i = spot.pos.x - 1; i <= spot.pos.x + 1; i++) {
@@ -53,30 +53,29 @@ getMiningSpots = function(spot) {
         }
     }
     return localMiningSpots;
-}
+};
 
-RemoveFromList = function(list, entry) {
+RemoveFromList = function (list, entry) {
     const index = list.indexOf(entry);
     if (index > -1) {
         list.splice(index, 1); // 2nd parameter means remove one item only
     }
-}
+};
 
-AddToList = function(list, entry) {
-    var ret = true
+AddToList = function (list, entry) {
+    var ret = true;
     if (list == undefined) {
-        console.log("can't add to undefined list")
-        return
+        console.log("can't add to undefined list");
+        return;
     }
-    for(var i of list) {
+    for (var i of list) {
         if (i.id === entry.id) {
-            console.log("already exists in list")
-            ret = false
+            console.log("already exists in list");
+            ret = false;
         }
     }
     if (ret == true) {
         list.push(entry);
     }
     return ret;
-}
-
+};

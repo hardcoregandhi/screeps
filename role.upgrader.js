@@ -14,13 +14,13 @@ global.roleUpgrader = {
     bodyLoop: [WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
     run: function (creep) {
-        Log(creep, "roleUpgrader")
+        Log(creep, "roleUpgrader");
 
         Log(creep, "run");
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
-            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName))
-            return
+            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
+            return;
         }
 
         if (creep.memory.upgrading == undefined) {
@@ -117,13 +117,10 @@ global.roleUpgrader = {
                     creep.memory.DIE = {};
                 }
             }
-            Log(creep, "upgrading controller")
+            Log(creep, "upgrading controller");
             if (creep.upgradeController(creep.room.controller) != OK) {
-                if (!creep.pos.inRangeTo(creep.room.controller, 4))
-                    moveToMultiRoomTarget(creep, creep.room.controller.pos, {range: 3});
-                else
-                    moveToMultiRoomTargetAvoidCreep(creep, creep.room.controller.pos, {range: 3});
-
+                if (!creep.pos.inRangeTo(creep.room.controller, 4)) moveToMultiRoomTarget(creep, creep.room.controller.pos, { range: 3 });
+                else moveToMultiRoomTargetAvoidCreep(creep, creep.room.controller.pos, { range: 3 });
             }
         } else {
             Log(creep, "retrieving");

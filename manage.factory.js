@@ -57,9 +57,9 @@ Object.assign(exports, {
 
 */
 
-asdf = function() {
-    mainStorage = Game.getObjectById(Memory.rooms["W17N1"].mainStorage)
-    factory = Game.getObjectById(Memory.rooms["W17N1"].structs.factory.id)
+asdf = function () {
+    mainStorage = Game.getObjectById(Memory.rooms["W17N1"].mainStorage);
+    factory = Game.getObjectById(Memory.rooms["W17N1"].structs.factory.id);
     for (c of Object.keys(COMMODITY_SCORE).reverse()) {
         // console.log(c);
         // console.log(JSON.stringify(COMMODITIES[c].components))
@@ -68,22 +68,23 @@ asdf = function() {
             // console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
             if (
                 mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
-                ( (COMMODITIES[c].level || 0) > (factory.level || 0) ) ||
-                ( COMMODITIES[c].level != undefined && factory.effects.length == 0 )
+                (COMMODITIES[c].level || 0) > (factory.level || 0) ||
+                (COMMODITIES[c].level != undefined && factory.effects.length == 0)
             ) {
                 ret = false;
             }
         }
         if (ret) {
-            console.log(`${c} is possible to make`)
+            console.log(`${c} is possible to make`);
         }
     }
-}
+};
 
-zxcv = function() {
-    mainStorage = Game.getObjectById(Memory.rooms["W17N1"].mainStorage)
-    factory = Game.getObjectById(Memory.rooms["W17N1"].structs.factory.id)
-    for (c of Object.keys(COMMODITY_SCORE).reverse()) { //reverse so we make the most valuable first
+zxcv = function () {
+    mainStorage = Game.getObjectById(Memory.rooms["W17N1"].mainStorage);
+    factory = Game.getObjectById(Memory.rooms["W17N1"].structs.factory.id);
+    for (c of Object.keys(COMMODITY_SCORE).reverse()) {
+        //reverse so we make the most valuable first
         var possible = true;
         for (subC in COMMODITIES[c].components) {
             // console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
@@ -91,77 +92,74 @@ zxcv = function() {
             // console.log(factory.store.getUsedCapacity(subC));
             if (
                 mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
-                ( (COMMODITIES[c].level || 0) > (factory.level || 0) ) ||
-                ( COMMODITIES[c].level != undefined && factory.effects.length == 0 )
+                (COMMODITIES[c].level || 0) > (factory.level || 0) ||
+                (COMMODITIES[c].level != undefined && factory.effects.length == 0)
             ) {
                 possible = false;
                 break;
             }
         }
         if (possible) {
-            console.log(`${c} is possible to make`)
-            ret = true
+            console.log(`${c} is possible to make`);
+            ret = true;
             break;
         }
     }
     return ret;
-}
+};
 
-factoryPossIgnoreEffects = function() {
-    mainStorage = Game.getObjectById(Memory.rooms["W17N1"].mainStorage)
-    factory = Game.getObjectById(Memory.rooms["W17N1"].structs.factory.id)
-    for (c of Object.keys(COMMODITY_SCORE).reverse()) { //reverse so we make the most valuable first
+factoryPossIgnoreEffects = function () {
+    mainStorage = Game.getObjectById(Memory.rooms["W17N1"].mainStorage);
+    factory = Game.getObjectById(Memory.rooms["W17N1"].structs.factory.id);
+    for (c of Object.keys(COMMODITY_SCORE).reverse()) {
+        //reverse so we make the most valuable first
         var possible = true;
         for (subC in COMMODITIES[c].components) {
             // console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
             // console.log(mainStorage.store.getUsedCapacity(subC));
             // console.log(factory.store.getUsedCapacity(subC));
-            if (
-                mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
-                ( (COMMODITIES[c].level || 0) > (factory.level || 0) )
-            ) {
+            if (mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] || (COMMODITIES[c].level || 0) > (factory.level || 0)) {
                 possible = false;
                 break;
             }
         }
         if (possible) {
-            console.log(`${c} is possible to make`)
-            ret = true
+            console.log(`${c} is possible to make`);
+            ret = true;
         }
     }
     return ret;
-}
+};
 
-getPossibleScore = function() {
-    total = 0; 
+getPossibleScore = function () {
+    total = 0;
     for (r of myRooms[Game.shard.name]) {
-        console.log(r)
+        console.log(r);
         for (s in Game.rooms[r].storage.store) {
-            console.log(s)
+            console.log(s);
             if (COMMODITY_SCORE[s]) {
-                console.log(`${s} is worth ${COMMODITY_SCORE[s]}`)
-                total += COMMODITY_SCORE[s] * Game.rooms[r].storage.store.getUsedCapacity(s); 
-            } 
+                console.log(`${s} is worth ${COMMODITY_SCORE[s]}`);
+                total += COMMODITY_SCORE[s] * Game.rooms[r].storage.store.getUsedCapacity(s);
+            }
         }
         if (Game.rooms[r].factory) {
             for (s in Game.rooms[r].factory.store) {
-                console.log(s)
+                console.log(s);
                 if (COMMODITY_SCORE[s]) {
-                    console.log(`${s} is worth ${COMMODITY_SCORE[s]}`)
-                    total += COMMODITY_SCORE[s] * Game.rooms[r].factory.store.getUsedCapacity(s); 
-                } 
-            } 
+                    console.log(`${s} is worth ${COMMODITY_SCORE[s]}`);
+                    total += COMMODITY_SCORE[s] * Game.rooms[r].factory.store.getUsedCapacity(s);
+                }
+            }
         }
         if (Game.rooms[r].terminal) {
-
             for (s in Game.rooms[r].terminal.store) {
-                console.log(s)
+                console.log(s);
                 if (COMMODITY_SCORE[s]) {
-                    console.log(`${s} is worth ${COMMODITY_SCORE[s]}`)
-                    total += COMMODITY_SCORE[s] * Game.rooms[r].terminal.store.getUsedCapacity(s); 
-                } 
-            } 
+                    console.log(`${s} is worth ${COMMODITY_SCORE[s]}`);
+                    total += COMMODITY_SCORE[s] * Game.rooms[r].terminal.store.getUsedCapacity(s);
+                }
+            }
         }
-    };
-    console.log(total)
-}
+    }
+    console.log(total);
+};

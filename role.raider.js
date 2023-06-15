@@ -18,9 +18,9 @@ global.roleRaider = {
         if (creep.memory.scav == undefined) {
             creep.memory.scav = false;
         }
-        
+
         creep.memory.noHeal = true;
-        
+
         Log(creep, creep.ticksToLive < 300 || creep.memory.healing == true);
         Log(creep, creep.memory.noHeal == undefined || creep.memory.noHeal != true);
 
@@ -39,7 +39,7 @@ global.roleRaider = {
             creep.memory.scav = false;
             creep.say("dropping");
         }
-        
+
         if (creep.memory.toDIE == true && creep.store.getUsedCapacity() == 0) {
             creep.memory.DIE = true;
             return;
@@ -65,7 +65,7 @@ global.roleRaider = {
             }
         } else {
             Log(creep, "scavin");
-            
+
             if (Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource] == undefined || Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].finished == true) {
                 creep.memory.toDIE = true;
                 creep.memory.scav = false;
@@ -81,15 +81,13 @@ global.roleRaider = {
                 //     creep.moveTo(exit);
                 //     return;
                 // }
-                // if (Game.rooms[creep.memory.targetRoomName] == undefined) 
-                    moveToRoom(creep, creep.memory.targetRoomName);
-                // else 
-                    // creep.moveTo(new RoomPosition(25, 25, creep.memory.targetRoomName));
+                // if (Game.rooms[creep.memory.targetRoomName] == undefined)
+                moveToRoom(creep, creep.memory.targetRoomName);
+                // else
+                // creep.moveTo(new RoomPosition(25, 25, creep.memory.targetRoomName));
             } else {
-                
-                
                 var droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
-                
+
                 if (creep.memory.power != undefined && creep.memory.power == true) {
                     var powerBanks = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
                     if (!powerBanks.length && droppedResource == null) {
@@ -101,28 +99,26 @@ global.roleRaider = {
                             return;
                         }
                     }
-                
                 }
-                
-                
+
                 if (creep.pickup(droppedResource) != OK) {
-                    creep.moveTo(droppedResource)
+                    creep.moveTo(droppedResource);
                 }
-                return
+                return;
                 // if (creep.memory.currentTarget == null) {
-                    
-                    // var resourceFilledStructs = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
-                    //     filter: (r) => r.store != undefined && r.store.getUsedCapacity()
-                    // });
-                    
-                    // if (creep.memory.currentTarget == null && resourceFilledStructs)
-                    //     creep.memory.currentTarget = resourceFilledStructs.id;
-                    // } 
-                    
-                    // if (creep.memory.currentTarget == null && droppedResource)
-                    //     creep.memory.currentTarget = droppedResource.id
-                    // if (creep.memory.currentTarget == null && creep.memory.power == undefined)
-                    //     creep.memory.DIE = true
+
+                // var resourceFilledStructs = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, {
+                //     filter: (r) => r.store != undefined && r.store.getUsedCapacity()
+                // });
+
+                // if (creep.memory.currentTarget == null && resourceFilledStructs)
+                //     creep.memory.currentTarget = resourceFilledStructs.id;
+                // }
+
+                // if (creep.memory.currentTarget == null && droppedResource)
+                //     creep.memory.currentTarget = droppedResource.id
+                // if (creep.memory.currentTarget == null && creep.memory.power == undefined)
+                //     creep.memory.DIE = true
                 // }
 
                 resourceFilledStructs = Game.getObjectById(creep.memory.currentTarget);

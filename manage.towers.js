@@ -15,7 +15,6 @@ getStructureHealLimit = function (room, structure) {
 
 getEmergencyStructureHealLimit = function (room, structure) {
     var wallHealPercent = 0.005;
-    
 
     switch (structure.structureType) {
         case STRUCTURE_ROAD:
@@ -67,7 +66,7 @@ global.runTowers = function (room) {
 };
 
 attack = function (room, towers) {
-    var allHostiles = room.find(FIND_HOSTILE_CREEPS).filter(creep => creep.owner.username != "KyberPrizrak");
+    var allHostiles = room.find(FIND_HOSTILE_CREEPS).filter((creep) => creep.owner.username != "KyberPrizrak");
     if (!allHostiles.length) {
         Memory.rooms[room.name].mainTower.enemyInRoom = false;
         return 0;
@@ -154,7 +153,7 @@ repair = function (room, towers) {
     var highlyDamagedStructs = room.find(FIND_STRUCTURES).filter((structure) => {
         return getEmergencyStructureHealLimit(room, structure) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos));
     });
-    
+
     if (highlyDamagedStructs.length) {
         highlyDamagedStructs.sort((a, b) => a.hits - b.hits);
         var mostDamagedStructure = highlyDamagedStructs[0];
@@ -202,21 +201,21 @@ repair = function (room, towers) {
     });
     if (customStructureSpecificPercentLimits.length) {
         customStructureSpecificPercentLimits.sort((a, b) => a.hits - b.hits);
-        
-        if (creepRoomMap.get(room.name+"eenergy") < 200000) {
-            customStructureSpecificPercentLimits = customStructureSpecificPercentLimits.filter(s => s.structureType != STRUCTURE_RAMPART)
+
+        if (creepRoomMap.get(room.name + "eenergy") < 200000) {
+            customStructureSpecificPercentLimits = customStructureSpecificPercentLimits.filter((s) => s.structureType != STRUCTURE_RAMPART);
             if (!customStructureSpecificPercentLimits.length) {
                 return;
             }
         }
-        
+
         for (var t of customStructureSpecificPercentLimits) {
             new RoomVisual().text(t.hits, t.pos, {
                 align: "right",
                 font: 0.2,
             });
         }
-        
+
         for (var tower of towers) {
             // console.log(tower)
             closestTarget = tower.pos.findClosestByRange(customStructureSpecificPercentLimits);

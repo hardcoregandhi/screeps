@@ -14,7 +14,7 @@ global.roleTrucker = {
     /** @param {Creep} creep **/
     run: function (creep) {
         // creep.memory.DIE = true
-        Log(creep, "run()")
+        Log(creep, "run()");
         if (creep.memory.returning == undefined) {
             creep.memory.returning = true;
         }
@@ -36,8 +36,8 @@ global.roleTrucker = {
         }
 
         if (!creep.memory.returning) {
-            Log(creep, "!returning")
-            
+            Log(creep, "!returning");
+
             // if (creep.room.name != creep.memory.targetRoomName) {
             //     creep.moveTo(creep.memory.targetRoomName)
             //     return
@@ -49,63 +49,63 @@ global.roleTrucker = {
                         visualizePathStyle: { stroke: "#ffaa00" },
                     });
                 }
-                return
+                return;
             } else {
                 if (creep.room.name != creep.memory.targetRoomName) {
-                    moveToMultiRoomTargetAvoidCreep(creep, new RoomPosition(25,25,creep.memory.targetRoomName))
-                    return
+                    moveToMultiRoomTargetAvoidCreep(creep, new RoomPosition(25, 25, creep.memory.targetRoomName));
+                    return;
                 }
                 if (creep.memory.targetCreep == undefined) {
-                    creeps = []
-                    allCreep = creep.room.find(FIND_MY_CREEPS)
-                    Log(creep, "l4upgrader")
+                    creeps = [];
+                    allCreep = creep.room.find(FIND_MY_CREEPS);
+                    Log(creep, "l4upgrader");
                     creeps = allCreep.filter((c) => {
-                        return c.memory.role == 'upgrader';
-                    })
-                    
+                        return c.memory.role == "upgrader";
+                    });
+
                     if (!creeps.length) {
-                        Log(creep, "l4harvester")
-    
+                        Log(creep, "l4harvester");
+
                         creeps = allCreep.filter((c) => {
-                            return c.memory.role == 'builder';
-                        })
+                            return c.memory.role == "builder";
+                        });
                     }
                     if (!creeps.length) {
-                        Log(creep, "l4harvester")
-    
+                        Log(creep, "l4harvester");
+
                         creeps = allCreep.filter((c) => {
-                            return c.memory.role == 'harvester';
-                        })
+                            return c.memory.role == "harvester";
+                        });
                     }
                     if (!creeps.length) {
-                        Log(creep, "l4all")
+                        Log(creep, "l4all");
                         creeps = allCreep.filter((c) => {
-                            return c.memory.role != 'trucker';
-                        })
+                            return c.memory.role != "trucker";
+                        });
                     }
                     if (creeps.length) {
-                        targetCreep = creep.pos.findClosestByRange(creeps)
-                        creep.memory.targetCreep = targetCreep.id
+                        targetCreep = creep.pos.findClosestByRange(creeps);
+                        creep.memory.targetCreep = targetCreep.id;
                     }
                 }
-                
-                targetCreep = Game.getObjectById(creep.memory.targetCreep)
+
+                targetCreep = Game.getObjectById(creep.memory.targetCreep);
                 if (targetCreep == null) {
                     delete creep.memory.targetCreep;
-                    return
+                    return;
                 }
-                Log(creep, targetCreep)
+                Log(creep, targetCreep);
                 // console.log(targetCreep)
                 if (creep.transfer(targetCreep, RESOURCE_ENERGY) != OK) {
-                    creep.moveTo(targetCreep)
+                    creep.moveTo(targetCreep);
                 }
             }
         } else {
-            Log(creep, "returning")
+            Log(creep, "returning");
 
             var target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (target.store.getUsedCapacity(RESOURCE_ENERGY) <= 50000) {
-                creep.memory.DIE = true
+                creep.memory.DIE = true;
             }
             if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {

@@ -72,25 +72,25 @@ global.roleEngineer = {
         var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
         var factory = Game.getObjectById(Memory.rooms[creep.room.name].structs.factory.id);
         var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
-        
+
         if (factory.store.getUsedCapacity() <= 1000) {
             creep.memory.emyptingFactory = false;
         }
         if (creep.memory.emyptingFactory == true) {
-            if(creep.memory.moving) {
-                for(const r in creep.store) {
-                Log(creep, "transferring " + r)
-                    if (creep.transfer(terminal, r) == ERR_NOT_IN_RANGE){
-                        Log(creep, "moving to terminal")
+            if (creep.memory.moving) {
+                for (const r in creep.store) {
+                    Log(creep, "transferring " + r);
+                    if (creep.transfer(terminal, r) == ERR_NOT_IN_RANGE) {
+                        Log(creep, "moving to terminal");
                         creep.moveTo(terminal);
                     }
                     return;
                 }
             } else {
-                for(const r in factory.store) {
-                Log(creep, "withdrawing " + r)
-                    if (creep.withdraw(factory, r) == ERR_NOT_IN_RANGE){
-                        Log(creep, "moving to factory")
+                for (const r in factory.store) {
+                    Log(creep, "withdrawing " + r);
+                    if (creep.withdraw(factory, r) == ERR_NOT_IN_RANGE) {
+                        Log(creep, "moving to factory");
                         creep.moveTo(factory);
                     }
                     return;
@@ -109,12 +109,12 @@ global.roleEngineer = {
                 }
             }
         }
-        
+
         var factoryIsSupplied = true;
-        for(subC in creep.memory.currentTarget.resourceSubcomponents) {
+        for (subC in creep.memory.currentTarget.resourceSubcomponents) {
             if (factory.store.getUsedCapacity(subC) < COMMODITIES[creep.memory.currentTarget.resource].components[subC]) {
                 factoryIsSupplied = false;
-                Log(creep, `factoryIsSupplied: ${factoryIsSupplied} needs ${subC}`)
+                Log(creep, `factoryIsSupplied: ${factoryIsSupplied} needs ${subC}`);
                 // if (creep.store.getUsedCapacity(subC) < COMMODITIES[creep.memory.currentTarget.resource].components[subC]) {
                 if (creep.store.getUsedCapacity(subC) == 0) {
                     if (mainStorage.store.getUsedCapacity(subC) != 0) {
@@ -128,16 +128,15 @@ global.roleEngineer = {
                 break;
             }
         }
-        
+
         if (factoryIsSupplied) {
-            ret = factory.produce(creep.memory.currentTarget.resource)
+            ret = factory.produce(creep.memory.currentTarget.resource);
             if (ret == OK) {
                 creep.memory.currentTarget = null;
             } else {
-                Log(creep, `Factory@${factory.pos} failed to produce ${creep.memory.currentTarget.resource}: ${ret}`)
+                Log(creep, `Factory@${factory.pos} failed to produce ${creep.memory.currentTarget.resource}: ${ret}`);
             }
         }
-        
     },
 };
 
@@ -148,8 +147,8 @@ function resourceIsPossible(creep, storage, factory, resource) {
         // console.log(storage.store.getUsedCapacity(subC));
         if (
             mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[resource].components[subC] ||
-            ( (COMMODITIES[resource].level || 0) > (factory.level || 0) ) ||
-            ( COMMODITIES[resource].level != undefined && factory.effects.length == 0 )
+            (COMMODITIES[resource].level || 0) > (factory.level || 0) ||
+            (COMMODITIES[resource].level != undefined && factory.effects.length == 0)
         ) {
             possible = false;
             break;
@@ -159,27 +158,28 @@ function resourceIsPossible(creep, storage, factory, resource) {
 }
 
 function findTargetResource(creep, storage, factory) {
-    var ret = false
-    for (c of Object.keys(COMMODITY_SCORE).reverse()) { //reverse so we make the most valuable first
+    var ret = false;
+    for (c of Object.keys(COMMODITY_SCORE).reverse()) {
+        //reverse so we make the most valuable first
         var possible = true;
         for (subC in COMMODITIES[c].components) {
             // console.log(`${subC} ${COMMODITIES[c].components[subC]}`);
             // console.log(storage.store.getUsedCapacity(subC));
             if (
                 mainStorage.store.getUsedCapacity(subC) + factory.store.getUsedCapacity(subC) < COMMODITIES[c].components[subC] ||
-                ( (COMMODITIES[c].level || 0) > (factory.level || 0) ) ||
-                ( COMMODITIES[c].level != undefined && factory.effects.length == 0 )
+                (COMMODITIES[c].level || 0) > (factory.level || 0) ||
+                (COMMODITIES[c].level != undefined && factory.effects.length == 0)
             ) {
                 possible = false;
                 break;
             }
         }
         if (possible) {
-            console.log(`${creep.room.name}: ${c} is possible to make`)
-            creep.memory.currentTarget = {}
-            creep.memory.currentTarget.resource = c
-            creep.memory.currentTarget.resourceSubcomponents = COMMODITIES[c].components
-            ret = true
+            console.log(`${creep.room.name}: ${c} is possible to make`);
+            creep.memory.currentTarget = {};
+            creep.memory.currentTarget.resource = c;
+            creep.memory.currentTarget.resourceSubcomponents = COMMODITIES[c].components;
+            ret = true;
             break;
         }
     }
@@ -187,9 +187,9 @@ function findTargetResource(creep, storage, factory) {
 }
 
 function DumpNonTargetInStorage(creep, storage, target) {
-    Log(creep, "DumpNonTargetInStorage")
+    Log(creep, "DumpNonTargetInStorage");
     for (const resourceType in creep.store) {
-        if (resourceType != target){
+        if (resourceType != target) {
             if (creep.transfer(storage, resourceType) != OK) {
                 creep.moveTo(storage);
             }
@@ -200,8 +200,9 @@ function DumpNonTargetInStorage(creep, storage, target) {
 }
 
 function WithdrawResourceFromStorage(creep, storage, resource, amount = null) {
-    Log(creep, "WithdrawResourceFromStorage")
-    if (creep.store.getUsedCapacity(resource) == 0 && creep.store.getFreeCapacity() == 0) { // or less than amount
+    Log(creep, "WithdrawResourceFromStorage");
+    if (creep.store.getUsedCapacity(resource) == 0 && creep.store.getFreeCapacity() == 0) {
+        // or less than amount
         DumpNonTargetInStorage(creep, storage, resource);
     } else if (creep.withdraw(storage, resource) != OK) {
         creep.moveTo(storage);
@@ -210,7 +211,7 @@ function WithdrawResourceFromStorage(creep, storage, resource, amount = null) {
 }
 
 function DeliverResourceToFactory(creep, factory, resource) {
-    Log(creep, "DeliverResourceToFactory")
+    Log(creep, "DeliverResourceToFactory");
     if (creep.transfer(factory, resource) != OK) {
         creep.moveTo(factory);
     }

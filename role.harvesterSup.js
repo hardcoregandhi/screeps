@@ -18,7 +18,7 @@ global.roleHarvSup = {
         if (creep.memory.returning == undefined) {
             creep.memory.returning = true;
         }
-        
+
         mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
         if (mainStorage == null) {
             console.log(`${creep}: mainStorage could not be found`);
@@ -46,17 +46,17 @@ global.roleHarvSup = {
         if (!creep.memory.returning) {
             Log(creep, "retrieving");
             if (healRoads(creep) == OK) {
-                Log(creep, "healing roads")
+                Log(creep, "healing roads");
                 return;
             }
 
             if (mainStorage == null) {
-                Log(creep, "falling back to building")
+                Log(creep, "falling back to building");
                 return roleBuilder.run(creep);
             }
 
             if (mainStorage.structureType == STRUCTURE_CONTAINER) {
-                if (mainStorage.hits < mainStorage.hitsMax /2) {
+                if (mainStorage.hits < mainStorage.hitsMax / 2) {
                     if (creep.repair(mainStorage) == ERR_NOT_IN_RANGE) {
                         moveToMultiRoomTarget(creep, mainStorage.pos);
                     }
@@ -67,12 +67,12 @@ global.roleHarvSup = {
             if (mainStorage.store.getFreeCapacity() > 50) {
                 for (const resourceType in creep.store) {
                     if (creep.transfer(mainStorage, resourceType) != OK) {
-                        Log(creep, creep.transfer(mainStorage, resourceType))
+                        Log(creep, creep.transfer(mainStorage, resourceType));
                         moveToMultiRoomTarget(creep, mainStorage);
                     }
                 }
             } else {
-                Log(creep, `${creep.name} falling back to other roles`)
+                Log(creep, `${creep.name} falling back to other roles`);
                 if ((creep.memory.noFallback == undefined || creep.memory.noFallback != true) && creep.body.includes(WORK)) {
                     fallbackToOtherRoles(creep);
                 }
@@ -93,22 +93,25 @@ global.roleHarvSup = {
 
             target = Game.getObjectById(creep.memory.targetContainer);
             if (target == null) {
-                delete creep.memory.targetContainer
+                delete creep.memory.targetContainer;
                 if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource] != undefined && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
-                    creep.memory.targetContainer = Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id
+                    creep.memory.targetContainer = Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id;
                     target = Game.getObjectById(creep.memory.targetContainer);
                 } else {
-                    console.log(`${creep} has lost it's target container. retiring.`)
-                    creep.memory.DIE = true
+                    console.log(`${creep} has lost it's target container. retiring.`);
+                    creep.memory.DIE = true;
                 }
             }
             if (creep.memory.targetSource == undefined) {
                 creep.memory.targetSource = target.pos.findClosestByRange(FIND_SOURCES).id;
             }
 
-            if (creep.room.controller.level >= 6 &&
-                (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource] != undefined && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined) && // mineral sources won't have a sources entry or link
-            target.store.getUsedCapacity() == 0) {
+            if (
+                creep.room.controller.level >= 6 &&
+                Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource] != undefined &&
+                Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined && // mineral sources won't have a sources entry or link
+                target.store.getUsedCapacity() == 0
+            ) {
                 creep.memory.DIE = {};
             }
 
@@ -121,8 +124,7 @@ global.roleHarvSup = {
                 }
             } else {
                 Log(creep, "moving straight to target");
-                if(!creep.pos.isNearTo(target))
-                    moveToMultiRoomTarget(creep, target);
+                if (!creep.pos.isNearTo(target)) moveToMultiRoomTarget(creep, target);
             }
         }
     },

@@ -29,7 +29,7 @@ global.healRoads = function (creep) {
             return creep.repair(damagedStructs[0]);
         }
     }
-    return -1
+    return -1;
     //END Heal Roads
 };
 
@@ -52,23 +52,22 @@ global.pickupNearby = function (creep) {
 };
 
 global.returnToHeal = function (creep, room) {
-    Log(creep, "returnToHeal")
+    Log(creep, "returnToHeal");
 
     if (creep.ticksToLive >= 1400) {
         delete creep.memory.timeStartingRenew;
         creep.memory.healing = false;
         return false;
     }
-    
+
     if (Memory.rooms[creep.memory.baseRoomName].mainSpawn == undefined) {
         return false;
     }
-    
+
     if (creep.memory.timeStartingRenew == undefined) {
-        creep.memory.timeStartingRenew = Game.time
+        creep.memory.timeStartingRenew = Game.time;
     }
-    
-    
+
     if (Game.rooms[room].energyAvailable < 50) {
         return false;
     }
@@ -82,18 +81,18 @@ global.returnToHeal = function (creep, room) {
 
         if (creep.pos.isNearTo(spawn)) {
             // console.log(`${creep.name} setting ${spawn.name} renewRequested: true` )
-            lowestWaitListSpawn = null
-            lowestWaitListLength = 99
+            lowestWaitListSpawn = null;
+            lowestWaitListLength = 99;
             _.forEach(Memory.rooms[creep.room.name].spawns, (s) => {
                 // console.log(JSON.stringify(s))
                 if (Object.keys(s.creeps).length < lowestWaitListLength) {
-                    lowestWaitListLength = Object.keys(s.creeps).length
+                    lowestWaitListLength = Object.keys(s.creeps).length;
                     lowestWaitListSpawn = Game.getObjectById(s.id);
                 }
-            })
+            });
             // console.log(`lowestWaitListLength: ${lowestWaitListLength}`)
             // console.log(`lowestWaitListSpawn: ${lowestWaitListSpawn}`)
-            spawn = lowestWaitListSpawn
+            spawn = lowestWaitListSpawn;
             Memory.rooms[creep.room.name].spawns[spawn.name].renewRequested = true;
             Memory.rooms[creep.room.name].spawns[spawn.name].creeps[creep.id] = true;
         }
@@ -155,27 +154,30 @@ global.interShardMove = function (creep) {
     }
 };
 
-global.EnemyCheckFleeRequestBackup = function(creep) {
+global.EnemyCheckFleeRequestBackup = function (creep) {
+    Log(creep, "EnemyCheckFleeRequestBackup");
 
-    Log(creep, "EnemyCheckFleeRequestBackup")
-    
     if (isHighwayRoom(creep.room.name)) {
-        return
+        return;
     }
 
     if (Game.rooms[creep.memory.targetRoomName] != undefined) {
         var invaderCore = Game.rooms[creep.memory.targetRoomName].find(FIND_HOSTILE_STRUCTURES).filter((structure) => {
-                return structure.structureType == STRUCTURE_INVADER_CORE;
-            });
-        
-        var {meleeCount, rangedCount} = getAttackPartCounts(Game.rooms[creep.memory.targetRoomName])
-        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS)
-        if ((meleeCount || rangedCount) && hostileCreeps.length && hostileCreeps[0].owner.username != "KyberPrizrak" || invaderCore.length ) {
+            return structure.structureType == STRUCTURE_INVADER_CORE;
+        });
+
+        var { meleeCount, rangedCount } = getAttackPartCounts(Game.rooms[creep.memory.targetRoomName]);
+        var hostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);
+        if (((meleeCount || rangedCount) && hostileCreeps.length && hostileCreeps[0].owner.username != "KyberPrizrak") || invaderCore.length) {
             try {
-                if (meleeCount > rangedCount || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) < 1) {
-                    requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount+rangedCount);
+                if (
+                    meleeCount > rangedCount ||
+                    creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) == undefined ||
+                    creepRoomMap.get(creep.memory.baseRoomName + "soldierTarget" + creep.memory.targetRoomName) < 1
+                ) {
+                    requestSoldier(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount + rangedCount);
                 } else {
-                    requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount+rangedCount);
+                    requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount + rangedCount);
                 }
             } catch (e) {
                 console.log(`${creep}: ${e}`);
@@ -193,13 +195,13 @@ global.EnemyCheckFleeRequestBackup = function(creep) {
             creep.memory.fleeing = false;
         }
     }
-}
+};
 
-global.getAttackPartCounts = function(room) {
-    var hostileCreeps = room.find(FIND_HOSTILE_CREEPS)
+global.getAttackPartCounts = function (room) {
+    var hostileCreeps = room.find(FIND_HOSTILE_CREEPS);
     var hostileAttackCreeps = hostileCreeps.filter((c) => {
-            return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
-        });
+        return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
+    });
     rangedCount = 0;
     meleeCount = 0;
     if (hostileAttackCreeps.length) {
@@ -234,10 +236,10 @@ global.getAttackPartCounts = function(room) {
     return {
         meleeCount: meleeCount,
         rangedCount: rangedCount,
-    }
-}
+    };
+};
 
-global.TransferAll = function(creep, storage) {
+global.TransferAll = function (creep, storage) {
     Log(creep, "TransferAll");
     for (const resourceType in creep.store) {
         if (creep.transfer(storage, resourceType) != OK) {
@@ -246,4 +248,4 @@ global.TransferAll = function(creep, storage) {
             return;
         }
     }
-}
+};

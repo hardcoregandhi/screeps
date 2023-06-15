@@ -58,7 +58,7 @@ global.roleGunner = {
                     if (hostileCreeps.length > 2 || allHostileCreeps.length > 4) {
                         cloneCreep(creep.name);
                     }
-        
+
                     var closestHostile = creep.pos.findClosestByRange(hostileCreeps);
                     // console.log(closestHostile)
                     if (closestHostile) {
@@ -66,11 +66,11 @@ global.roleGunner = {
                             color: "red",
                             radius: 1,
                         });
-                        if(creep.pos.inRangeTo(target, 2)) {
-                            var direction = creep.pos.getDirectionTo(target)
-                            direction = direction >= 5 ? direction - 4 : direction + 4
-                            creep.move(direction)
-                            creep.rangedAttack(closestHostile)
+                        if (creep.pos.inRangeTo(target, 2)) {
+                            var direction = creep.pos.getDirectionTo(target);
+                            direction = direction >= 5 ? direction - 4 : direction + 4;
+                            creep.move(direction);
+                            creep.rangedAttack(closestHostile);
                         } else {
                             if (creep.rangedAttack(closestHostile) != OK) {
                                 creep.moveTo(closestHostile, { maxRooms: 1 });
@@ -81,20 +81,19 @@ global.roleGunner = {
                 }
             }
         }
-        
-        var invaderCore =
-                creep.room.find(FIND_HOSTILE_STRUCTURES, {
-                    filter: (s) => {
-                        return s.structureType == STRUCTURE_INVADER_CORE;
-                    },
-                });
-                
+
+        var invaderCore = creep.room.find(FIND_HOSTILE_STRUCTURES, {
+            filter: (s) => {
+                return s.structureType == STRUCTURE_INVADER_CORE;
+            },
+        });
+
         if (invaderCore.length) {
             if (creep.rangedAttack(invaderCore[0]) != OK) {
                 creep.heal(creep);
                 if (!creep.pos.inRangeTo(invaderCore[0], 2)) creep.moveTo(invaderCore[0], { maxRooms: 1 });
             }
-            return
+            return;
         }
 
         // if (creep.ticksToLive < 500) {

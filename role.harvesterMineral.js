@@ -9,7 +9,6 @@ global.roleHarvesterMineral = {
     bodyLoop: [WORK, WORK, WORK, CARRY, MOVE],
     /** @param {Creep} creep **/
     run: function (creep, focusHealing) {
-        
         if (creep.memory.mining == undefined) {
             creep.memory.mining = true;
         }
@@ -24,9 +23,9 @@ global.roleHarvesterMineral = {
             // console.log(creep.name, scoopSize)
             creep.memory.scoopSize = scoopSize;
         }
-        
+
         if (creep.memory.targetSource == undefined) {
-            console.log(`${creep.name} is awaiting a targetSource`)
+            console.log(`${creep.name} is awaiting a targetSource`);
         }
 
         if (creep.memory.mining && creep.store.getFreeCapacity() < creep.memory.scoopSize) {
@@ -53,7 +52,7 @@ global.roleHarvesterMineral = {
             targetSource = Game.getObjectById(creep.memory.targetSource);
             if (targetSource.ticksToRegeneration) {
                 creep.memory.DIE = true;
-                return
+                return;
             }
             if (creep.harvest(targetSource) != OK) {
                 creep.moveTo(targetSource, {
@@ -68,19 +67,22 @@ global.roleHarvesterMineral = {
                 creep.memory.targetContainer = target.id;
                 Log(creep, "local ccont found");
                 Log(creep, target);
-                
-                if (target.store.getFreeCapacity() == 0 && Memory.rooms[creep.memory.baseRoomName].mineral[creep.memory.targetSource].container.targettedBy == 0 && creepRoomMap.get(creep.memory.baseRoomName+"harvesterMineralSupportTarget"+creep.memory.targetSource) == undefined) {
+
+                if (
+                    target.store.getFreeCapacity() == 0 &&
+                    Memory.rooms[creep.memory.baseRoomName].mineral[creep.memory.targetSource].container.targettedBy == 0 &&
+                    creepRoomMap.get(creep.memory.baseRoomName + "harvesterMineralSupportTarget" + creep.memory.targetSource) == undefined
+                ) {
                     spawnCreep(roleHarvesterMineralSupport, "auto", { memory: { targetContainer: target.id, noHeal: true, targetSource: creep.memory.targetSource } }, creep.memory.baseRoomName);
                 }
-                
+
                 for (var type in creep.store) {
                     if (creep.transfer(target, type) != OK) {
                         moveToMultiRoomTarget(creep, target);
                     }
-                    return
+                    return;
                 }
             } else {
-                
             }
 
             mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
@@ -90,17 +92,17 @@ global.roleHarvesterMineral = {
                     if (creep.transfer(mainStorage, type) == ERR_NOT_IN_RANGE) {
                         moveToMultiRoomTarget(creep, mainStorage);
                     }
-                    return
+                    return;
                 }
             }
             Log(creep, "mainStorage not found");
-            console.log(`${creep.name} can't find mainStorage`)
+            console.log(`${creep.name} can't find mainStorage`);
         }
     },
 };
 
 function fallbackToOtherRoles(creep) {
-    Log(creep, "fallbackToOtherRoles")
+    Log(creep, "fallbackToOtherRoles");
     var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
     if (targets.length) {
         roleBuilder.run(creep);

@@ -93,19 +93,18 @@ global.roleBuilderExt = {
             } else {
                 creep.say("no targets");
                 creep.memory.DIE = true;
-                console.log(`${creep.name} has completed their work. Retiring.`)
+                console.log(`${creep.name} has completed their work. Retiring.`);
                 return;
                 // roleBuilder.run(creep);
             }
         } else {
             Log(creep, 7);
-            
+
             if (Game.rooms[creep.memory.targetRoomName] != null) {
-            
                 var containers = Game.rooms[creep.memory.targetRoomName].find(FIND_STRUCTURES).filter((structure) => {
                     return structure.structureType == STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 500;
                 });
-    
+
                 if (containers.length) {
                     Log(creep, 71);
                     var closest = creep.pos.findClosestByPath(containers);

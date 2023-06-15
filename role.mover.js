@@ -118,7 +118,7 @@ global.roleMover = {
                     Log(creep, "transitioning");
                     creep.memory.transitioning = true;
                     if (mainStorage.store.getUsedCapacity() == 0) {
-                        roomRefreshMap[creep.room.name] = Game.time -1
+                        roomRefreshMap[creep.room.name] = Game.time - 1;
                     }
                     for (const resourceType in mainStorage.store) {
                         if (creep.withdraw(mainStorage, resourceType) != OK) {
@@ -155,7 +155,7 @@ global.roleMover = {
                 });
                 if (towers.length) {
                     Log(creep, 6);
-                    Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.push(towers[0].id)
+                    Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.push(towers[0].id);
                     if (creep.transfer(towers[0], RESOURCE_ENERGY) != OK) {
                         creep.moveTo(towers[0]);
                     }
@@ -187,11 +187,12 @@ global.roleMover = {
 
             if (creep.memory.currentTarget != null) {
                 currentTarget = Game.getObjectById(creep.memory.currentTarget);
-                if (currentTarget == null || currentTarget.store.getFreeCapacity(RESOURCE_ENERGY) == 0 ) {
+                if (currentTarget == null || currentTarget.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
                     creep.memory.currentTarget = null;
                 } else {
-                    Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.push(creep.memory.currentTarget)
-                    if (currentTarget.structureType == STRUCTURE_SPAWN && Memory.rooms[creep.room.name].mainSpawn.refilling != false && Memory.rooms[creep.room.name].mainSpawn.refilling != creep.name) { // should be removed if room.creeps.movers.currentTargets works
+                    Memory.rooms[creep.memory.baseRoomName].creeps.movers.currentTargets.push(creep.memory.currentTarget);
+                    if (currentTarget.structureType == STRUCTURE_SPAWN && Memory.rooms[creep.room.name].mainSpawn.refilling != false && Memory.rooms[creep.room.name].mainSpawn.refilling != creep.name) {
+                        // should be removed if room.creeps.movers.currentTargets works
                         creep.memory.currentTarget = null;
                     } else {
                         for (const resourceType in creep.store) {

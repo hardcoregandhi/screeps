@@ -1,7 +1,7 @@
 creepReduction = function (r) {
     // return 0;
     if (isHighwayRoom(r.name) || (Memory.rooms[r.name].parentRoom == undefined && r.controller.level < 4)) {
-        return
+        return;
     }
     if (Memory.rooms[r.name].mainSpawn != undefined) {
         mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
@@ -30,29 +30,33 @@ creepReduction = function (r) {
                     return p.type == WORK ? (previous += 1) : previous;
                 }, 0);
             } else {
-                RemoveFromList(s.targettedByList, creepName)
+                RemoveFromList(s.targettedByList, creepName);
             }
             creepMiningPartsMap.push([creepName, creepMiningParts]);
             totalMiningParts += creepMiningParts;
         });
         creepMiningPartsMap.sort((e1, e2) => {
-            if(e1[1] != e2[1]) {
-                e1[1] < e2[1]
+            if (e1[1] != e2[1]) {
+                e1[1] < e2[1];
             } else {
-                Game.creeps[e1[0]].ticksToLive < Game.creeps[e2[0]].ticksToLive
+                Game.creeps[e1[0]].ticksToLive < Game.creeps[e2[0]].ticksToLive;
             }
         });
         // for (var i = creepMiningPartsMap.length; i > 0; i-=1) {
         while (totalMiningParts > 7 && totalMiningParts - creepMiningPartsMap[creepMiningPartsMap.length - 1][1] >= 7) {
             // kill some excess
             if (totalMiningParts - creepMiningPartsMap[creepMiningPartsMap.length - 1][1] >= 7 && creepMiningPartsMap.length) {
-                console.log(`${r.name} ${s.id.substr(-3)} has tar:7 act:${totalMiningParts} reducing totalMiningParts to ${totalMiningParts - creepMiningPartsMap[creepMiningPartsMap.length - 1][1]} by killing ${creepMiningPartsMap[creepMiningPartsMap.length - 1][0]}`);
+                console.log(
+                    `${r.name} ${s.id.substr(-3)} has tar:7 act:${totalMiningParts} reducing totalMiningParts to ${totalMiningParts - creepMiningPartsMap[creepMiningPartsMap.length - 1][1]} by killing ${
+                        creepMiningPartsMap[creepMiningPartsMap.length - 1][0]
+                    }`
+                );
                 Memory.creeps[creepMiningPartsMap[creepMiningPartsMap.length - 1][0]].DIE = true;
                 totalMiningParts -= creepMiningPartsMap[creepMiningPartsMap.length - 1][1];
-                RemoveFromList(s.targettedByList, creepMiningPartsMap[creepMiningPartsMap.length - 1][0])
+                RemoveFromList(s.targettedByList, creepMiningPartsMap[creepMiningPartsMap.length - 1][0]);
                 creepMiningPartsMap.pop();
             }
-            console.log(`${r.name} ${s.id.substr(-3)} now has tar:7 act:${totalMiningParts} and ${creepMiningPartsMap.length} or ${[...creepMiningPartsMap].length}`)
+            console.log(`${r.name} ${s.id.substr(-3)} now has tar:7 act:${totalMiningParts} and ${creepMiningPartsMap.length} or ${[...creepMiningPartsMap].length}`);
         }
         s.currentMiningParts = totalMiningParts;
 
@@ -69,7 +73,7 @@ creepReduction = function (r) {
                     creepCarryPartsMap.push([creepName, creepCarryParts]);
                     totalCarryParts += creepCarryParts;
                 } else {
-                    RemoveFromList(s.container.targettedByList, creepName)
+                    RemoveFromList(s.container.targettedByList, creepName);
                 }
             });
             if (creepRoomMap.get(`${parentRoom}moverExtRepairTarget${s.id}`) != undefined) {
@@ -81,17 +85,17 @@ creepReduction = function (r) {
             totalCarryAmount = totalCarryParts * 50;
             container = Game.getObjectById(s.container.id);
             if (s.container.targetCarryParts == undefined) {
-                console.log(`calculating targetCarryParts for ${s.id.substr(-3)}`)
-                ret = calcTargetCarryParts(container, mainSpawn, s.container)
+                console.log(`calculating targetCarryParts for ${s.id.substr(-3)}`);
+                ret = calcTargetCarryParts(container, mainSpawn, s.container);
                 if (ret != -1) {
-                    s.container.targetCarryParts = ret
+                    s.container.targetCarryParts = ret;
                 } else {
-                    console.log(`failed to calc targetCarryParts for ${s.id.substr(-3)}, cant continue`)
-                    return
+                    console.log(`failed to calc targetCarryParts for ${s.id.substr(-3)}, cant continue`);
+                    return;
                 }
             }
             targetCarryParts = s.container.targetCarryParts;
-            
+
             creepCarryPartsMap.sort((e1, e2) => e1[1] < e2[1]);
             // console.log(`targetCarryParts ${targetCarryParts}`);
             // console.log(`totalCarryParts ${totalCarryParts}`);
@@ -99,23 +103,27 @@ creepReduction = function (r) {
             while (totalCarryParts > targetCarryParts && targetCarryParts != 0 && totalCarryParts - creepCarryPartsMap[creepCarryPartsMap.length - 1][1] >= targetCarryParts) {
                 // kill some excess
                 if (totalCarryParts - creepCarryPartsMap[creepCarryPartsMap.length - 1][1] >= targetCarryParts) {
-                    console.log(`${r.name} ${s.id.substr(-3)} has tar:${targetCarryParts} act:${totalCarryParts} reducing totalCarryParts to ${totalCarryParts - creepCarryPartsMap[creepCarryPartsMap.length - 1][1]} by killing ${creepCarryPartsMap[creepCarryPartsMap.length - 1][0]}`);
+                    console.log(
+                        `${r.name} ${s.id.substr(-3)} has tar:${targetCarryParts} act:${totalCarryParts} reducing totalCarryParts to ${totalCarryParts - creepCarryPartsMap[creepCarryPartsMap.length - 1][1]} by killing ${
+                            creepCarryPartsMap[creepCarryPartsMap.length - 1][0]
+                        }`
+                    );
                     Memory.creeps[creepCarryPartsMap[creepCarryPartsMap.length - 1][0]].DIE = true;
-                    RemoveFromList(s.container.targettedByList, creepCarryPartsMap[creepCarryPartsMap.length - 1][0])
+                    RemoveFromList(s.container.targettedByList, creepCarryPartsMap[creepCarryPartsMap.length - 1][0]);
                     if (Game.creeps[creepCarryPartsMap[creepCarryPartsMap.length - 1][0]].spawning) {
-                        console.log(`killing a spawning creep ${creepCarryPartsMap[creepCarryPartsMap.length - 1][0]} ${creepCarryPartsMap[creepCarryPartsMap.length - 1][1]} totalCarryParts:${totalCarryParts} targetCarryParts:${targetCarryParts}`)
+                        console.log(`killing a spawning creep ${creepCarryPartsMap[creepCarryPartsMap.length - 1][0]} ${creepCarryPartsMap[creepCarryPartsMap.length - 1][1]} totalCarryParts:${totalCarryParts} targetCarryParts:${targetCarryParts}`);
                     }
                     totalCarryParts -= creepCarryPartsMap[creepCarryPartsMap.length - 1][1];
                     creepCarryPartsMap.pop();
                 }
-                console.log(`${r.name} ${s.id.substr(-3)}.container now has tar:${targetCarryParts} act:${totalCarryParts} and ${creepCarryPartsMap.length} or ${[...creepCarryPartsMap].length}`)
+                console.log(`${r.name} ${s.id.substr(-3)}.container now has tar:${targetCarryParts} act:${totalCarryParts} and ${creepCarryPartsMap.length} or ${[...creepCarryPartsMap].length}`);
             }
             s.container.currentCarryParts = totalCarryParts;
         }
     });
 };
 
-global.calcTargetCarryParts = function(container, mainSpawn, containerMemory) {
+global.calcTargetCarryParts = function (container, mainSpawn, containerMemory) {
     try {
         pathLength = PathFinder.search(container.pos, mainSpawn.pos).path.length;
         containerMemory.distanceToSpawn = pathLength;
@@ -124,11 +132,11 @@ global.calcTargetCarryParts = function(container, mainSpawn, containerMemory) {
         containerMemory.roundTripEnergyAccumulation = roundTripEnergyAccumulation;
 
         return Math.ceil(roundTripEnergyAccumulation / 50);
-    } catch(e) {
-        console.log(`calcTargetCarryParts failed: ${e}`)
-        return -1
+    } catch (e) {
+        console.log(`calcTargetCarryParts failed: ${e}`);
+        return -1;
     }
-}
+};
 
 reduceHarvesters = function () {};
 

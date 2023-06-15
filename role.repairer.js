@@ -14,7 +14,6 @@ getRepairerStructureHealLimit = function (room, structure, wallHealPercent) {
     }
 };
 
-
 global.roleRepairer = {
     name: "repairer",
     // prettier-ignore
@@ -31,7 +30,7 @@ global.roleRepairer = {
     roleMemory: { memory: {} },
     /** @param {Creep} creep **/
     run: function (creep) {
-        Log(creep, "roleRepairer")
+        Log(creep, "roleRepairer");
         if (creep.memory.interShard) {
             interShardMove(creep);
             return;
@@ -54,7 +53,7 @@ global.roleRepairer = {
         }
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
-            Log(creep, "returning home.")
+            Log(creep, "returning home.");
             moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
@@ -62,27 +61,27 @@ global.roleRepairer = {
         if (creep.memory.repairing && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.repairing = false;
             creep.say("🔄 harvest");
-            Log(creep, "setting repairing false")
+            Log(creep, "setting repairing false");
         }
         if (!creep.memory.repairing && creep.store.getFreeCapacity() == 0) {
             creep.memory.repairing = true;
             creep.say("🚧 build");
-            Log(creep, "setting repairing true")
+            Log(creep, "setting repairing true");
         }
 
         if (creep.memory.repairing) {
-            Log(creep, "repairing")
+            Log(creep, "repairing");
 
             if (creep.memory.currentTarget != null) {
                 target = Game.getObjectById(creep.memory.currentTarget);
-                Log(creep, `currentTarget ${creep.memory.currentTarget}: ${target}`)
-                Log(creep, `target.hits: ${target.hits}: getRepairerStructureHealLimit: ${getRepairerStructureHealLimit(creep.room, target)}`)
+                Log(creep, `currentTarget ${creep.memory.currentTarget}: ${target}`);
+                Log(creep, `target.hits: ${target.hits}: getRepairerStructureHealLimit: ${getRepairerStructureHealLimit(creep.room, target)}`);
                 if (target != undefined && getRepairerStructureHealLimit(creep.room, target, creep.memory.wallHealPercent)) {
                     if (creep.repair(target) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
                     }
                 } else {
-                    Log(creep, `currentTarget is now null`)
+                    Log(creep, `currentTarget is now null`);
                     creep.memory.currentTarget = null;
                 }
             }
@@ -90,17 +89,16 @@ global.roleRepairer = {
                 var customStructureSpecificPercentLimits = creep.room.find(FIND_STRUCTURES).filter((structure) => {
                     return getRepairerStructureHealLimit(creep.room, structure, creep.memory.wallHealPercent) && (Game.flags.DISMANTLE == undefined || !Game.flags.DISMANTLE.pos.isEqualTo(structure.pos));
                 });
-                Log(creep, customStructureSpecificPercentLimits)
+                Log(creep, customStructureSpecificPercentLimits);
                 if (customStructureSpecificPercentLimits.length) {
-                    Log(creep, "repair targets found:" + customStructureSpecificPercentLimits)
-                    creep.memory.currentTarget = creep.pos.findClosestByRange(customStructureSpecificPercentLimits).id
+                    Log(creep, "repair targets found:" + customStructureSpecificPercentLimits);
+                    creep.memory.currentTarget = creep.pos.findClosestByRange(customStructureSpecificPercentLimits).id;
                 } else {
-                    creep.memory.wallHealPercent = creep.memory.wallHealPercent + 0.01
+                    creep.memory.wallHealPercent = creep.memory.wallHealPercent + 0.01;
                 }
             }
-                
         } else {
-            Log(creep, "!repairing")
+            Log(creep, "!repairing");
 
             mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
             link_controller = Game.getObjectById(Memory.rooms[creep.room.name].link_controller);
@@ -110,12 +108,12 @@ global.roleRepairer = {
                 Log(creep, "using mainStorage");
                 if (link_controller && creep.pos.getRangeTo(link_controller) < creep.pos.getRangeTo(mainStorage) && creep.room.controller.level == 8) {
                     if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
-                            // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                            creep.moveTo(link_controller, {
-                                visualizePathStyle: { stroke: "#ffaa00" },
-                                maxRooms: 0,
-                            });
-                        }
+                        // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
+                        creep.moveTo(link_controller, {
+                            visualizePathStyle: { stroke: "#ffaa00" },
+                            maxRooms: 0,
+                        });
+                    }
                 } else {
                     if (mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity() * 0.01) {
                         if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
@@ -132,7 +130,6 @@ global.roleRepairer = {
                 }
                 return;
             }
-
         }
     },
 };

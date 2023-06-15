@@ -24,7 +24,6 @@ global.roleHealerChase = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-
         // creep.say('🏳️');
         // creep.memory.return = true;
 

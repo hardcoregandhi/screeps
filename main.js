@@ -186,7 +186,7 @@ try {
 module.exports.loop = function () {
     profiler.wrap(function () {
         // Cleanup
-        
+
         try {
             deadCreepCleanup();
         } catch (e) {
@@ -225,7 +225,7 @@ module.exports.loop = function () {
             resetSourceContainerTracking();
             nextCreepRoomMapRefreshTime = Game.time + nextCreepRoomMapRefreshInterval;
         }
-        resetSourceContainerTracking()
+        resetSourceContainerTracking();
 
         if (refreshRoomTrackingNextTick) {
             console.log("refreshRoomTrackingNextTick is true. Refreshing forced.");
@@ -261,8 +261,8 @@ module.exports.loop = function () {
             // Must be ran after creeps that will have set healingRequested
             myRooms[Game.shard.name].forEach((r) => {
                 room = Game.rooms[r];
-                try{
-                runTowers(room);
+                try {
+                    runTowers(room);
                 } catch {}
             });
         } catch (e) {
@@ -275,7 +275,7 @@ module.exports.loop = function () {
         } catch (e) {
             console.log(`runRenew() failed: ${e}`);
         }
-        
+
         try {
             // Must be after renew so healing can cancel spawns
             runSpawns();
@@ -288,7 +288,7 @@ module.exports.loop = function () {
         } catch (e) {
             console.log(`runBaseBuilder() failed: ${e}`);
         }
-        
+
         // try {
         //     roomExpansion();
         // } catch (e) {
@@ -300,7 +300,6 @@ module.exports.loop = function () {
         } catch (e) {
             console.log(`drawGUI() failed: ${e}`);
         }
-        
 
         // runRoads();
 

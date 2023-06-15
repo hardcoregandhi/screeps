@@ -1,73 +1,75 @@
 global.runBaseBuilder = function () {
-    for (var roomName of myRooms[Game.shard.name]) { try{
-        r = Game.rooms[roomName];
-        if (r == undefined) {
-            log.error("runBaseBuilder: Couldn't retrieve room to upgrade it");
-            continue;
-        }
-        if (r.controller.level == 1) continue;
-
-        if (Memory.rooms[roomName].mainSpawn == undefined) return;
-
-        var currentRoomBuildingLevel = Memory.rooms[roomName].currentRoomBuildingLevel;
-        if (Memory.rooms[roomName].building[r.controller.level].isComplete == true) continue;
-
-        var currentStage = Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage;
-        stageComplete = true;
-
-        baseCenter = Memory.rooms[roomName].mainSpawn.pos;
-
-        if (baseData[currentRoomBuildingLevel] == undefined || baseData[currentRoomBuildingLevel].stages == undefined) continue;
-
-        for (var s in baseData[currentRoomBuildingLevel].stages[currentStage]) {
-            baseData[currentRoomBuildingLevel].stages[currentStage].forEach((subStageBuildingTypeSet) => {
-                subStageBuildingTypeSet.pos.forEach((offsetPos) => {
-                    var realX = baseCenter.x + offsetPos.x;
-                    var realY = baseCenter.y + offsetPos.y;
-                    r.visual.circle(realX, realY, { color: "green", lineStyle: "dashed" });
-                    const look = new RoomPosition(realX, realY, roomName).lookFor(LOOK_STRUCTURES);
-                    if (look.length) {
-                        if (look[0].structureType == STRUCTURE_ROAD && look[0].structureType != subStageBuildingTypeSet.buildingType) {
-                            look[0].destroy();
-                            look.pop();
-                        }
-                        if (look[0].structureType == subStageBuildingTypeSet.buildingType) {
-                            return;
-                        }
-                    }
-                    const isWall = new Room.Terrain(roomName).get(realX, realY) == TERRAIN_MASK_WALL;
-                    if (!isWall && !look.length) {
-                        var ret = r.createConstructionSite(realX, realY, subStageBuildingTypeSet.buildingType);
-                        if (ret == ERR_RCL_NOT_ENOUGH) {
-                            console.log("ERR_RCL_NOT_ENOUGH");
-                        } else {
-                            stageComplete = false;
-                        }
-                    }
-                });
-            });
-        }
-
-        if (stageComplete == true) {
-            Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage++;
-            if (Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage > baseData[r.controller.level].stages.length) {
-                // this will only be hit once on the pass that all building is completed
-                if (r.controller.level == 3) {
-                    buildRoadsToSources(r);
-                }
-                if (r.controller.level == 5) {
-                    buildControllerRampartSurroundings(r);
-                    buildRampartSurroundings(r);
-                    queueSpawnCreep(roleRepairer, null, null, roomName)
-                }
-                if (r.controller.level == 6) {
-                    buildExtractor(r);
-                }
-                Memory.rooms[roomName].building[currentRoomBuildingLevel].isComplete = true;
-                Memory.rooms[roomName].currentRoomBuildingLevel++;
+    for (var roomName of myRooms[Game.shard.name]) {
+        try {
+            r = Game.rooms[roomName];
+            if (r == undefined) {
+                log.error("runBaseBuilder: Couldn't retrieve room to upgrade it");
+                continue;
             }
-        }
-    } catch {} }
+            if (r.controller.level == 1) continue;
+
+            if (Memory.rooms[roomName].mainSpawn == undefined) return;
+
+            var currentRoomBuildingLevel = Memory.rooms[roomName].currentRoomBuildingLevel;
+            if (Memory.rooms[roomName].building[r.controller.level].isComplete == true) continue;
+
+            var currentStage = Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage;
+            stageComplete = true;
+
+            baseCenter = Memory.rooms[roomName].mainSpawn.pos;
+
+            if (baseData[currentRoomBuildingLevel] == undefined || baseData[currentRoomBuildingLevel].stages == undefined) continue;
+
+            for (var s in baseData[currentRoomBuildingLevel].stages[currentStage]) {
+                baseData[currentRoomBuildingLevel].stages[currentStage].forEach((subStageBuildingTypeSet) => {
+                    subStageBuildingTypeSet.pos.forEach((offsetPos) => {
+                        var realX = baseCenter.x + offsetPos.x;
+                        var realY = baseCenter.y + offsetPos.y;
+                        r.visual.circle(realX, realY, { color: "green", lineStyle: "dashed" });
+                        const look = new RoomPosition(realX, realY, roomName).lookFor(LOOK_STRUCTURES);
+                        if (look.length) {
+                            if (look[0].structureType == STRUCTURE_ROAD && look[0].structureType != subStageBuildingTypeSet.buildingType) {
+                                look[0].destroy();
+                                look.pop();
+                            }
+                            if (look[0].structureType == subStageBuildingTypeSet.buildingType) {
+                                return;
+                            }
+                        }
+                        const isWall = new Room.Terrain(roomName).get(realX, realY) == TERRAIN_MASK_WALL;
+                        if (!isWall && !look.length) {
+                            var ret = r.createConstructionSite(realX, realY, subStageBuildingTypeSet.buildingType);
+                            if (ret == ERR_RCL_NOT_ENOUGH) {
+                                console.log("ERR_RCL_NOT_ENOUGH");
+                            } else {
+                                stageComplete = false;
+                            }
+                        }
+                    });
+                });
+            }
+
+            if (stageComplete == true) {
+                Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage++;
+                if (Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage > baseData[r.controller.level].stages.length) {
+                    // this will only be hit once on the pass that all building is completed
+                    if (r.controller.level == 3) {
+                        buildRoadsToSources(r);
+                    }
+                    if (r.controller.level == 5) {
+                        buildControllerRampartSurroundings(r);
+                        buildRampartSurroundings(r);
+                        queueSpawnCreep(roleRepairer, null, null, roomName);
+                    }
+                    if (r.controller.level == 6) {
+                        buildExtractor(r);
+                    }
+                    Memory.rooms[roomName].building[currentRoomBuildingLevel].isComplete = true;
+                    Memory.rooms[roomName].currentRoomBuildingLevel++;
+                }
+            }
+        } catch {}
+    }
 };
 
 function buildControllerRampartSurroundings(r) {
@@ -127,8 +129,7 @@ function buildExtractor(r) {
                     for (var ii = i - 1; ii <= i + 1; ii++) {
                         for (var jj = j - 1; jj <= j + 1; jj++) {
                             if (terrain.get(ii, jj) != TERRAIN_MASK_WALL) {
-                                if(r.createConstructionSite(ii, jj, STRUCTURE_CONTAINER) == OK)
-                                    return;
+                                if (r.createConstructionSite(ii, jj, STRUCTURE_CONTAINER) == OK) return;
                             }
                         }
                     }
@@ -146,18 +147,20 @@ setRoomCostMatrix = function (r) {
         }
     }
     const terrain = new Room.Terrain(r.name);
-    const matrix = new PathFinder.CostMatrix;
+    const matrix = new PathFinder.CostMatrix();
     const visual = new RoomVisual(r.name);
-    
+
     // Fill CostMatrix with default terrain costs for future analysis:
-    for(let y = 0; y < 50; y++) {
-        for(let x = 0; x < 50; x++) {
+    for (let y = 0; y < 50; y++) {
+        for (let x = 0; x < 50; x++) {
             const tile = terrain.get(x, y);
             weight =
-                tile === TERRAIN_MASK_WALL  ? 255 : // wall  => unwalkable
-                tile === TERRAIN_MASK_SWAMP ?   5 : // swamp => weight:  5
-                                                3 ; // plain => weight:  3
-            var struct = r.lookForAt(LOOK_STRUCTURES, x, y)
+                tile === TERRAIN_MASK_WALL
+                    ? 255 // wall  => unwalkable
+                    : tile === TERRAIN_MASK_SWAMP
+                    ? 5 // swamp => weight:  5
+                    : 3; // plain => weight:  3
+            var struct = r.lookForAt(LOOK_STRUCTURES, x, y);
             if (struct.length) {
                 if (struct[0].structureType == STRUCTURE_ROAD) {
                     weight = 0;
@@ -168,31 +171,31 @@ setRoomCostMatrix = function (r) {
             matrix.set(x, y, weight);
         }
     }
-    for (var l in baseData) { 
-        for (var s in baseData[l].stages) { 
-            for (var sub_s in baseData[l].stages[s]) { 
-                baseData[l].stages[s].forEach((subStageBuildingTypeSet) => { 
+    for (var l in baseData) {
+        for (var s in baseData[l].stages) {
+            for (var sub_s in baseData[l].stages[s]) {
+                baseData[l].stages[s].forEach((subStageBuildingTypeSet) => {
                     subStageBuildingTypeSet.pos.forEach((offsetPos) => {
                         baseCenter = Memory.rooms[r.name].mainSpawn.pos;
                         var realX = baseCenter.x + offsetPos.x;
                         var realY = baseCenter.y + offsetPos.y;
-                        if (subStageBuildingTypeSet.buildingType == "road") { 
-                            matrix.set(realX, realY, 0)
+                        if (subStageBuildingTypeSet.buildingType == "road") {
+                            matrix.set(realX, realY, 0);
                         } else {
-                            matrix.set(realX, realY, 255)
+                            matrix.set(realX, realY, 255);
                         }
-                    }) 
-                }) 
-            } 
-        } 
-    };
-    for(let y = 0; y < 50; y++) {
-        for(let x = 0; x < 50; x++) {
+                    });
+                });
+            }
+        }
+    }
+    for (let y = 0; y < 50; y++) {
+        for (let x = 0; x < 50; x++) {
             visual.text(matrix.get(x, y), x, y);
         }
     }
     Memory.rooms[r.name].costMatrix = matrix.serialize();
-}
+};
 
 buildRoadsToSources = function (r, debug = false) {
     if (_.isString(r)) {
@@ -201,7 +204,7 @@ buildRoadsToSources = function (r, debug = false) {
             return false;
         }
     }
-    setRoomCostMatrix(r)
+    setRoomCostMatrix(r);
     mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
 
     new RoomVisual().circle(mainSpawn, { fill: "transparent", radius: 0.55, stroke: "red" });
@@ -211,10 +214,13 @@ buildRoadsToSources = function (r, debug = false) {
         if (s == undefined) {
             return;
         }
-        pathTo = mainSpawn.pos.findPathTo(s, { ignoreCreeps: true, range: 1,
-            costCallback: function(roomName, costMatrix) {
+        pathTo = mainSpawn.pos.findPathTo(s, {
+            ignoreCreeps: true,
+            range: 1,
+            costCallback: function (roomName, costMatrix) {
                 return PathFinder.CostMatrix.deserialize(Memory.rooms[roomName].costMatrix);
-            }});
+            },
+        });
         if (!debug) {
             _.forEach(pathTo, (step) => {
                 r.createConstructionSite(step.x, step.y, "road");
@@ -243,7 +249,7 @@ buildRoadsToExtSources = function (r, debug = false) {
             return;
         }
         // pathTo = mainSpawn.pos.findPathTo(s, { ignoreCreeps: true, maxRooms: 3 });
-        pathTo = PathfinderSearchUsePathsIgnoreCreeps(mainSpawn.pos, s.pos)
+        pathTo = PathfinderSearchUsePathsIgnoreCreeps(mainSpawn.pos, s.pos);
         if (!debug) {
             _.forEach(pathTo.path, (step) => {
                 const terrain = Game.rooms[step.roomName].getTerrain();
@@ -270,7 +276,7 @@ buildWalls = function (r, debug = false) {
     new RoomVisual().circle(mainSpawn, { fill: "transparent", radius: 0.55, stroke: "red" });
 
     _.forEach(wallData.constructedWall, (w) => {
-        if (r.lookAt(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y).length == 1 ) {
+        if (r.lookAt(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y).length == 1) {
             r.visual.circle(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y);
             if (!debug) {
                 r.createConstructionSite(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, "constructedWall");
@@ -278,7 +284,7 @@ buildWalls = function (r, debug = false) {
         }
     });
     _.forEach(wallData.rampart, (w) => {
-        if (r.getTerrain().get(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y) != 1 ) {
+        if (r.getTerrain().get(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y) != 1) {
             r.visual.circle(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y);
             if (!debug) {
                 r.createConstructionSite(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, "rampart");
@@ -672,5 +678,5 @@ global.baseData = JSON.parse(baseRawData);
 Memory.buildingPlan = baseData;
 
 wallRawData = `{"constructedWall":[{"x":-8,"y":7},{"x":-6,"y":7},{"x":-4,"y":7},{"x":-2,"y":7},{"x":-1,"y":7},{"x":0,"y":7},{"x":1,"y":7},{"x":2,"y":7},{"x":3,"y":7},{"x":4,"y":7},{"x":4,"y":6},{"x":5,"y":6},{"x":5,"y":5},{"x":6,"y":5},{"x":6,"y":4},{"x":7,"y":4},{"x":7,"y":3},{"x":7,"y":2},{"x":7,"y":1},{"x":7,"y":0},{"x":7,"y":-1},{"x":6,"y":-2},{"x":5,"y":-3},{"x":4,"y":-4},{"x":3,"y":-5},{"x":2,"y":-6},{"x":1,"y":-7},{"x":1,"y":-8},{"x":2,"y":-7},{"x":3,"y":-6},{"x":4,"y":-5},{"x":5,"y":-4},{"x":6,"y":-3},{"x":7,"y":-2},{"x":-10,"y":-1},{"x":-10,"y":-2},{"x":-10,"y":-3},{"x":-10,"y":-4},{"x":-10,"y":-5},{"x":-10,"y":-6},{"x":-9,"y":-6},{"x":-8,"y":-7},{"x":-8,"y":-8},{"x":-7,"y":-8},{"x":-10,"y":0},{"x":-10,"y":1},{"x":-10,"y":2},{"x":-10,"y":3},{"x":-10,"y":4},{"x":-10,"y":5},{"x":-10,"y":6},{"x":-10,"y":7},{"x":-4,"y":-8},{"x":-3,"y":-8},{"x":-2,"y":-8},{"x":-1,"y":-8}],"rampart":[{"x":-9,"y":7},{"x":-7,"y":7},{"x":-5,"y":7},{"x":-3,"y":7},{"x":0,"y":-8},{
-    "x":-8,"y":-6}]}`
+    "x":-8,"y":-6}]}`;
 global.wallData = JSON.parse(wallRawData);

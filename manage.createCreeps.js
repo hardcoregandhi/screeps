@@ -9,13 +9,13 @@ getBodyCost = function (bodyParts) {
 };
 
 displaySpawnFailMessage = function (_roomName, _roleName, _cost, _reason, _memory = null) {
-    var extraInfo = ""
-    if(_roleName == "moverExt" || _roleName == "moverExtRepair" || _roleName == "harvesterExt") {
+    var extraInfo = "";
+    if (_roleName == "moverExt" || _roleName == "moverExtRepair" || _roleName == "harvesterExt") {
         if (_memory != null) {
-            extraInfo = `Target = ${_memory.memory.targetRoomName} : ${_memory.memory.targetSource}`
+            extraInfo = `Target = ${_memory.memory.targetRoomName} : ${_memory.memory.targetSource}`;
         }
     }
-    new RoomVisual().text(`${_reason} ${_roomName}: ${_.capitalize(_roleName).padEnd(15)} Cost: ${_cost} ${extraInfo}`, 1, listOffset + inc(), { align: "left", font: '0.3 Lucida Console' });
+    new RoomVisual().text(`${_reason} ${_roomName}: ${_.capitalize(_roleName).padEnd(15)} Cost: ${_cost} ${extraInfo}`, 1, listOffset + inc(), { align: "left", font: "0.3 Lucida Console" });
 };
 
 generateBodyParts = function (_spawnRoom, _role = null) {
@@ -153,35 +153,35 @@ upgradeCreep = function (sourceCreepName) {
     }
 };
 
-queueSpawnCreep = function(_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
+queueSpawnCreep = function (_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
     if (_spawnRoom == null) {
-        console.log("queueSpawnCreep requires a spawnRoom")
-        return -1
+        console.log("queueSpawnCreep requires a spawnRoom");
+        return -1;
     }
     if (Memory.rooms[_spawnRoom].spawnQueue == undefined) {
         Memory.rooms[_spawnRoom].spawnQueue = [];
     }
     Memory.rooms[_spawnRoom].spawnQueue.push(["role" + _.capitalize(_role.name), customBodyParts, customMemory, _spawnRoom]);
-    console.log(`Queueing creep spawn: ${["role" + _.capitalize(_role.name), customBodyParts, customMemory, _spawnRoom]}`)
+    console.log(`Queueing creep spawn: ${["role" + _.capitalize(_role.name), customBodyParts, customMemory, _spawnRoom]}`);
     return;
-}
+};
 
-queuePrioritySpawnCreep = function(_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
+queuePrioritySpawnCreep = function (_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
     if (_spawnRoom == null) {
-        console.log("queuePrioritySpawnCreep requires a spawnRoom")
-        return -1
+        console.log("queuePrioritySpawnCreep requires a spawnRoom");
+        return -1;
     }
     if (Memory.rooms[_spawnRoom].spawnQueue == undefined) {
         Memory.rooms[_spawnRoom].spawnQueue = [];
     }
     Memory.rooms[_spawnRoom].spawnQueue.unshift(["role" + _.capitalize(_role.name), customBodyParts, customMemory, _spawnRoom]);
     return;
-}
+};
 
 spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
     // console.log(`spawnCreep ${_role.name} ${customBodyParts} ${customMemory} ${_spawnRoom}`)
     var ret = -1;
-    var cost = 6969
+    var cost = 6969;
     if (_spawnRoom != null) {
         room = Game.rooms[_spawnRoom];
         if (room == null) {
@@ -220,7 +220,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
         displaySpawnFailMessage(spawn.room.name, _role.name, 0, "[Renewing]", customMemory);
         return -1;
     }
-    
+
     myCreeps = spawn.room.find(FIND_MY_CREEPS).filter((c) => {
         return (
             spawn.pos.inRangeTo(c, 1) &&
@@ -232,7 +232,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
         displaySpawnFailMessage(spawn.room.name, _role.name, cost, "[Healing]");
         return -1;
     }
-    
+
     if (customBodyParts) {
         // console.log(customBodyParts)
         // console.log("customActivated")
@@ -251,7 +251,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
     }
 
     cost = getBodyCost(_role.BodyParts);
-    
+
     // console.log("energy available", spawn.room.energyAvailable)
     // console.log("cost", cost)
 
@@ -275,7 +275,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
             )
         );
         if (ret == 0) {
-            Memory.rooms[spawn.room.name].spawns[spawn.name].spawnRequested = true
+            Memory.rooms[spawn.room.name].spawns[spawn.name].spawnRequested = true;
             refreshCreepTrackingNextTick = true;
             roomRefreshMap[spawn.room.name] = Game.time;
             if (customMemory && customMemory.targetRoomName != undefined) {

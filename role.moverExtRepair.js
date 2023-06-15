@@ -1,9 +1,3 @@
 global.roleMoverExtRepair = Object.create(roleMoverExt);
-roleMoverExtRepair.name = 'moverExtRepair'
-roleMoverExtRepair.BodyParts = [
-    WORK,
-    CARRY, CARRY, CARRY,
-    CARRY, CARRY, CARRY,
-    CARRY, CARRY, CARRY,
-    MOVE, MOVE, MOVE, MOVE, MOVE,
-    ];
+roleMoverExtRepair.name = "moverExtRepair";
+roleMoverExtRepair.BodyParts = [WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];

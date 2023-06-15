@@ -12,7 +12,6 @@ global.roleHealer = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-
         if (creep.hits < creep.hitsMax) {
             creep.heal(creep);
         }
@@ -27,7 +26,7 @@ global.roleHealer = {
             creep.moveTo(Game.flags.holding.pos);
             return;
         }
-        
+
         if (creep.memory.healSize == undefined) {
             var healSize = 0;
             _.forEach(creep.body, (b) => {
@@ -46,12 +45,13 @@ global.roleHealer = {
         }
 
         if (creep.memory.passiveTravel == undefined || creep.memory.passiveTravel == false) {
-            var allHostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS)
-            var hostileCreeps = allHostileCreeps.filter((c) => {return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)})
+            var allHostileCreeps = creep.room.find(FIND_HOSTILE_CREEPS);
+            var hostileCreeps = allHostileCreeps.filter((c) => {
+                return c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK);
+            });
             // if (hostileCreeps.length > 2 || allHostileCreeps.length > 4) {
             //     cloneCreep(creep.name)
             // }
-
 
             if (hostileCreeps) {
                 var closestHostile = creep.pos.findClosestByRange(hostileCreeps);

@@ -14,7 +14,7 @@ global.roleDeliverer = {
     /** @param {Creep} creep **/
     run: function (creep) {
         // creep.memory.DIE = true
-        Log(creep, "run()")
+        Log(creep, "run()");
         if (creep.memory.returning == undefined) {
             creep.memory.returning = true;
         }
@@ -35,9 +35,9 @@ global.roleDeliverer = {
         }
 
         if (!creep.memory.returning) {
-            Log(creep, "!returning")
-            target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.terminal.id)
-            Log(creep, target)
+            Log(creep, "!returning");
+            target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.terminal.id);
+            Log(creep, target);
             // console.log(targetCreep)
             for (resourceType in creep.store) {
                 if (creep.transfer(target, resourceType) != OK) {
@@ -47,9 +47,9 @@ global.roleDeliverer = {
                 }
             }
         } else {
-            Log(creep, "returning")
+            Log(creep, "returning");
 
-            var target = Game.getObjectById('621e4cf805dfb7e3a79afcec');
+            var target = Game.getObjectById("621e4cf805dfb7e3a79afcec");
             if (creep.withdraw(target, RESOURCE_LEMERGIUM) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target, {
                     visualizePathStyle: { stroke: "#ffaa00" },

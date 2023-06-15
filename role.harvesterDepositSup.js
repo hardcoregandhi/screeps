@@ -46,17 +46,17 @@ global.roleHarvSup = {
         if (!creep.memory.returning) {
             Log(creep, "retrieving");
             if (healRoads(creep) == OK) {
-                Log(creep, "healing roads")
+                Log(creep, "healing roads");
                 return;
             }
 
             if (mainStorage == null) {
-                Log(creep, "falling back to building")
+                Log(creep, "falling back to building");
                 return roleBuilder.run(creep);
             }
 
             if (mainStorage.structureType == STRUCTURE_CONTAINER) {
-                if (mainStorage.hits < mainStorage.hitsMax /2) {
+                if (mainStorage.hits < mainStorage.hitsMax / 2) {
                     if (creep.repair(mainStorage) == ERR_NOT_IN_RANGE) {
                         moveToMultiRoomTarget(creep, mainStorage.pos);
                     }
@@ -67,12 +67,12 @@ global.roleHarvSup = {
             if (mainStorage.store.getFreeCapacity() > 50) {
                 for (const resourceType in creep.store) {
                     if (creep.transfer(mainStorage, resourceType) != OK) {
-                        Log(creep, creep.transfer(mainStorage, resourceType))
+                        Log(creep, creep.transfer(mainStorage, resourceType));
                         moveToMultiRoomTarget(creep, mainStorage);
                     }
                 }
             } else {
-                Log(creep, `${creep.name} falling back to other roles`)
+                Log(creep, `${creep.name} falling back to other roles`);
                 fallbackToOtherRoles(creep);
             }
         } else {
@@ -107,8 +107,7 @@ global.roleHarvSup = {
                 }
             } else {
                 Log(creep, "moving straight to target");
-                if(!creep.pos.isNearTo(target))
-                    moveToMultiRoomTarget(creep, target);
+                if (!creep.pos.isNearTo(target)) moveToMultiRoomTarget(creep, target);
             }
         }
     },
