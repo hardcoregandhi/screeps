@@ -146,6 +146,7 @@ setRoomCostMatrix = function (r) {
             return false;
         }
     }
+    console.log(`Calculating room cost matrix for ${r.name}`)
     const terrain = new Room.Terrain(r.name);
     const matrix = new PathFinder.CostMatrix();
     const visual = new RoomVisual(r.name);
@@ -217,8 +218,14 @@ buildRoadsToSources = function (r, debug = false) {
         pathTo = mainSpawn.pos.findPathTo(s, {
             ignoreCreeps: true,
             range: 1,
+            maxRooms: 1,
             costCallback: function (roomName, costMatrix) {
-                return PathFinder.CostMatrix.deserialize(Memory.rooms[roomName].costMatrix);
+                if (Memory.rooms[roomName].costMatrix == undefined) {
+                    console.log(`${roomName} has no costMatrix`)
+                    return null
+                } else {
+                    return PathFinder.CostMatrix.deserialize(Memory.rooms[roomName].costMatrix);
+                }
             },
         });
         if (!debug) {
@@ -277,7 +284,7 @@ buildWalls = function (r, debug = false) {
 
     _.forEach(wallData.constructedWall, (w) => {
         if (r.lookAt(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y).length == 1) {
-            r.visual.circle(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y);
+            r.visual.circle(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, { stroke: "black" });
             if (!debug) {
                 r.createConstructionSite(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, "constructedWall");
             }
@@ -285,7 +292,7 @@ buildWalls = function (r, debug = false) {
     });
     _.forEach(wallData.rampart, (w) => {
         if (r.getTerrain().get(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y) != 1) {
-            r.visual.circle(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y);
+            r.visual.circle(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, { fill: "transparent", stroke: "light-green" });
             if (!debug) {
                 r.createConstructionSite(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, "rampart");
             }
