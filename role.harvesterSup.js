@@ -9,8 +9,8 @@ global.roleHarvSup = {
         MOVE, MOVE, MOVE, MOVE, MOVE,
         MOVE, MOVE, MOVE, MOVE, MOVE,
     ],
-    baseBodyParts: [WORK],
-    bodyLoop: [CARRY, MOVE],
+    baseBodyParts: [WORK, CARRY, MOVE, CARRY, MOVE],
+    bodyLoop: [MOVE, CARRY],
     bodyPartsMaxCount: 21,
 
     /** @param {Creep} creep **/
