@@ -120,6 +120,7 @@ drawGUI = function () {
                     }
                 }
             }
+            buildWalls(r.name, true)
         } catch (e) {}
     }
 };
