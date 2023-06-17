@@ -51,6 +51,14 @@ global.pickupNearby = function (creep) {
     }
 };
 
+global.pickupOnSpot = function (creep) {
+    // console.log("pickupNearby")
+    const found = creep.room.lookForAt(FIND_DROPPED_RESOURCES, creep.pos);
+    if(found.length && found[0].type == RESOURCE_ENERGY) {
+        creep.pickup(found[0]);
+    }
+};
+
 global.returnToHeal = function (creep, room) {
     Log(creep, "returnToHeal");
 

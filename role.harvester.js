@@ -33,6 +33,8 @@ global.roleHarvester = {
         if (creep.memory.mining == undefined) {
             creep.memory.mining = true;
         }
+        
+        pickupOnSpot(creep)
 
         if (creep.memory.scoopSize == undefined || creep.spawning) {
             scoopSize = 0;
