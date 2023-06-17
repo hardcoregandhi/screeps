@@ -263,7 +263,10 @@ global.roleHarvester = {
                             customBody = customBody.concat(Array(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts).fill(CARRY));
                             customBody = customBody.concat(Array(Math.ceil(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts / 2)).fill(MOVE));
                             // console.log(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts)
-                            console.log(customBody);
+                            // console.log(customBody);
+                            if (getBodyCost(customBody) > Game.rooms[creep.memory.baseRoomName].energyCapacityAvailable) {
+                                customBody = "auto"
+                            }
 
                             spawnCreep(roleHarvSup, customBody, { memory: { targetSource: creep.memory.targetSource, targetContainer: creep.memory.targetContainer } }, creep.memory.baseRoomName);
                         }
