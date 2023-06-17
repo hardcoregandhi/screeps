@@ -76,7 +76,7 @@ global.roleCourier = {
                         try {
                             caravanCreepMap[c.id] = Object.keys(c.store)[0];
                             caravanCreepMap[Object.keys(c.store)[0]] = c.id;
-                        } catch {}
+                        } catch(e) {}
                     });
                     creep.memory.targetCreep = caravanCreepMap[creep.memory.resourceType];
                     // console.log(JSON.stringify(caravanCreepMap))

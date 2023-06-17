@@ -68,7 +68,7 @@ global.runBaseBuilder = function () {
                     Memory.rooms[roomName].currentRoomBuildingLevel++;
                 }
             }
-        } catch {}
+        } catch(e) {}
     }
 };
 

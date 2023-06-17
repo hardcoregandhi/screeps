@@ -263,7 +263,7 @@ module.exports.loop = function () {
                 room = Game.rooms[r];
                 try {
                     runTowers(room);
-                } catch {}
+                } catch(e) {}
             });
         } catch (e) {
             console.log(`runTowers() failed: ${e}`);

@@ -49,7 +49,7 @@ global.rolePowHarvester = {
             if (creep.memory.healer != undefined || creep.memory.healer != null) {
                 try {
                     Memory.creeps[creep.memory.healer].DIE = true;
-                } catch {}
+                } catch(e) {}
             }
             return;
         }
@@ -64,7 +64,7 @@ global.rolePowHarvester = {
                 queuePrioritySpawnCreep(rolePowHealer, Array(19).fill(HEAL).concat(Array(19).fill(MOVE)), { memory: { targetRoomName: creep.memory.targetRoomName, targetSource: creep.memory.targetSource, noHeal: true } }, creep.memory.baseRoomName);
                 creep.memory.replacementOrdered = true;
             }
-        } catch {
+        } catch(e) {
             console.log("error calcing replacement");
         }
 
@@ -105,7 +105,7 @@ global.rolePowHarvester = {
                 }
                 Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].raidersSpawned = true;
             }
-        } catch {
+        } catch(e) {
             console.log(`error spawning power collectors`);
         }
 

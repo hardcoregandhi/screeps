@@ -14,7 +14,7 @@ rolePowHealer.run = function (creep) {
             if (creep.memory.targetCreep == null) {
                 try {
                     creep.memory.targetCreep = Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource].targettedByList[0];
-                } catch {
+                } catch(e) {
                     // creep.memory.DIE = true;
                 }
             }
