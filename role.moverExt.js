@@ -23,7 +23,7 @@ function findReplacementTarget(creep) {
             return;
         }
 
-        if (Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedBy > 0) {
+        if (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedBy > 0) {
             console.log(`corrupt currentCarryParts/targettedByList found for ${source.id}`);
             totalCarryParts = 0;
             _.forEach(Memory.rooms[source.room.name].sources[source.id].container.targettedByList, (creepName) => {
@@ -32,7 +32,7 @@ function findReplacementTarget(creep) {
                 }, 0);
                 totalCarryParts += creepCarryParts;
             });
-            Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts = totalCarryParts;
+            Memory.rooms[source.room.name].sources[source.id].targetCarryParts = totalCarryParts;
         }
 
         if (Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id) == null) {
@@ -41,13 +41,13 @@ function findReplacementTarget(creep) {
         }
 
         if (
-            Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts != undefined &&
-            Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts < Memory.rooms[source.room.name].sources[source.id].container.targetCarryParts &&
+            Memory.rooms[source.room.name].sources[source.id].targetCarryParts != undefined &&
+            Memory.rooms[source.room.name].sources[source.id].targetCarryParts < Memory.rooms[source.room.name].sources[source.id].targetCarryParts &&
             Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id).store.getUsedCapacity() > 1000
         ) {
             console.log(
-                `setting ${creep.name} to s: ${source.id.substr(-3)} r: ${source.room.name} curParts: ${Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts} tarBy: ${
-                    Memory.rooms[source.room.name].sources[source.id].container.targetCarryParts
+                `setting ${creep.name} to s: ${source.id.substr(-3)} r: ${source.room.name} curParts: ${Memory.rooms[source.room.name].sources[source.id].targetCarryParts} tarBy: ${
+                    Memory.rooms[source.room.name].sources[source.id].targetCarryParts
                 }`
             );
 
@@ -56,7 +56,7 @@ function findReplacementTarget(creep) {
             var carryCount = creep.body.reduce((previous, p) => {
                 return p.type == CARRY ? (previous += 1) : previous;
             }, 0);
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts - carryCount;
+            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts - carryCount;
 
             creep.memory.targetRoomName = source.room.name;
             creep.memory.targetSource = source.id;
@@ -67,7 +67,7 @@ function findReplacementTarget(creep) {
             var carryCount = creep.body.reduce((previous, p) => {
                 return p.type == CARRY ? (previous += 1) : previous;
             }, 0);
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts + carryCount;
+            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts + carryCount;
             ret = true;
             return false; //early escape
         }
@@ -313,7 +313,7 @@ global.roleMoverExt = {
                         TransferAll(creep, mainStorage);
                     }
                 } else {
-                    roleMover.run(creep);
+                    roleHandler.run(creep);
                     return;
                 }
                 return;

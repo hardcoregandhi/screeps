@@ -79,13 +79,13 @@ global.runCreeps = function () {
             }
 
             switch (creep.memory.role) {
-                case "mover":
-                    if (creep.room.energyAvailable > creep.room.energyCapacityAvailable / 2 && Memory.rooms[creep.room.name].scav == true && creep.room.memory.mainTower.enemyInRoom == false) {
+                case "handler":
+                    if (creep.room.energyAvailable > creep.room.energyCapacityAvailable / 2 && Memory.rooms[creep.room.name].scav == true && creep.room.memory.mainTower != undefined && creep.room.memory.mainTower.enemyInRoom == false) {
                         roleScavenger.run(creep);
                         // console.log(creep.name, "scav")
                     } else {
-                        roleMover.run(creep);
-                        // console.log(creep.name, "mover")
+                        roleHandler.run(creep);
+                        // console.log(creep.name, "handler")
                     }
                     break;
                 case "moverExt":

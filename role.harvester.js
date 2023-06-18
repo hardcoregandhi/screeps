@@ -18,6 +18,7 @@ global.roleHarvester = {
             var lowestSource = 99;
 
             _.forEach(Memory.rooms[creep.memory.baseRoomName].sources, (s) => {
+                console.log(JSON.stringify(s))
                 if (myRooms[Game.shard.name].includes(r.name) || Memory.rooms[r.name].mainSpawn != undefined) {
                     // for new rooms we don't care
                     if (s.targettedBy >= s.miningSpots && s.container == undefined) {
@@ -34,8 +35,10 @@ global.roleHarvester = {
             creep.memory.mining = true;
         }
         
-        pickupOnSpot(creep)
-
+        if (pickupOnSpot(creep) == OK) {
+            return
+        }
+        
         if (creep.memory.scoopSize == undefined || creep.spawning) {
             scoopSize = 0;
             _.forEach(creep.body, (b) => {
@@ -86,7 +89,9 @@ global.roleHarvester = {
         }
 
         if (creep.memory.mining) {
-            pickupNearby(creep);
+            if (pickupNearby(creep) == OK) {
+                return;
+            }
 
             targetSource = Game.getObjectById(creep.memory.targetSource);
             if (trackedHarvest(creep, targetSource) != OK) {
@@ -104,12 +109,14 @@ global.roleHarvester = {
             var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
                     return (
-                        (structure.structureType == STRUCTURE_EXTENSION ||
+                        ((structure.structureType == STRUCTURE_EXTENSION ||
                             structure.structureType == STRUCTURE_CONTAINER ||
-                            structure.structureType == STRUCTURE_SPAWN ||
                             structure.structureType == STRUCTURE_TOWER ||
                             structure.structureType == STRUCTURE_STORAGE) &&
-                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > structure.store.getCapacity(RESOURCE_ENERGY) / 2
+                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > structure.store.getCapacity(RESOURCE_ENERGY) / 2) ||
+                        (
+                            structure.structureType == STRUCTURE_SPAWN && structure.store.getFreeCapacity(RESOURCE_ENERGY)
+                        )
                     );
                 },
             });
@@ -135,9 +142,9 @@ global.roleHarvester = {
                     return;
                 }
 
-                // If we have Movers, just use the storage
-                if (creepRoomMap.get(creep.memory.baseRoomName + "mover") != undefined && creepRoomMap.get(creep.memory.baseRoomName + "mover") > 0) {
-                    Log(creep, "movers found");
+                // If we have Handlers, just use the storage
+                if (creepRoomMap.get(creep.memory.baseRoomName + "handler") != undefined && creepRoomMap.get(creep.memory.baseRoomName + "handler") > 0) {
+                    Log(creep, "handlers found");
 
                     if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined) {
                         Log(creep, "local link found");
@@ -238,38 +245,6 @@ global.roleHarvester = {
                         Log(creep, "local ccont found");
                         Log(creep, target);
 
-                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts == undefined) {
-                            ret = calcTargetCarryParts(target, Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id), Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container);
-                            if (ret != -1) {
-                                Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts = ret;
-                            } else {
-                                console.log(`failed to calc targetCarryParts for ${creep.memory.targetSource.substr(-3)}, cant continue`);
-                                return;
-                            }
-                        }
-
-                        if (
-                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy == 0 ||
-                            (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
-                                Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts != 0 &&
-                                Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.currentCarryParts < Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts &&
-                                Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined)
-                        ) {
-                            Log(creep, "spawning harvSup");
-                            customBody = [];
-                            if (Memory.rooms[creep.memory.baseRoomName].mainTower == undefined) {
-                                customBody.push(WORK);
-                            }
-                            customBody = customBody.concat(Array(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts).fill(CARRY));
-                            customBody = customBody.concat(Array(Math.ceil(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts / 2)).fill(MOVE));
-                            // console.log(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targetCarryParts)
-                            // console.log(customBody);
-                            if (getBodyCost(customBody) > Game.rooms[creep.memory.baseRoomName].energyCapacityAvailable) {
-                                customBody = "auto"
-                            }
-
-                            spawnCreep(roleHarvSup, customBody, { memory: { targetSource: creep.memory.targetSource, targetContainer: creep.memory.targetContainer } }, creep.memory.baseRoomName);
-                        }
 
                         if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy == 0) {
                             if (target != null && target.hits < 200000) {
@@ -280,7 +255,7 @@ global.roleHarvester = {
                                 return;
                             }
                             if (target.store.getFreeCapacity() <= 50) {
-                                roleHarvSup.run(creep);
+                                roleMover.run(creep);
                                 return;
                             }
                         }
@@ -367,7 +342,7 @@ global.roleHarvester = {
                         return;
                     }
                 } else {
-                    Log(creep, "no movers found");
+                    Log(creep, "no handlers found");
                     targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
                         return (
                             (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&

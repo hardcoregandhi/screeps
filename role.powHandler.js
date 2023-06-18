@@ -2,9 +2,9 @@ function Log(str) {
     if (0) console.log(str);
 }
 
-var roleMover = require("role.mover");
+var roleHandler = require("role.handler");
 
-global.rolePowMover = Object.assign({}, roleMover);
+global.rolePowHandler = Object.assign({}, roleHandler);
 
 const job = {
     MOVING_POWER: 0,
@@ -12,9 +12,9 @@ const job = {
     RETURNING: 2,
 };
 
-global.rolePowMover.name = "powMover";
-global.rolePowMover.run = function (creep) {
-    Log(creep, "rolePowMover.run()");
+global.rolePowHandler.name = "powHandler";
+global.rolePowHandler.run = function (creep) {
+    Log(creep, "rolePowHandler.run()");
     // Lost creeps return home
     if (creep.room.name != creep.memory.baseRoomName) {
         const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
@@ -129,4 +129,4 @@ global.rolePowMover.run = function (creep) {
     }
 };
 
-module.exports = rolePowMover;
+module.exports = rolePowHandler;

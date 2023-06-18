@@ -23,7 +23,7 @@ getEmergencyStructureHealLimit = function (room, structure) {
             return Math.round((structure.hits / structure.hitsMax) * 100 < 10);
         case STRUCTURE_RAMPART:
             // console.log(`${structure} {structure.structureType} ${structure.hits / structure.hitsMax} ${Math.round((structure.hits / structure.hitsMax) * 100)} < ${wallHealPercent}`)
-            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent;
+            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent * 1000;
         case STRUCTURE_WALL:
             return (structure.hits / structure.hitsMax) * 100 < wallHealPercent;
     }

@@ -55,6 +55,8 @@ global.runBaseBuilder = function () {
                     // this will only be hit once on the pass that all building is completed
                     if (r.controller.level == 3) {
                         buildRoadsToSources(r);
+                        buildRoadsToController(r);
+                        buildWalls(r)
                     }
                     if (r.controller.level == 5) {
                         buildControllerRampartSurroundings(r);
@@ -236,6 +238,40 @@ buildRoadsToSources = function (r, debug = false) {
         console.log(JSON.stringify(pathTo));
         new RoomVisual().poly(pathTo);
     });
+};
+
+buildRoadsToController = function (r, debug = false) {
+    if (_.isString(r)) {
+        r = Game.rooms[r];
+        if (r == undefined) {
+            return false;
+        }
+    }
+    setRoomCostMatrix(r);
+    mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
+
+    new RoomVisual().circle(mainSpawn, { fill: "transparent", radius: 0.55, stroke: "red" });
+
+    pathTo = mainSpawn.pos.findPathTo(r.controller, {
+        ignoreCreeps: true,
+        range: 2,
+        maxRooms: 1,
+        costCallback: function (roomName, costMatrix) {
+            if (Memory.rooms[roomName].costMatrix == undefined) {
+                console.log(`${roomName} has no costMatrix`)
+                return null
+            } else {
+                return PathFinder.CostMatrix.deserialize(Memory.rooms[r.name].costMatrix);
+            }
+        },
+    });
+    if (!debug) {
+        _.forEach(pathTo, (step) => {
+            r.createConstructionSite(step.x, step.y, "road");
+        });
+    }
+    console.log(JSON.stringify(pathTo));
+    new RoomVisual().poly(pathTo);
 };
 
 buildRoadsToExtSources = function (r, debug = false) {

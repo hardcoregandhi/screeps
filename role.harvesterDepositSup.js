@@ -1,4 +1,4 @@
-global.roleHarvSup = {
+global.roleMover = {
     name: "harvSup",
     roleMemory: { memory: {} },
     // prettier-ignore
@@ -77,7 +77,10 @@ global.roleHarvSup = {
             }
         } else {
             Log(creep, "returning");
-            pickupNearby(creep);
+            if (pickupNearby(creep) == OK) {
+                return;
+            }
+            
             if (creep.memory.targetContainer == undefined) {
                 Log(creep, "finding new container");
 
@@ -113,4 +116,4 @@ global.roleHarvSup = {
     },
 };
 
-module.exports = roleHarvSup;
+module.exports = roleMover;

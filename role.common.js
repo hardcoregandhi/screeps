@@ -39,16 +39,19 @@ global.pickupNearby = function (creep) {
     var tombstoneResource = creep.room.find(FIND_TOMBSTONES).filter((r) => r.store.getUsedCapacity() >= 150);
     var ruinResource = creep.room.find(FIND_RUINS).filter((object) => creep.pos.inRangeTo(object, 1));
 
+    var ret = ERR_NOT_FOUND;
     if (droppedEnergy.length > 0) {
         // console.log(creep.name + " picking up Nearby")
-        creep.pickup(droppedEnergy[0]);
+        droppedEnergy.sort((a, b) => b.amount - a.amount);
+        ret = creep.pickup(droppedEnergy[0]);
     }
     if (tombstoneResource.length > 0) {
-        creep.withdraw(tombstoneResource[0], RESOURCE_ENERGY);
+        ret = creep.withdraw(tombstoneResource[0], RESOURCE_ENERGY);
     }
     if (ruinResource.length > 0) {
-        creep.withdraw(ruinResource[0], RESOURCE_ENERGY);
+        ret = creep.withdraw(ruinResource[0], RESOURCE_ENERGY);
     }
+    return ret;
 };
 
 global.pickupOnSpot = function (creep) {
@@ -119,6 +122,9 @@ global.returnToHeal = function (creep, room) {
 };
 
 global.fallbackToOtherRoles = function (creep, roomName) {
+    if (creepRoomMap.get(roomName+"handler") == undefined) {
+        roleMover.run(creep);
+    }
     var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
     if (targets.length) {
         roleBuilder.run(creep);

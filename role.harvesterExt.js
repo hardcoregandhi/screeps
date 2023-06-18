@@ -95,9 +95,9 @@ global.roleHarvesterExt = {
             if (creep.memory.targetRoomName != undefined && Game.rooms[creep.memory.targetRoomName] != undefined && creep.room.name == creep.memory.targetRoomName) {
                 // if (
                 //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container != undefined &&
-                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
-                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != 0 &&
-                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts < Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts &&
+                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts != undefined &&
+                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts != 0 &&
+                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts < Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts &&
                 //     Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined &&
                 //     Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id).store.getUsedCapacity(RESOURCE_ENERGY) > 1000
                 // ) {

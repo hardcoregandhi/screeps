@@ -8,7 +8,7 @@ depositInSupportedContainer = function (creep, source, container) {
                 Memory.rooms[container.room.name].sources[source.id].container.moverLimitIncreaseCooldownTimestamp = Game.time;
             }
             if (Game.time > Memory.rooms[container.room.name].sources[source.id].container.moverLimitIncreaseCooldownTimestamp + 10000) {
-                Memory.rooms[container.room.name].sources[source.id].container.moversNeeded = Memory.rooms[container.room.name].sources[source.id].container.moversNeeded + 1;
+                Memory.rooms[container.room.name].sources[source.id].container.handlersNeeded = Memory.rooms[container.room.name].sources[source.id].container.handlersNeeded + 1;
                 Memory.rooms[container.room.name].sources[source.id].container.containerFilledTimestamp = undefined;
                 Memory.rooms[container.room.name].sources[source.id].container.moverLimitIncreaseCooldownTimestamp = Game.time;
             }

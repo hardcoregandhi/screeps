@@ -19,12 +19,16 @@ global.roleBuilder = {
     /** @param {Creep} creep **/
     run: function (creep) {
         Log(creep, "roleBuilder");
+        // console.log("roleBuilder")
         if (creep.memory.interShard) {
             interShardMove(creep);
             return;
         }
         if (!creep.memory.currentSource == null) {
             creep.memory.currentSource = 0;
+        }
+        if (creep.memory.building == null) {
+            creep.memory.building = true
         }
 
         // creep.memory.DIE = 1
@@ -163,6 +167,7 @@ global.roleBuilder = {
             }
         } else {
             Log(creep, "!building");
+            delete creep.memory.currentTarget
 
             Log(creep, 8);
             if (Game.flags.DISMANTLE && creep.memory.baseRoomName == Game.flags.DISMANTLE.room.name) {
@@ -178,7 +183,7 @@ global.roleBuilder = {
                 }
             }
 
-            if (creepRoomMap.get(creep.room.name + "mover") >= 1) {
+            if (creepRoomMap.get(creep.room.name + "handler") >= 1) {
                 Log(creep, 81);
                 if ((creepRoomMap.get(creep.room.name + "eenergy") === undefined && creep.room.energyAvailable < creep.room.energyCapacityAvailable / 2) || creepRoomMap.get(creep.room.name + "eenergy") < 1500) {
                     Log(creep, 10);

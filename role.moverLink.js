@@ -261,9 +261,9 @@ global.roleMoverLink = {
         if (creep.memory.moving) {
             Log(creep, "moving");
 
-            if (creep.memory.powerMover == true) {
-                rolePowMover.run(creep);
-                creep.memory.powerMover = false;
+            if (creep.memory.powerHandler == true) {
+                rolePowHandler.run(creep);
+                creep.memory.powerHandler = false;
                 return;
             }
 
@@ -611,8 +611,8 @@ global.roleMoverLink = {
 
                 Log(creep, "did nothing.");
                 if (Memory.rooms[creep.memory.baseRoomName].structs.pspawn != undefined && mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 250000) {
-                    rolePowMover.run(creep);
-                    creep.memory.powerMover = true;
+                    rolePowHandler.run(creep);
+                    creep.memory.powerHandler = true;
                 }
 
                 // } else {

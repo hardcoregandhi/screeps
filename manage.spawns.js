@@ -48,19 +48,29 @@ global.runSpawns = function () {
             if (spawnCreep(roleClaimer, null, { memory: { baseRoomName: r.name } }, r.name) == 0) {
                 Memory.createClaimer = false;
             }
+        } else if (spawnMover(r)) {
+            console.log("spawnMover")
+            continue;
         } else if (creepRoomMap.get(r.name + "harvester") == undefined || spawnHarvester(r)) {
+            console.log("spawnHarvester")
             continue;
             /*} else if (unsearchedNeighbouringRooms.length > 0) {
             // spawnCreep(roleExplorer, null, {memory: {targetRoomName:unsearchedNeighbouringRooms[0]}}, r.name);
             continue;*/
         } else if (Memory.rooms[r.name].mainStorage == undefined) {
             continue;
-        } else if (creepRoomMap.get(r.name + "mover") < 1) {
+        } else if (creepRoomMap.get(r.name + "handler") == undefined || creepRoomMap.get(r.name + "handler") < 1) {
+            console.log("spawnHandler")
             BaseBodyParts = [CARRY, CARRY, CARRY, MOVE, MOVE];
-            spawnCreep(roleMover, BaseBodyParts, null, r.name);
+            spawnCreep(roleHandler, BaseBodyParts, null, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "upgrader") < 1 && r.controller.level < 8) {
+            console.log("spawnUpgrader")
             spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
+            continue;
+        } else if (creepRoomMap.get(r.name + "upgraderSupport") == undefined || creepRoomMap.get(r.name + "upgraderSupport") < Math.floor(creepRoomMap.get(r.name + "upgrader") / 2) && r.controller.level < 8) {
+            console.log("spawnUpgraderSupport")
+            spawnCreep(roleUpgraderSupport, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "upgrader") < 2 && r.controller.level < 8 && room.energyAvailable == room.energyCapacityAvailable && Game.getObjectById(Memory.rooms[r.name].mainStorage).store.getFreeCapacity() <= 50) {
             spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
@@ -68,6 +78,8 @@ global.runSpawns = function () {
         } else if (creepRoomMap.get(r.name + "upgrader") < 1 && r.controller.level == 8 && r.controller.ticksToDowngrade < 10000) {
             spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
+        } else if (r.controller.level >=3 && creepRoomMap.get(r.name + "repairer") == undefined){
+            spawnCreep(roleRepairer, "auto", { memory: { baseRoomName: r.name } }, r.name);
         } else if (creepRoomMap.get(r.name + "builder") < Math.min(creepRoomMap.get(r.name + "csites"), 3) && creepRoomMap.get(r.name + "csites") != 0) {
             spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
@@ -91,7 +103,7 @@ global.runSpawns = function () {
             continue;
         } else if (roomExpansion(r.name)) {
             continue;
-        } else if (spawnExternalMover(r.name)) {
+        } else if (spawnExternalHandler(r.name)) {
             continue;
         } else if (spawnExternalHarvester(r.name)) {
             continue;
@@ -102,11 +114,11 @@ global.runSpawns = function () {
             //     continue;
         } else if (roomExpansion(r.name)) {
             continue;
-        } else if (creepRoomMap.get(r.name + "mover") < 2 && r.energyCapacityAvailable > 1000) {
-            spawnCreep(roleMover, null, { memory: { baseRoomName: r.name } }, r.name);
+        } else if (creepRoomMap.get(r.name + "handler") < 2 && r.energyCapacityAvailable > 1000) {
+            spawnCreep(roleHandler, null, { memory: { baseRoomName: r.name } }, r.name);
             continue;
-        } else if (creepRoomMap.get(r.name + "mover") < 3 && r.energyCapacityAvailable > 1000 && r.controller.level >= 7) {
-            spawnCreep(roleMover, "auto", { memory: { baseRoomName: r.name } }, r.name);
+        } else if (creepRoomMap.get(r.name + "handler") < 3 && r.energyCapacityAvailable > 1000 && r.controller.level >= 7) {
+            spawnCreep(roleHandler, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "eenergy") > 750000 && r.controller.level < 8) {
             spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name); //spawn builders to upgrade which will then use the storage annd not the link
@@ -127,7 +139,7 @@ global.runSpawns = function () {
             continue;
         }
         // else if (r.energyAvailable == r.energyCapacityAvailable) {
-        //     spawnCreep(roleMover, "auto")
+        //     spawnCreep(roleHandler, "auto")
         // }
         // if (creepRoomMap.get(r.name+"upgrader") > 2) {
         //     // _.forEach(Game.creeps, c => { if(c.memory.role == 'harvester' && c.body.length == 5){ console.log(c.body.length)} } )
@@ -210,9 +222,60 @@ function spawnExternalHarvester(roomName) {
     return false;
 }
 
-function spawnExternalMover(roomName) {
-    // console.log(`spawnExternalMover(${roomName}))`)
-    Debug(roomName, "spawnExternalMover");
+function spawnMover(room) {
+    for (var sourceId in Memory.rooms[room.name].sources) {
+        source = Game.getObjectById(sourceId);
+        if (source == undefined || source == null) {
+            return;
+        }
+
+        if (source.room.controller && source.room.controller.reservation != undefined && source.room.controller.reservation.username != "hardcoregandhi" && Memory.rooms[source.room.name].reservation.username != "hardcoregandhi") {
+            return;
+        }
+
+        if (1 || Memory.rooms[source.room.name].sources[source.id].targetCarryParts == undefined || Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].targettedBy > 0) {
+            // console.log(`corrupt currentCarryParts/targettedByList found for ${source.id}`);
+            totalCarryParts = 0;
+            _.forEach(Memory.rooms[source.room.name].sources[source.id].targettedByList, (creepName) => {
+                if (Memory.creeps[creepName].DIE == undefined) {
+                    creepCarryParts = Game.creeps[creepName].body.reduce((previous, p) => {
+                        return p.type == CARRY ? (previous += 1) : previous;
+                    }, 0);
+                    totalCarryParts += creepCarryParts;
+                }
+            });
+            Memory.rooms[source.room.name].sources[source.id].targetCarryParts = totalCarryParts;
+        }
+        // console.log(`Memory.rooms[source.room.name].sources[source.id].currentCarryParts ${Memory.rooms[source.room.name].sources[source.id].currentCarryParts}`)
+        // console.log(`Memory.rooms[source.room.name].sources[source.id].targetCarryParts ${Memory.rooms[source.room.name].sources[source.id].targetCarryParts}`)
+
+        if (
+            // 0 ||
+            Memory.rooms[source.room.name].sources[source.id].targetCarryParts != undefined &&
+            Memory.rooms[source.room.name].sources[source.id].currentCarryParts < Memory.rooms[source.room.name].sources[source.id].targetCarryParts ||
+            ((creepRoomMap.get(source.room.name + "moverTarget" + source.id) == undefined || creepRoomMap.get(source.room.name + "moverTarget" + source.id) < 2)) &&
+            (creepRoomMap.get(source.room.name + "harvesterTarget" + source.id) == undefined || creepRoomMap.get(source.room.name + "harvesterTarget" + source.id) >= 1)
+        ) {
+// console.log(Memory.rooms[source.room.name].sources[source.])
+            var customBody = Array(Memory.rooms[source.room.name].sources[source.id].targetCarryParts).fill(CARRY);
+            customBody = customBody.concat(Array(Math.ceil(Memory.rooms[source.room.name].sources[source.id].targetCarryParts / 2)).fill(MOVE));
+            // console.log(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].targetCarryParts)
+            // console.log(customBody);
+            if (getBodyCost(customBody) == 0 || getBodyCost(customBody) > Game.rooms[source.room.name].energyCapacityAvailable) {
+                customBody = "auto"
+            }
+
+            spawnCreep(roleMover, customBody, { memory: { targetSource: source.id } }, room.name);
+            return true
+        }
+    }
+
+    return false;
+}
+
+function spawnExternalHandler(roomName) {
+    // console.log(`spawnExternalHandler(${roomName}))`)
+    Debug(roomName, "spawnExternalHandler");
     var potentialSources = [];
     if (Memory.rooms[roomName].externalSources != undefined && Memory.rooms[roomName].externalSources.length) {
         _.forEach(Memory.rooms[roomName].externalSources, (sourceId) => {
@@ -238,8 +301,8 @@ function spawnExternalMover(roomName) {
             }
             // console.log(container)
 
-            if (Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedBy > 0) {
-                console.log(`corrupt currentCarryParts/targettedByList found for ${source.id}`);
+            if (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedBy > 0) {
+                // console.log(`corrupt currentCarryParts/targettedByList found for ${source.id}`);
                 totalCarryParts = 0;
                 _.forEach(Memory.rooms[source.room.name].sources[source.id].container.targettedByList, (creepName) => {
                     if (Memory.creeps[creepName].DIE == undefined) {
@@ -255,7 +318,7 @@ function spawnExternalMover(roomName) {
                         return p == CARRY ? (previous += 1) : previous;
                     }, 0);
                 }
-                Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts = totalCarryParts;
+                Memory.rooms[source.room.name].sources[source.id].targetCarryParts = totalCarryParts;
             }
 
             if (Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id) == null) {
@@ -265,14 +328,14 @@ function spawnExternalMover(roomName) {
             }
 
             if (
-                Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts != undefined &&
-                Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts < Memory.rooms[source.room.name].sources[source.id].container.targetCarryParts &&
+                Memory.rooms[source.room.name].sources[source.id].targetCarryParts != undefined &&
+                Memory.rooms[source.room.name].sources[source.id].targetCarryParts < Memory.rooms[source.room.name].sources[source.id].targetCarryParts &&
                 (creepRoomMap.get(roomName + "moverExtTarget" + source.id) == undefined || creepRoomMap.get(roomName + "moverExtTarget" + source.id) < 4) &&
                 Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id).store.getUsedCapacity() > 500
             ) {
                 potentialSources.push(source);
                 // console.log(`creepRoomMap.get(${roomName}+"moverExtTarget"+${source.id}) ${creepRoomMap.get(roomName+"moverExtTarget"+source.id)}`)
-                // console.log(`s: ${source.id.substr(-3)} r: ${source.room.name} curParts: ${Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts} tarBy: ${Memory.rooms[source.room.name].sources[source.id].container.targetCarryParts}`)
+                // console.log(`s: ${source.id.substr(-3)} r: ${source.room.name} curParts: ${Memory.rooms[source.room.name].sources[source.id].targetCarryParts} tarBy: ${Memory.rooms[source.room.name].sources[source.id].targetCarryParts}`)
             }
         });
 
@@ -280,10 +343,10 @@ function spawnExternalMover(roomName) {
 
         if (potentialSources.length) {
             potentialSources = potentialSources.sort(function (s1, s2) {
-                if (Memory.rooms[s1.room.name].sources[s1.id].container.currentCarryParts == Memory.rooms[s2.room.name].sources[s2.id].container.currentCarryParts) {
+                if (Memory.rooms[s1.room.name].sources[s1.id].targetCarryParts == Memory.rooms[s2.room.name].sources[s2.id].targetCarryParts) {
                     return Game.getObjectById(Memory.rooms[s1.room.name].sources[s1.id].container.id).store.getUsedCapacity() - Game.getObjectById(Memory.rooms[s2.room.name].sources[s2.id].container.id).store.getUsedCapacity();
                 } else {
-                    return Memory.rooms[s1.room.name].sources[s1.id].container.currentCarryParts - Memory.rooms[s2.room.name].sources[s2.id].container.currentCarryParts;
+                    return Memory.rooms[s1.room.name].sources[s1.id].targetCarryParts - Memory.rooms[s2.room.name].sources[s2.id].targetCarryParts;
                 }
             });
             if (creepRoomMap.get(`${roomName}moverExtRepairTarget${potentialSources[0].id}`) == undefined || creepRoomMap.get(`${roomName}moverExtRepairTarget${potentialSources[0].id}`) == 0) {
@@ -299,7 +362,7 @@ function spawnExternalMover(roomName) {
                     .filter((p) => {
                         return p != CARRY;
                     })
-                    .concat(Array(Memory.rooms[potentialSources[0].room.name].sources[potentialSources[0].id].container.targetCarryParts).fill(CARRY));
+                    .concat(Array(Memory.rooms[potentialSources[0].room.name].sources[potentialSources[0].id].targetCarryParts).fill(CARRY));
                 spawnCreep(
                     roleMoverExt,
                     customBodyParts,
@@ -320,10 +383,10 @@ function spawnHarvester(room) {
     _.forEach(Memory.rooms[room.name].sources, (s) => {
         if (
             (s.currentMiningParts != undefined && s.currentMiningParts < 7 && s.targettedBy < s.miningSpots) ||
-            (Memory.rooms[room.name].sources[s.id].container == undefined && Memory.rooms[room.name].sources[s.id].link == undefined && s.targettedBy < s.miningSpots * 2)
+            (Memory.rooms[room.name].sources[s.id].container == undefined && Memory.rooms[room.name].sources[s.id].link == undefined && s.targettedBy < s.miningSpots)
         ) {
-            if (r.energyAvailable <= 450) {
-                BaseBodyParts = [WORK, CARRY, CARRY, MOVE, MOVE];
+            if (r.energyAvailable <= 350 && Memory.rooms[room.name].sources[s.id].container == undefined) {
+                BaseBodyParts = [WORK, WORK, MOVE, MOVE];
                 // console.log(1)
                 spawnCreep(roleHarvester, BaseBodyParts, { memory: { targetSource: s.id } }, room.name);
             } else {

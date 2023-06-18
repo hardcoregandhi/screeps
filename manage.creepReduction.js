@@ -1,8 +1,8 @@
 creepReduction = function (r) {
     // return 0;
-    if (isHighwayRoom(r.name) || (Memory.rooms[r.name].parentRoom == undefined && r.controller.level < 4)) {
-        return;
-    }
+    // if (isHighwayRoom(r.name) || (Memory.rooms[r.name].parentRoom == undefined)) {
+    //     return;
+    // }
     if (Memory.rooms[r.name].mainSpawn != undefined) {
         mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
     } else {
@@ -76,7 +76,7 @@ creepReduction = function (r) {
                     RemoveFromList(s.container.targettedByList, creepName);
                 }
             });
-            if (creepRoomMap.get(`${parentRoom}moverExtRepairTarget${s.id}`) != undefined) {
+            if (Memory.rooms[r.name].parentRoom != undefined && creepRoomMap.get(`${Memory.rooms[r.name].parentRoom}moverExtRepairTarget${s.id}`) != undefined) {
                 totalCarryParts += roleMoverExtRepair.BodyParts.reduce((previous, p) => {
                     return p == CARRY ? (previous += 1) : previous;
                 }, 0);
@@ -84,17 +84,17 @@ creepReduction = function (r) {
             // console.log(`creepCarryPartsMap ${creepCarryPartsMap}`);
             totalCarryAmount = totalCarryParts * 50;
             container = Game.getObjectById(s.container.id);
-            if (s.container.targetCarryParts == undefined) {
+            if (s.targetCarryParts == undefined) {
                 console.log(`calculating targetCarryParts for ${s.id.substr(-3)}`);
                 ret = calcTargetCarryParts(container, mainSpawn, s.container);
                 if (ret != -1) {
-                    s.container.targetCarryParts = ret;
+                    s.targetCarryParts = ret;
                 } else {
                     console.log(`failed to calc targetCarryParts for ${s.id.substr(-3)}, cant continue`);
                     return;
                 }
             }
-            targetCarryParts = s.container.targetCarryParts;
+            targetCarryParts = s.targetCarryParts;
 
             creepCarryPartsMap.sort((e1, e2) => e1[1] < e2[1]);
             // console.log(`targetCarryParts ${targetCarryParts}`);
@@ -118,7 +118,7 @@ creepReduction = function (r) {
                 }
                 console.log(`${r.name} ${s.id.substr(-3)}.container now has tar:${targetCarryParts} act:${totalCarryParts} and ${creepCarryPartsMap.length} or ${[...creepCarryPartsMap].length}`);
             }
-            s.container.currentCarryParts = totalCarryParts;
+            s.targetCarryParts = totalCarryParts;
         }
     });
 };
@@ -127,7 +127,7 @@ global.calcTargetCarryParts = function (container, mainSpawn, containerMemory) {
     try {
         pathLength = PathFinder.search(container.pos, mainSpawn.pos).path.length;
         containerMemory.distanceToSpawn = pathLength;
-        energyPerTick = 7 * 2; // assume a full miner
+        energyPerTick = 14 * 2; // assume a full miner
         roundTripEnergyAccumulation = Math.round(pathLength * energyPerTick); // Allow 20% overhead for renewing and traffic
         containerMemory.roundTripEnergyAccumulation = roundTripEnergyAccumulation;
 
