@@ -120,6 +120,25 @@ global.roleGunner = {
             //     if (source) creep.moveTo(source);
             //     return;
             // }
+            var enemyTargets = Game.rooms[creep.memory.targetRoomName]
+                    .find(FIND_HOSTILE_CREEPS)
+                    .filter((c) => creep.owner.username != "KyberPrizrak");
+            if (enemyTargets.length) {
+                if (creep.attack(enemyTargets[0]) != OK) {
+                    creep.moveTo(enemyTargets[0], { maxRooms: 1 });
+                }
+                return;
+            }
+            var allHurtCreeps = creep.room.find(FIND_MY_CREEPS).filter((c) => {
+                return c.hits < c.hitsMax;
+            });
+            if (allHurtCreeps.length) {
+                var closestHurtCreep = creep.pos.findClosestByRange(allHurtCreeps);
+                if (creep.heal(closestHurtCreep) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(closestHurtCreep)
+                }
+                return
+            }
             if (creep.attack(creep.room.controller) != OK) {
                 creep.heal(creep);
                 if (!creep.pos.inRangeTo(creep.room.controller, 2)) creep.moveTo(creep.room.controller, { maxRooms: 1 });
