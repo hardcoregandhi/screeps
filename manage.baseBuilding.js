@@ -21,10 +21,18 @@ global.runBaseBuilder = function () {
             if (baseData[currentRoomBuildingLevel] == undefined || baseData[currentRoomBuildingLevel].stages == undefined) continue;
 
             for (var s in baseData[currentRoomBuildingLevel].stages[currentStage]) {
+                // console.log(s)
+                // console.log(currentStage)
                 baseData[currentRoomBuildingLevel].stages[currentStage].forEach((subStageBuildingTypeSet) => {
-                    subStageBuildingTypeSet.pos.forEach((offsetPos) => {
+                    // console.log(subStageBuildingTypeSet)
+                    for (var offsetPos of subStageBuildingTypeSet.pos) {
                         var realX = baseCenter.x + offsetPos.x;
                         var realY = baseCenter.y + offsetPos.y;
+                        if (realX <=1 || realY <=1 || 
+                            realX >=48 || realY >=48) {
+                                continue
+                            }
+                        // console.log(`realX ${realX} realY ${realY}`)
                         r.visual.circle(realX, realY, { color: "green", lineStyle: "dashed" });
                         const look = new RoomPosition(realX, realY, roomName).lookFor(LOOK_STRUCTURES);
                         if (look.length) {
@@ -33,22 +41,27 @@ global.runBaseBuilder = function () {
                                 look.pop();
                             }
                             if (look[0].structureType == subStageBuildingTypeSet.buildingType) {
-                                return;
+                                continue;
                             }
                         }
                         const isWall = new Room.Terrain(roomName).get(realX, realY) == TERRAIN_MASK_WALL;
                         if (!isWall && !look.length) {
                             var ret = r.createConstructionSite(realX, realY, subStageBuildingTypeSet.buildingType);
+                            // console.log(ret)
                             if (ret == ERR_RCL_NOT_ENOUGH) {
-                                console.log("ERR_RCL_NOT_ENOUGH");
+                                // console.log("ERR_RCL_NOT_ENOUGH");
+                            } else if (ret == ERR_INVALID_TARGET || ret == ERR_INVALID_ARGS) {
+                                continue;
                             } else {
+                                // console.log(`stageComplete = ${stageComplete}`)
                                 stageComplete = false;
                             }
                         }
-                    });
+                    }
                 });
             }
 
+            // console.log(`stageComplete = ${stageComplete}`)
             if (stageComplete == true) {
                 Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage++;
                 if (Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage > baseData[r.controller.level].stages.length) {
