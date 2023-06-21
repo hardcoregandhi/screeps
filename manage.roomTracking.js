@@ -289,7 +289,8 @@ roomTracking = function () {
                                 // console.log(source)
                                 if (source != null) {
                                     // console.log(source.pos.findPathTo(Game.getObjectById(Memory.rooms[r.name].mainSpawn.id)))
-                                    if ((Memory.rooms[roomName].reservation && Memory.rooms[roomName].reservation.username != "hardcoregandhi") || myRooms[Game.shard.name].includes(r.name) || Memory.rooms[roomName].parentRoom != r.name) {
+                                    if ((Memory.rooms[roomName].reservation && Memory.rooms[roomName].reservation.username != g_myUsername) || myRooms[Game.shard.name].includes(source.room.name) || Memory.rooms[roomName].parentRoom != r.name) {
+                                        // console.log("ignoring source")
                                         return;
                                     } else {
                                         if (PathFinder.search(source.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 150) {
@@ -480,7 +481,7 @@ roomTracking = function () {
                 }
             }
 
-            if (s.room.controller == undefined || (s.room.controller && s.room.controller.reservation != undefined && s.room.controller.reservation.username != "hardcoregandhi" && s.room.controller.reservation.ticksToEnd > 1000)) {
+            if (s.room.controller == undefined || (s.room.controller && s.room.controller.reservation != undefined && s.room.controller.reservation.username != g_myUsername && s.room.controller.reservation.ticksToEnd > 1000)) {
                 console.log(`Memory.rooms[\'${r.name}\'].sources[\'${s.id}\']`);
                 _.forEach(Memory.rooms[r.name].sources[s.id].targettedByList, (c) => {
                     console.log(`killing ${c} due to invader core reservation`);
@@ -610,7 +611,7 @@ roomTracking = function () {
             }
         }
 
-        if (r.controller && r.controller.reservation && r.controller.reservation.username != "hardcoregandhi") {
+        if (r.controller && r.controller.reservation && r.controller.reservation.username != g_myUsername) {
             console.log(`room ${r.name} is enemy controlled`);
             Memory.rooms[r.name].reservation = {};
             Memory.rooms[r.name].reservation.username = r.controller.reservation.username;

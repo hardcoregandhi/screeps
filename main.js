@@ -94,6 +94,15 @@ for (s of Object.keys(myRooms)) {
     }
 }
 
+global.g_myUsername = "";
+let allMyRooms = _.filter(Game.rooms, (aRoom) => (typeof aRoom.controller != "undefined") && aRoom.controller.my);
+if (allMyRooms.length === 0) {
+    let allMyCreeps = _.filter(Game.creeps, (creep) => true);
+    if (allMyCreeps.length === 0) {
+        return false;
+    } else global.g_myUsername = allMyCreeps[0].owner.username;
+} else global.g_myUsername = allMyRooms[0].controller.owner.username;
+
 global.creepsToKill = [];
 
 Memory.RoomVisualData = {};

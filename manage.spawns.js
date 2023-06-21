@@ -187,8 +187,8 @@ function spawnExternalHarvester(roomName) {
             // console.log(roomName + "harvesterExtTarget" + source.id)
             if (
                 source.room.controller == undefined ||
-                (source.room.controller && source.room.controller.reservation != undefined && source.room.controller.reservation.username != "hardcoregandhi") ||
-                (Memory.rooms[source.room.name].reservation && Memory.rooms[source.room.name].reservation.username != "hardcoregandhi")
+                (source.room.controller && source.room.controller.reservation != undefined && source.room.controller.reservation.username != g_myUsername) ||
+                (Memory.rooms[source.room.name].reservation && Memory.rooms[source.room.name].reservation.username != g_myUsername)
             ) {
                 return;
             }
@@ -229,7 +229,7 @@ function spawnMover(room) {
             return;
         }
 
-        if (source.room.controller && source.room.controller.reservation != undefined && source.room.controller.reservation.username != "hardcoregandhi" && Memory.rooms[source.room.name].reservation.username != "hardcoregandhi") {
+        if (source.room.controller && source.room.controller.reservation != undefined && source.room.controller.reservation.username != g_myUsername && Memory.rooms[source.room.name].reservation.username != g_myUsername) {
             return;
         }
 
@@ -282,7 +282,7 @@ function spawnExternalMover(roomName) {
             }
             // console.log(source.room.name + "harvesterExtTarget" + source.id)
 
-            if (source.room.controller && source.room.controller.reservation != undefined && source.room.controller.reservation.username != "hardcoregandhi" && Memory.rooms[source.room.name].reservation.username != "hardcoregandhi") {
+            if (source.room.controller && source.room.controller.reservation != undefined && source.room.controller.reservation.username != g_myUsername && Memory.rooms[source.room.name].reservation.username != g_myUsername) {
                 return;
             }
 
@@ -445,7 +445,7 @@ function scoutNeighbouringRooms(room) {
             }
         }
         if (Game.rooms[n] == undefined) {
-            if (Memory.rooms[n] && Memory.rooms[n].reservation != undefined && Memory.rooms[n].reservation.username != "hardcoregandhi") {
+            if (Memory.rooms[n] && Memory.rooms[n].reservation != undefined && Memory.rooms[n].reservation.username != g_myUsername) {
                 //do this in the if so it will still scout neghbouring neghbour rooms
                 // This room is reserved by someone else, just ignore it
                 return;
@@ -457,7 +457,7 @@ function scoutNeighbouringRooms(room) {
             }
         } else {
             _.forEach(Memory.rooms[n].neighbouringRooms, (nn) => {
-                if (Memory.rooms[nn] && Memory.rooms[nn].reservation != undefined && Memory.rooms[nn].reservation.username != "hardcoregandhi") {
+                if (Memory.rooms[nn] && Memory.rooms[nn].reservation != undefined && Memory.rooms[nn].reservation.username != g_myUsername) {
                     // This room is reserved by someone else, just ignore it
                     return;
                 }
@@ -476,7 +476,7 @@ function scoutNeighbouringRooms(room) {
     });
     if (ret == false && Memory.rooms[room.name].extraRooms != undefined) {
         _.forEach(Memory.rooms[room.name].extraRooms, (n) => {
-            if (Memory.rooms[n] && Memory.rooms[n].reservation != undefined && Memory.rooms[n].reservation.username != "hardcoregandhi") {
+            if (Memory.rooms[n] && Memory.rooms[n].reservation != undefined && Memory.rooms[n].reservation.username != g_myUsername) {
                 //do this in the if so it will still scout neghbouring neghbour rooms
                 // This room is reserved by someone else, just ignore it
                 return;
@@ -502,7 +502,7 @@ function spawnBuilderExt(roomName) {
                 return;
             }
             // console.log(roomName + "harvesterExtTarget" + source.id)
-            if (source.room.controller && source.room.controller.reservation != undefined && source.room.controller.reservation.username != "hardcoregandhi") {
+            if (source.room.controller && source.room.controller.reservation != undefined && source.room.controller.reservation.username != g_myUsername) {
                 return;
             }
 

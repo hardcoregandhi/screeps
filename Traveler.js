@@ -456,7 +456,7 @@ class Traveler {
             Memory.Traveler.rooms[room.name] = {}
         }
         if (room.controller) {
-            if ((room.controller.owner && !room.controller.my) || (room.controller.reservation && room.controller.reservation.username !== "Joey")) {
+            if ((room.controller.owner && !room.controller.my) || (room.controller.reservation && room.controller.reservation.username !== g_myUsername)) {
                 Memory.Traveler.rooms[room.name].avoid = 1
             } else {
                 delete Memory.Traveler.rooms[room.name].avoid
