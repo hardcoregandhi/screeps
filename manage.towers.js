@@ -159,7 +159,7 @@ repair = function (room, towers) {
         var mostDamagedStructure = highlyDamagedStructs[0];
 
         for (var t of highlyDamagedStructs) {
-            new RoomVisual().text(t.hits, t.pos, {
+            room.visual.text(t.hits, t.pos, {
                 align: "right",
                 font: 0.2,
             });
@@ -210,7 +210,7 @@ repair = function (room, towers) {
         }
 
         for (var t of customStructureSpecificPercentLimits) {
-            new RoomVisual().text(t.hits, t.pos, {
+            room.visual.text(t.hits, t.pos, {
                 align: "right",
                 font: 0.2,
             });
