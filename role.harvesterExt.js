@@ -115,7 +115,8 @@ global.roleHarvesterExt = {
                 }
 
                 if (creepRoomMap.get(creep.memory.targetRoomName + "csites") != undefined && creepRoomMap.get(creep.memory.targetRoomName + "csites") > 2) {
-                    if (creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) < 1) {
+                    if (creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) < Math.ceil(creepRoomMap.get(creep.memory.targetRoomName + "csites") / 10) &&
+                        Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container != undefined) {
                         spawnCreep(roleBuilderExt, "auto", { memory: { targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
                     }
                 }
