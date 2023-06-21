@@ -15,7 +15,6 @@ global.roleMover = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        creep.memory.debug = false
         if (creep.memory.returning == undefined) {
             creep.memory.returning = true;
         }
