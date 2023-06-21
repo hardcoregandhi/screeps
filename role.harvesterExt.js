@@ -176,7 +176,10 @@ global.roleHarvesterExt = {
                 if (container == null) {
                     delete Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container;
                 } else {
-                    creep.memory.targetContainer = container.id;
+                    if(creep.memory.targetContainer == null) {
+                        creep.memory.targetContainer = container.id;
+                        buildRoadsToExtSources(creep.memory.baseRoomName)
+                    }
                 }
                 // createRoadBetweenTargets(container, Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id))
             } catch (e) {
