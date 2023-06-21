@@ -361,6 +361,9 @@ function spawnExternalMover(roomName) {
                         return p != CARRY;
                     })
                     .concat(Array(Memory.rooms[potentialSources[0].room.name].sources[potentialSources[0].id].targetCarryParts).fill(CARRY));
+                if (getBodyCost(customBodyParts) == 0 || getBodyCost(customBodyParts) > Game.rooms[roomName].energyCapacityAvailable) {
+                    customBodyParts = "auto"
+                }
                 spawnCreep(
                     roleMoverExt,
                     customBodyParts,
