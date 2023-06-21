@@ -62,7 +62,7 @@ global.roleMoverLink = {
         ],
     baseBodyParts: [MOVE],
     bodyLoop: [CARRY],
-    // bodyPartsMaxCount: 17,
+    bodyPartsMaxCount:9,
 
     /** @param {Creep} creep **/
     run: function (creep) {

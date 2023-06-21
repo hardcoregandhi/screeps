@@ -11,9 +11,9 @@ global.roleBuilder = {
         CARRY, CARRY, CARRY, CARRY, CARRY,
         MOVE, MOVE, MOVE, MOVE, MOVE
         ],
-    baseBodyParts: [],
-    bodyLoop: [WORK, CARRY, MOVE],
-    bodyPartsMaxCount: 48,
+    baseBodyParts: [MOVE, CARRY, WORK],
+    bodyLoop: [MOVE, CARRY, WORK],
+    bodyPartsMaxCount: 20,
 
     roleMemory: { memory: {} },
     /** @param {Creep} creep **/
@@ -129,7 +129,7 @@ global.roleBuilder = {
                     // console.log("Defauling to Harvester")
                     roleHarvester.run(creep);
                     return;
-                } else if(creepRoomMap.get(creep.room.name + "eenergy") < 1000){
+                } else if(creepRoomMap.get(creep.room.name + "eenergy") < 1000 {
                     creep.memory.DIE=1
                 } else {
                     // console.log("Defauling to upgrader")

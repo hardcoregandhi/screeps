@@ -8,7 +8,7 @@ getRepairerStructureHealLimit = function (room, structure, wallHealPercent) {
         case STRUCTURE_CONTAINER:
             return (structure.hits / structure.hitsMax) * 100 < 50;
         case STRUCTURE_RAMPART:
-            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent;
+            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent * 10;
         case STRUCTURE_WALL:
             return (structure.hits / structure.hitsMax) * 100 < wallHealPercent;
     }
@@ -92,7 +92,8 @@ global.roleRepairer = {
                 Log(creep, customStructureSpecificPercentLimits);
                 if (customStructureSpecificPercentLimits.length) {
                     Log(creep, "repair targets found:" + customStructureSpecificPercentLimits);
-                    creep.memory.currentTarget = creep.pos.findClosestByRange(customStructureSpecificPercentLimits).id;
+                    customStructureSpecificPercentLimits.sort((a, b) => a.hits - b.hits);
+                    creep.memory.currentTarget = customStructureSpecificPercentLimits[0].id;
                 } else {
                     creep.memory.wallHealPercent = creep.memory.wallHealPercent + 0.01;
                 }

@@ -64,6 +64,9 @@ global.runSpawns = function () {
             BaseBodyParts = [CARRY, CARRY, CARRY, MOVE, MOVE];
             spawnCreep(roleHandler, BaseBodyParts, null, r.name);
             continue;
+        } else if (creepRoomMap.get(r.name + "moverLink") < 1 && r.memory.link_storage != undefined) {
+            spawnCreep(roleMoverLink, "auto", { memory: { baseRoomName: r.name } }, r.name);
+            continue;
         } else if (creepRoomMap.get(r.name + "upgrader") < 1 && r.controller.level < 8) {
             console.log("spawnUpgrader")
             spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
@@ -80,7 +83,7 @@ global.runSpawns = function () {
             continue;
         } else if (r.controller.level >=3 && creepRoomMap.get(r.name + "repairer") == undefined){
             spawnCreep(roleRepairer, "auto", { memory: { baseRoomName: r.name } }, r.name);
-        } else if (creepRoomMap.get(r.name + "builder") < Math.min(creepRoomMap.get(r.name + "csites"), 3) && creepRoomMap.get(r.name + "csites") != 0) {
+        } else if (creepRoomMap.get(r.name + "builder") < Math.min(creepRoomMap.get(r.name + "csites"), 3) && creepRoomMap.get(r.name + "csites") != 0 && creepRoomMap.get(r.name + "eenergy") > 10000) {
             spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "upgrader") < 3 && creepRoomMap.get(r.name + "eenergy") > 50000 && (r.controller.level < 8 || (r.controller.level == 8 && r.controller.ticksToDowngrade < 10000)) && !Memory.rooms[r.name].pauseGrowth) {
@@ -107,11 +110,12 @@ global.runSpawns = function () {
             continue;
         } else if (spawnExternalHarvester(r.name)) {
             continue;
+        } else if (( creepRoomMap.get(r.name + "repairer")  == undefined || creepRoomMap.get(r.name + "repairer") < 1) &&
+                    creepRoomMap.get(r.name + "eenergy") > 70000) {
+            spawnCreep(roleRepairer, "auto", null, r.name);
+            continue;
         } else if (r.controller.level < 5) {
             continue;
-            // } else if ( creepRoomMap.get(r.name + "repairer")  == undefined || creepRoomMap.get(r.name + "repairer") < 1) {
-            //     spawnCreep(roleRepairer, "auto", null, r.name);
-            //     continue;
         } else if (roomExpansion(r.name)) {
             continue;
         } else if (creepRoomMap.get(r.name + "handler") < 2 && r.energyCapacityAvailable > 1000) {
@@ -123,9 +127,7 @@ global.runSpawns = function () {
         } else if (creepRoomMap.get(r.name + "eenergy") > 750000 && r.controller.level < 8) {
             spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name); //spawn builders to upgrade which will then use the storage annd not the link
             continue;
-        } else if (creepRoomMap.get(r.name + "moverLink") < 1 && r.memory.link_storage != undefined) {
-            spawnCreep(roleMoverLink, null, { memory: { baseRoomName: r.name } }, r.name);
-            continue;
+
         } else if (creepRoomMap.get(r.name + "csites") > 5) {
             continue;
         } else if (r.controller.level == 8 && spawnPowerHarvester(r.name)) {

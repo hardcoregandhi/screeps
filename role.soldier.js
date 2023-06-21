@@ -13,7 +13,7 @@ global.roleSoldier = {
         MOVE,MOVE,MOVE,MOVE,MOVE,
         HEAL,
     ],
-    baseBodyParts: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK],
+    baseBodyParts: [TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, ATTACK],
     subBodyParts: [HEAL, HEAL, MOVE, MOVE],
     bodyLoop: [MOVE, ATTACK],
 
@@ -28,7 +28,7 @@ global.roleSoldier = {
                 return s.structureType == STRUCTURE_TOWER;
             });
         }
-        if (creep.hits < creep.hitsMax) {
+        if (creep.hits < creep.hitsMax / 2 ) {
             creep.heal(creep);
         }
 
@@ -158,6 +158,25 @@ global.roleSoldier = {
             //     if (source) creep.Move(source);
             //     return;
             // }
+            var enemyTargets = Game.rooms[creep.memory.targetRoomName]
+                    .find(FIND_HOSTILE_CREEPS)
+                    .filter((c) => creep.owner.username != "KyberPrizrak");
+            if (enemyTargets.length) {
+                if (creep.attack(enemyTargets[0]) != OK) {
+                    creep.moveTo(enemyTargets[0], { maxRooms: 1 });
+                }
+                return;
+            }
+            var allHurtCreeps = creep.room.find(FIND_MY_CREEPS).filter((c) => {
+                return c.hits < c.hitsMax;
+            });
+            if (allHurtCreeps.length) {
+                var closestHurtCreep = creep.pos.findClosestByRange(allHurtCreeps);
+                if (creep.heal(closestHurtCreep) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(closestHurtCreep)
+                }
+                return
+            }
             if (creep.attack(creep.room.controller) != OK) {
                 creep.heal(creep);
                 if (!creep.pos.inRangeTo(creep.room.controller, 2)) creep.moveTo(creep.room.controller, { maxRooms: 1 });

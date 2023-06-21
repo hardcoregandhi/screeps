@@ -57,6 +57,18 @@ global.moveToMultiRoomTarget = function (creep, target, extraOptions = null) {
     if (creep.fatigue != 0) return;
 
     if (creep.memory.prevPos != undefined) {
+        // if (creep.memory.prevPos.unstuckAttempt == true) {
+        //     ret = moveToMultiRoomTargetAvoidCreep(creep, target);
+        //     if(creep.memory.prevPos.unstuckAttemptCount == undefined) {
+        //         creep.memory.prevPos.unstuckAttemptCount = 1
+        //     } else {
+        //         creep.memory.prevPos.unstuckAttemptCount = creep.memory.prevPos.unstuckAttemptCount + 1
+        //         if (creep.memory.prevPos.unstuckAttemptCount == 5) {
+        //             delete creep.memory.prevPos
+        //         }
+        //     }
+        // }
+        ret = moveToMultiRoomTargetAvoidCreep(creep, target);
         if (creep.pos.x != creep.memory.prevPos.pos.x || creep.pos.y != creep.memory.prevPos.pos.y) {
             Log(creep, "deleting prevPos");
             Log(creep, `pos: ${creep.pos} mem: ${JSON.stringify(creep.memory.prevPos.pos)}`);

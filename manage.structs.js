@@ -176,7 +176,7 @@ global.runStructs = function () {
         if (Memory.rooms[room.name].defence == undefined) {
             Memory.rooms[room.name].defence = {};
         }
-        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS).filter((c) => c.owner.username != "KyberPrizrak" && c.body.find((part) => part.type == ATTACK || part.type == RANGED_ATTACK));
+        var hostileCreeps = room.find(FIND_HOSTILE_CREEPS).filter((c) => c.owner.username != "Invader" && c.owner.username != "KyberPrizrak" && c.body.find((part) => part.type == ATTACK || part.type == RANGED_ATTACK));
         if (!hostileCreeps.length && Memory.rooms[room.name].defence.timerInvasionStarted != undefined) {
             delete Memory.rooms[room.name].defence.timerInvasionStarted;
             return;
