@@ -8,7 +8,7 @@ global.roleHarvesterExt = {
     BodyParts: [WORK,WORK,WORK,WORK,WORK,WORK,WORK,CARRY,MOVE,MOVE,MOVE,MOVE],
     baseBodyParts: [CARRY, MOVE, WORK, WORK],
     bodyLoop: [MOVE, WORK, WORK],
-    bodyPartsMaxCount: 20,
+    bodyPartsMaxCount: 13,
     /** @param {Creep} creep **/
     run: function (creep) {
         if (creep.memory.targetSource == undefined) {
