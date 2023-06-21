@@ -13,7 +13,7 @@ global.roleGunner = {
         MOVE,MOVE,MOVE,MOVE,MOVE,
         HEAL,
     ],
-    baseBodyParts: [TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],
+    baseBodyParts: [TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE],
     subBodyParts: [HEAL, HEAL, MOVE, MOVE],
     bodyLoop: [MOVE, RANGED_ATTACK],
 
@@ -28,7 +28,7 @@ global.roleGunner = {
         if (creep.pos.roomName == creep.memory.targetRoomName) {
             enemyTowers = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((s) => s.structureType == STRUCTURE_TOWER);
         }
-        if (creep.hits < creep.hitsMax) {
+        if (creep.hits < creep.hitsMax / 2) {
             creep.heal(creep);
         }
 
