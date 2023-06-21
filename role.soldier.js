@@ -104,7 +104,7 @@ global.roleSoldier = {
             if (invaderCore.length) {
                 if (creep.attack(invaderCore[0]) != OK) {
                     creep.heal(creep);
-                    if (!creep.pos.inRangeTo(invaderCore[0], 2)) creep.moveTo(invaderCore[0], { maxRooms: 1 });
+                    if (!creep.pos.inRangeTo(invaderCore[0], 1)) creep.moveTo(invaderCore[0], { maxRooms: 1 });
                 }
                 return;
             }
