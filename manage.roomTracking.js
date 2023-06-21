@@ -448,7 +448,7 @@ roomTracking = function () {
             } else {
                 if (Memory.rooms[r.name].sources[s.id].targetCarryParts == undefined) {
                     console.log("Container found without targetCarryParts, calculating now");
-                    ret = calcTargetCarryParts(Game.getObjectById(Memory.rooms[r.name].sources[s.id].container.id), Game.getObjectById(Memory.rooms[Memory.rooms[r.name].parentRoom].mainSpawn.id), Memory.rooms[r.name].sources[s.id].container);
+                    ret = calcTargetCarryParts(Game.getObjectById(s.id), Game.getObjectById(Memory.rooms[Memory.rooms[r.name].parentRoom].mainSpawn.id), Memory.rooms[r.name].sources[s.id]);
                     if (ret != -1) {
                         Memory.rooms[r.name].sources[s.id].targetCarryParts = ret;
                     } else {
@@ -732,7 +732,6 @@ resetSourceContainerTracking = function () {
                 if (s.container != undefined) {
                     s.container.targettedBy = 0;
                     s.container.targettedByList = [];
-                    s.targetCarryParts = 0;
                 }
             });
             _.forEach(Memory.rooms[r.name].powerBanks, (p) => {
@@ -789,7 +788,7 @@ resetSourceContainerTracking = function () {
                     }, 0);
                     Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
                     Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
-                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].targetCarryParts += creepCarryParts;
+                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].currentCarryParts += creepCarryParts;
                 }
             } else if (c.memory.role == "powHarvester") {
                 Memory.rooms[c.memory.baseRoomName].powerBanks[c.memory.targetSource].targettedBy += 1;

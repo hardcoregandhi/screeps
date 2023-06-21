@@ -123,14 +123,14 @@ creepReduction = function (r) {
     });
 };
 
-global.calcTargetCarryParts = function (container, mainSpawn, containerMemory) {
+global.calcTargetCarryParts = function (source, mainSpawn, sourceMemory) {
     try {
-        pathLength = PathFinder.search(container.pos, mainSpawn.pos).path.length;
-        containerMemory.distanceToSpawn = pathLength;
+        // console.log(`calcTargetCarryParts(${JSON.stringify(source.pos)}, ${JSON.stringify(mainSpawn.pos)})`)
+        pathLength = PathFinder.search(source.pos, mainSpawn.pos).path.length;
+        sourceMemory.distanceToSpawn = pathLength;
         energyPerTick = 14 * 2; // assume a full miner
         roundTripEnergyAccumulation = Math.round(pathLength * energyPerTick); // Allow 20% overhead for renewing and traffic
-        containerMemory.roundTripEnergyAccumulation = roundTripEnergyAccumulation;
-
+        sourceMemory.roundTripEnergyAccumulation = roundTripEnergyAccumulation;
         return Math.ceil(roundTripEnergyAccumulation / 50);
     } catch (e) {
         console.log(`calcTargetCarryParts failed: ${e}`);

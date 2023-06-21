@@ -23,7 +23,7 @@ function findReplacementTarget(creep) {
             return;
         }
 
-        if (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedBy > 0) {
+        if (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 || Memory.rooms[source.room.name].sources[source.id].currentCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedBy > 0) {
             console.log(`corrupt currentCarryParts/targettedByList found for ${source.id}`);
             totalCarryParts = 0;
             _.forEach(Memory.rooms[source.room.name].sources[source.id].container.targettedByList, (creepName) => {
@@ -32,7 +32,7 @@ function findReplacementTarget(creep) {
                 }, 0);
                 totalCarryParts += creepCarryParts;
             });
-            Memory.rooms[source.room.name].sources[source.id].targetCarryParts = totalCarryParts;
+            Memory.rooms[source.room.name].sources[source.id].currentCarryParts = totalCarryParts;
         }
 
         if (Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id) == null) {
@@ -42,7 +42,7 @@ function findReplacementTarget(creep) {
 
         if (
             Memory.rooms[source.room.name].sources[source.id].targetCarryParts != undefined &&
-            Memory.rooms[source.room.name].sources[source.id].targetCarryParts < Memory.rooms[source.room.name].sources[source.id].targetCarryParts &&
+            Memory.rooms[source.room.name].sources[source.id].currentCarryParts < Memory.rooms[source.room.name].sources[source.id].targetCarryParts &&
             Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id).store.getUsedCapacity() > 1000
         ) {
             console.log(
@@ -56,7 +56,7 @@ function findReplacementTarget(creep) {
             var carryCount = creep.body.reduce((previous, p) => {
                 return p.type == CARRY ? (previous += 1) : previous;
             }, 0);
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts - carryCount;
+            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].currentCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].currentCarryParts - carryCount;
 
             creep.memory.targetRoomName = source.room.name;
             creep.memory.targetSource = source.id;
@@ -67,7 +67,7 @@ function findReplacementTarget(creep) {
             var carryCount = creep.body.reduce((previous, p) => {
                 return p.type == CARRY ? (previous += 1) : previous;
             }, 0);
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts + carryCount;
+            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].currentCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].currentCarryParts + carryCount;
             ret = true;
             return false; //early escape
         }

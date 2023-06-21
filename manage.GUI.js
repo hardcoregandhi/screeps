@@ -82,7 +82,7 @@ drawGUI = function () {
                     `${Memory.rooms[source.room.name].sources[source.id].currentMiningParts || 0}/${Memory.rooms[source.room.name].sources[source.id].targetMiningParts || 0} ` +
                     `M: ${(creepRoomMap.get(r.name + "moverExtTarget" + source.id) || 0) + (creepRoomMap.get(r.name + "moverExtRepairTarget" + source.id) || 0)}`;
                 if (Memory.rooms[source.room.name].sources[source.id].container != undefined) {
-                    text += ` ${Memory.rooms[source.room.name].sources[source.id].targetCarryParts || 0}/${Memory.rooms[source.room.name].sources[source.id].targetCarryParts || 0}`;
+                    text += ` ${Memory.rooms[source.room.name].sources[source.id].currentCarryParts || 0}/${Memory.rooms[source.room.name].sources[source.id].targetCarryParts || 0}`;
                     container = Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id);
                     if (container != undefined) {
                         text += ` ${container.store.getUsedCapacity()} / ${container.store.getCapacity()}`;

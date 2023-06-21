@@ -233,18 +233,14 @@ function spawnMover(room) {
             return;
         }
 
-        if (1 || Memory.rooms[source.room.name].sources[source.id].targetCarryParts == undefined || Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].targettedBy > 0) {
-            // console.log(`corrupt currentCarryParts/targettedByList found for ${source.id}`);
-            totalCarryParts = 0;
-            _.forEach(Memory.rooms[source.room.name].sources[source.id].targettedByList, (creepName) => {
-                if (Memory.creeps[creepName].DIE == undefined) {
-                    creepCarryParts = Game.creeps[creepName].body.reduce((previous, p) => {
-                        return p.type == CARRY ? (previous += 1) : previous;
-                    }, 0);
-                    totalCarryParts += creepCarryParts;
-                }
-            });
-            Memory.rooms[source.room.name].sources[source.id].targetCarryParts = totalCarryParts;
+        if (Memory.rooms[room.name].mainStorage != undefined) {
+            if (creepRoomMap.get(room.name+"eenergy") > 2000 && (creepRoomMap.get(room.name + "handler") == undefined || creepRoomMap.get(room.name + "handler") == 0)) {
+                return false
+            }
+        }
+
+        if (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == undefined || (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].targettedBy > 0)) {
+            Memory.rooms[source.room.name].sources[source.id].targetCarryParts = calcTargetCarryParts(source, Memory.rooms[source.room.name].mainSpawn, Memory.rooms[source.room.name].sources[source.id]);
         }
         // console.log(`Memory.rooms[source.room.name].sources[source.id].currentCarryParts ${Memory.rooms[source.room.name].sources[source.id].currentCarryParts}`)
         // console.log(`Memory.rooms[source.room.name].sources[source.id].targetCarryParts ${Memory.rooms[source.room.name].sources[source.id].targetCarryParts}`)
@@ -252,9 +248,9 @@ function spawnMover(room) {
         if (
             // 0 ||
             Memory.rooms[source.room.name].sources[source.id].targetCarryParts != undefined &&
-            Memory.rooms[source.room.name].sources[source.id].currentCarryParts < Memory.rooms[source.room.name].sources[source.id].targetCarryParts ||
-            ((creepRoomMap.get(source.room.name + "moverTarget" + source.id) == undefined || creepRoomMap.get(source.room.name + "moverTarget" + source.id) < 2)) &&
-            (creepRoomMap.get(source.room.name + "harvesterTarget" + source.id) == undefined || creepRoomMap.get(source.room.name + "harvesterTarget" + source.id) >= 1)
+            Memory.rooms[source.room.name].sources[source.id].currentCarryParts < Memory.rooms[source.room.name].sources[source.id].targetCarryParts &&
+            // ((creepRoomMap.get(source.room.name + "moverTarget" + source.id) == undefined || creepRoomMap.get(source.room.name + "moverTarget" + source.id) < 2)) &&
+            (creepRoomMap.get(source.room.name + "harvesterTarget" + source.id) != undefined || creepRoomMap.get(source.room.name + "harvesterTarget" + source.id) >= 1)
         ) {
 // console.log(Memory.rooms[source.room.name].sources[source.])
             var customBody = Array(Memory.rooms[source.room.name].sources[source.id].targetCarryParts).fill(CARRY);
@@ -301,8 +297,8 @@ function spawnExternalHandler(roomName) {
             }
             // console.log(container)
 
-            if (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedBy > 0) {
-                // console.log(`corrupt currentCarryParts/targettedByList found for ${source.id}`);
+            if (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == undefined || (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].targettedBy > 0)) {
+                console.log(`corrupt currentCarryParts/targettedByList found for ${source.id}`);
                 totalCarryParts = 0;
                 _.forEach(Memory.rooms[source.room.name].sources[source.id].container.targettedByList, (creepName) => {
                     if (Memory.creeps[creepName].DIE == undefined) {
@@ -313,12 +309,14 @@ function spawnExternalHandler(roomName) {
                         totalCarryParts += creepCarryParts;
                     }
                 });
-                if (creepRoomMap.get(`${parentRoom}moverExtRepairTarget${source.id}`) != undefined) {
+                if (creepRoomMap.get(`${Memory.rooms[source.room.name].parentRoom}moverExtRepairTarget${source.id}`) != undefined) {
                     totalCarryParts += roleMoverExtRepair.BodyParts.reduce((previous, p) => {
                         return p == CARRY ? (previous += 1) : previous;
                     }, 0);
                 }
-                Memory.rooms[source.room.name].sources[source.id].targetCarryParts = totalCarryParts;
+                Memory.rooms[source.room.name].sources[source.id].currentCarryParts = totalCarryParts;
+                Memory.rooms[source.room.name].sources[source.id].targetCarryParts = calcTargetCarryParts(source, Memory.rooms[room.name].mainSpawn, Memory.rooms[source.room.name].sources[source.id]);
+                console.log(Memory.rooms[source.room.name].sources[source.id].targetCarryParts)
             }
 
             if (Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id) == null) {
@@ -329,7 +327,7 @@ function spawnExternalHandler(roomName) {
 
             if (
                 Memory.rooms[source.room.name].sources[source.id].targetCarryParts != undefined &&
-                Memory.rooms[source.room.name].sources[source.id].targetCarryParts < Memory.rooms[source.room.name].sources[source.id].targetCarryParts &&
+                Memory.rooms[source.room.name].sources[source.id].currentCarryParts < Memory.rooms[source.room.name].sources[source.id].targetCarryParts &&
                 (creepRoomMap.get(roomName + "moverExtTarget" + source.id) == undefined || creepRoomMap.get(roomName + "moverExtTarget" + source.id) < 4) &&
                 Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id).store.getUsedCapacity() > 500
             ) {
