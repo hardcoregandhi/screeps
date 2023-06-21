@@ -9,7 +9,7 @@ getStructureHealLimit = function (room, structure) {
         case STRUCTURE_RAMPART:
             return Math.round((structure.hits / structure.hitsMax) * 100) < wallHealPercent;
         case STRUCTURE_WALL:
-            return Math.round((structure.hits / structure.hitsMax) * 100 < wallHealPercent);
+            return Math.round((structure.hits / structure.hitsMax) * 100) < wallHealPercent;
     }
 };
 
