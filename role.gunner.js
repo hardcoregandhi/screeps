@@ -58,6 +58,39 @@ global.roleGunner = {
                     if (hostileCreeps.length > 2 || allHostileCreeps.length > 4) {
                         cloneCreep(creep.name);
                     }
+                    
+                    // var healer = null;
+                    // var healerCount = 0;
+                    // const reducer = (accumulator, currentBodyPart) => {
+            
+                    //     if (currentBodyPart.type == HEAL && currentBodyPart.hits > 0) {
+                    //         accumulator += 1;
+                    //     }
+                    //     if (currentBodyPart.type == HEAL && currentBodyPart.hits > 0 && currentBodyPart.boost != undefined) {
+                    //         accumulator += 1;
+                    //     }
+                    //     return accumulator;
+                    // };
+                    // for (var h of hostileCreeps) {
+                    //     healparts = h.body.reduce(reducer, 0);
+                    //     // console.log(`${h.name} : ${healparts}`)
+                    //     if (healerCount < healparts) {
+                    //         console.log(`healer found in ${room.name}`);
+                    //         healer = h;
+                    //         healerCount = healparts;
+                    //         if (creep.pos.inRangeTo(healer, 2)) {
+                    //             var direction = creep.pos.getDirectionTo(healer);
+                    //             direction = direction >= 5 ? direction - 4 : direction + 4;
+                    //             // creep.move(direction);
+                    //             creep.rangedAttack(healer);
+                    //         } else {
+                    //             if (creep.rangedAttack(healer) != OK) {
+                    //                 creep.moveTo(healer, { maxRooms: 1 });
+                    //             }
+                    //         }
+                    //         return
+                    //     }
+                    // }
 
                     var closestHostile = creep.pos.findClosestByRange(hostileCreeps);
                     // console.log(closestHostile)
