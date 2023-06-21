@@ -129,6 +129,8 @@ global.roleBuilder = {
                     // console.log("Defauling to Harvester")
                     roleHarvester.run(creep);
                     return;
+                } else if(creepRoomMap.get(creep.room.name + "eenergy") < 1000){
+                    creep.memory.DIE=1
                 } else {
                     // console.log("Defauling to upgrader")
                     roleUpgrader.run(creep);
