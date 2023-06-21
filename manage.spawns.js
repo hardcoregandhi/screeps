@@ -381,6 +381,11 @@ function spawnExternalMover(roomName) {
 function spawnHarvester(room) {
     Debug(room.name, "spawnHarvester");
     ret = false;
+    if (Memory.rooms[room.name].mainStorage != undefined) {
+        if (creepRoomMap.get(room.name+"eenergy") > 2000 && (creepRoomMap.get(room.name + "handler") == undefined || creepRoomMap.get(room.name + "handler") == 0)) {
+            return false
+        }
+    }
     _.forEach(Memory.rooms[room.name].sources, (s) => {
         if (
             (s.currentMiningParts != undefined && s.currentMiningParts < 7 && s.targettedBy < s.miningSpots) ||
