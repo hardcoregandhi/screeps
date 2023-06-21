@@ -103,7 +103,7 @@ global.runSpawns = function () {
             continue;
         } else if (roomExpansion(r.name)) {
             continue;
-        } else if (spawnExternalHandler(r.name)) {
+        } else if (spawnExternalMover(r.name)) {
             continue;
         } else if (spawnExternalHarvester(r.name)) {
             continue;
@@ -174,7 +174,7 @@ global.runSpawns = function () {
 };
 
 function spawnExternalHarvester(roomName) {
-    // console.log(roomName)
+    console.log(`spawnExternalHarvester`)
     Debug(roomName, "spawnExternalHarvester");
 
     if (Memory.rooms[roomName].externalSources != undefined && Memory.rooms[roomName].externalSources.length) {
@@ -269,9 +269,9 @@ function spawnMover(room) {
     return false;
 }
 
-function spawnExternalHandler(roomName) {
-    // console.log(`spawnExternalHandler(${roomName}))`)
-    Debug(roomName, "spawnExternalHandler");
+function spawnExternalMover(roomName) {
+    console.log(`spawnExternalMover(${roomName}))`)
+    Debug(roomName, "spawnExternalMover");
     var potentialSources = [];
     if (Memory.rooms[roomName].externalSources != undefined && Memory.rooms[roomName].externalSources.length) {
         _.forEach(Memory.rooms[roomName].externalSources, (sourceId) => {
