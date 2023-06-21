@@ -1,5 +1,10 @@
 roomExpansion = function (myRoom) {
     if (Memory.rooms[myRoom].roomExpansion != undefined && Memory.rooms[myRoom].roomExpansion.active == true) {
+        if (target.store.getUsedCapacity(RESOURCE_ENERGY) <= 50000)
+        {
+            Memory.rooms[myRoom].roomExpansion.active = false;
+            return
+        }
         if (Memory.rooms[myRoom].roomExpansion.targetRoomName != undefined) {
             targetRoomName = Memory.rooms[myRoom].roomExpansion.targetRoomName;
             for (const i in Game.spawns) {
