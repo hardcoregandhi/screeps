@@ -3,7 +3,7 @@ global.roleUpgraderSupport = {
     roleMemory: { memory: { targetRoomName: null } },
     // prettier-ignore
     BodyParts: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ],
-    baseBodyParts: [],
+    baseBodyParts: [MOVE, MOVE, MOVE, CARRY, CARRY],
     bodyLoop: [MOVE, CARRY],
 
     /** @param {Creep} creep **/
@@ -54,13 +54,13 @@ global.roleUpgraderSupport = {
                 Log(creep, "l4upgrader");
 
                 creeps = allCreep.filter((c) => {
-                    return c.memory.role == "upgrader" && c.store.getFreeCapacity() > Math.min(100, creep.store.getUsedCapacity());
+                    return c.memory.role == "upgrader" && c.store.getFreeCapacity() >= Math.min(50, creep.store.getUsedCapacity());
                 });
 
                 if (!creeps.length) {
                     Log(creep, "l4builder");
                     creeps = allCreep.filter((c) => {
-                        return c.memory.role == "builder" && c.store.getFreeCapacity() > Math.min(100, creep.store.getUsedCapacity());
+                        return c.memory.role == "builder" && c.store.getFreeCapacity() >= Math.min(50, creep.store.getUsedCapacity());
                     });
                 }
 
@@ -79,7 +79,7 @@ global.roleUpgraderSupport = {
             Log(creep, targetCreep);
             // console.log(targetCreep)
             if (creep.transfer(targetCreep, RESOURCE_ENERGY) != OK) {
-                creep.moveTo(targetCreep);
+                creep.Move(targetCreep);
             } else {
                 targetCreep.memory.upgrading = true;
             }

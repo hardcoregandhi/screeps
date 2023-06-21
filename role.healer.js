@@ -23,7 +23,7 @@ global.roleHealer = {
         }
 
         if (creep.memory.return) {
-            creep.moveTo(Game.flags.holding.pos);
+            creep.Move(Game.flags.holding.pos);
             return;
         }
 
@@ -82,7 +82,7 @@ global.roleHealer = {
         //         const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
         //         if (route.length > 0) {
         //             const exit = creep.pos.findClosestByRange(route[0].exit);
-        //             creep.moveTo(exit);
+        //             creep.Move(exit);
         //             return
         //         }
         //     }
@@ -99,7 +99,7 @@ global.roleHealer = {
         } else {
             // if (creep.room.controller.safeMode != undefined && enemyTowers.length == 0) {
             //     source = creep.pos.findClosestByPath(FIND_SOURCES);
-            //     if (source) creep.moveTo(source);
+            //     if (source) creep.Move(source);
             //     return;
             // }
             var closestFriendlySoldier = creep.pos.findClosestByRange(FIND_MY_CREEPS).filter((c) => {
@@ -107,7 +107,7 @@ global.roleHealer = {
             });
 
             if (closestFriendlySoldier) {
-                creep.moveTo(closestFriendlySoldier);
+                creep.Move(closestFriendlySoldier);
                 return;
             }
         }

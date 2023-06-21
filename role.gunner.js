@@ -13,7 +13,7 @@ global.roleGunner = {
         MOVE,MOVE,MOVE,MOVE,MOVE,
         HEAL,
     ],
-    baseBodyParts: [TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE],
+    baseBodyParts: [TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, RANGED_ATTACK],
     subBodyParts: [HEAL, HEAL, MOVE, MOVE],
     bodyLoop: [MOVE, RANGED_ATTACK],
 
@@ -46,7 +46,7 @@ global.roleGunner = {
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
         if (creep.memory.return) {
-            creep.moveTo(Game.flags.holding.pos);
+            creep.Move(Game.flags.holding.pos);
             return;
         }
 
@@ -134,7 +134,7 @@ global.roleGunner = {
         //         const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
         //         if (route.length > 0) {
         //             const exit = creep.pos.findClosestByRange(route[0].exit);
-        //             creep.moveTo(exit);
+        //             creep.Move(exit);
         //             return
         //         }
         //     }
@@ -150,7 +150,7 @@ global.roleGunner = {
         } else {
             // if (creep.room.controller.safeMode != undefined && enemyTowers.length == 0) {
             //     source = creep.pos.findClosestByPath(FIND_SOURCES);
-            //     if (source) creep.moveTo(source);
+            //     if (source) creep.Move(source);
             //     return;
             // }
             var enemyTargets = Game.rooms[creep.memory.targetRoomName]

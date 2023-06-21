@@ -14,7 +14,7 @@ global.runRenew = function () {
         longestWaitTime = 0;
         longestWaitCreep = null;
         soldierCreep = null;
-        moverCreep = null;
+        handlerCreep = null;
         localCreeps = [];
 
         // console.log(s)
@@ -48,8 +48,8 @@ global.runRenew = function () {
                 longestWaitTime = Game.time - c.memory.timeStartingRenew;
                 longestWaitCreep = c;
             }
-            if (c.memory.role == "mover") {
-                moverCreep = c;
+            if (c.memory.role == "handler") {
+                handlerCreep = c;
             }
             if (c.memory.role == "soldier") {
                 soldierCreep = c;
@@ -62,7 +62,7 @@ global.runRenew = function () {
         // console.log(`lowestLocalTickCreep: ${lowestLocalTickCreep}`)
         // console.log(`lowestLocalTickCount: ${lowestLocalTickCount}`)
         // console.log(`soldierCreep: ${soldierCreep}`)
-        // console.log(`moverCreep: ${moverCreep}`)
+        // console.log(`handlerCreep: ${handlerCreep}`)
         if (highestLocalTickCreep != undefined) {
             if (localCreeps.length == 8 && s.spawning) {
                 // console.log("spawn surrounded")
@@ -77,7 +77,7 @@ global.runRenew = function () {
             }
             // priority
             // 0 <50 tick left
-            // 1 mover to keep everything else healing
+            // 1 handler to keep everything else healing
             // 2 soldier to protect
             // 3 highest to remove traffic
             var healTarget;
@@ -90,9 +90,9 @@ global.runRenew = function () {
             } else if (longestWaitTime > 100) {
                 Memory.rooms[s.room.name].spawns[s.name].blockSpawn = true;
                 healTarget = longestWaitCreep;
-            } else if (moverCreep != undefined) {
+            } else if (handlerCreep != undefined) {
                 Memory.rooms[s.room.name].spawns[s.name].blockSpawn = true;
-                healTarget = moverCreep;
+                healTarget = handlerCreep;
             } else if (soldierCreep != undefined) {
                 healTarget = soldierCreep;
             } else if (highestLocalTickCreep) {

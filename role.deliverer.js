@@ -42,7 +42,7 @@ global.roleDeliverer = {
             for (resourceType in creep.store) {
                 if (creep.transfer(target, resourceType) != OK) {
                     // console.log(creep.transfer(storage, resourceType) )
-                    creep.moveTo(target);
+                    creep.Move(target);
                     return;
                 }
             }

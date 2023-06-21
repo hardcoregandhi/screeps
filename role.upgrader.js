@@ -20,7 +20,7 @@ global.roleUpgrader = {
         Log(creep, "run");
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
-            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
+            creep.Move(new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
 
@@ -120,8 +120,8 @@ global.roleUpgrader = {
             }
             Log(creep, "upgrading controller");
             if (creep.upgradeController(creep.room.controller) != OK) {
-                if (!creep.pos.inRangeTo(creep.room.controller, 4)) moveToMultiRoomTarget(creep, creep.room.controller.pos, { range: 3 });
-                else moveToMultiRoomTargetAvoidCreep(creep, creep.room.controller.pos, { range: 3 });
+                if (!creep.pos.inRangeTo(creep.room.controller, 4)) creep.Move(creep.room.controller.pos, { range: 3 });
+                else creep.Move(creep.room.controller.pos, { range: 3 });
             }
         } else {
             Log(creep, "retrieving");
@@ -155,7 +155,7 @@ global.roleUpgrader = {
                     return;
                 } else {
                     if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
-                        moveToMultiRoomTarget(creep, mainStorage.pos);
+                        creep.Move(mainStorage.pos);
                     }
                 }
             }

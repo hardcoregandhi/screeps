@@ -24,7 +24,7 @@ creepTracking = function () {
     // Active Creep Tracking
     _.forEach(Game.rooms, (r) => {
         creepRoomMap.set(r.name + "builder", 0);
-        creepRoomMap.set(r.name + "mover", 0);
+        creepRoomMap.set(r.name + "handler", 0);
         creepRoomMap.set(r.name + "upgrader", 0);
         creepRoomMap.set(r.name + "harvester", 0);
         creepRoomMap.set(r.name + "claimer", 0);

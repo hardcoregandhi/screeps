@@ -12,6 +12,10 @@ global.Log = function (creep, str) {
 };
 
 global.healRoads = function (creep) {
+    
+    if(!creep.body.some(e => e.type == WORK)) {
+        return -1;
+    }
     // Heal Roads
     var towers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
         return structure.structureType == STRUCTURE_TOWER;
@@ -39,16 +43,19 @@ global.pickupNearby = function (creep) {
     var tombstoneResource = creep.room.find(FIND_TOMBSTONES).filter((r) => r.store.getUsedCapacity() >= 150);
     var ruinResource = creep.room.find(FIND_RUINS).filter((object) => creep.pos.inRangeTo(object, 1));
 
+    var ret = ERR_NOT_FOUND;
     if (droppedEnergy.length > 0) {
         // console.log(creep.name + " picking up Nearby")
-        creep.pickup(droppedEnergy[0]);
+        droppedEnergy.sort((a, b) => b.amount - a.amount);
+        ret = creep.pickup(droppedEnergy[0]);
     }
     if (tombstoneResource.length > 0) {
-        creep.withdraw(tombstoneResource[0], RESOURCE_ENERGY);
+        ret = creep.withdraw(tombstoneResource[0], RESOURCE_ENERGY);
     }
     if (ruinResource.length > 0) {
-        creep.withdraw(ruinResource[0], RESOURCE_ENERGY);
+        ret = creep.withdraw(ruinResource[0], RESOURCE_ENERGY);
     }
+    return ret;
 };
 
 global.pickupOnSpot = function (creep) {
@@ -83,7 +90,7 @@ global.returnToHeal = function (creep, room) {
     if (creep.memory.healing === true) {
         spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
         if (creep.room.name != room) {
-            moveToMultiRoomTarget(creep, spawn);
+            creep.Move(spawn);
             return true;
         }
 
@@ -119,6 +126,9 @@ global.returnToHeal = function (creep, room) {
 };
 
 global.fallbackToOtherRoles = function (creep, roomName) {
+    if (creepRoomMap.get(roomName+"handler") == undefined) {
+        roleMover.run(creep);
+    }
     var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
     if (targets.length) {
         roleBuilder.run(creep);
@@ -145,7 +155,7 @@ global.interShardMove = function (creep) {
             }
             portal = portal[0];
             InterShardMemory.setLocal(JSON.stringify(creep.memory));
-            creep.moveTo(portal);
+            creep.Move(portal);
 
             break;
         default:
@@ -153,7 +163,7 @@ global.interShardMove = function (creep) {
                 const route = Game.map.findRoute(creep.room.name, creep.memory.interShard[0]);
                 if (route.length > 0) {
                     const exit = creep.pos.findClosestByRange(route[0].exit);
-                    creep.moveTo(exit);
+                    creep.Move(exit);
                 }
             } else {
                 creep.memory.interShard.shift();
@@ -252,7 +262,7 @@ global.TransferAll = function (creep, storage) {
     for (const resourceType in creep.store) {
         if (creep.transfer(storage, resourceType) != OK) {
             // console.log(creep.transfer(storage, resourceType) )
-            creep.moveTo(storage);
+            creep.Move(storage);
             return;
         }
     }

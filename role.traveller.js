@@ -48,7 +48,7 @@ global.roleTraveller = {
                 const route = Game.map.findRoute(creep.room.name, creep.memory.baseRoomName);
                 if (route.length > 0) {
                     const exit = creep.pos.findClosestByRange(route[0].exit);
-                    creep.moveTo(exit);
+                    creep.Move(exit);
                 }
             } else {
                 var targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
