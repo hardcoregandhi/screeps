@@ -50,6 +50,11 @@ global.roleHandler = {
 
         Log(creep, 2);
         pickupNearby(creep);
+        
+        if (creepRoomMap.get(r.name + "eenergy") == 0 && creepRoomMap.get(r.name + "harvester") == 0) {
+            creep.memory.DIE=1
+            return
+        }
 
         // if (creep.room.energyCapacityAvailable - creep.room.energyAvailable < 100 && Memory.rooms[creep.room.name].link_storage == undefined) return;
 
