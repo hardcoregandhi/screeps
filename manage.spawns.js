@@ -70,7 +70,7 @@ global.runSpawns = function () {
             continue;
         } else if (creepRoomMap.get(r.name + "upgraderSupport") == undefined || creepRoomMap.get(r.name + "upgraderSupport") < Math.floor(creepRoomMap.get(r.name + "upgrader") / 2) && r.controller.level < 8) {
             console.log("spawnUpgraderSupport")
-            spawnCreep(roleUpgraderSupport, "auto", { memory: { baseRoomName: r.name } }, r.name);
+            spawnCreep(roleUpgraderSupport, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name);
             continue;
         } else if (creepRoomMap.get(r.name + "upgrader") < 2 && r.controller.level < 8 && room.energyAvailable == room.energyCapacityAvailable && Game.getObjectById(Memory.rooms[r.name].mainStorage).store.getFreeCapacity() <= 50) {
             spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
