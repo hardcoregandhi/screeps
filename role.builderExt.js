@@ -121,7 +121,7 @@ global.roleBuilderExt = {
 
             Log(creep, 8);
             var targets = Game.rooms[creep.memory.baseRoomName].find(FIND_STRUCTURES).filter((structure) => {
-                return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity() > 0;
+                return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER) && structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
             });
 
             if (targets.length) {
