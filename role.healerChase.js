@@ -39,7 +39,7 @@ global.roleHealerChase = {
         }
 
         if (creep.memory.return) {
-            creep.moveTo(Game.flags.holding.pos);
+            creep.Move(Game.flags.holding.pos);
             return;
         }
 
@@ -65,7 +65,7 @@ global.roleHealerChase = {
             creep.heal(targetCreep);
         } else {
             creep.rangedHeal(targetCreep);
-            creep.moveTo(targetCreep);
+            creep.Move(targetCreep);
         }
     },
 };

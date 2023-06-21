@@ -54,7 +54,7 @@ global.roleRepairer = {
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
             Log(creep, "returning home.");
-            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
+            creep.Move(new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
 

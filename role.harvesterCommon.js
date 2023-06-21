@@ -18,10 +18,10 @@ depositInSupportedContainer = function (creep, source, container) {
     if (container != null && container.hits < 200000) {
         Log(creep, `healing ${container}`);
         if (creep.repair(container) != OK) {
-            moveToMultiRoomTarget(creep, container);
+            creep.Move(container);
         }
     } else if (creep.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-        moveToMultiRoomTarget(creep, container);
+        creep.Move(container);
         Log(creep, `filling ${container}`);
     }
 };

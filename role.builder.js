@@ -41,7 +41,7 @@ global.roleBuilder = {
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
             Log(creep, "returning home.");
-            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
+            creep.Move(new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
         var customStructureSpecificPercentLimits = [];
@@ -230,7 +230,7 @@ global.roleBuilder = {
                 if (containers.length) {
                     container = creep.pos.findClosestByPath(containers);
                     if (creep.withdraw(container, RESOURCE_ENERGY) != OK) {
-                        moveToMultiRoomTarget(creep, container);
+                        creep.Move(container);
                     }
                     return;
                 }

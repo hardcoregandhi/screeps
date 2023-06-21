@@ -57,7 +57,7 @@ global.roleRaider = {
                 Log(creep, "using mainStorage");
                 for (const resourceType in creep.store) {
                     if (creep.transfer(mainStorage, resourceType) != OK) {
-                        moveToMultiRoomTarget(creep, mainStorage);
+                        creep.Move(mainStorage);
                         return;
                     }
                 }
@@ -78,7 +78,7 @@ global.roleRaider = {
                 // });
                 // if (route.length > 0) {
                 //     const exit = creep.pos.findClosestByRange(route[0].exit);
-                //     creep.moveTo(exit);
+                //     creep.Move(exit);
                 //     return;
                 // }
                 // if (Game.rooms[creep.memory.targetRoomName] == undefined)
@@ -102,7 +102,7 @@ global.roleRaider = {
                 }
 
                 if (creep.pickup(droppedResource) != OK) {
-                    creep.moveTo(droppedResource);
+                    creep.Move(droppedResource);
                 }
                 return;
                 // if (creep.memory.currentTarget == null) {
@@ -131,7 +131,7 @@ global.roleRaider = {
                     creep.say("f/tomb");
                     for (const resourceType in resourceFilledStructs.store) {
                         if (creep.withdraw(resourceFilledStructs, resourceType) != 0) {
-                            moveToMultiRoomTarget(creep, resourceFilledStructs);
+                            creep.Move(resourceFilledStructs);
                         }
                     }
                 } else {

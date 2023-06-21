@@ -59,7 +59,7 @@ global.roleMover = {
                 if (mainStorage.structureType == STRUCTURE_CONTAINER) {
                     if (mainStorage.hits < mainStorage.hitsMax / 2) {
                         if (creep.repair(mainStorage) == ERR_NOT_IN_RANGE) {
-                            moveToMultiRoomTarget(creep, mainStorage.pos);
+                            creep.Move(mainStorage.pos);
                         }
                         return;
                     }
@@ -69,7 +69,7 @@ global.roleMover = {
                     for (const resourceType in creep.store) {
                         if (creep.transfer(mainStorage, resourceType) != OK) {
                             Log(creep, creep.transfer(mainStorage, resourceType));
-                            moveToMultiRoomTarget(creep, mainStorage);
+                            creep.Move(mainStorage);
                         }
                     }
                 } else {
@@ -112,7 +112,7 @@ global.roleMover = {
                 target = Game.getObjectById(creep.memory.targetSource)
                 var droppedEnergy = target.pos.findInRange(FIND_DROPPED_RESOURCES, 3);
                 droppedEnergy.sort((a, b) => b.amount - a.amount);
-                moveToMultiRoomTarget(creep, droppedEnergy[0]);
+                creep.Move(droppedEnergy[0]);
                 return
             }
 
@@ -133,7 +133,7 @@ global.roleMover = {
                 for (const resourceType in target.store) {
                     Log(creep, 9);
                     if (creep.withdraw(target, resourceType) != OK) {
-                        moveToMultiRoomTarget(creep, target);
+                        creep.Move(target);
                     }
                 }
             } else {
@@ -141,7 +141,7 @@ global.roleMover = {
                 target = Game.getObjectById(creep.memory.targetSource)
                 var droppedEnergy = target.pos.findInRange(FIND_DROPPED_RESOURCES, 3);
                 droppedEnergy.sort((a, b) => b.amount - a.amount);
-                moveToMultiRoomTarget(creep, droppedEnergy[0]);
+                creep.Move(droppedEnergy[0]);
             }
         }
     },

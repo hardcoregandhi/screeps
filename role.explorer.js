@@ -27,7 +27,7 @@ global.roleExplorer = {
             moveToRoom(creep, creep.memory.baseRoomName);
             return;
         } else {
-            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.targetRoomName));
+            creep.Move(new RoomPosition(25, 25, creep.memory.targetRoomName));
         }
     },
 };

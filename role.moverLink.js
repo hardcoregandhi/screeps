@@ -146,13 +146,13 @@ global.roleMoverLink = {
                     if (link_storage.store.getUsedCapacity(RESOURCE_ENERGY)) {
                         if (creep.withdraw(link_storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                             Log(creep, "moving to link_storage");
-                            creep.moveTo(link_storage);
+                            creep.Move(link_storage);
                             return;
                         }
                     } else {
                         if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                             Log(creep, "moving to mainStorage");
-                            creep.moveTo(mainStorage);
+                            creep.Move(mainStorage);
                             return;
                         }
                     }
@@ -160,7 +160,7 @@ global.roleMoverLink = {
 
                 if (creep.transfer(terminal, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     Log(creep, "moving to terminal");
-                    creep.moveTo(terminal);
+                    creep.Move(terminal);
                     return;
                 }
 
@@ -275,7 +275,7 @@ global.roleMoverLink = {
             if (creep.memory.overflow == true) {
                 if (creep.transfer(terminal, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     Log(creep, "moving to mainStorage");
-                    creep.moveTo(terminal);
+                    creep.Move(terminal);
                     return;
                 }
                 creep.memory.overflow = false;
@@ -290,7 +290,7 @@ global.roleMoverLink = {
                     if (creep.transfer(terminal, resourceType) == OK) {
                         creep.memory.transferringToMainRoom = false;
                     } else {
-                        creep.moveTo(terminal);
+                        creep.Move(terminal);
                     }
                     creep.memory.transferringToMainRoom = false;
                     return;
@@ -304,7 +304,7 @@ global.roleMoverLink = {
                         if (creep.transfer(mainStorage, resourceType) == OK) {
                             creep.memory.withdrawFromTerminal = false;
                         } else {
-                            creep.moveTo(mainStorage);
+                            creep.Move(mainStorage);
                         }
                         return;
                     }
@@ -317,7 +317,7 @@ global.roleMoverLink = {
                 if (ret == OK) {
                     creep.memory.topUpTerminal = false;
                 } else {
-                    creep.moveTo(terminal);
+                    creep.Move(terminal);
                 }
                 return;
             }
@@ -326,7 +326,7 @@ global.roleMoverLink = {
                 Log(creep, `${link_controller}: mainStorage:${mainStorage.store.getUsedCapacity(RESOURCE_ENERGY)} linkController:${link_controller.store.getUsedCapacity(RESOURCE_ENERGY)}`);
                 if (creep.transfer(link_storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     Log(creep, "moving to link_storage");
-                    creep.moveTo(link_storage);
+                    creep.Move(link_storage);
                     return;
                 }
                 if (link_storage.cooldown == 0) {
@@ -352,7 +352,7 @@ global.roleMoverLink = {
                 if (ret == ERR_NOT_IN_RANGE) {
                     Log(creep, ret);
                     Log(creep, "moving to " + terminal);
-                    creep.moveTo(terminal);
+                    creep.Move(terminal);
                 } else if (ret == OK) {
                     creep.memory.sendingToSupportRoom = false;
                     return;
@@ -365,7 +365,7 @@ global.roleMoverLink = {
                 for (const resourceType in creep.store) {
                     if (creep.transfer(terminal, resourceType) == OK) {
                     } else {
-                        creep.moveTo(terminal);
+                        creep.Move(terminal);
                     }
                     return;
                 }
@@ -391,7 +391,7 @@ global.roleMoverLink = {
                     ret = creep.transfer(terminal, creep.memory.requestDepositResource);
                     Log(creep, ret);
                     if (ret == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(mainStorage);
+                        creep.Move(mainStorage);
                     } else if (ret == OK) {
                         return;
                     }
@@ -416,7 +416,7 @@ global.roleMoverLink = {
                 if (mainStorage.store.getUsedCapacity() > 950000) {
                     if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         Log(creep, "moving to mainStorage");
-                        creep.moveTo(mainStorage);
+                        creep.Move(mainStorage);
                         return;
                     }
                     creep.memory.overflow = true;
@@ -431,7 +431,7 @@ global.roleMoverLink = {
                         Log(creep, "doing default behaviour");
                         if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                             Log(creep, "moving to mainStorage");
-                            creep.moveTo(mainStorage);
+                            creep.Move(mainStorage);
                             return;
                         } else {
                             creep.memory.supplyController = true;
@@ -447,7 +447,7 @@ global.roleMoverLink = {
                     if (ret == ERR_NOT_IN_RANGE) {
                         Log(creep, ret);
                         Log(creep, "moving to " + link_storage);
-                        creep.moveTo(link_storage);
+                        creep.Move(link_storage);
                     } else if (ret == OK) {
                         return;
                     }
@@ -463,7 +463,7 @@ global.roleMoverLink = {
                             if (ret == ERR_NOT_IN_RANGE) {
                                 Log(creep, creep.withdraw(mainStorage, RESOURCE_ENERGY));
                                 Log(creep, "moving to " + mainStorage);
-                                creep.moveTo(mainStorage);
+                                creep.Move(mainStorage);
                             } else if (ret == OK) {
                                 creep.memory.sendingToSupportRoom = true;
                                 return;
@@ -488,7 +488,7 @@ global.roleMoverLink = {
                     // var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
                     ret = creep.withdraw(terminal, RESOURCE_ENERGY);
                     if (ret == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(terminal);
+                        creep.Move(terminal);
                     }
                     return;
                 }
@@ -500,7 +500,7 @@ global.roleMoverLink = {
                         ret = creep.withdraw(mainStorage, "energy");
                         Log(creep, ret);
                         if (ret == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(mainStorage);
+                            creep.Move(mainStorage);
                         } else if (ret == OK) {
                             return;
                         }
@@ -516,7 +516,7 @@ global.roleMoverLink = {
                             ret = creep.withdraw(terminal, creep.memory.requestWithdrawResource);
                             Log(creep, ret);
                             if (ret == ERR_NOT_IN_RANGE) {
-                                creep.moveTo(terminal);
+                                creep.Move(terminal);
                             } else if (ret == OK) {
                                 return;
                             }
@@ -531,7 +531,7 @@ global.roleMoverLink = {
                         ret = creep.withdraw(mainStorage, creep.memory.requestDepositResource);
                         Log(creep, ret);
                         if (ret == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(mainStorage);
+                            creep.Move(mainStorage);
                         } else if (ret == OK) {
                             return;
                         }
@@ -547,7 +547,7 @@ global.roleMoverLink = {
                                 creep.memory.transferringToMainRoom = true;
                                 creep.memory.moving = true;
                             } else {
-                                creep.moveTo(mainStorage);
+                                creep.Move(mainStorage);
                             }
                             return;
                         }
@@ -567,7 +567,7 @@ global.roleMoverLink = {
                                 return;
                             } else {
                                 Log(creep, "mainRoom moving to terminal");
-                                creep.moveTo(terminal);
+                                creep.Move(terminal);
                                 return;
                             }
                         }
@@ -578,7 +578,7 @@ global.roleMoverLink = {
                 if (terminal && mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 200000 && terminal.store.getUsedCapacity(RESOURCE_ENERGY) < 10000 && terminal.store.getFreeCapacity()) {
                     Log(creep, "topping up terminal");
                     if (creep.withdraw(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(mainStorage);
+                        creep.Move(mainStorage);
                     } else {
                         creep.memory.topUpTerminal = true;
                     }
@@ -589,7 +589,7 @@ global.roleMoverLink = {
                 //     ret = creep.withdraw(terminal, RESOURCE_ENERGY);
                 //     Log(creep, ret);
                 //     if (ret == ERR_NOT_IN_RANGE) {
-                //         creep.moveTo(terminal);
+                //         creep.Move(terminal);
                 //     } else if (ret == OK) {
                 //         return;
                 //     }
@@ -602,7 +602,7 @@ global.roleMoverLink = {
                             if (creep.withdraw(terminal, resourceType) == OK) {
                                 creep.memory.withdrawFromTerminal = true;
                             } else {
-                                creep.moveTo(terminal);
+                                creep.Move(terminal);
                             }
                             return;
                         }

@@ -64,7 +64,7 @@ global.roleCourier = {
         if (!creep.memory.returning) {
             Log(creep, "!returning");
             if (creep.room.name != creep.memory.targetRoomName) {
-                moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.targetRoomName));
+                creep.Move(new RoomPosition(25, 25, creep.memory.targetRoomName));
             } else {
                 roomCreeps = creep.room.find(FIND_CREEPS).filter(function (c) {
                     return c.owner.username == "Screeps";

@@ -79,7 +79,7 @@ global.roleUpgraderSupport = {
             Log(creep, targetCreep);
             // console.log(targetCreep)
             if (creep.transfer(targetCreep, RESOURCE_ENERGY) != OK) {
-                creep.moveTo(targetCreep);
+                creep.Move(targetCreep);
             } else {
                 targetCreep.memory.upgrading = true;
             }

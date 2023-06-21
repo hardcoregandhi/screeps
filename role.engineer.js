@@ -82,7 +82,7 @@ global.roleEngineer = {
                     Log(creep, "transferring " + r);
                     if (creep.transfer(terminal, r) == ERR_NOT_IN_RANGE) {
                         Log(creep, "moving to terminal");
-                        creep.moveTo(terminal);
+                        creep.Move(terminal);
                     }
                     return;
                 }
@@ -91,7 +91,7 @@ global.roleEngineer = {
                     Log(creep, "withdrawing " + r);
                     if (creep.withdraw(factory, r) == ERR_NOT_IN_RANGE) {
                         Log(creep, "moving to factory");
-                        creep.moveTo(factory);
+                        creep.Move(factory);
                     }
                     return;
                 }
@@ -191,7 +191,7 @@ function DumpNonTargetInStorage(creep, storage, target) {
     for (const resourceType in creep.store) {
         if (resourceType != target) {
             if (creep.transfer(storage, resourceType) != OK) {
-                creep.moveTo(storage);
+                creep.Move(storage);
             }
             break;
         }
@@ -205,7 +205,7 @@ function WithdrawResourceFromStorage(creep, storage, resource, amount = null) {
         // or less than amount
         DumpNonTargetInStorage(creep, storage, resource);
     } else if (creep.withdraw(storage, resource) != OK) {
-        creep.moveTo(storage);
+        creep.Move(storage);
     }
     return;
 }
@@ -213,7 +213,7 @@ function WithdrawResourceFromStorage(creep, storage, resource, amount = null) {
 function DeliverResourceToFactory(creep, factory, resource) {
     Log(creep, "DeliverResourceToFactory");
     if (creep.transfer(factory, resource) != OK) {
-        creep.moveTo(factory);
+        creep.Move(factory);
     }
 }
 
@@ -238,23 +238,23 @@ function DeliverResourceToFactory(creep, factory, resource) {
 //     } else {
 //         if(creep.store.getUsedCapacity(RESOURCE_BATTERY)) {
 //             if(creep.transfer(terminal, RESOURCE_BATTERY) != OK) {
-//                 creep.moveTo(terminal)
+//                 creep.Move(terminal)
 //             }
 //         } else {
 //             if (factory.store.getUsedCapacity(RESOURCE_BATTERY)) {
 //                 if (creep.withdraw(factory, RESOURCE_BATTERY) != OK) {
-//                     creep.moveTo(factory)
+//                     creep.Move(factory)
 //                 }
 //             } else {
 //                 // Make battery
 //                 if (factory.produce(RESOURCE_BATTERY) != OK) {
 //                     if(creep.store.getUsedCapacity(RESOURCE_ENERGY)) {
 //                         if(creep.transfer(factory, RESOURCE_ENERGY) != OK) {
-//                             creep.moveTo(factory)
+//                             creep.Move(factory)
 //                         }
 //                     } else {
 //                          if(creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
-//                             creep.moveTo(mainStorage)
+//                             creep.Move(mainStorage)
 //                         }
 //                     }
 //                 }

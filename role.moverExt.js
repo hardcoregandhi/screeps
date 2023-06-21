@@ -112,7 +112,7 @@ global.roleMoverExt = {
 
         if (creep.memory.fleeing > 0) {
             creep.memory.fleeing -= 1;
-            moveToMultiRoomTarget(creep, Game.rooms[creep.memory.baseRoomName].controller);
+            creep.Move(Game.rooms[creep.memory.baseRoomName].controller);
             return;
         }
 
@@ -159,7 +159,7 @@ global.roleMoverExt = {
                 if (route.length > 0) {
                     creep.say("Headin oot");
                     const exit = creep.pos.findClosestByRange(route[0].exit);
-                    moveToMultiRoomTarget(creep, exit);
+                    creep.Move(exit);
                 } else {
                     creep.say("No route found");
                     Log(creep, "no route to target room ", creep.memory.targetRoomName);
@@ -253,13 +253,13 @@ global.roleMoverExt = {
                         findReplacementTarget(creep);
                     }
                     if (!creep.pos.inRangeTo(targetContainer, 3)) {
-                        moveToMultiRoomTarget(creep, targetContainer);
+                        creep.Move(targetContainer);
                     }
 
                     return;
                 }
                 if (creep.withdraw(targetContainer, RESOURCE_ENERGY) != OK) {
-                    if (!creep.pos.inRangeTo(targetContainer, 1)) moveToMultiRoomTarget(creep, targetContainer);
+                    if (!creep.pos.inRangeTo(targetContainer, 1)) creep.Move(targetContainer);
                 }
             } else {
                 if (Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container != undefined) {
@@ -269,7 +269,7 @@ global.roleMoverExt = {
                     console.log(`${creep.name} has no container, killing.`);
                     // creep.memory.DIE = true;
                     targetSource = Game.getObjectById(creep.memory.targetSource);
-                    if (!creep.pos.inRangeTo(targetSource.pos, 1)) moveToMultiRoomTarget(creep, targetSource.pos);
+                    if (!creep.pos.inRangeTo(targetSource.pos, 1)) creep.Move(targetSource.pos);
                 }
             }
         } else {
@@ -295,7 +295,7 @@ global.roleMoverExt = {
                 link = Game.getObjectById(creep.memory.target_link);
                 if (link != undefined) {
                     if (creep.transfer(link, RESOURCE_ENERGY) != OK) {
-                        moveToMultiRoomTarget(creep, link);
+                        creep.Move(link);
                     }
                     if (link.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
                         link_storage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_storage);
@@ -324,7 +324,7 @@ global.roleMoverExt = {
             if (storages.length) {
                 if (creep.transfer(storages[0], RESOURCE_ENERGY) != OK) {
                     // console.log(1)
-                    moveToMultiRoomTarget(creep, storages[0]);
+                    creep.Move(storages[0]);
                 }
             } else creep.say("no eenergy");
         }

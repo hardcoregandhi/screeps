@@ -163,7 +163,7 @@ global.roleHarvester = {
                             Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link = undefined;
                         }
                         if (creep.transfer(link, RESOURCE_ENERGY) != OK) {
-                            moveToMultiRoomTarget(creep, link.pos);
+                            creep.Move(link.pos);
                         }
 
                         Log(creep, link.store.getFreeCapacity(RESOURCE_ENERGY));
@@ -205,7 +205,7 @@ global.roleHarvester = {
                             if (csites.length) {
                                 Log(creep, "building");
                                 if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
-                                    moveToMultiRoomTarget(creep, csites[0]);
+                                    creep.Move(csites[0]);
                                 }
                                 return;
                             } else {
@@ -233,7 +233,7 @@ global.roleHarvester = {
                                         }
                                     }
                                 } else {
-                                    moveToMultiRoomTarget(creep, targetSource);
+                                    creep.Move(targetSource);
                                 }
                             }
                         }
@@ -250,7 +250,7 @@ global.roleHarvester = {
                             if (target != null && target.hits < 200000) {
                                 Log(creep, `healing ${target}`);
                                 if (creep.repair(target) != OK) {
-                                    moveToMultiRoomTarget(creep, target);
+                                    creep.Move(target);
                                 }
                                 return;
                             }
@@ -289,7 +289,7 @@ global.roleHarvester = {
                                 }
                             }
                         } else {
-                            moveToMultiRoomTarget(creep, source);
+                            creep.Move(source);
                         }
                     }
 
@@ -299,7 +299,7 @@ global.roleHarvester = {
                     if (csites.length) {
                         Log(creep, "building");
                         if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
-                            moveToMultiRoomTarget(creep, csites[0]);
+                            creep.Move(csites[0]);
                         }
                         return;
                     }
@@ -309,13 +309,13 @@ global.roleHarvester = {
                         Log(creep, "mainStorage found");
                         if (mainStorage != null && mainStorage.hits < 200000 && mainStorage.structureType == STRUCTURE_CONTAINER) {
                             if (creep.repair(mainStorage) == ERR_NOT_IN_RANGE) {
-                                moveToMultiRoomTarget(creep, mainStorage.pos);
+                                creep.Move(mainStorage.pos);
                             }
                         } else if (mainStorage.store.getFreeCapacity() == 0) {
                             roleUpgrader.run(creep);
                         } else {
                             if (creep.transfer(mainStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                                moveToMultiRoomTarget(creep, mainStorage.pos);
+                                creep.Move(mainStorage.pos);
                             }
                         }
                         return;
@@ -337,7 +337,7 @@ global.roleHarvester = {
                         if (target != null && target.hits < 200000 && target.structureType == STRUCTURE_CONTAINER) {
                             creep.repair(target);
                         } else if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            moveToMultiRoomTarget(creep, target.pos);
+                            creep.Move(target.pos);
                         }
                         return;
                     }

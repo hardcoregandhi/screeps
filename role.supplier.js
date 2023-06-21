@@ -33,7 +33,7 @@ global.roleSupplier = {
             var closestSource = creep.pos.findClosestByRange(sources);
 
             if (creep.harvest(closestSource) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(closestSource);
+                creep.Move(closestSource);
             }
 
         }

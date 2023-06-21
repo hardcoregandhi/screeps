@@ -29,7 +29,7 @@ global.moveToTarget = function (creep, target, extraOptions = null) {
                 creep.memory.prevPos.time = Game.time;
             } else {
                 if (creep.pos == creep.memory.prevPos.pos.x && creep.pos == creep.memory.prevPos.pos.y && Game.time + 5 > creep.memory.prevPos.time) {
-                    ret = moveToMultiRoomTargetAvoidCreep(creep, target);
+                    ret = creep.Move(target);
                     if (ret == OK) {
                         delete creep.memory.prevPos;
                     }
@@ -95,7 +95,7 @@ global.moveToMultiRoomTarget = function (creep, target, extraOptions = null) {
                     if (creep.memory.prevPos.unstuckAttempt == undefined) {
                         Log(creep, `stuck.`);
                         creep.memory.prevPos.unstuckAttempt = true;
-                        ret = moveToMultiRoomTargetAvoidCreep(creep, target);
+                        ret = creep.Move(target);
                     } else {
                         creep.move(Math.round(Math.random() * 10));
                     }

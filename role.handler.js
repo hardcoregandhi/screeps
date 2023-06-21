@@ -44,7 +44,7 @@ global.roleHandler = {
                 return;
             }
             Log(creep, 1);
-            moveToMultiRoomTarget(creep, creep.memory.baseRoomName);
+            creep.Move(creep.memory.baseRoomName);
             return;
         }
 
@@ -65,7 +65,7 @@ global.roleHandler = {
                     Log(creep, 3);
                     if (creep.transfer(mainStorage, resourceType) != OK) {
                         // console.log(creep.transfer(storage, resourceType) )
-                        creep.moveTo(mainStorage);
+                        creep.Move(mainStorage);
                         return;
                     }
                 }
@@ -124,7 +124,7 @@ global.roleHandler = {
                     for (const resourceType in mainStorage.store) {
                         if (creep.withdraw(mainStorage, resourceType) != OK) {
                             Log(creep, creep.withdraw(mainStorage, resourceType));
-                            creep.moveTo(mainStorage);
+                            creep.Move(mainStorage);
                         }
                         return;
                     }
@@ -202,7 +202,7 @@ global.roleHandler = {
                         for (const resourceType in creep.store) {
                             Log(creep, "transferring to currentTarget");
                             if (creep.transfer(currentTarget, resourceType) != OK) {
-                                creep.moveTo(currentTarget);
+                                creep.Move(currentTarget);
                             }
                             return;
                         }
@@ -258,7 +258,7 @@ global.roleHandler = {
                     var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
                     if (creep.transfer(terminal, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         Log(creep, "moving to terminal");
-                        creep.moveTo(terminal);
+                        creep.Move(terminal);
                         return;
                     }
                 }
@@ -283,13 +283,13 @@ global.roleHandler = {
                 } else {
                     creep.moveTo(mainStorage.pos.x - 7, mainStorage.pos.y);
                 }
-                // creep.moveTo(mainStorage);
+                // creep.Move(mainStorage);
                 return;
             }
             target = creep.pos.findClosestByPath(targets);
             if (target == null) {
                 //no path found
-                creep.moveTo(mainStorage);
+                creep.Move(mainStorage);
                 return;
             }
 
@@ -299,7 +299,7 @@ global.roleHandler = {
             for (const resourceType in creep.store) {
                 Log(creep, 9);
                 if (creep.transfer(target, resourceType) != OK) {
-                    creep.moveTo(target);
+                    creep.Move(target);
                 }
                 return;
             }

@@ -70,7 +70,7 @@ global.roleBuilderExt = {
             }
 
             if (Game.rooms[creep.memory.targetRoomName] == null) {
-                moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.targetRoomName));
+                creep.Move(new RoomPosition(25, 25, creep.memory.targetRoomName));
                 return;
             }
 
@@ -80,12 +80,12 @@ global.roleBuilderExt = {
                 var closest = creep.pos.findClosestByPath(targets);
                 if (closest == null) {
                     // not in the correct room so can't figure out closest
-                    moveToMultiRoomTarget(creep, targets[0]);
+                    creep.Move(targets[0]);
                     return;
                 }
                 creep.memory.currentTarget = closest.id;
                 if (creep.build(closest) != OK) {
-                    moveToMultiRoomTarget(creep, closest);
+                    creep.Move(closest);
                     // creep.moveTo(closest, {
                     //     visualizePathStyle: { stroke: "#ffffff" },
                     // });
@@ -113,7 +113,7 @@ global.roleBuilderExt = {
                         closest = containers[0];
                     }
                     if (creep.withdraw(closest, RESOURCE_ENERGY) != OK) {
-                        moveToMultiRoomTarget(creep, closest);
+                        creep.Move(closest);
                     }
                     return;
                 }
@@ -126,7 +126,7 @@ global.roleBuilderExt = {
 
             if (targets.length) {
                 if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
-                    moveToMultiRoomTarget(creep, targets[0], {
+                    creep.Move(targets[0], {
                         visualizePathStyle: { stroke: "#ffaa00" },
                     });
                 }

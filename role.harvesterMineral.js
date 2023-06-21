@@ -78,7 +78,7 @@ global.roleHarvesterMineral = {
 
                 for (var type in creep.store) {
                     if (creep.transfer(target, type) != OK) {
-                        moveToMultiRoomTarget(creep, target);
+                        creep.Move(target);
                     }
                     return;
                 }
@@ -90,7 +90,7 @@ global.roleHarvesterMineral = {
                 Log(creep, "mainStorage found");
                 for (var type in creep.store) {
                     if (creep.transfer(mainStorage, type) == ERR_NOT_IN_RANGE) {
-                        moveToMultiRoomTarget(creep, mainStorage);
+                        creep.Move(mainStorage);
                     }
                     return;
                 }
