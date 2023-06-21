@@ -126,6 +126,15 @@ global.roleHarvesterExt = {
             creep.memory.mining = false;
             creep.say("🔄 dropping");
             Log(creep, "switching to dropping");
+            if (creep.memory.targetContainer != null) {
+                cont = Game.getObjectById(creep.memory.targetContainer)
+                if (cont != null) {
+                    if (cont.pos.x == creep.pos.x && cont.pos.y == creep.pos.y && cont.store.getFreeCapacity()) {
+                        creep.memory.mining = true;
+                        creep.say("drop mining");
+                    }
+                }
+            }
         }
         if (!creep.memory.mining && creep.store.getUsedCapacity() == 0) {
             creep.memory.healing = false;
