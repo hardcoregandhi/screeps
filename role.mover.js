@@ -57,7 +57,8 @@ global.roleMover = {
             } else {
 
                 if (mainStorage.structureType == STRUCTURE_CONTAINER) {
-                    if (mainStorage.hits < mainStorage.hitsMax / 2) {
+                    if (creep.body.some(e => e.type == WORK) && mainStorage.hits < mainStorage.hitsMax / 2) {
+                        Log(creep, "healing storage")
                         if (creep.repair(mainStorage) == ERR_NOT_IN_RANGE) {
                             creep.Move(mainStorage.pos);
                         }

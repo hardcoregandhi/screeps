@@ -12,6 +12,10 @@ global.Log = function (creep, str) {
 };
 
 global.healRoads = function (creep) {
+    
+    if(!creep.body.some(e => e.type == WORK)) {
+        return -1;
+    }
     // Heal Roads
     var towers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
         return structure.structureType == STRUCTURE_TOWER;
