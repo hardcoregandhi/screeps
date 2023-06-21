@@ -292,7 +292,7 @@ roomTracking = function () {
                                     if ((Memory.rooms[roomName].reservation && Memory.rooms[roomName].reservation.username != "hardcoregandhi") || myRooms[Game.shard.name].includes(r.name) || Memory.rooms[roomName].parentRoom != r.name) {
                                         return;
                                     } else {
-                                        if (PathFinder.search(source.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 100) {
+                                        if (PathFinder.search(source.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 150) {
                                             addExternalSource(r.name, source);
                                         }
                                     }
