@@ -628,7 +628,7 @@ global.roleMoverLink = {
                 // }
                 return;
             } catch (e) {
-                console.log(`${creep}: ${e}`);
+                console.log(`${creep}: ${e} + ${e.stack}`);
             }
         }
     },

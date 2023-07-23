@@ -193,7 +193,7 @@ global.roleHarvesterExt = {
                 }
                 // createRoadBetweenTargets(container, Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id))
             } catch (e) {
-                console.log(`${creep}: ${e}`);
+                console.log(`${creep}: ${e} + ${e.stack}`);
                 console.log(`${creep}: ${creep.memory.targetRoomName}`);
                 console.log(`${creep}: ${creep.memory.targetSource}`);
             }

@@ -133,7 +133,7 @@ global.calcTargetCarryParts = function (source, mainSpawn, sourceMemory) {
         sourceMemory.roundTripEnergyAccumulation = roundTripEnergyAccumulation;
         return Math.ceil(roundTripEnergyAccumulation / 50);
     } catch (e) {
-        console.log(`calcTargetCarryParts failed: ${e}`);
+        console.log(`calcTargetCarryParts failed: ${e} + ${e.stack}`);
         return -1;
     }
 };

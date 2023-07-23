@@ -231,7 +231,7 @@ global.roleMoverExt = {
                             console.log(`moverExt has an unknown error`);
                         }
                     } catch (e) {
-                        console.log(`container is dead`);
+                        console.log(`container is dead ${e} + ${e.stack}`);
                         // creep.memory.targetContainer = null;
                         // creep.memory.targetRoomName = null;
                         // creep.memory.targetSource = null;

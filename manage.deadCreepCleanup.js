@@ -29,7 +29,7 @@ deadCreepCleanup = function () {
                     }
                 }
             } catch (e) {
-                console.log(`${e}`);
+                console.log(`${e} + ${e.stack}`);
             }
             delete Memory.creeps[i];
             resetSourceContainerTracking();

@@ -524,7 +524,7 @@ roomTracking = function () {
                 }
             }
         } catch (e) {
-            console.log(`link setup failed in ${r.name}: ${e}`);
+            console.log(`link setup failed in ${r.name}: ${e} + ${e.stack}`);
         }
 
         if (isHighwayRoom(r.name)) {
@@ -635,7 +635,7 @@ roomTracking = function () {
         try {
             // creepReduction(r);
         } catch (e) {
-            console.log(`creepReduction() failed: ${e}`);
+            console.log(`creepReduction() failed: ${e} + ${e.stack}`);
             for (var b in e) {
                 console.log(b);
             }
@@ -740,7 +740,7 @@ resetSourceContainerTracking = function () {
                 p.targettedByList = [];
             });
         } catch (e) {
-            console.log(`${r.name} Failure in resetSourceContainerTracking: ${e}`);
+            console.log(`${r.name} Failure in resetSourceContainerTracking: ${e} + ${e.stack}`);
         }
     });
 

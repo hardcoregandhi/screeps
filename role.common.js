@@ -198,7 +198,7 @@ global.EnemyCheckFleeRequestBackup = function (creep) {
                     requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName, meleeCount + rangedCount);
                 }
             } catch (e) {
-                console.log(`${creep}: ${e}`);
+                console.log(`${creep}: ${e} + ${e.stack}`);
             }
             if (invaderCore.length) return;
             creep.memory.fleeing = 20;

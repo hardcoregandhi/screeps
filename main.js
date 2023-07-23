@@ -189,7 +189,7 @@ try {
     profiler.registerObject(roleExplorer, "roleExplorer");
     profiler.registerObject(roleCleaner, "roleCleaner");
 } catch (e) {
-    console.log(`${e}`);
+    console.log(`${e} + ${e.stack}`);
 }
 
 module.exports.loop = function () {
@@ -199,7 +199,7 @@ module.exports.loop = function () {
         try {
             deadCreepCleanup();
         } catch (e) {
-            console.log(`deadCreepCleanup(); failed: ${e}`);
+            console.log(`deadCreepCleanup(); failed: ${e} + ${e.stack}`);
         }
 
         // Event logging
@@ -245,7 +245,7 @@ module.exports.loop = function () {
         try {
             roomTracking();
         } catch (e) {
-            console.log(`roomTracking() failed: ${e}`);
+            console.log(`roomTracking() failed: ${e} + ${e.stack}`);
         }
         nextRoomTrackingRefreshTime = Game.time + roomTrackingRefreshInterval;
         // }
@@ -254,7 +254,7 @@ module.exports.loop = function () {
             // Also includes struct resets
             runStructs();
         } catch (e) {
-            console.log(`runStructs() failed: ${e}`);
+            console.log(`runStructs() failed: ${e} + ${e.stack}`);
             for (var b in e) {
                 console.log(b);
             }
@@ -263,7 +263,7 @@ module.exports.loop = function () {
         try {
             runCreeps();
         } catch (e) {
-            console.log(`runCreeps() failed: ${e}`);
+            console.log(`runCreeps() failed: ${e} + ${e.stack}`);
         }
 
         try {
@@ -275,39 +275,39 @@ module.exports.loop = function () {
                 } catch(e) {}
             });
         } catch (e) {
-            console.log(`runTowers() failed: ${e}`);
+            console.log(`runTowers() failed: ${e} + ${e.stack}`);
         }
 
         try {
             // Must be ran after creeps that will have set renewRequested
             runRenew();
         } catch (e) {
-            console.log(`runRenew() failed: ${e}`);
+            console.log(`runRenew() failed: ${e} + ${e.stack}`);
         }
 
         try {
             // Must be after renew so healing can cancel spawns
             runSpawns();
         } catch (e) {
-            console.log(`runSpawns() failed: ${e}`);
+            console.log(`runSpawns() failed: ${e} + ${e.stack}`);
         }
 
         try {
             runBaseBuilder();
         } catch (e) {
-            console.log(`runBaseBuilder() failed: ${e}`);
+            console.log(`runBaseBuilder() failed: ${e} + ${e.stack}`);
         }
 
         // try {
         //     roomExpansion();
         // } catch (e) {
-        //     console.log(`roomExpansion() failed: ${e}`);
+        //     console.log(`roomExpansion() failed: ${e} + ${e.stack}`);
         // }
 
         try {
             drawGUI();
         } catch (e) {
-            console.log(`drawGUI() failed: ${e}`);
+            console.log(`drawGUI() failed: ${e} + ${e.stack}`);
         }
 
         // runRoads();

@@ -142,7 +142,7 @@ global.roleUpgrader = {
                         return;
                     }
                 } catch (e) {
-                    console.log(`${creep}: ${e}`);
+                    console.log(`${creep}: ${e} + ${e.stack}`);
                 }
             }
             if (mainStorage != undefined) {

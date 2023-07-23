@@ -97,7 +97,8 @@ global.runCreeps = function () {
                     eval("role" + _.capitalize(creep.memory.role)).run(creep);
             }
         } catch (e) {
-            console.log(`${e}`);
+            console.log(`${e} + ${e.stack}`);
+            console.log(`${e.stack}`);
             console.log(creep, `${creep.pos} failed to run`);
         }
     }
@@ -190,7 +191,7 @@ global.runCreeps = function () {
             // }
             creep.usePower(PWR_GENERATE_OPS);
         } catch (e) {
-            console.log(`${e}`);
+            console.log(`${e} + ${e.stack}`);
             console.log(creep, " failed to run");
         }
     }

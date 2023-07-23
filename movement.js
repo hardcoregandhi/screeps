@@ -116,7 +116,7 @@ global.moveToMultiRoomTarget = function (creep, target, extraOptions = null) {
             return;
         }
     } catch (e) {
-        console.log(`moveToMultiRoomTarget failed: ${e}`);
+        console.log(`moveToMultiRoomTarget failed: ${e} + ${e.stack}`);
     }
     ret = creep.moveTo(
         target,

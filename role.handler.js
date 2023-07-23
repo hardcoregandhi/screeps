@@ -255,7 +255,7 @@ global.roleHandler = {
                     }
                 }
             } catch (e) {
-                console.log(`${creep}: ${e}`);
+                console.log(`${creep}: ${e} + ${e.stack}`);
             }
 
             if (!targets.length) {
@@ -278,7 +278,7 @@ global.roleHandler = {
                         creep.moveTo(mainStorage.pos.x - 7, mainStorage.pos.y);
                     }
                 } catch (e) {
-                    console.log(`${creep}: ${e}`);
+                    console.log(`${creep}: ${e} + ${e.stack}`);
                 }
                 return;
             }

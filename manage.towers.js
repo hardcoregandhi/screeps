@@ -117,7 +117,7 @@ attack = function (room, towers) {
             return 1;
         }
     } catch (e) {
-        console.log(`tower failed: ${e}`);
+        console.log(`tower failed: ${e} + ${e.stack}`);
     }
     console.log("no healer found, firing at will");
     for (var t of towers) {
