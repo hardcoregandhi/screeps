@@ -11,7 +11,7 @@ global.roleDoctor = {
             if (c.hits < c.hitsMax) {
                 c.cancelOrder(MOVE);
                 if (creep.heal(c) != OK) {
-                    moveToTarget(creep, c.pos);
+                    creep.Move(c.pos);
                 } else {
                     return false;
                 }

@@ -82,7 +82,7 @@ global.roleCourier = {
                     // console.log(JSON.stringify(caravanCreepMap))
                     console.log(creep.memory.targetCreep);
                     if (creep.transfer(Game.getObjectById(creep.memory.targetCreep), creep.memory.resourceType) != OK) {
-                        creep.moveTo(Game.getObjectById(creep.memory.targetCreep));
+                        creep.Move(Game.getObjectById(creep.memory.targetCreep));
                     }
                 } else {
                     console.log(`${creep}@${creep.pos} is in targetroom but can't find caravan`);
@@ -111,25 +111,19 @@ global.roleCourier = {
 
             if (factory.store.getUsedCapacity(creep.memory.resourceType) > 0) {
                 if (creep.withdraw(factory, creep.memory.resourceType) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(factory, {
-                        visualizePathStyle: { stroke: "#ffaa00" },
-                    });
+                    creep.Move(factory);
                 }
                 return;
             }
             if (mainStorage.store.getUsedCapacity(creep.memory.resourceType) > 0) {
                 if (creep.withdraw(mainStorage, creep.memory.resourceType) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(mainStorage, {
-                        visualizePathStyle: { stroke: "#ffaa00" },
-                    });
+                    creep.Move(mainStorage);
                 }
                 return;
             }
             if (terminal.store.getUsedCapacity(creep.memory.resourceType) > 0) {
                 if (creep.withdraw(terminal, creep.memory.resourceType) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(terminal, {
-                        visualizePathStyle: { stroke: "#ffaa00" },
-                    });
+                    creep.Move(terminal);
                 }
                 return;
             }
@@ -144,9 +138,7 @@ function retire(creep) {
         Log(creep, mainStorage);
         Log(creep, creep.memory.resourceType);
         if (creep.transfer(mainStorage, creep.memory.resourceType) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(mainStorage, {
-                visualizePathStyle: { stroke: "#ffaa00" },
-            });
+            creep.Move(mainStorage);
         }
     } else {
         creep.memory.DIE = true;

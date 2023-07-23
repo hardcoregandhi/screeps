@@ -80,7 +80,7 @@ global.roleRepairer = {
                 }
                 if (target != null && getRepairerStructureHealLimit(creep.room, target, creep.memory.wallHealPercent)) {
                     if (creep.repair(target) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
+                        creep.Move(target, { visualizePathStyle: { stroke: "#ffffff" } });
                     }
                 } else {
                     Log(creep, `currentTarget is now null`);
@@ -112,7 +112,7 @@ global.roleRepairer = {
                 if (link_controller && creep.pos.getRangeTo(link_controller) < creep.pos.getRangeTo(mainStorage) && creep.room.controller.level == 8) {
                     if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
                         // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                        creep.moveTo(link_controller, {
+                        creep.Move(link_controller, {
                             visualizePathStyle: { stroke: "#ffaa00" },
                             maxRooms: 0,
                         });
@@ -121,13 +121,13 @@ global.roleRepairer = {
                     if (mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity() * 0.01) {
                         if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
                             // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                            creep.moveTo(mainStorage, {
+                            creep.Move(mainStorage, {
                                 visualizePathStyle: { stroke: "#ffaa00" },
                                 maxRooms: 0,
                             });
                         }
                     } else {
-                        moveToTarget(creep, creep.room.controller.pos);
+                        creep.Move(creep.room.controller.pos);
                         return;
                     }
                 }

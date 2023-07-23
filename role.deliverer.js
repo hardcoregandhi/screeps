@@ -51,7 +51,7 @@ global.roleDeliverer = {
 
             var target = Game.getObjectById("621e4cf805dfb7e3a79afcec");
             if (creep.withdraw(target, RESOURCE_LEMERGIUM) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target, {
+                creep.Move(target, {
                     visualizePathStyle: { stroke: "#ffaa00" },
                 });
             }

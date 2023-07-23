@@ -31,6 +31,8 @@ global.roleGunner = {
         if (creep.hits < creep.hitsMax / 2) {
             creep.heal(creep);
         }
+        
+        creep.memory.noHeal = true
 
         if (Game.rooms[creep.memory.baseRoomName].controller.level == 8) creep.memory.noHeal = true;
         if ((creep.ticksToLive < 300 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
@@ -85,7 +87,7 @@ global.roleGunner = {
                     //             creep.rangedAttack(healer);
                     //         } else {
                     //             if (creep.rangedAttack(healer) != OK) {
-                    //                 creep.moveTo(healer, { maxRooms: 1 });
+                    //                 creep.Move(healer, { maxRooms: 1 });
                     //             }
                     //         }
                     //         return
@@ -106,7 +108,7 @@ global.roleGunner = {
                             creep.rangedAttack(closestHostile);
                         } else {
                             if (creep.rangedAttack(closestHostile) != OK) {
-                                creep.moveTo(closestHostile, { maxRooms: 1 });
+                                creep.Move(closestHostile, { maxRooms: 1 });
                             }
                         }
                         return;
@@ -124,7 +126,7 @@ global.roleGunner = {
         if (invaderCore.length) {
             if (creep.rangedAttack(invaderCore[0]) != OK) {
                 creep.heal(creep);
-                if (!creep.pos.inRangeTo(invaderCore[0], 2)) creep.moveTo(invaderCore[0], { maxRooms: 1 });
+                if (!creep.pos.inRangeTo(invaderCore[0], 2)) creep.Move(invaderCore[0], { maxRooms: 1 });
             }
             return;
         }
@@ -158,7 +160,7 @@ global.roleGunner = {
                     .filter((c) => creep.owner.username != "KyberPrizrak");
             if (enemyTargets.length) {
                 if (creep.attack(enemyTargets[0]) != OK) {
-                    creep.moveTo(enemyTargets[0], { maxRooms: 1 });
+                    creep.Move(enemyTargets[0], { maxRooms: 1 });
                 }
                 return;
             }
@@ -168,13 +170,13 @@ global.roleGunner = {
             if (allHurtCreeps.length) {
                 var closestHurtCreep = creep.pos.findClosestByRange(allHurtCreeps);
                 if (creep.heal(closestHurtCreep) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(closestHurtCreep)
+                    creep.Move(closestHurtCreep)
                 }
                 return
             }
             if (creep.attack(creep.room.controller) != OK) {
                 creep.heal(creep);
-                if (!creep.pos.inRangeTo(creep.room.controller, 2)) creep.moveTo(creep.room.controller, { maxRooms: 1 });
+                if (!creep.pos.inRangeTo(creep.room.controller, 2)) creep.Move(creep.room.controller, { maxRooms: 1 });
             }
         }
     },

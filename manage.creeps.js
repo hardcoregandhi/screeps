@@ -192,7 +192,7 @@ global.runCreeps = function () {
                 ps = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.pspawn.id);
                 creep.memory.sweetSpot = new RoomPosition(ps.pos.x + 1, ps.pos.y - 1, ps.room.name);
             }
-            creep.moveTo(creep.memory.sweetSpot.x, creep.memory.sweetSpot.y);
+            creep.Move(creep.memory.sweetSpot.x, creep.memory.sweetSpot.y);
 
             if (creep.store.getFreeCapacity() == 0) {
                 if (creep.transfer(mainStorage, RESOURCE_OPS) != OK) {

@@ -181,7 +181,7 @@ global.roleMoverExt = {
         //     if (route.length > 0) {
         //         creep.say("Headin oot");
         //         const exit = creep.pos.findClosestByRange(route[0].exit);
-        //         moveToTarget(creep, exit);
+        //         creep.Move(exit);
         //     } else {
         //         creep.say("No route found");
         //     }

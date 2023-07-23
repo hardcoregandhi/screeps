@@ -21,7 +21,7 @@ global.rolePowHandler.run = function (creep) {
         if (route.length > 0) {
             creep.say("Headin oot");
             const exit = creep.pos.findClosestByRange(route[0].exit);
-            moveToTarget(creep, exit);
+            creep.Move(exit);
         } else {
             creep.say("No route found");
         }
@@ -54,7 +54,7 @@ global.rolePowHandler.run = function (creep) {
                 if (resourceType != RESOURCE_POWER) {
                     if (creep.transfer(mainStorage, resourceType) != OK) {
                         // console.log(creep.transfer(storage, resourceType) )
-                        moveToTarget(creep, mainStorage);
+                        creep.Move(mainStorage);
                         return;
                     }
                 }
@@ -63,7 +63,7 @@ global.rolePowHandler.run = function (creep) {
                 if (resourceType != RESOURCE_ENERGY) {
                     if (creep.transfer(mainStorage, resourceType) != OK) {
                         // console.log(creep.transfer(storage, resourceType) )
-                        moveToTarget(creep, mainStorage);
+                        creep.Move(mainStorage);
                         return;
                     }
                 }
@@ -96,7 +96,7 @@ global.rolePowHandler.run = function (creep) {
         switch (creep.memory.job) {
             case job.MOVING_POWER:
                 if (creep.withdraw(mainStorage, RESOURCE_POWER) != OK) {
-                    moveToTarget(creep, mainStorage);
+                    creep.Move(mainStorage);
                     if (mainStorage.store.getUsedCapacity(RESOURCE_POWER) == 0) {
                         creep.memory.moving = true;
                     }
@@ -104,7 +104,7 @@ global.rolePowHandler.run = function (creep) {
                 break;
             case job.MOVING_ENERGY:
                 if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
-                    moveToTarget(creep, mainStorage);
+                    creep.Move(mainStorage);
                 }
                 break;
         }
@@ -113,12 +113,12 @@ global.rolePowHandler.run = function (creep) {
             switch (creep.memory.job) {
                 case job.MOVING_POWER:
                     if (creep.transfer(power_spawn, RESOURCE_POWER) != OK) {
-                        moveToTarget(creep, power_spawn);
+                        creep.Move(power_spawn);
                     }
                     break;
                 case job.MOVING_ENERGY:
                     if (creep.transfer(power_spawn, RESOURCE_ENERGY) != OK) {
-                        moveToTarget(creep, power_spawn);
+                        creep.Move(power_spawn);
                     }
                     break;
             }

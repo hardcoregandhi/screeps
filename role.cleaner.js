@@ -35,7 +35,7 @@ global.roleCleaner = {
                 Log(creep, "using mainStorage");
                 for (const resourceType in creep.store) {
                     if (creep.transfer(mainStorage, resourceType) != OK) {
-                        creep.moveTo(mainStorage, {
+                        creep.Move(mainStorage, {
                             visualizePathStyle: { stroke: "#ffaa00" },
                             maxRooms: 1,
                         });
@@ -50,7 +50,7 @@ global.roleCleaner = {
                 if (route.length > 0) {
                     creep.say("Headin oot");
                     const exit = creep.pos.findClosestByRange(route[0].exit);
-                    creep.moveTo(exit, {
+                    creep.Move(exit, {
                         visualizePathStyle: { stroke: "#ffaa00" },
                         maxRooms: 0,
                         ignoreRoads: true,
@@ -68,7 +68,7 @@ global.roleCleaner = {
             if (droppedResource) {
                 creep.say("f/drop");
                 if (creep.pickup(droppedResource) != 0) {
-                    creep.moveTo(droppedResource, {
+                    creep.Move(droppedResource, {
                         visualizePathStyle: { stroke: "#ffffff" },
                         maxRooms: 1,
                     });
@@ -88,7 +88,7 @@ global.roleCleaner = {
                 creep.say("f/tomb");
                 for (const resourceType in targetResource.store) {
                     if (creep.withdraw(targetResource, resourceType) != 0) {
-                        creep.moveTo(targetResource, {
+                        creep.Move(targetResource, {
                             visualizePathStyle: { stroke: "#ffffff" },
                             maxRooms: 1,
                         });

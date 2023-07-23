@@ -141,7 +141,7 @@ global.roleWanderer = {
 
         // creep.Move(new RoomPosition(25, 25, creep.memory.targetRooms[creep.memory.currentTargetRoom]))
 
-        creep.moveTo(new RoomPosition(25, 25, creep.memory.targetRooms[creep.memory.currentTargetRoom]), {
+        creep.Move(new RoomPosition(25, 25, creep.memory.targetRooms[creep.memory.currentTargetRoom]), {
             visualizePathStyle: { stroke: "#ffffff" },
             maxRooms: 16,
             reusePath: 50,

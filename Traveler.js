@@ -96,7 +96,7 @@ class Traveler {
             const blocker = Game.getObjectById(travelData.swap)
             if (blocker && creep.pos.isNearTo(blocker)) {
                 //console.log(Game.shard.name + ' Swapping ' + creep.name + ' with fast mover ' + blocker.name + ' ' + blocker.pos)
-                creep.moveTo((blocker))
+                creep.Move((blocker))
                 blocker.creep.Move(creep)
                 delete creep.memory._trav.path
                 delete creep.memory._trav.swap
@@ -1145,7 +1145,7 @@ exports.Traveler = Traveler;
 const MAX_CACHED_PATH_MEM_USAGE = 2000 // approx 100kb
 const MIN_CACHED_PATH_LENGTH = 999 // minimum path length to cache. Set to a very high value to stop caching.
 const REPORT_CPU_THRESHOLD = 1000;
-const DEFAULT_MAXOPS = 20000;
+const DEFAULT_MAXOPS = 1000;
 const DEFAULT_STUCK_VALUE = 2;
 const STATE_PREV_X = 0;
 const STATE_PREV_Y = 1;

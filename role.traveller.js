@@ -20,13 +20,13 @@ global.roleTraveller = {
                 const route = Game.map.findRoute(creep.room, targetRoom);
                 if (route.length > 0) {
                     const exit = creep.pos.findClosestByRange(route[0].exit);
-                    moveToTarget(creep, exit);
+                    creep.Move(exit);
                 }
             } else {
                 var sources = creep.room.find(FIND_STRUCTURES).filter((structure) => structure.structureType == STRUCTURE_POWER_BANK);
                 if (sources.length) {
                     if (creep.attack(sources[0]) != OK) {
-                        ret = creep.moveTo(sources[0], {
+                        ret = creep.Move(sources[0], {
                             visualizePathStyle: { stroke: "#ffaa00" },
                         });
                     }
@@ -36,7 +36,7 @@ global.roleTraveller = {
                 var power = creep.room.find(FIND_DROPPED_RESOURCES).filter((r) => r.resourceType == RESOURCE_POWER);
                 if (power.length) {
                     if (creep.pickup(power[0]) != OK) {
-                        ret = creep.moveTo(power[0], {
+                        ret = creep.Move(power[0], {
                             visualizePathStyle: { stroke: "#ffaa00" },
                         });
                     }
@@ -58,7 +58,7 @@ global.roleTraveller = {
                     creep.say("m2storage");
                     for (const resourceType in creep.store) {
                         if (creep.transfer(targets[0], resourceType) != OK) {
-                            creep.moveTo(targets[0], {
+                            creep.Move(targets[0], {
                                 visualizePathStyle: { stroke: "#ffaa00" },
                             });
                         }

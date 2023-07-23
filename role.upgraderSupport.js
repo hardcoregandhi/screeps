@@ -88,7 +88,7 @@ global.roleUpgraderSupport = {
 
             var target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
             if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target, {
+                creep.Move(target, {
                     visualizePathStyle: { stroke: "#ffaa00" },
                 });
             }

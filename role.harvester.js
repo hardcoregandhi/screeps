@@ -61,7 +61,7 @@ global.roleHarvester = {
             if (route.length > 0) {
                 creep.say("Headin oot");
                 const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit, {
+                creep.Move(exit, {
                     visualizePathStyle: { stroke: "#ffffff" },
                 });
             } else {
@@ -146,7 +146,7 @@ global.roleHarvester = {
                 // console.log(closestHostile)
                 if (closestHostile && towers.length) {
                     if (creep.transfer(towers[0], RESOURCE_ENERGY) != OK) {
-                        creep.moveTo(towers[0]);
+                        creep.Move(towers[0]);
                     }
                     return;
                 }
@@ -360,7 +360,7 @@ global.roleHarvester = {
                 Log(creep, `target: ${target}`);
 
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    moveToTarget(creep, target.pos);
+                    creep.Move(target.pos);
                 }
             } else {
                 fallbackToOtherRoles(creep);

@@ -48,7 +48,7 @@ global.roleBuilderExt = {
             // var targets = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
             // if (targets.length > 0) {
             //     if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-            //         creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+            //         creep.Move(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
             //     }
             // }
 
@@ -58,7 +58,7 @@ global.roleBuilderExt = {
                 target = Game.getObjectById(creep.memory.currentTarget);
                 if (target != undefined) {
                     if (creep.build(target) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(target, {
+                        creep.Move(target, {
                             visualizePathStyle: { stroke: "#ffffff" },
                         });
                     }
@@ -86,7 +86,7 @@ global.roleBuilderExt = {
                 creep.memory.currentTarget = closest.id;
                 if (creep.build(closest) != OK) {
                     creep.Move(closest);
-                    // creep.moveTo(closest, {
+                    // creep.Move(closest, {
                     //     visualizePathStyle: { stroke: "#ffffff" },
                     // });
                 }
@@ -126,9 +126,7 @@ global.roleBuilderExt = {
 
             if (targets.length) {
                 if (creep.withdraw(targets[0], RESOURCE_ENERGY) != OK) {
-                    creep.Move(targets[0], {
-                        visualizePathStyle: { stroke: "#ffaa00" },
-                    });
+                    creep.Move(targets[0]);
                 }
             } else {
                 creep.say("oopsiewoopsie");

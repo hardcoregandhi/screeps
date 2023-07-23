@@ -38,7 +38,7 @@ global.roleEngineer = {
             if (route.length > 0) {
                 creep.say("Headin oot");
                 const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit, {
+                creep.Move(exit, {
                     visualizePathStyle: { stroke: "#ffffff" },
                 });
             } else {

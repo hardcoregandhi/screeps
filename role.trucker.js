@@ -45,9 +45,7 @@ global.roleTrucker = {
             var target = Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].mainStorage);
             if (target != undefined && target.store.getFreeCapacity() > 200) {
                 if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target, {
-                        visualizePathStyle: { stroke: "#ffaa00" },
-                    });
+                    creep.Move(target);
                 }
                 return;
             } else {
@@ -108,7 +106,7 @@ global.roleTrucker = {
                 creep.memory.DIE = true;
             }
             if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(target, {
+                creep.Move(target, {
                     visualizePathStyle: { stroke: "#ffaa00" },
                 });
             }

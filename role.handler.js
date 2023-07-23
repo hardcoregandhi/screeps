@@ -2,7 +2,7 @@
 
 calls		time		avg	    	function
 652	    	440.7		0.676		roleHandler.run
-487		    186.2		0.382		Creep.moveTo
+487		    186.2		0.382		creep.Move
 500 		95.7		0.191		Creep.move
 288 		59.0		0.205		Creep.moveByPath
 147 		57.7		0.392		RoomPosition.findClosestByPath
@@ -144,7 +144,7 @@ global.roleHandler = {
                 }
                 if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
                     // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                    creep.moveTo(mainStorage, {
+                    creep.Move(mainStorage, {
                         visualizePathStyle: { stroke: "#ffaa00" },
                         maxRooms: 0,
                     });
@@ -165,7 +165,7 @@ global.roleHandler = {
                         Log(creep, 6);
                         Memory.rooms[creep.memory.baseRoomName].creeps.handlers.currentTargets.push(towers[0].id);
                         if (creep.transfer(towers[0], RESOURCE_ENERGY) != OK) {
-                            creep.moveTo(towers[0]);
+                            creep.Move(towers[0]);
                         }
                         return;
                     }
@@ -179,7 +179,7 @@ global.roleHandler = {
                     if (creep.transfer(storage[0], resourceType) != OK) {
                         Log(creep, creep.transfer(storage[0], resourceType));
                         Log(creep, "dropping in storage");
-                        creep.moveTo(storage[0]);
+                        creep.Move(storage[0]);
                     }
                     return;
                 }
@@ -275,7 +275,7 @@ global.roleHandler = {
                     if (creep.store.getFreeCapacity()) {
                         creep.memory.moving = false;
                     } else {
-                        creep.moveTo(mainStorage.pos.x - 7, mainStorage.pos.y);
+                        creep.Move(mainStorage.pos.x - 7, mainStorage.pos.y);
                     }
                 } catch (e) {
                     console.log(`${creep}: ${e} + ${e.stack}`);
@@ -286,7 +286,7 @@ global.roleHandler = {
                 if (creep.store.getFreeCapacity()) {
                     creep.memory.moving = false;
                 } else {
-                    creep.moveTo(mainStorage.pos.x - 7, mainStorage.pos.y);
+                    creep.Move(mainStorage.pos.x - 7, mainStorage.pos.y);
                 }
                 // creep.Move(mainStorage);
                 return;

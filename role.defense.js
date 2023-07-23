@@ -21,7 +21,7 @@ global.roleDefence = {
 
         if (creep.memory.mining) {
             if (creep.harvest(sources[creep.memory.currentSource]) == ERR_NOT_IN_RANGE) {
-                let ret = creep.moveTo(sources[creep.memory.currentSource], {
+                let ret = creep.Move(sources[creep.memory.currentSource], {
                     visualizePathStyle: { stroke: "#ffaa00" },
                 });
                 // if(ret != OK) {
@@ -48,7 +48,7 @@ global.roleDefence = {
 
             if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 if ((NO_SWAMP = true)) {
-                    creep.moveTo(target, {
+                    creep.Move(target, {
                         visualizePathStyle: { stroke: "#ffffff" },
                     });
                     // console.log(target)
@@ -58,7 +58,7 @@ global.roleDefence = {
                     isSwamp = new Room.Terrain(creep.room.name).get(path[0].x, path[0].y) == TERRAIN_MASK_SWAMP;
                     isPath = roomPos.lookFor(LOOK_STRUCTURES).length != 0;
                     if (!isSwamp || (isSwamp && isPath)) {
-                        creep.moveTo(path[0].x, path[0].y, {
+                        creep.Move(path[0].x, path[0].y, {
                             visualizePathStyle: { stroke: "#ffffff" },
                         });
                     }

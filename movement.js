@@ -9,7 +9,7 @@ global.moveToTarget = function (creep, target, extraOptions = null) {
         Log(creep, `distanceToTarget: ${distanceToTarget} `);
         if ((distanceToSpawn == Infinity || distanceToTarget == Infinity) && distanceToSpawn > 8 && distanceToTarget > 3) {
             Log(creep, "moveToTarget: ignoringCreeps");
-            ret = creep.moveTo(
+            ret = creep.Move(
                 target,
                 _.merge(
                     {
@@ -39,7 +39,7 @@ global.moveToTarget = function (creep, target, extraOptions = null) {
         }
     } catch (e) {}
 
-    creep.moveTo(
+    creep.Move(
         target,
         _.merge(
             {
@@ -84,7 +84,7 @@ global.moveToMultiRoomTarget = function (creep, target, extraOptions = null) {
         Log(creep, `distanceToTarget: ${distanceToTarget} `);
         if (distanceToSpawn == Infinity || distanceToTarget == Infinity || (distanceToSpawn > 8 && distanceToTarget > 3)) {
             Log(creep, "moveToMultiRoomTarget: ignoringCreeps");
-            ret = creep.moveTo(
+            ret = creep.Move(
                 target,
                 _.merge(
                     {
@@ -118,7 +118,7 @@ global.moveToMultiRoomTarget = function (creep, target, extraOptions = null) {
     } catch (e) {
         console.log(`moveToMultiRoomTarget failed: ${e} + ${e.stack}`);
     }
-    ret = creep.moveTo(
+    ret = creep.Move(
         target,
         _.merge(
             {
@@ -134,7 +134,7 @@ global.moveToMultiRoomTarget = function (creep, target, extraOptions = null) {
 };
 
 global.moveToMultiRoomTargetAvoidCreep = function (creep, target, extraOptions = null) {
-    return creep.moveTo(
+    return creep.Move(
         target,
         _.merge(
             {
@@ -211,7 +211,7 @@ global.moveToRoomIgnoreStructures = function (creep, targetRoom) {
                     console.log("erroe");
                 }
             }
-            if ((ret = creep.moveTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)) == OK) {
+            if ((ret = creep.Move(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)) == OK) {
                 creep.room.visual.circle(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y);
                 creep.memory.pathfinderPath.path.shift();
                 if ((creep.memory.prevPos != undefined && creep.memory.prevPos == creep.pos) || !creep.pos.isNearTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)) {
@@ -235,6 +235,9 @@ global.moveToRoomIgnoreStructures = function (creep, targetRoom) {
 
 global.moveToRoom = function (creep, targetRoom) {
     Log(creep, `moveToRoom(${creep}, ${targetRoom})`);
+
+    return creep.Move(new RoomPosition(25,25,targetRoom))
+
     // if (creep.memory.pathfinderPath == undefined || creep.memory.pathfinderPath.length == 0) {
     let from = creep.pos;
     let to = { pos: new RoomPosition(25, 25, targetRoom), range: 1 };
@@ -315,7 +318,7 @@ global.moveToRoom = function (creep, targetRoom) {
             creep.memory.prevPos = {};
             creep.memory.prevPos.pos = creep.pos;
             creep.memory.prevPos.tick = Game.time;
-            if ((ret = creep.moveTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)) == OK) {
+            if ((ret = creep.Move(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)) == OK) {
                 creep.room.visual.circle(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y);
                 creep.memory.pathfinderPath.path.shift();
                 if ((creep.memory.prevPos != undefined && creep.memory.prevPos == creep.pos) || !creep.pos.isNearTo(creep.memory.pathfinderPath.path[0].x, creep.memory.pathfinderPath.path[0].y)) {

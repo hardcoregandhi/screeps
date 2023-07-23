@@ -55,7 +55,7 @@ global.roleHarvesterMineral = {
                 return;
             }
             if (creep.harvest(targetSource) != OK) {
-                creep.moveTo(targetSource, {
+                creep.Move(targetSource, {
                     visualizePathStyle: { stroke: "#ffaa00" },
                 });
             }

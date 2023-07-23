@@ -29,7 +29,7 @@ global.runBaseBuilder = function () {
                     for (var offsetPos of subStageBuildingTypeSet.pos) {
                         var realX = baseCenter.x + offsetPos.x;
                         var realY = baseCenter.y + offsetPos.y;
-                        console.log(`${roomName} ${subStageBuildingTypeSet.buildingType} ${realX} ${realY}`)
+                        // console.log(`${roomName} ${subStageBuildingTypeSet.buildingType} ${realX} ${realY}`)
                         if (realX <=1 || realY <=1 || 
                             realX >=48 || realY >=48) {
                                 continue

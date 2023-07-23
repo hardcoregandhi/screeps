@@ -112,7 +112,7 @@ Memory.RoomVisualData = {};
 
 /*
 calls	time		avg		function
-1106	398.3		0.360		Creep.moveTo
+1106	398.3		0.360		creep.Move
 677		270.5		0.400		roleMoverExt.run
 386		191.7		0.497		RoomPosition.findPathTo
 386		188.2		0.488		Room.findPath
@@ -147,7 +147,7 @@ Avg: 88.59	Total: 708.72	Ticks: 8
 global.profiler = require("screeps-profiler");
 
 // This line monkey patches the global prototypes.
-// profiler.enable();
+profiler.enable();
 
 // Line to run profiling from: https://github.com/screepers/screeps-profiler
 // Game.profiler.profile(10)
@@ -198,7 +198,9 @@ try {
 module.exports.loop = function () {
     profiler.wrap(function () {
         // Cleanup
+        if (Memory.roomRefreshMap) {
         roomRefreshMap = JSON.parse(Memory.roomRefreshMap)
+        }
 
         try {
             deadCreepCleanup();

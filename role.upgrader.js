@@ -111,7 +111,7 @@ global.roleUpgrader = {
                         creep.memory.sweetSpot = intersectionSpots[0];
                     }
                 } else {
-                    moveToTarget(creep, creep.memory.sweetSpot);
+                    creep.Move(creep.memory.sweetSpot);
                 }
 
                 if (creep.room.controller.ticksToDowngrade >= 200000) {
@@ -135,9 +135,9 @@ global.roleUpgrader = {
                         if (link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
                             creep.memory.upgrading = true;
                         } else if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
-                            moveToTarget(creep, link_controller);
+                            creep.Move(link_controller);
                         }
-                        moveToTarget(creep, link_controller);
+                        creep.Move(link_controller);
                         return;
                     }
                 } catch (e) {
@@ -150,7 +150,7 @@ global.roleUpgrader = {
                     (creepRoomMap.get(creep.room.name + "eenergy") < 2000 && creep.room.energyAvailable < creep.room.energyCapacityAvailable - 400) ||
                     (mainStorage.structureType == STRUCTURE_CONTAINER && mainStorage.store.getUsedCapacity() < mainStorage.store.getCapacity() / 2)
                 ) {
-                    moveToTarget(creep, creep.room.controller.pos);
+                    creep.Move(creep.room.controller.pos);
                     return;
                 } else {
                     if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {

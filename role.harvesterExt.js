@@ -84,7 +84,7 @@ global.roleHarvesterExt = {
         EnemyCheckFleeRequestBackup(creep);
         if (creep.memory.fleeing > 0) {
             creep.memory.fleeing -= 1;
-            moveToTarget(creep, Game.rooms[Memory.rooms[creep.memory.targetRoomName].parentRoom].controller);
+            creep.Move(Game.rooms[Memory.rooms[creep.memory.targetRoomName].parentRoom].controller);
             return;
         }
 

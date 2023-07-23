@@ -15,7 +15,7 @@ global.roleCaravanChaser = {
 
             if (creep.memory.nextTargetRoom != undefined && creep.room.name != creep.memory.nextTargetRoom) {
                 // Memory.caravanLog.push(`${creep} caravan is now in ${creep.memory.nextTargetRoom}`)
-                creep.moveTo(new RoomPosition(25, 25, creep.memory.nextTargetRoom));
+                creep.Move(new RoomPosition(25, 25, creep.memory.nextTargetRoom));
                 return;
             } else {
                 // caravan must have died
@@ -38,6 +38,6 @@ global.roleCaravanChaser = {
             creep.memory.nextTargetRoom = exits[1];
         }
 
-        creep.moveTo(Game.getObjectById(creep.memory.targetCaravan));
+        creep.Move(Game.getObjectById(creep.memory.targetCaravan));
     },
 };

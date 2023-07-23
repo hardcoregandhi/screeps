@@ -56,7 +56,7 @@ global.roleHealer = {
             if (hostileCreeps) {
                 var closestHostile = creep.pos.findClosestByRange(hostileCreeps);
                 if (creep.pos.isNearTo(closestHostile)) {
-                    creep.moveTo((creep.pos.x - closestHostile.pos.x) * -1, (creep.pos.y - closestHostile.pos.y) * -1);
+                    creep.Move((creep.pos.x - closestHostile.pos.x) * -1, (creep.pos.y - closestHostile.pos.y) * -1);
                 }
             }
 
@@ -70,7 +70,7 @@ global.roleHealer = {
                     creep.rangedHeal(closestHurtCreep);
                 } else {
                     if (creep.heal(closestHurtCreep) != OK) {
-                        creep.moveTo(closestHurtCreep, { maxRooms: 1 });
+                        creep.Move(closestHurtCreep, { maxRooms: 1 });
                     }
                 }
                 return;

@@ -23,7 +23,7 @@ global.roleSupplier = {
             console.log("supplying")
             var spawns = creep.room.find(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_SPAWN } });
             if (creep.transfer(spawns[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(spawns[0]);
+                creep.Move(spawns[0]);
             }
 
         } else {

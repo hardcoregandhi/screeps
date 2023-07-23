@@ -78,7 +78,7 @@ global.roleSieger = {
                     // if (creep.attack(wall[0])) {
                     Log(creep, creep.attack(wall[0]));
 
-                    Log(creep, moveToTarget(creep, wall[0]));
+                    Log(creep, creep.Move(wall[0]));
                     return;
                 }
             } else {

@@ -11,7 +11,7 @@ global.roleScavenger = {
             if (route.length > 0) {
                 creep.say("Headin oot");
                 const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit, {
+                creep.Move(exit, {
                     visualizePathStyle: { stroke: "#ffaa00" },
                     maxRooms: 0,
                     ignoreRoads: true,
@@ -42,7 +42,7 @@ global.roleScavenger = {
             if (storage) {
                 for (const resourceType in creep.store) {
                     if (creep.transfer(storage, resourceType) != OK) {
-                        creep.moveTo(storage, {
+                        creep.Move(storage, {
                             visualizePathStyle: { stroke: "#ffaa00" },
                             maxRooms: 1,
                         });
@@ -56,7 +56,7 @@ global.roleScavenger = {
                     Log(creep, "using mainStorage");
                     if (creep.transfer(mainStorage, RESOURCE_ENERGY) != OK) {
                         // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                        creep.moveTo(mainStorage, {
+                        creep.Move(mainStorage, {
                             visualizePathStyle: { stroke: "#ffaa00" },
                             maxRooms: 0,
                         });
@@ -76,7 +76,7 @@ global.roleScavenger = {
                         closest = creep.pos.findClosestByRange(targets);
                         for (const resourceType in creep.store) {
                             if (creep.transfer(closest, resourceType) != OK) {
-                                creep.moveTo(closest, {
+                                creep.Move(closest, {
                                     visualizePathStyle: { stroke: "#ffaa00" },
                                     maxRooms: 1,
                                 });
@@ -99,7 +99,7 @@ global.roleScavenger = {
             if (droppedResource) {
                 creep.say("f/drop");
                 if (creep.pickup(droppedResource) != 0) {
-                    creep.moveTo(droppedResource, {
+                    creep.Move(droppedResource, {
                         visualizePathStyle: { stroke: "#ffffff" },
                         maxRooms: 1,
                     });
@@ -108,7 +108,7 @@ global.roleScavenger = {
                 creep.say("f/tomb");
                 for (const resourceType in tombstoneResource.store) {
                     if (creep.withdraw(tombstoneResource, resourceType) != 0) {
-                        creep.moveTo(tombstoneResource, {
+                        creep.Move(tombstoneResource, {
                             visualizePathStyle: { stroke: "#ffffff" },
                             maxRooms: 1,
                         });

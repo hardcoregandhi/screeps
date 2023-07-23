@@ -78,7 +78,7 @@ global.roleMoverLink = {
             if (route.length > 0) {
                 creep.say("Headin oot");
                 const exit = creep.pos.findClosestByRange(route[0].exit);
-                creep.moveTo(exit, {
+                creep.Move(exit, {
                     visualizePathStyle: { stroke: "#ffffff" },
                 });
             } else {
@@ -375,7 +375,7 @@ global.roleMoverLink = {
                 var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
                 if (creep.transfer(terminal, RESOURCE_ENERGY) != OK) {
                     // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                    creep.moveTo(terminal, {
+                    creep.Move(terminal, {
                         visualizePathStyle: { stroke: "#ffaa00" },
                         maxRooms: 0,
                     });
@@ -402,7 +402,7 @@ global.roleMoverLink = {
             for (const resourceType in creep.store) {
                 if (creep.transfer(mainStorage, resourceType) != OK) {
                     // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                    creep.moveTo(mainStorage, {
+                    creep.Move(mainStorage, {
                         visualizePathStyle: { stroke: "#ffaa00" },
                         maxRooms: 0,
                     });

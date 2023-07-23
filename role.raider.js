@@ -84,7 +84,7 @@ global.roleRaider = {
                 // if (Game.rooms[creep.memory.targetRoomName] == undefined)
                 moveToRoom(creep, creep.memory.targetRoomName);
                 // else
-                // creep.moveTo(new RoomPosition(25, 25, creep.memory.targetRoomName));
+                // creep.Move(new RoomPosition(25, 25, creep.memory.targetRoomName));
             } else {
                 var droppedResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
 

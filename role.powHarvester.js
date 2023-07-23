@@ -12,7 +12,7 @@ global.rolePowHarvester = {
         // var enemies = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 3);
         // if (enemies.length) {
         //     if (creep.attack(enemies[0]) != OK) {
-        //         ret = creep.moveTo(enemies[0], {
+        //         ret = creep.Move(enemies[0], {
         //             visualizePathStyle: { stroke: "#ffaa00" },
         //         });
         //     }
@@ -111,9 +111,7 @@ global.rolePowHarvester = {
 
         if (creep.hits < 200) return;
         if (creep.attack(powerBank) != OK) {
-            ret = creep.moveTo(powerBank, {
-                visualizePathStyle: { stroke: "#ffaa00" },
-            });
+            ret = creep.Move(powerBank);
         }
         return;
     },

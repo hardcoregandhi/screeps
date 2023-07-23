@@ -81,7 +81,7 @@ requestHealer = function (_baseRoomName, _targetRoomName, attackPartCount) {
         Memory.rooms[_baseRoomName].defenders.healer = null;
         if (Memory.rooms[_baseRoomName].defenders.healerSpawnTime == undefined || Memory.rooms[_baseRoomName].defenders.healerSpawnTime >= Game.time + defenderSpawnTimeDelay) {
             Memory.rooms[_baseRoomName].defenders.healerSpawnTime = Game.time;
-            queueSpawnCreep(roleHealerChase, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal: false } }, _baseRoomName);
+            queueSpawnCreep(roleHealerChase, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal: true } }, _baseRoomName);
             return;
         }
     } else {

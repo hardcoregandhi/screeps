@@ -103,7 +103,7 @@ global.roleBuilder = {
                     Log(creep, `building ${target}@${target.pos}`);
 
                     if (creep.build(target) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(target, {
+                        creep.Move(target, {
                             visualizePathStyle: { stroke: "#ffffff" },
                         });
                     }
@@ -141,7 +141,7 @@ global.roleBuilder = {
             // var targets = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
             // if (targets.length > 0) {
             //     if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-            //         creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+            //         creep.Move(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
             //     }
             // }
 
@@ -153,8 +153,8 @@ global.roleBuilder = {
                 creep.memory.currentTarget = closest.id;
 
                 if (creep.build(closest) == ERR_NOT_IN_RANGE) {
-                    // moveToTarget(creep, closest)
-                    creep.moveTo(closest, {
+                    // creep.Move(closest)
+                    creep.Move(closest, {
                         visualizePathStyle: { stroke: "#ffffff" },
                     });
                 }
@@ -164,7 +164,7 @@ global.roleBuilder = {
             if (customStructureSpecificPercentLimits.length) {
                 repairTarget = creep.pos.findClosestByPath(customStructureSpecificPercentLimits);
                 if (creep.repair(repairTarget) != OK) {
-                    moveToTarget(creep, repairTarget);
+                    creep.Move(repairTarget);
                 }
             }
         } else {
@@ -177,7 +177,7 @@ global.roleBuilder = {
                 if (dismantle) {
                     if (creep.dismantle(dismantle) != OK) {
                         console.log(creep.dismantle(dismantle));
-                        creep.moveTo(dismantle, {
+                        creep.Move(dismantle, {
                             visualizePathStyle: { stroke: "#ffaa00" },
                         });
                     }
@@ -192,7 +192,7 @@ global.roleBuilder = {
                     var link_controller = Game.getObjectById(Memory.rooms[creep.room.name].link_controller);
                     if (link_controller && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
                         if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
-                            moveToTarget(creep, link_controller);
+                            creep.Move(link_controller);
                         }
                         return;
                     }
@@ -209,20 +209,20 @@ global.roleBuilder = {
                     if (mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity() * 0.001) {
                         if (creep.withdraw(mainStorage, RESOURCE_ENERGY) != OK) {
                             // console.log(creep.withdraw(targets[0], RESOURCE_ENERGY))
-                            creep.moveTo(mainStorage, {
+                            creep.Move(mainStorage, {
                                 visualizePathStyle: { stroke: "#ffaa00" },
                                 maxRooms: 0,
                             });
                         }
                     } else {
-                        moveToTarget(creep, creep.room.controller.pos);
+                        creep.Move(creep.room.controller.pos);
                         return;
                     }
                     return;
                 }
             } else {
                 if ((creepRoomMap.get(creep.room.name + "eenergy") === undefined && creep.room.energyAvailable < creep.room.energyCapacityAvailable / 3) || creepRoomMap.get(creep.room.name + "eenergy") < 300) {
-                    moveToTarget(creep, creep.room.controller.pos);
+                    creep.Move(creep.room.controller.pos);
                     return;
                 }
                 var containers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
@@ -241,12 +241,12 @@ global.roleBuilder = {
                 if (sources.length > 0) {
                     target = creep.pos.findClosestByPath(sources);
                     if (creep.harvest(target) == ERR_NOT_IN_RANGE) {
-                        if (moveToTarget(creep, target) == ERR_NO_PATH) {
+                        if (creep.Move(target) == ERR_NO_PATH) {
                             creep.say("no path");
                         }
                     }
                 } else {
-                    moveToTarget(creep, creep.room.controller.pos);
+                    creep.Move(creep.room.controller.pos);
                 }
             }
         }

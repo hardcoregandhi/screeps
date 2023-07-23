@@ -63,7 +63,7 @@ global.roleInvader = {
             if (c_sites.length) {
                 close_c_site = creep.pos.findClosestByRange(c_sites);
                 if (creep.attack(close_c_site) != OK) {
-                    moveToTarget(creep, close_c_site);
+                    creep.Move(close_c_site);
                 }
             }
 
@@ -75,13 +75,13 @@ global.roleInvader = {
                     radius: 1,
                 });
                 if (creep.attack(closestHostile) != OK) {
-                    creep.moveTo(closestHostile, { maxRooms: 1 });
+                    creep.Move(closestHostile, { maxRooms: 1 });
                 }
                 return;
             }
 
             if (creep.attack(creep.room.controller) != OK) {
-                creep.moveTo(creep.room.controller, { maxRooms: 1 });
+                creep.Move(creep.room.controller, { maxRooms: 1 });
             }
         }
     },
