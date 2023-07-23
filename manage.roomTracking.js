@@ -351,6 +351,9 @@ roomTracking = function () {
             //console.log("eenergy calc has used " + elapsed + " CPU time");
             //startCpu = Game.cpu.getUsed();
             minerals = r.find(FIND_MINERALS);
+            if (Memory.rooms[r.name].mineral.id != undefined) {
+                delete Memory.rooms[r.name].mineral
+            }
             if (Memory.rooms[r.name].mineral == undefined) {
                 Memory.rooms[r.name].mineral = {};
                 _.forEach(minerals, (mineral) => {
@@ -361,7 +364,8 @@ roomTracking = function () {
             }
             _.forEach(minerals, (mineral) => {
                 // console.log(r)
-                if (Memory.rooms[r.name].mineral[mineral.id].extractor == false && mineral.pos.lookFor(LOOK_STRUCTURES).length) {
+                if (Memory.rooms[r.name].mineral[mineral.id].extractor != undefined &&
+                    Memory.rooms[r.name].mineral[mineral.id].extractor == false && mineral.pos.lookFor(LOOK_STRUCTURES).length) {
                     Memory.rooms[r.name].mineral[mineral.id].extractor = true;
                 }
                 if (Memory.rooms[r.name].mineral[mineral.id].container == undefined) {
