@@ -51,6 +51,8 @@ roomTracking = function () {
 
             //startCpu = Game.cpu.getUsed();
 
+            Memory.rooms[r.name].parentRoom = r.name
+
             if (Memory.rooms[r.name].structs == undefined) {
                 Memory.rooms[r.name].structs = {};
             }
@@ -454,6 +456,10 @@ roomTracking = function () {
             } else {
                 if (Memory.rooms[r.name].sources[s.id].targetCarryParts == undefined) {
                     console.log("Container found without targetCarryParts, calculating now");
+                    if (Memory.rooms[r.name].parentRoom == undefined) {
+                        console.log(`${r.name} no parent Room `)
+                        return
+                    }
                     ret = calcTargetCarryParts(Game.getObjectById(s.id), Game.getObjectById(Memory.rooms[Memory.rooms[r.name].parentRoom].mainSpawn.id), Memory.rooms[r.name].sources[s.id]);
                     if (ret != -1) {
                         Memory.rooms[r.name].sources[s.id].targetCarryParts = ret;
