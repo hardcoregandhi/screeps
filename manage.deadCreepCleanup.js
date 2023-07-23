@@ -2,7 +2,7 @@ deadCreepCleanup = function () {
     for (var i in Memory.creeps) {
         if (!Game.creeps[i]) {
             c = Memory.creeps[i];
-            console.log(`${i} the ${c.role} is dead. RIP.`);
+            // console.log(`${i} the ${c.role} is dead. RIP.`);
             try {
                 if (c.role == "harvester") {
                     // console.log("s.id:", s.id)
@@ -10,16 +10,16 @@ deadCreepCleanup = function () {
                     Memory.rooms[c.baseRoomName].sources[c.targetSource].targettedBy -= 1;
                     RemoveFromList(Memory.rooms[c.baseRoomName].sources[c.targetSource].targettedByList, i);
                     // console.log(Memory.rooms[r.name].sources[i].targettedBy)
-                } else if (c.role == "harvSup") {
-                    Memory.rooms[c.baseRoomName].sources[c.targetSource].container.targettedBy -= 1;
-                    RemoveFromList(Memory.rooms[c.baseRoomName].sources[c.targetSource].targettedByList, i);
+                } else if (c.role == "mover") {
+                    Memory.rooms[c.baseRoomName].sources[c.targetSource].targettedByMover -= 1;
+                    RemoveFromList(Memory.rooms[c.baseRoomName].sources[c.targetSource].targettedByMoverList, i);
                 } else if (c.role == "harvesterExt") {
                     Memory.rooms[c.targetRoomName].sources[c.targetSource].targettedBy -= 1;
                     RemoveFromList(Memory.rooms[c.targetRoomName].sources[c.targetSource].targettedByList, i);
                 } else if (c.role == "moverExt") {
                     if (c.targetContainer == Memory.rooms[c.targetRoomName].sources[c.targetSource].container.id) {
-                        Memory.rooms[c.targetRoomName].sources[c.targetSource].container.targettedBy -= 1;
-                        RemoveFromList(Memory.rooms[c.targetRoomName].sources[c.targetSource].container.targettedByList, i);
+                        Memory.rooms[c.targetRoomName].sources[c.targetSource].targettedByMover -= 1;
+                        RemoveFromList(Memory.rooms[c.targetRoomName].sources[c.targetSource].targettedByMoverList, i);
                     }
                 } else if (c.role == "gunner" || c.role == "soldier") {
                     if (Memory.rooms[c.baseRoomName].defenders.soldier == c.id) {
@@ -29,7 +29,7 @@ deadCreepCleanup = function () {
                     }
                 }
             } catch (e) {
-                console.log(`${e}`);
+                console.log(`${e} + ${e.stack}`);
             }
             delete Memory.creeps[i];
             resetSourceContainerTracking();

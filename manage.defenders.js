@@ -18,7 +18,7 @@ requestGunner = function (_baseRoomName, _targetRoomName, rangedCount) {
         Memory.rooms[_baseRoomName].defenders.gunner = null;
         if (Memory.rooms[_baseRoomName].defenders.gunnerSpawnTime == undefined || Game.time >= Memory.rooms[_baseRoomName].defenders.gunnerSpawnTime + defenderSpawnTimeDelay) {
             Memory.rooms[_baseRoomName].defenders.gunnerSpawnTime = Game.time;
-            queueSpawnCreep(roleGunner, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal: false } }, _baseRoomName);
+            queueSpawnCreep(roleGunner, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal: true } }, _baseRoomName);
             return;
         } else {
             if (!Memory.rooms[_baseRoomName].spawnQueue.length) {
@@ -49,7 +49,7 @@ requestSoldier = function (_baseRoomName, _targetRoomName, meleeCount) {
         Memory.rooms[_baseRoomName].defenders.soldier = null;
         if (Memory.rooms[_baseRoomName].defenders.soldierSpawnTime == undefined || Game.time >= Memory.rooms[_baseRoomName].defenders.soldierSpawnTime + defenderSpawnTimeDelay) {
             Memory.rooms[_baseRoomName].defenders.soldierSpawnTime = Game.time;
-            queueSpawnCreep(roleSoldier, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal: false } }, _baseRoomName);
+            queueSpawnCreep(roleSoldier, "auto", { memory: { baseRoomName: _baseRoomName, targetRoomName: _targetRoomName, noHeal: true } }, _baseRoomName);
             return;
         }
     } else {

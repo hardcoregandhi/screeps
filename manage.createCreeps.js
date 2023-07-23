@@ -45,11 +45,17 @@ generateBodyParts = function (_spawnRoom, _role = null) {
     // console.log(energyAvailable)
     // console.log(bodyParts.length)
 
-    while (getBodyCost(bodyParts) <= energyAvailable && bodyParts.length < bodyPartsMaxCount + 1) {
+    if (getBodyCost(bodyParts) > room.energyCapacityAvailable) {
+        // console.log("Room does not have minimuim spawn energy required, attempting spawn with bodyLoop only")
+        bodyParts = _.cloneDeep(_role.bodyLoop);
+    }
+
+    while (getBodyCost(bodyParts.concat(bodyLoop[bodyIter])) <= energyAvailable && bodyParts.length < bodyPartsMaxCount) {
         //one more as the last is popped unless we could only match the baseBodyParts
         // if (bodyParts.length > _role.baseBodyParts.length)
         bodyParts.splice(insertIndex++, 0, bodyLoop[bodyIter++]);
-        // console.log(bodyParts);
+        // console.log(bodyParts)
+        // console.log(getBodyCost(bodyParts))
         if (bodyIter >= bodyLoop.length) bodyIter = 0;
     }
     if (bodyParts.length > _role.baseBodyParts.length) _.pullAt(bodyParts, --insertIndex);
@@ -80,7 +86,7 @@ cloneCreep = function (sourceCreepName, room = null, force = null) {
     // console.log(newName);
     memoryClone = Object.assign({}, { memory: sourceCreep.memory });
     // console.log(memoryClone.memory.role)
-    console.log(JSON.stringify(memoryClone));
+    // console.log(JSON.stringify(memoryClone));
     if (force != null) {
         return roomSpawner.spawnCreep(
             sourceCreep.body.map((a) => a.type),
@@ -106,6 +112,7 @@ cloneCreep = function (sourceCreepName, room = null, force = null) {
 upgradeCreep = function (sourceCreepName) {
     var sourceCreep = Game.creeps[sourceCreepName];
     if (sourceCreep === null) return -1;
+    if (sourceCreep.memory.DIE == true) return -1;
     var spawnRoom = Game.rooms[sourceCreep.memory.baseRoomName];
     if (spawnRoom === null) return -1;
     if (spawnRoom.memory.mainSpawn == undefined) return -1;
@@ -122,7 +129,7 @@ upgradeCreep = function (sourceCreepName) {
     // console.log(`old : ${sourceCreep.body.map((a) => a.type)}`);
     // console.log(`new : ${newBody}`);
 
-    if (getBodyCost(newBody) <= getBodyCost(sourceCreep.body.map((a) => a.type))) {
+    if (getBodyCost(newBody) <= getBodyCost(sourceCreep.body.map((a) => a.type)) * 1.5) {
         // console.log("no upgrade available");
         return -1;
     }
@@ -135,22 +142,31 @@ upgradeCreep = function (sourceCreepName) {
         return -1;
     }
 
-    if (getBodyCost(newBody) > getBodyCost(eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts)) {
-        newBody = eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts;
-    }
+    // if (getBodyCost(newBody) > getBodyCost(eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts) + 100 /*Buffer headroom*/) {
+    //     newBody = eval("role" + _.capitalize(sourceCreep.memory.role)).BodyParts;
+    // }
 
     // console.log(memoryClone.memory.role)
     // console.log(JSON.stringify(memoryClone));
     // ret = roomSpawner.spawnCreep(newBody, newName, memoryClone)
-    ret = spawnCreep(eval("role" + _.capitalize(sourceCreep.memory.role)), newBody, memoryClone, sourceCreep.memory.baseRoomName);
-    if (ret == OK) {
+    if (queueSpawnCreep(eval("role" + _.capitalize(sourceCreep.memory.role)), newBody, memoryClone, sourceCreep.memory.baseRoomName) != -1) {
         console.log("Upgrading to " + newName + " from " + sourceCreepName);
-        // sourceCreep.memory.DIE = "";
-        creepsToKill.push(sourceCreepName);
+        console.log("upgraing from ")
+        console.log(sourceCreep.body.map(a => a.type))
+        console.log("upgraing to ")
+        console.log(newBody)
+        oldBodyCost = getBodyCost(sourceCreep.body.map((a) => a.type))
+        console.log(`oldBodyCost = ${oldBodyCost}`)
+        console.log(`newBodyCost = ${getBodyCost(newBody)}`)
+
+        sourceCreep.memory.DIE = 1;
+        // creepsToKill.push(sourceCreepName);
         return 0;
-    } else {
-        return ret;
     }
+    else {
+        return -1;
+    }
+    
 };
 
 queueSpawnCreep = function (_role, customBodyParts = null, customMemory = null, _spawnRoom = null) {
@@ -161,6 +177,19 @@ queueSpawnCreep = function (_role, customBodyParts = null, customMemory = null, 
     if (Memory.rooms[_spawnRoom].spawnQueue == undefined) {
         Memory.rooms[_spawnRoom].spawnQueue = [];
     }
+
+    
+    var json_creep = JSON.stringify(["role" + _.capitalize(_role.name), customBodyParts, _spawnRoom])
+    console.log(json_creep)
+    for (let index = 0; index < Memory.rooms[_spawnRoom].spawnQueue.length; index++) {
+        existingQueueEntry = JSON.stringify([Memory.rooms[_spawnRoom].spawnQueue[index][0], Memory.rooms[_spawnRoom].spawnQueue[index][1], Memory.rooms[_spawnRoom].spawnQueue[index][3]])
+        console.log(existingQueueEntry)
+        if (json_creep == existingQueueEntry) {
+            console.log("Creep already in spawnQueue, skipping.")
+            return -1;
+        }
+    }
+
     Memory.rooms[_spawnRoom].spawnQueue.push(["role" + _.capitalize(_role.name), customBodyParts, customMemory, _spawnRoom]);
     console.log(`Queueing creep spawn: ${["role" + _.capitalize(_role.name), customBodyParts, customMemory, _spawnRoom]}`);
     return;
@@ -250,15 +279,42 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
         _role.BodyParts = customBodyParts;
     }
 
+    if (getBodyCost(_role.BodyParts) > room.energyCapacityAvailable) {
+        // console.log("Room does not have minimuim spawn energy required, attempting spawn with bodyLoop only")
+    }
+
     cost = getBodyCost(_role.BodyParts);
 
     // console.log("energy available", spawn.room.energyAvailable)
     // console.log("cost", cost)
+    // console.log(`${cost} ${_role.BodyParts}`)
 
     if (spawn.room.energyAvailable >= cost && !spawn.spawning) {
         var newName = _.capitalize(_role.name) + "_" + getRandomInt();
-        console.log("Spawning new " + _role.name + " : " + newName);
-
+        // console.log(`[${spawn.room.name}] `+"Spawning new " + _role.name + " : " + newName);
+        // console.log(JSON.stringify(
+        //     _.merge(
+        //         {
+        //             memory: {
+        //                 role: _role.name,
+        //                 currentSource: "0",
+        //                 baseRoomName: spawn.room.name,
+        //             },
+        //         },
+        //         _role.memory,
+        //         customMemory
+        //     )))
+        // console.log(`Game.spawns["${spawn.name}"].spawnCreep([${_role.BodyParts}], ${newName}, ${JSON.stringify(_.merge(
+        //     {
+        //         memory: {
+        //             role: _role.name,
+        //             currentSource: "0",
+        //             baseRoomName: spawn.room.name,
+        //         },
+        //     },
+        //     _role.memory,
+        //     customMemory
+        // ))})`)
         ret = spawn.spawnCreep(
             _role.BodyParts,
             newName,
@@ -282,7 +338,7 @@ spawnCreep = function (_role, customBodyParts = null, customMemory = null, _spaw
                 roomRefreshMap[customMemory.targetRoomName] = Game.time;
             }
         } else if (ret != 0) {
-            console.log("Spawn failed: ", ret);
+            // console.log("Spawn failed: ", ret);
         }
     } else {
         // console.log(`Funds not available: ${cost}`)

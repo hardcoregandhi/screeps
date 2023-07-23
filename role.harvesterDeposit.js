@@ -100,7 +100,7 @@ global.roleHarvesterDeposit = {
             //             requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName);
             //         }
             //     } catch (e) {
-            //         console.log(`${creep}: ${e}`);
+            //         console.log(`${creep}: ${e} + ${e.stack}`);
             //     }
             // }
 

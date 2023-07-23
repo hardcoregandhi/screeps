@@ -116,7 +116,7 @@ global.moveToMultiRoomTarget = function (creep, target, extraOptions = null) {
             return;
         }
     } catch (e) {
-        console.log(`moveToMultiRoomTarget failed: ${e}`);
+        console.log(`moveToMultiRoomTarget failed: ${e} + ${e.stack}`);
     }
     ret = creep.moveTo(
         target,
@@ -487,25 +487,20 @@ PathfinderSearchUsePathsIgnoreCreeps = function (fromPos, toPos) {
 
         roomCallback: function (roomName) {
             let room = Game.rooms[roomName];
-            // In this example `room` will always exist, but since
-            // PathFinder supports searches which span multiple rooms
-            // you should be careful!
-            console.log(roomName);
             if (!room) return;
+            let costs = new PathFinder.CostMatrix;
 
-            let costs = new PathFinder.CostMatrix();
-
-            room.find(FIND_STRUCTURES)
-                .concat(room.find(FIND_CONSTRUCTION_SITES))
-                .forEach(function (struct) {
-                    if (struct.structureType === STRUCTURE_ROAD) {
-                        // Favor roads over plain tiles
-                        costs.set(struct.pos.x, struct.pos.y, 1);
-                    } else if (struct.structureType !== STRUCTURE_CONTAINER && (struct.structureType !== STRUCTURE_RAMPART || !struct.my)) {
-                        // Can't walk through non-walkable buildings
-                        costs.set(struct.pos.x, struct.pos.y, 0xff);
-                    }
-                });
+            room.find(FIND_STRUCTURES).forEach(function(struct) {
+                if (struct.structureType === STRUCTURE_ROAD) {
+                  // Favor roads over plain tiles
+                  costs.set(struct.pos.x, struct.pos.y, 1);
+                } else if (struct.structureType !== STRUCTURE_CONTAINER &&
+                           (struct.structureType !== STRUCTURE_RAMPART ||
+                            !struct.my)) {
+                  // Can't walk through non-walkable buildings
+                  costs.set(struct.pos.x, struct.pos.y, 0xff);
+                }
+              });
 
             return costs;
         },

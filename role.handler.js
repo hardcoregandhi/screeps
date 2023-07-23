@@ -29,8 +29,8 @@ global.roleHandler = {
         MOVE, MOVE, MOVE, MOVE, MOVE,
         MOVE, MOVE, MOVE, MOVE, MOVE,
         ],
-    baseBodyParts: [],
-    bodyLoop: [CARRY, CARRY, MOVE],
+    baseBodyParts: [MOVE, CARRY, CARRY, MOVE, CARRY, CARRY],
+    bodyLoop: [MOVE, CARRY, CARRY],
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -44,14 +44,14 @@ global.roleHandler = {
                 return;
             }
             Log(creep, 1);
-            creep.Move(creep.memory.baseRoomName);
+            creep.Move(new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
 
         Log(creep, 2);
         pickupNearby(creep);
         
-        if (creepRoomMap.get(r.name + "eenergy") == 0 && creepRoomMap.get(r.name + "harvester") == 0) {
+        if (creepRoomMap.get(creep.room.name + "eenergy") == 0 && creepRoomMap.get(creep.room.name + "harvester") == 0) {
             creep.memory.DIE=1
             return
         }
@@ -255,7 +255,7 @@ global.roleHandler = {
                     }
                 }
             } catch (e) {
-                console.log(`${creep}: ${e}`);
+                console.log(`${creep}: ${e} + ${e.stack}`);
             }
 
             if (!targets.length) {
@@ -278,7 +278,7 @@ global.roleHandler = {
                         creep.moveTo(mainStorage.pos.x - 7, mainStorage.pos.y);
                     }
                 } catch (e) {
-                    console.log(`${creep}: ${e}`);
+                    console.log(`${creep}: ${e} + ${e.stack}`);
                 }
                 return;
             }

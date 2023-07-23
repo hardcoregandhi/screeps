@@ -120,8 +120,7 @@ global.roleUpgrader = {
             }
             Log(creep, "upgrading controller");
             if (creep.upgradeController(creep.room.controller) != OK) {
-                if (!creep.pos.inRangeTo(creep.room.controller, 4)) creep.Move(creep.room.controller.pos, { range: 3 });
-                else creep.Move(creep.room.controller.pos, { range: 3 });
+                creep.Move(creep.room.controller.pos, 3);
             }
         } else {
             Log(creep, "retrieving");
@@ -142,7 +141,7 @@ global.roleUpgrader = {
                         return;
                     }
                 } catch (e) {
-                    console.log(`${creep}: ${e}`);
+                    console.log(`${creep}: ${e} + ${e.stack}`);
                 }
             }
             if (mainStorage != undefined) {

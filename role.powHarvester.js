@@ -75,7 +75,7 @@ global.rolePowHarvester = {
                 creep.memory.prevPowerBankHealth = powerBank.hits;
             }
         } catch (e) {
-            console.log(`${creep}: ${e}`);
+            console.log(`${creep}: ${e} + ${e.stack}`);
         }
 
         if (Memory.rooms[creep.memory.baseRoomName].powerBanks[creep.memory.targetSource] == undefined) {

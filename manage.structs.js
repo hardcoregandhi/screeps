@@ -188,13 +188,17 @@ global.runStructs = function () {
             }
         }
 
+        if (room.find(FIND_HOSTILE_CREEPS).filter((c) => c.body.find((part) => part.type == ATTACK || part.type == RANGED_ATTACK)).length && !Object.keys(Memory.rooms.W3N7.towers).length && room.controller.level <=2) {
+            room.controller.activateSafeMode();
+        }
+
         if (hostileCreeps.length > 2) {
             var { meleeCount, rangedCount } = getAttackPartCounts(room);
-            requestHealer(Memory.rooms[room.name].parentRoom, r.name);
+            requestHealer(room.name, room.name);
             if (meleeCount > rangedCount) {
-                requestSoldier(Memory.rooms[room.name].parentRoom, r.name);
+                requestSoldier(room.name, room.name);
             } else {
-                requestGunner(Memory.rooms[r.name].parentRoom, r.name);
+                requestGunner(room.name, room.name);
             }
         }
         // if (hostileCreeps.length > 2 && (room.find(FIND_STRUCTURES).filter(s => ["rampart", "constructedWall"].includes(s.structureType) && s.hits > 500).length || room.controller.ticksToDecay < 500)) {

@@ -79,6 +79,22 @@ global.runCreeps = function () {
                 }
             }
 
+            if (creep.room.name == creep.memory.baseRoomName) {
+                if (creep.room.memory.emergencyUpgrade == true || creep.room.controller.ticksToDowngrade <= 1000) {
+                    creep.room.memory.emergencyUpgrade = true;
+                    if(creep.body.some(e => e.type == WORK)) {
+                        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) != 0) {
+                            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                                creep.Move(room.controller)
+                                return
+                            }
+                        }
+                    }
+                } else if (creep.room.memory.emergencyUpgrade == true || creep.room.controller.ticksToDowngrade >= 3000) {
+                    creep.room.memory.emergencyUpgrade = false
+                }
+            }
+
             switch (creep.memory.role) {
                 case "handler":
                     if (creep.room.energyAvailable > creep.room.energyCapacityAvailable / 2 && Memory.rooms[creep.room.name].scav == true && creep.room.memory.mainTower != undefined && creep.room.memory.mainTower.enemyInRoom == false) {
@@ -97,7 +113,8 @@ global.runCreeps = function () {
                     eval("role" + _.capitalize(creep.memory.role)).run(creep);
             }
         } catch (e) {
-            console.log(`${e}`);
+            console.log(`${e} + ${e.stack}`);
+            console.log(`${e.stack}`);
             console.log(creep, `${creep.pos} failed to run`);
         }
     }
@@ -190,7 +207,7 @@ global.runCreeps = function () {
             // }
             creep.usePower(PWR_GENERATE_OPS);
         } catch (e) {
-            console.log(`${e}`);
+            console.log(`${e} + ${e.stack}`);
             console.log(creep, " failed to run");
         }
     }

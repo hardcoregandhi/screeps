@@ -193,7 +193,7 @@ global.roleHarvesterExt = {
                 }
                 // createRoadBetweenTargets(container, Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id))
             } catch (e) {
-                console.log(`${creep}: ${e}`);
+                console.log(`${creep}: ${e} + ${e.stack}`);
                 console.log(`${creep}: ${creep.memory.targetRoomName}`);
                 console.log(`${creep}: ${creep.memory.targetSource}`);
             }
@@ -210,7 +210,7 @@ global.roleHarvesterExt = {
                     if (csites.length) {
                         creep.memory.containerConstructionSite = csites[0].id;
                     } else {
-                        if (targetSource.pos.inRangeTo(creep.pos, 2)) {
+                        if (targetSource.pos.inRangeTo(creep.pos, 1)) {
                             creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER);
                         } else {
                             creep.Move(targetSource.pos);
