@@ -58,7 +58,7 @@ global.roleHarvesterDeposit = {
                     if (route.length > 0) {
                         creep.say("Headin oot");
                         const exit = creep.pos.findClosestByRange(route[0].exit);
-                        moveToMultiRoomTarget(creep, exit);
+                        creep.Move(exit);
                     } else {
                         creep.say("No route found");
                         Log(creep, "no route to target room");
@@ -116,7 +116,7 @@ global.roleHarvesterDeposit = {
 
             if (creep.harvest(targetSource) != OK) {
                 // console.log(creep.harvest(targetSource))
-                moveToMultiRoomTarget(creep, targetSource);
+                creep.Move(targetSource);
             }
             return;
         } else {
@@ -127,7 +127,7 @@ global.roleHarvesterDeposit = {
                 if (route.length > 0) {
                     creep.say("Headin oot");
                     const exit = creep.pos.findClosestByRange(route[0].exit);
-                    moveToMultiRoomTarget(creep, exit);
+                    creep.Move(exit);
                 } else {
                     creep.say("No route found");
                     Log(creep, "no route to target room");
@@ -138,7 +138,7 @@ global.roleHarvesterDeposit = {
 
             for (var type in creep.store) {
                 if (creep.transfer(mainStorage, type) != OK) {
-                    moveToMultiRoomTarget(creep, mainStorage);
+                    creep.Move(mainStorage);
                 }
             }
         }

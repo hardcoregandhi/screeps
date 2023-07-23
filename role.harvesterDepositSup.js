@@ -1,4 +1,4 @@
-global.roleHarvSup = {
+global.roleMover = {
     name: "harvSup",
     roleMemory: { memory: {} },
     // prettier-ignore
@@ -58,7 +58,7 @@ global.roleHarvSup = {
             if (mainStorage.structureType == STRUCTURE_CONTAINER) {
                 if (mainStorage.hits < mainStorage.hitsMax / 2) {
                     if (creep.repair(mainStorage) == ERR_NOT_IN_RANGE) {
-                        moveToMultiRoomTarget(creep, mainStorage.pos);
+                        creep.Move(mainStorage.pos);
                     }
                     return;
                 }
@@ -68,7 +68,7 @@ global.roleHarvSup = {
                 for (const resourceType in creep.store) {
                     if (creep.transfer(mainStorage, resourceType) != OK) {
                         Log(creep, creep.transfer(mainStorage, resourceType));
-                        moveToMultiRoomTarget(creep, mainStorage);
+                        creep.Move(mainStorage);
                     }
                 }
             } else {
@@ -77,7 +77,10 @@ global.roleHarvSup = {
             }
         } else {
             Log(creep, "returning");
-            pickupNearby(creep);
+            if (pickupNearby(creep) == OK) {
+                return;
+            }
+            
             if (creep.memory.targetContainer == undefined) {
                 Log(creep, "finding new container");
 
@@ -102,15 +105,15 @@ global.roleHarvSup = {
                 for (const resourceType in target.store) {
                     Log(creep, 9);
                     if (creep.withdraw(target, resourceType) != OK) {
-                        moveToMultiRoomTarget(creep, target);
+                        creep.Move(target);
                     }
                 }
             } else {
                 Log(creep, "moving straight to target");
-                if (!creep.pos.isNearTo(target)) moveToMultiRoomTarget(creep, target);
+                if (!creep.pos.isNearTo(target)) creep.Move(target);
             }
         }
     },
 };
 
-module.exports = roleHarvSup;
+module.exports = roleMover;

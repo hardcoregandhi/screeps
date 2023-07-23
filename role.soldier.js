@@ -13,7 +13,7 @@ global.roleSoldier = {
         MOVE,MOVE,MOVE,MOVE,MOVE,
         HEAL,
     ],
-    baseBodyParts: [TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE],
+    baseBodyParts: [TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, ATTACK],
     subBodyParts: [HEAL, HEAL, MOVE, MOVE],
     bodyLoop: [MOVE, ATTACK],
 
@@ -46,7 +46,7 @@ global.roleSoldier = {
             if (returnToHeal(creep, creep.memory.baseRoomName)) return;
         }
         if (creep.memory.return) {
-            creep.moveTo(Game.flags.holding.pos);
+            creep.Move(Game.flags.holding.pos);
             return;
         }
 
@@ -104,7 +104,7 @@ global.roleSoldier = {
             if (invaderCore.length) {
                 if (creep.attack(invaderCore[0]) != OK) {
                     creep.heal(creep);
-                    if (!creep.pos.inRangeTo(invaderCore[0], 2)) creep.moveTo(invaderCore[0], { maxRooms: 1 });
+                    if (!creep.pos.inRangeTo(invaderCore[0], 1)) creep.moveTo(invaderCore[0], { maxRooms: 1 });
                 }
                 return;
             }
@@ -115,7 +115,7 @@ global.roleSoldier = {
         //         const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
         //         if (route.length > 0) {
         //             const exit = creep.pos.findClosestByRange(route[0].exit);
-        //             creep.moveTo(exit);
+        //             creep.Move(exit);
         //             return
         //         }
         //     }
@@ -130,7 +130,7 @@ global.roleSoldier = {
             if (creep.memory.targetCore != undefined) {
                 invaderCore = Game.getObjectById(creep.memory.targetCore);
                 if (invaderCore != undefined) {
-                    creep.moveTo(invaderCore);
+                    creep.Move(invaderCore);
                     requestGunner(creep.memory.baseRoomName, creep.memory.targetRoomName);
                     return;
                 } else {
@@ -143,10 +143,10 @@ global.roleSoldier = {
                     .find(FIND_HOSTILE_CREEPS)
                     .filter((c) => creep.owner.username != "KyberPrizrak" && (c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)));
                 if (enemyTargets.length) {
-                    moveToMultiRoomTarget(creep, enemyTargets[0]);
+                    creep.Move(enemyTargets[0]);
                     return;
                 }
-                creep.moveTo(Game.rooms[creep.memory.targetRoomName].controller);
+                creep.Move(Game.rooms[creep.memory.targetRoomName].controller);
                 return;
             } else {
                 moveToRoom(creep, creep.memory.targetRoomName);
@@ -155,7 +155,7 @@ global.roleSoldier = {
         } else {
             // if (creep.room.controller.safeMode != undefined && enemyTowers.length == 0) {
             //     source = creep.pos.findClosestByPath(FIND_SOURCES);
-            //     if (source) creep.moveTo(source);
+            //     if (source) creep.Move(source);
             //     return;
             // }
             var enemyTargets = Game.rooms[creep.memory.targetRoomName]

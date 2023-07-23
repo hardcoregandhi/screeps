@@ -19,9 +19,9 @@ require("manage.market");
 require("manage.factory");
 require("role.common");
 require("global.logging");
-
+const Traveler = require('Traveler');
 var roleHarvester = require("role.harvester");
-var roleHarvSup = require("role.harvesterSup");
+var roleMover = require("role.mover");
 var roleHarvesterExt = require("role.harvesterExt");
 var roleHarvesterDeposit = require("role.harvesterDeposit");
 var roleHarvesterMineral = require("role.harvesterMineral");
@@ -32,7 +32,7 @@ var roleBuilder = require("role.builder");
 var roleBuilderExt = require("role.builderExt");
 var roleTower = require("tower");
 var roleClaimer = require("role.claimer");
-var roleMover = require("role.mover");
+var roleHandler = require("role.handler");
 var roleMoverExt = require("role.moverExt");
 var roleMoverExtRepair = require("role.moverExtRepair");
 var roleMoverLink = require("role.moverLink");
@@ -44,7 +44,7 @@ var roleSoldier = require("role.soldier");
 var roleGunner = require("role.gunner");
 var roleSieger = require("role.sieger");
 var rolePowHarvester = require("role.powHarvester");
-var rolePowMover = require("role.powMover");
+var rolePowHandler = require("role.powHandler");
 var roleDoctor = require("role.doctor");
 var roleHealer = require("role.healer");
 var roleHealerChase = require("role.healerChase");
@@ -94,6 +94,15 @@ for (s of Object.keys(myRooms)) {
     }
 }
 
+global.g_myUsername = "";
+let allMyRooms = _.filter(Game.rooms, (aRoom) => (typeof aRoom.controller != "undefined") && aRoom.controller.my);
+if (allMyRooms.length === 0) {
+    let allMyCreeps = _.filter(Game.creeps, (creep) => true);
+    if (allMyCreeps.length === 0) {
+        return false;
+    } else global.g_myUsername = allMyCreeps[0].owner.username;
+} else global.g_myUsername = allMyRooms[0].controller.owner.username;
+
 global.creepsToKill = [];
 
 Memory.RoomVisualData = {};
@@ -112,12 +121,12 @@ calls	time		avg		function
 50		25.8		0.516		roleBuilder.run
 8785	23.3		0.003		Room.find
 143		22.9		0.160		Creep.harvest
-58		22.3		0.384		roleMover.run
+58		22.3		0.384		roleHandler.run
 60		18.8		0.313		roleClaimer.run
 220		16.8		0.076		roleExplorer.run
 304		10.3		0.034		Creep.withdraw
 60		8.8	    	0.146		Creep.reserveController
-30		8.7	    	0.289		roleHarvSup.run
+30		8.7	    	0.289		roleMover.run
 30		8.5	    	0.285		towers
 61		7.3	    	0.119		Creep.repair
 30		6.3	    	0.211		Creep.heal
@@ -158,13 +167,13 @@ try {
     // resetSourceContainerTracking = profiler.registerFN(resetSourceContainerTracking, "resetSourceContainerTracking");
 
     profiler.registerObject(roleHarvester, "roleHarvester");
-    profiler.registerObject(roleHarvSup, "roleHarvSup");
+    profiler.registerObject(roleMover, "roleMover");
     profiler.registerObject(roleHarvesterExt, "roleHarvesterExt");
     profiler.registerObject(roleUpgrader, "roleUpgrader");
     profiler.registerObject(roleBuilder, "roleBuilder");
     profiler.registerObject(roleBuilderExt, "roleBuilderExt");
     profiler.registerObject(roleClaimer, "roleClaimer");
-    profiler.registerObject(roleMover, "roleMover");
+    profiler.registerObject(roleHandler, "roleHandler");
     profiler.registerObject(roleMoverExt, "roleMoverExt");
     profiler.registerObject(roleMoverLink, "roleMoverLink");
     profiler.registerObject(roleDefence, "roleDefence");
@@ -175,7 +184,7 @@ try {
     profiler.registerObject(roleGunner, "roleGunner");
     profiler.registerObject(roleSieger, "roleSieger");
     profiler.registerObject(rolePowHarvester, "rolePowHarvester");
-    profiler.registerObject(rolePowMover, "rolePowMover");
+    profiler.registerObject(rolePowHandler, "rolePowHandler");
     profiler.registerObject(roleDoctor, "roleDoctor");
     profiler.registerObject(roleExplorer, "roleExplorer");
     profiler.registerObject(roleCleaner, "roleCleaner");

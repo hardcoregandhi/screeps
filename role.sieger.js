@@ -33,16 +33,16 @@ global.roleSieger = {
         if (creep.hits < creep.hitsMax / 2) {
             // flee to safety
             creep.say("healing");
-            creep.moveTo(Game.rooms[creep.memory.baseRoomName].controller);
+            creep.Move(Game.rooms[creep.memory.baseRoomName].controller);
             return;
         }
         if (creep.memory.return) {
-            creep.moveTo(Game.flags.holding.pos);
+            creep.Move(Game.flags.holding.pos);
             return;
         }
 
         // if (creep.hits < creep.hitsMax) {
-        //     creep.moveTo(Game.rooms[creep.memory.baseRoomName].controller);
+        //     creep.Move(Game.rooms[creep.memory.baseRoomName].controller);
         // }
 
         // if (creep.ticksToLive < 500) {
@@ -50,7 +50,7 @@ global.roleSieger = {
         //         const route = Game.map.findRoute(creep.room, creep.memory.baseRoomName);
         //         if (route.length > 0) {
         //             const exit = creep.pos.findClosestByRange(route[0].exit);
-        //             creep.moveTo(exit);
+        //             creep.Move(exit);
         //             return
         //         }
         //     }

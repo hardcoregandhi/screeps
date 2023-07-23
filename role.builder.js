@@ -19,12 +19,16 @@ global.roleBuilder = {
     /** @param {Creep} creep **/
     run: function (creep) {
         Log(creep, "roleBuilder");
+        // console.log("roleBuilder")
         if (creep.memory.interShard) {
             interShardMove(creep);
             return;
         }
         if (!creep.memory.currentSource == null) {
             creep.memory.currentSource = 0;
+        }
+        if (creep.memory.building == null) {
+            creep.memory.building = true
         }
 
         // creep.memory.DIE = 1
@@ -37,7 +41,7 @@ global.roleBuilder = {
         // Lost creeps return home
         if (creep.room.name != creep.memory.baseRoomName) {
             Log(creep, "returning home.");
-            moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.baseRoomName));
+            creep.Move(new RoomPosition(25, 25, creep.memory.baseRoomName));
             return;
         }
         var customStructureSpecificPercentLimits = [];
@@ -125,8 +129,8 @@ global.roleBuilder = {
                     // console.log("Defauling to Harvester")
                     roleHarvester.run(creep);
                     return;
-                } else  if (creepRoomMap.get(creep.room.name + "eenergy") < 5000) {
-                    creep.memory.DIE = 1
+                } else if(creepRoomMap.get(creep.room.name + "eenergy") < 1000 {
+                    creep.memory.DIE=1
                 } else {
                     // console.log("Defauling to upgrader")
                     roleUpgrader.run(creep);
@@ -165,6 +169,7 @@ global.roleBuilder = {
             }
         } else {
             Log(creep, "!building");
+            delete creep.memory.currentTarget
 
             Log(creep, 8);
             if (Game.flags.DISMANTLE && creep.memory.baseRoomName == Game.flags.DISMANTLE.room.name) {
@@ -180,7 +185,7 @@ global.roleBuilder = {
                 }
             }
 
-            if (creepRoomMap.get(creep.room.name + "mover") >= 1) {
+            if (creepRoomMap.get(creep.room.name + "handler") >= 1) {
                 Log(creep, 81);
                 if ((creepRoomMap.get(creep.room.name + "eenergy") === undefined && creep.room.energyAvailable < creep.room.energyCapacityAvailable / 2) || creepRoomMap.get(creep.room.name + "eenergy") < 1500) {
                     Log(creep, 10);
@@ -227,7 +232,7 @@ global.roleBuilder = {
                 if (containers.length) {
                     container = creep.pos.findClosestByPath(containers);
                     if (creep.withdraw(container, RESOURCE_ENERGY) != OK) {
-                        moveToMultiRoomTarget(creep, container);
+                        creep.Move(container);
                     }
                     return;
                 }

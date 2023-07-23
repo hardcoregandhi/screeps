@@ -139,7 +139,7 @@ global.roleWanderer = {
             Game.notify(`${new Date().toLocaleString()}: Memory.rooms[${creep.memory.baseRoomName}].caravan.targetRoomName[${creep.room.name}]: ${JSON.stringify(Memory.rooms[creep.memory.baseRoomName].caravan.targetRoomName[creep.room.name])}`, 0);
         }
 
-        // moveToMultiRoomTarget(creep, new RoomPosition(25, 25, creep.memory.targetRooms[creep.memory.currentTargetRoom]))
+        // creep.Move(new RoomPosition(25, 25, creep.memory.targetRooms[creep.memory.currentTargetRoom]))
 
         creep.moveTo(new RoomPosition(25, 25, creep.memory.targetRooms[creep.memory.currentTargetRoom]), {
             visualizePathStyle: { stroke: "#ffffff" },

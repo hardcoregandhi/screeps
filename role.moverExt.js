@@ -23,7 +23,7 @@ function findReplacementTarget(creep) {
             return;
         }
 
-        if (Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedBy > 0) {
+        if (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 || Memory.rooms[source.room.name].sources[source.id].currentCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedBy > 0) {
             console.log(`corrupt currentCarryParts/targettedByList found for ${source.id}`);
             totalCarryParts = 0;
             _.forEach(Memory.rooms[source.room.name].sources[source.id].container.targettedByList, (creepName) => {
@@ -32,7 +32,7 @@ function findReplacementTarget(creep) {
                 }, 0);
                 totalCarryParts += creepCarryParts;
             });
-            Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts = totalCarryParts;
+            Memory.rooms[source.room.name].sources[source.id].currentCarryParts = totalCarryParts;
         }
 
         if (Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id) == null) {
@@ -41,13 +41,13 @@ function findReplacementTarget(creep) {
         }
 
         if (
-            Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts != undefined &&
-            Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts < Memory.rooms[source.room.name].sources[source.id].container.targetCarryParts &&
+            Memory.rooms[source.room.name].sources[source.id].targetCarryParts != undefined &&
+            Memory.rooms[source.room.name].sources[source.id].currentCarryParts < Memory.rooms[source.room.name].sources[source.id].targetCarryParts &&
             Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id).store.getUsedCapacity() > 1000
         ) {
             console.log(
-                `setting ${creep.name} to s: ${source.id.substr(-3)} r: ${source.room.name} curParts: ${Memory.rooms[source.room.name].sources[source.id].container.currentCarryParts} tarBy: ${
-                    Memory.rooms[source.room.name].sources[source.id].container.targetCarryParts
+                `setting ${creep.name} to s: ${source.id.substr(-3)} r: ${source.room.name} curParts: ${Memory.rooms[source.room.name].sources[source.id].targetCarryParts} tarBy: ${
+                    Memory.rooms[source.room.name].sources[source.id].targetCarryParts
                 }`
             );
 
@@ -56,7 +56,7 @@ function findReplacementTarget(creep) {
             var carryCount = creep.body.reduce((previous, p) => {
                 return p.type == CARRY ? (previous += 1) : previous;
             }, 0);
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts - carryCount;
+            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].currentCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].currentCarryParts - carryCount;
 
             creep.memory.targetRoomName = source.room.name;
             creep.memory.targetSource = source.id;
@@ -67,7 +67,7 @@ function findReplacementTarget(creep) {
             var carryCount = creep.body.reduce((previous, p) => {
                 return p.type == CARRY ? (previous += 1) : previous;
             }, 0);
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts + carryCount;
+            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].currentCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].currentCarryParts + carryCount;
             ret = true;
             return false; //early escape
         }
@@ -112,7 +112,7 @@ global.roleMoverExt = {
 
         if (creep.memory.fleeing > 0) {
             creep.memory.fleeing -= 1;
-            moveToMultiRoomTarget(creep, Game.rooms[creep.memory.baseRoomName].controller);
+            creep.Move(Game.rooms[creep.memory.baseRoomName].controller);
             return;
         }
 
@@ -159,7 +159,7 @@ global.roleMoverExt = {
                 if (route.length > 0) {
                     creep.say("Headin oot");
                     const exit = creep.pos.findClosestByRange(route[0].exit);
-                    moveToMultiRoomTarget(creep, exit);
+                    creep.Move(exit);
                 } else {
                     creep.say("No route found");
                     Log(creep, "no route to target room ", creep.memory.targetRoomName);
@@ -253,13 +253,13 @@ global.roleMoverExt = {
                         findReplacementTarget(creep);
                     }
                     if (!creep.pos.inRangeTo(targetContainer, 3)) {
-                        moveToMultiRoomTarget(creep, targetContainer);
+                        creep.Move(targetContainer);
                     }
 
                     return;
                 }
                 if (creep.withdraw(targetContainer, RESOURCE_ENERGY) != OK) {
-                    if (!creep.pos.inRangeTo(targetContainer, 1)) moveToMultiRoomTarget(creep, targetContainer);
+                    if (!creep.pos.inRangeTo(targetContainer, 1)) creep.Move(targetContainer);
                 }
             } else {
                 if (Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container != undefined) {
@@ -269,7 +269,7 @@ global.roleMoverExt = {
                     console.log(`${creep.name} has no container, killing.`);
                     // creep.memory.DIE = true;
                     targetSource = Game.getObjectById(creep.memory.targetSource);
-                    if (!creep.pos.inRangeTo(targetSource.pos, 1)) moveToMultiRoomTarget(creep, targetSource.pos);
+                    if (!creep.pos.inRangeTo(targetSource.pos, 1)) creep.Move(targetSource.pos);
                 }
             }
         } else {
@@ -295,7 +295,7 @@ global.roleMoverExt = {
                 link = Game.getObjectById(creep.memory.target_link);
                 if (link != undefined) {
                     if (creep.transfer(link, RESOURCE_ENERGY) != OK) {
-                        moveToMultiRoomTarget(creep, link);
+                        creep.Move(link);
                     }
                     if (link.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
                         link_storage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_storage);
@@ -313,7 +313,7 @@ global.roleMoverExt = {
                         TransferAll(creep, mainStorage);
                     }
                 } else {
-                    roleMover.run(creep);
+                    roleHandler.run(creep);
                     return;
                 }
                 return;
@@ -324,7 +324,7 @@ global.roleMoverExt = {
             if (storages.length) {
                 if (creep.transfer(storages[0], RESOURCE_ENERGY) != OK) {
                     // console.log(1)
-                    moveToMultiRoomTarget(creep, storages[0]);
+                    creep.Move(storages[0]);
                 }
             } else creep.say("no eenergy");
         }

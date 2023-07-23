@@ -70,7 +70,7 @@ global.roleHarvesterExt = {
                 if (route.length > 0) {
                     creep.say("Headin oot");
                     const exit = creep.pos.findClosestByRange(route[0].exit);
-                    moveToMultiRoomTarget(creep, exit);
+                    creep.Move(exit);
                 } else {
                     creep.say("No route found");
                     Log(creep, "no route to target room");
@@ -95,9 +95,9 @@ global.roleHarvesterExt = {
             if (creep.memory.targetRoomName != undefined && Game.rooms[creep.memory.targetRoomName] != undefined && creep.room.name == creep.memory.targetRoomName) {
                 // if (
                 //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container != undefined &&
-                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != undefined &&
-                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts != 0 &&
-                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.currentCarryParts < Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targetCarryParts &&
+                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts != undefined &&
+                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts != 0 &&
+                //     Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts < Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targetCarryParts &&
                 //     Memory.rooms[creep.memory.baseRoomName].mainStorage != undefined &&
                 //     Game.getObjectById(Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.id).store.getUsedCapacity(RESOURCE_ENERGY) > 1000
                 // ) {
@@ -115,7 +115,8 @@ global.roleHarvesterExt = {
                 }
 
                 if (creepRoomMap.get(creep.memory.targetRoomName + "csites") != undefined && creepRoomMap.get(creep.memory.targetRoomName + "csites") > 2) {
-                    if (creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) < 1) {
+                    if (creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) == undefined || creepRoomMap.get(creep.memory.baseRoomName + "builderExtTarget" + creep.memory.targetRoomName) < Math.ceil(creepRoomMap.get(creep.memory.targetRoomName + "csites") / 10) &&
+                        Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container != undefined) {
                         spawnCreep(roleBuilderExt, "auto", { memory: { targetRoomName: creep.memory.targetRoomName } }, creep.memory.baseRoomName);
                     }
                 }
@@ -160,7 +161,7 @@ global.roleHarvesterExt = {
             Log(creep, targetSource);
             if (trackedHarvest(creep, targetSource) != OK) {
                 // console.log(creep.harvest(targetSource))
-                moveToMultiRoomTargetAvoidCreep(creep, targetSource);
+                creep.Move(targetSource);
             }
             return;
         } else {
@@ -185,7 +186,10 @@ global.roleHarvesterExt = {
                 if (container == null) {
                     delete Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container;
                 } else {
-                    creep.memory.targetContainer = container.id;
+                    if(creep.memory.targetContainer == null) {
+                        creep.memory.targetContainer = container.id;
+                        buildRoadsToExtSources(creep.memory.baseRoomName)
+                    }
                 }
                 // createRoadBetweenTargets(container, Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id))
             } catch (e) {
@@ -209,7 +213,7 @@ global.roleHarvesterExt = {
                         if (targetSource.pos.inRangeTo(creep.pos, 2)) {
                             creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER);
                         } else {
-                            moveToMultiRoomTarget(creep, targetSource.pos);
+                            creep.Move(targetSource.pos);
                         }
                     }
 
@@ -224,17 +228,17 @@ global.roleHarvesterExt = {
                 }
                 Log(creep, "building");
                 if (creep.build(targetSite) == ERR_NOT_IN_RANGE) {
-                    moveToMultiRoomTargetAvoidCreep(creep, targetSite);
+                    creep.Move(targetSite);
                 }
                 return;
             } else {
                 if (container != null && container.hits < 200000) {
                     Log(creep, `healing ${container}`);
                     if (creep.repair(container) != OK) {
-                        moveToMultiRoomTargetAvoidCreep(creep, container);
+                        creep.Move(container);
                     }
                 } else if (creep.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    moveToMultiRoomTargetAvoidCreep(creep, container);
+                    creep.Move(container);
                     Log(creep, `filling ${container}`);
                 }
             }
