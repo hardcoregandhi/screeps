@@ -65,7 +65,7 @@ drawGUI = function () {
                     `${Memory.rooms[source.room.name].sources[source.id].currentMiningParts || 0}/${Memory.rooms[source.room.name].sources[source.id].targetMiningParts || 0} ` +
                     `M: ${Memory.rooms[source.room.name].sources[source.id].link != undefined || creepRoomMap.get(r.name + "harvSupTarget" + source.id) || 0}`;
                 if (Memory.rooms[source.room.name].sources[source.id].container != undefined) {
-                    text += ` ${Memory.rooms[source.room.name].sources[source.id].targetCarryParts || 0}/${Memory.rooms[source.room.name].sources[source.id].targetCarryParts || 0}`;
+                    text += ` ${Memory.rooms[source.room.name].sources[source.id].currentCarryParts || 0}/${Memory.rooms[source.room.name].sources[source.id].targetCarryParts || 0}`;
                     container = Game.getObjectById(Memory.rooms[source.room.name].sources[source.id].container.id);
                     if (container != undefined) {
                         text += ` ${container.store.getUsedCapacity()} / ${container.store.getCapacity()}`;
@@ -90,6 +90,10 @@ drawGUI = function () {
                 }
                 new RoomVisual().text(text, 1, listOffset + inc(), { align: "left", font: "0.3 Lucida Console" });
             });
+            new RoomVisual().text("SpawnQueue    : ", 1, listOffset + inc(), { align: "left", font: fontSize });
+            _.forEach(Memory.rooms[r.name].spawnQueue, (s) => {
+                new RoomVisual().text(s, 1, listOffset + inc(), { align: "left", font: "0.3 Lucida Console" });
+            })
 
             textOffset;
             inc();
@@ -121,6 +125,8 @@ drawGUI = function () {
                 }
             }
             buildWalls(r.name, true)
+            // buildRoadsToSources(r.name, true)
+            // buildRoadsToExtSources(r.name, true)
         } catch (e) {}
     }
 };

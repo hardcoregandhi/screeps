@@ -3,6 +3,12 @@ creepReduction = function (r) {
     // if (isHighwayRoom(r.name) || (Memory.rooms[r.name].parentRoom == undefined)) {
     //     return;
     // }
+    if (_.isString(r)) {
+        r = Game.rooms[r];
+        if (r == undefined) {
+            return false;
+        }
+    }
     if (Memory.rooms[r.name].mainSpawn != undefined) {
         mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
     } else {
@@ -65,7 +71,7 @@ creepReduction = function (r) {
             energyPerTick = totalMiningParts * 2;
             totalCarryParts = 0;
             creepCarryPartsMap = [];
-            _.forEach(s.container.targettedByList, (creepName) => {
+            _.forEach(s.targettedByMoverList, (creepName) => {
                 if (Memory.creeps[creepName].DIE == undefined) {
                     creepCarryParts = Game.creeps[creepName].body.reduce((previous, p) => {
                         return p.type == CARRY ? (previous += 1) : previous;
@@ -73,7 +79,7 @@ creepReduction = function (r) {
                     creepCarryPartsMap.push([creepName, creepCarryParts]);
                     totalCarryParts += creepCarryParts;
                 } else {
-                    RemoveFromList(s.container.targettedByList, creepName);
+                    RemoveFromList(s.targettedByMoverList, creepName);
                 }
             });
             if (Memory.rooms[r.name].parentRoom != undefined && creepRoomMap.get(`${Memory.rooms[r.name].parentRoom}moverExtRepairTarget${s.id}`) != undefined) {
@@ -109,7 +115,7 @@ creepReduction = function (r) {
                         }`
                     );
                     Memory.creeps[creepCarryPartsMap[creepCarryPartsMap.length - 1][0]].DIE = true;
-                    RemoveFromList(s.container.targettedByList, creepCarryPartsMap[creepCarryPartsMap.length - 1][0]);
+                    RemoveFromList(s.targettedByMoverList, creepCarryPartsMap[creepCarryPartsMap.length - 1][0]);
                     if (Game.creeps[creepCarryPartsMap[creepCarryPartsMap.length - 1][0]].spawning) {
                         console.log(`killing a spawning creep ${creepCarryPartsMap[creepCarryPartsMap.length - 1][0]} ${creepCarryPartsMap[creepCarryPartsMap.length - 1][1]} totalCarryParts:${totalCarryParts} targetCarryParts:${targetCarryParts}`);
                     }

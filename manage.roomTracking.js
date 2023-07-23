@@ -20,7 +20,7 @@ roomTracking = function () {
             return;
         }
 
-        console.log(`Refreshing ${r.name}`);
+        // console.log(`Refreshing ${r.name}`);
         Debug(r.name, `Refreshing ${r.name}`);
 
         const terrain = r.getTerrain();
@@ -293,7 +293,7 @@ roomTracking = function () {
                                         // console.log("ignoring source")
                                         return;
                                     } else {
-                                        if (PathFinder.search(source.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 150) {
+                                        if (PathFinder.search(source.pos, Game.getObjectById(Memory.rooms[r.name].mainSpawn.id).pos).path.length < 250) {
                                             addExternalSource(r.name, source);
                                         }
                                     }
@@ -442,7 +442,8 @@ roomTracking = function () {
                         console.log("adding new container ", r.name, " ", cont.id);
                         Memory.rooms[r.name].sources[s.id].container = {};
                         Memory.rooms[r.name].sources[s.id].container.id = cont.id;
-                        Memory.rooms[r.name].sources[s.id].container.targettedBy = 0;
+                        Memory.rooms[r.name].sources[s.id].targettedByMover = 0;
+                        Memory.rooms[r.name].sources[s.id].targettedByMoverList = [];
                         Memory.rooms[r.name].sources[s.id].container.handlersNeeded = 2;
                     }
                 }
@@ -477,7 +478,7 @@ roomTracking = function () {
                 if (cont == null) {
                     Memory.rooms[r.name].sources[s.id].container = undefined;
                 } else {
-                    new RoomVisual(r.name).text(Memory.rooms[r.name].sources[s.id].container.targettedBy, cont.pos.x - 0.17, cont.pos.y + 0.2, { align: "left", font: 0.6 });
+                    new RoomVisual(r.name).text(Memory.rooms[r.name].sources[s.id].targettedBy, cont.pos.x - 0.17, cont.pos.y + 0.2, { align: "left", font: 0.6 });
                 }
             }
 
@@ -496,7 +497,7 @@ roomTracking = function () {
                 console.log(`Memory.rooms[\'${r.name}\'].sources[\'${s.id}\'].container`);
                 if (Memory.rooms[r.name].sources[s.id].container != undefined) {
                     console.log("hello");
-                    _.forEach(Memory.rooms[r.name].sources[s.id].container.targettedByList, (c) => {
+                    _.forEach(Memory.rooms[r.name].sources[s.id].targettedByMoverList, (c) => {
                         console.log(`killing ${c} due to invader core reservation`);
                         Memory.creeps[c].DIE = true;
                     });
@@ -728,12 +729,10 @@ resetSourceContainerTracking = function () {
             _.forEach(Memory.rooms[r.name].sources, (s) => {
                 s.targettedBy = 0;
                 s.targettedByList = [];
+                s.targettedByMover = 0;
+                s.targettedByMoverList = [];
                 s.currentMiningParts = 0;
                 s.currentCarryParts = 0;
-                if (s.container != undefined) {
-                    s.container.targettedBy = 0;
-                    s.container.targettedByList = [];
-                }
             });
             _.forEach(Memory.rooms[r.name].powerBanks, (p) => {
                 p.targettedBy = 0;
@@ -759,13 +758,13 @@ resetSourceContainerTracking = function () {
             if (c.memory.role == "harvester") {
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].targettedBy += 1;
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].targettedByList.push(c.name);
-                creepMiningParts = Game.creeps[c.name].body.reduce((previous, p) => {
+                var creepMiningParts = Game.creeps[c.name].body.reduce((previous, p) => {
                     return p.type == WORK ? (previous += 1) : previous;
                 }, 0);
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].currentMiningParts += creepMiningParts;
             } else if (c.memory.role == "harvesterExt") {
                 if (Memory.creeps[c.name].DIE == undefined) {
-                    creepMiningParts = Game.creeps[c.name].body.reduce((previous, p) => {
+                    var creepMiningParts = Game.creeps[c.name].body.reduce((previous, p) => {
                         return p.type == WORK ? (previous += 1) : previous;
                     }, 0);
                     Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].targettedBy += 1;
@@ -773,9 +772,12 @@ resetSourceContainerTracking = function () {
                     Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].currentMiningParts += creepMiningParts;
                 }
             } else if (c.memory.role == "mover") {
-                Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
-                Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
-                creepCarryParts = Game.creeps[c.name].body.reduce((previous, p) => {
+                // console.log(`AMemory.rooms[W8N3].sources[71ac0772347ffe6].currentCarryParts = ${Memory.rooms["W8N3"].sources["71ac0772347ffe6"].currentCarryParts}`)
+                // console.log(`BMemory.rooms[${c.memory.baseRoomName}].sources[${c.memory.targetSource}].currentCarryParts = ${Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].currentCarryParts}`)
+
+                Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].targettedByMover += 1;
+                Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].targettedByMoverList.push(c.name);
+                var creepCarryParts = Game.creeps[c.name].body.reduce((previous, p) => {
                     return p.type == CARRY ? (previous += 1) : previous;
                 }, 0);
                 Memory.rooms[c.memory.baseRoomName].sources[c.memory.targetSource].currentCarryParts += creepCarryParts;
@@ -784,11 +786,11 @@ resetSourceContainerTracking = function () {
                 Memory.rooms[c.memory.baseRoomName].mineral.container.targettedByList.push(c.name);
             } else if (c.memory.role == "moverExt" || c.memory.role == "moverExtRepair") {
                 if (Memory.creeps[c.name].DIE == undefined) {
-                    creepCarryParts = Game.creeps[c.name].body.reduce((previous, p) => {
+                    var creepCarryParts = Game.creeps[c.name].body.reduce((previous, p) => {
                         return p.type == CARRY ? (previous += 1) : previous;
                     }, 0);
-                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedBy += 1;
-                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].container.targettedByList.push(c.name);
+                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].targettedByMover += 1;
+                    Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].targettedByMoverList.push(c.name);
                     Memory.rooms[c.memory.targetRoomName].sources[c.memory.targetSource].currentCarryParts += creepCarryParts;
                 }
             } else if (c.memory.role == "powHarvester") {

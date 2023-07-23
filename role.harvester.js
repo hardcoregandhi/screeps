@@ -73,6 +73,13 @@ global.roleHarvester = {
         if (creep.memory.mining && creep.store.getFreeCapacity() < creep.memory.scoopSize) {
             creep.memory.mining = false;
             creep.say("🔄 dropping");
+            cont = Game.getObjectById(creep.memory.targetContainer)
+            if (cont != null) {
+                if (cont.pos.x == creep.pos.x && cont.pos.y == creep.pos.y && cont.store.getFreeCapacity()) {
+                    creep.memory.mining = true;
+                    creep.say("drop mining");
+                }
+            }
         }
         if (!creep.memory.mining && creep.store[RESOURCE_ENERGY] == 0) {
             creep.memory.mining = true;
@@ -95,9 +102,11 @@ global.roleHarvester = {
 
             targetSource = Game.getObjectById(creep.memory.targetSource);
             if (trackedHarvest(creep, targetSource) != OK) {
-                creep.moveTo(targetSource, {
-                    visualizePathStyle: { stroke: "#ffaa00" },
-                });
+                if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].targettedBy == 1) {
+                    creep.Move(Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id), 0)
+                } else {
+                    creep.Move(targetSource, 1, 99);
+                }
             }
         } else {
             if (creep.memory.focusBuilding) {
@@ -146,147 +155,139 @@ global.roleHarvester = {
                 if (creepRoomMap.get(creep.memory.baseRoomName + "handler") != undefined && creepRoomMap.get(creep.memory.baseRoomName + "handler") > 0) {
                     Log(creep, "handlers found");
 
-                    if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined) {
-                        Log(creep, "local link found");
-                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
-                            if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id != undefined) {
-                                old_container = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id);
-                                if (old_container != undefined) {
-                                    old_container.destroy();
-                                    delete Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container;
-                                }
-                            }
-                        }
+                    // if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link != undefined) {
+                    //     Log(creep, "local link found");
+                    //     if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
+                    //         if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id != undefined) {
+                    //             old_container = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id);
+                    //             if (old_container != undefined) {
+                    //                 old_container.destroy();
+                    //                 delete Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container;
+                    //             }
+                    //         }
+                    //     }
 
-                        var link = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link);
-                        if (link == null) {
-                            Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link = undefined;
-                        }
-                        if (creep.transfer(link, RESOURCE_ENERGY) != OK) {
-                            creep.Move(link.pos);
-                        }
+                    //     var link = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link);
+                    //     if (link == null) {
+                    //         Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].link = undefined;
+                    //     }
+                    //     if (creep.transfer(link, RESOURCE_ENERGY) != OK) {
+                    //         creep.Move(link.pos);
+                    //     }
 
-                        Log(creep, link.store.getFreeCapacity(RESOURCE_ENERGY));
+                    //     Log(creep, link.store.getFreeCapacity(RESOURCE_ENERGY));
 
-                        if (link.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
-                            // transmit
-                            Log(creep, "transmitting");
-                            // try {
-                            //     link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller)
-                            //     if (link_controller.store.getFreeCapacity(RESOURCE_ENERGY) > 10) {
-                            //         link.transferEnergy(link_controller, link_controller.store.getFreeCapacity(RESOURCE_ENERGY))
-                            //         return
-                            //     }
-                            // } catch (e) {
-                            //     console.log(`${creep.name} failed to use ${link}, ${e}`)
-                            // }
+                    //     if (link.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+                    //         // transmit
+                    //         Log(creep, "transmitting");
+                    //         // try {
+                    //         //     link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller)
+                    //         //     if (link_controller.store.getFreeCapacity(RESOURCE_ENERGY) > 10) {
+                    //         //         link.transferEnergy(link_controller, link_controller.store.getFreeCapacity(RESOURCE_ENERGY))
+                    //         //         return
+                    //         //     }
+                    //         // } catch (e) {
+                    //         //     console.log(`${creep.name} failed to use ${link}, ${e} + ${e.stack}`)
+                    //         // }
 
-                            try {
-                                link_storage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_storage);
-                                link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
-                                if (link_controller && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
-                                    link.transferEnergy(link_controller, link_controller.store.getFreeCapacity(RESOURCE_ENERGY));
-                                    return;
-                                } else if (link_storage) {
-                                    link.transferEnergy(link_storage, link_storage.store.getFreeCapacity(RESOURCE_ENERGY));
-                                    return;
-                                }
-                            } catch (e) {
-                                console.log(`${creep.name}@${creep.pos} failed to use ${link}, ${e}`);
-                            }
-                        }
-                        return;
-                    } else {
-                        if (creep.room.controller.level >= 6) {
-                            //try to build a link
-                            var csites = creep.room.find(FIND_CONSTRUCTION_SITES).filter((site) => {
-                                return creep.pos.inRangeTo(site, 1);
-                            });
-                            if (csites.length) {
-                                Log(creep, "building");
-                                if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
-                                    creep.Move(csites[0]);
-                                }
-                                return;
-                            } else {
-                                targetSource = Game.getObjectById(creep.memory.targetSource);
-                                if (targetSource.pos.inRangeTo(creep.pos, 2)) {
-                                    var csites = Game.rooms[creep.memory.baseRoomName].find(FIND_CONSTRUCTION_SITES, {
-                                        filter: (site) => {
-                                            return targetSource.pos.inRangeTo(site, 3); //; && site.structureType == STRUCTURE_CONTAINER;
-                                        },
-                                    });
-                                    if (csites.length == 0) {
-                                        const terrain = creep.room.getTerrain();
-                                        for (var i = targetSource.pos.x - 1; i <= targetSource.pos.x + 1; i++) {
-                                            for (var j = targetSource.pos.y - 1; j <= targetSource.pos.y + 1; j++) {
-                                                if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
-                                                    for (var ii = i - 1; ii <= i + 1; ii++) {
-                                                        for (var jj = j - 1; jj <= j + 1; jj++) {
-                                                            if (terrain.get(ii, jj) != TERRAIN_MASK_WALL) {
-                                                                if (creep.room.createConstructionSite(ii, jj, STRUCTURE_LINK) == OK) return;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    creep.Move(targetSource);
-                                }
-                            }
-                        }
-                    }
+                    //         try {
+                    //             link_storage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_storage);
+                    //             link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
+                    //             if (link_controller && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
+                    //                 link.transferEnergy(link_controller, link_controller.store.getFreeCapacity(RESOURCE_ENERGY));
+                    //                 return;
+                    //             } else if (link_storage) {
+                    //                 link.transferEnergy(link_storage, link_storage.store.getFreeCapacity(RESOURCE_ENERGY));
+                    //                 return;
+                    //             }
+                    //         } catch (e) {
+                    //             console.log(`${creep.name}@${creep.pos} failed to use ${link}, ${e} + ${e.stack}`);
+                    //         }
+                    //     }
+                    //     return;
+                    // } else {
+                    //     if (creep.room.controller.level >= 6) {
+                    //         //try to build a link
+                    //         var csites = creep.room.find(FIND_CONSTRUCTION_SITES).filter((site) => {
+                    //             return creep.pos.inRangeTo(site, 1);
+                    //         });
+                    //         if (csites.length) {
+                    //             Log(creep, "building");
+                    //             if (creep.build(csites[0]) == ERR_NOT_IN_RANGE) {
+                    //                 creep.Move(csites[0]);
+                    //             }
+                    //             return;
+                    //         } else {
+                    //             targetSource = Game.getObjectById(creep.memory.targetSource);
+                    //             if (targetSource.pos.inRangeTo(creep.pos, 2)) {
+                    //                 var csites = Game.rooms[creep.memory.baseRoomName].find(FIND_CONSTRUCTION_SITES, {
+                    //                     filter: (site) => {
+                    //                         return targetSource.pos.inRangeTo(site, 3); //; && site.structureType == STRUCTURE_CONTAINER;
+                    //                     },
+                    //                 });
+                    //                 if (csites.length == 0) {
+                    //                     const terrain = creep.room.getTerrain();
+                    //                     for (var i = targetSource.pos.x - 1; i <= targetSource.pos.x + 1; i++) {
+                    //                         for (var j = targetSource.pos.y - 1; j <= targetSource.pos.y + 1; j++) {
+                    //                             if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
+                    //                                 for (var ii = i - 1; ii <= i + 1; ii++) {
+                    //                                     for (var jj = j - 1; jj <= j + 1; jj++) {
+                    //                                         if (terrain.get(ii, jj) != TERRAIN_MASK_WALL) {
+                    //                                             if (creep.room.createConstructionSite(ii, jj, STRUCTURE_LINK) == OK) return;
+                    //                                         }
+                    //                                     }
+                    //                                 }
+                    //                             }
+                    //                         }
+                    //                     }
+                    //                 }
+                    //             } else {
+                    //                 creep.Move(targetSource);
+                    //             }
+                    //         }
+                    //     }
+                    // }
 
                     if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
-                        target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id);
-                        creep.memory.targetContainer = target.id;
-                        Log(creep, "local ccont found");
-                        Log(creep, target);
+                        Log(creep, "container defined for source");
+                        if (creep.memory.targetContainer == undefined) {
+                            Log(creep, "Setting creep targetContainer to container");
+                            target = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id);
+                            creep.memory.targetContainer = target.id;
+                            Log(creep, "local ccont found");
+                            Log(creep, target);
+                            buildRoadsToSources(creep.room);
 
-
-                        if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.targettedBy == 0) {
-                            if (target != null && target.hits < 200000) {
-                                Log(creep, `healing ${target}`);
-                                if (creep.repair(target) != OK) {
-                                    creep.Move(target);
+                            if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].targettedByMover == 0) {
+                                if (target != null && target.hits < 200000) {
+                                    Log(creep, `healing ${target}`);
+                                    if (creep.repair(target) != OK) {
+                                        creep.Move(target);
+                                    }
+                                    return;
                                 }
-                                return;
+                                // if (target.store.getFreeCapacity() <= 50) {
+                                //     roleMover.run(creep);
+                                //     return;
+                                // }
                             }
-                            if (target.store.getFreeCapacity() <= 50) {
-                                roleMover.run(creep);
-                                return;
-                            }
+                        } else {
+                            target = Game.getObjectById(creep.memory.targetContainer);
+                            source = Game.getObjectById(creep.memory.targetSource);
+                            return depositInSupportedContainer(creep, source, target);
                         }
-
-                        source = Game.getObjectById(creep.memory.targetSource);
-                        return depositInSupportedContainer(creep, source, target);
                     } else {
                         creep.say("makin con");
                         source = Game.getObjectById(creep.memory.targetSource);
 
-                        if (source.pos.inRangeTo(creep.pos, 2)) {
+                        if (source.pos.inRangeTo(creep.pos, 1)) {
                             var csites = Game.rooms[creep.memory.baseRoomName].find(FIND_CONSTRUCTION_SITES, {
                                 filter: (site) => {
                                     return source.pos.inRangeTo(site, 3); //; && site.structureType == STRUCTURE_CONTAINER;
                                 },
                             });
                             if (csites.length == 0) {
-                                const terrain = creep.room.getTerrain();
-                                for (var i = source.pos.x - 1; i <= source.pos.x + 1; i++) {
-                                    for (var j = source.pos.y - 1; j <= source.pos.y + 1; j++) {
-                                        if (terrain.get(i, j) != TERRAIN_MASK_WALL) {
-                                            for (var ii = i - 1; ii <= i + 1; ii++) {
-                                                for (var jj = j - 1; jj <= j + 1; jj++) {
-                                                    if (terrain.get(ii, jj) != TERRAIN_MASK_WALL) {
-                                                        if (creep.room.createConstructionSite(ii, jj, STRUCTURE_CONTAINER) == OK) return;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                if (creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER) == OK) return;
                             }
                         } else {
                             creep.Move(source);

@@ -210,7 +210,7 @@ global.roleHarvesterExt = {
                     if (csites.length) {
                         creep.memory.containerConstructionSite = csites[0].id;
                     } else {
-                        if (targetSource.pos.inRangeTo(creep.pos, 2)) {
+                        if (targetSource.pos.inRangeTo(creep.pos, 1)) {
                             creep.room.createConstructionSite(creep.pos, STRUCTURE_CONTAINER);
                         } else {
                             creep.Move(targetSource.pos);

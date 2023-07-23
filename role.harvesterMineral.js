@@ -70,7 +70,7 @@ global.roleHarvesterMineral = {
 
                 if (
                     target.store.getFreeCapacity() == 0 &&
-                    Memory.rooms[creep.memory.baseRoomName].mineral[creep.memory.targetSource].container.targettedBy == 0 &&
+                    Memory.rooms[creep.memory.baseRoomName].mineral[creep.memory.targetSource].targettedByMover == 0 &&
                     creepRoomMap.get(creep.memory.baseRoomName + "harvesterMineralSupportTarget" + creep.memory.targetSource) == undefined
                 ) {
                     spawnCreep(roleHarvesterMineralSupport, "auto", { memory: { targetContainer: target.id, noHeal: true, targetSource: creep.memory.targetSource } }, creep.memory.baseRoomName);

@@ -20,7 +20,7 @@ global.roleMover = {
         }
 
         mainStorage = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainStorage);
-        if (mainStorage == null) {
+        if (mainStorage == null && creep.room.controller.level > 2) {
             console.log(`${creep}: mainStorage could not be found`);
             // resetMainStorage(creep.memory.baseRoomName);
         }
@@ -36,7 +36,7 @@ global.roleMover = {
 
         if ((creep.ticksToLive < 200 || creep.memory.healing) && (creep.memory.noHeal == undefined || creep.memory.noHeal != true)) {
             creep.say("healing");
-            if (upgradeCreep(creep.name) == 0) {
+            if (creep.memory.DIE != true && upgradeCreep(creep.name) == 0) {
                 return;
             }
             creep.memory.healing = true;
@@ -102,13 +102,13 @@ global.roleMover = {
                     creep.memory.targetContainer = Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id;
                     target = Game.getObjectById(creep.memory.targetContainer);
                 } else {
-                    console.log(`${creep} has lost it's target container. retiring.`);
+                    // console.log(`${creep} has lost it's target container. retiring.`);
                     // creep.memory.DIE = true;
                 }
             }
 
             if (target == null) {
-                console.log("moving to sourcce")
+                // console.log("moving to sourcce")
                 target = Game.getObjectById(creep.memory.targetSource)
                 var droppedEnergy = target.pos.findInRange(FIND_DROPPED_RESOURCES, 3);
                 droppedEnergy.sort((a, b) => b.amount - a.amount);

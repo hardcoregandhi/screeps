@@ -84,6 +84,7 @@ global.returnToHeal = function (creep, room) {
     }
 
     if (Game.rooms[room].energyAvailable < 50) {
+        creep.memory.DIE =1
         return false;
     }
 
@@ -126,8 +127,8 @@ global.returnToHeal = function (creep, room) {
 };
 
 global.fallbackToOtherRoles = function (creep, roomName) {
-    if (creepRoomMap.get(roomName+"handler") == undefined) {
-        roleMover.run(creep);
+    if (creepRoomMap.get(roomName+"handler") == undefined || creepRoomMap.get(roomName+"handler") == 0) {
+        roleHandler.run(creep);
     }
     var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
     if (targets.length) {
@@ -267,3 +268,17 @@ global.TransferAll = function (creep, storage) {
         }
     }
 };
+
+
+global.xxxorder66section42fullreset = function() {
+    Object.keys(Game.rooms).forEach(r => Game.rooms[r].find(FIND_STRUCTURES).forEach(s => s.destroy()))
+    Object.keys(Game.creeps).forEach(c => Game.creeps[c].suicide())
+    Object.keys(Memory).forEach(m => delete Memory[m])
+}
+
+global.findCSites = function() {
+    Object.keys(Game.rooms).forEach(r => {
+        console.log(r);
+        console.log(Game.rooms[r].find(FIND_MY_CONSTRUCTION_SITES).length)
+    })
+}

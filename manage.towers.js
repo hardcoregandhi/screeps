@@ -1,5 +1,5 @@
 getStructureHealLimit = function (room, structure) {
-    var wallHealPercent = room.controller.level * 0.01;
+    var wallHealPercent = room.controller.level * 0.002;
 
     switch (structure.structureType) {
         case STRUCTURE_ROAD:
@@ -9,12 +9,12 @@ getStructureHealLimit = function (room, structure) {
         case STRUCTURE_RAMPART:
             return Math.round((structure.hits / structure.hitsMax) * 100) < wallHealPercent * 10;
         case STRUCTURE_WALL:
-            return Math.round((structure.hits / structure.hitsMax) * 100) < wallHealPercent;
+            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent;
     }
 };
 
 getEmergencyStructureHealLimit = function (room, structure) {
-    var wallHealPercent = 0.005;
+    var wallHealPercent = 0.001;
 
     switch (structure.structureType) {
         case STRUCTURE_ROAD:
@@ -23,7 +23,7 @@ getEmergencyStructureHealLimit = function (room, structure) {
             return Math.round((structure.hits / structure.hitsMax) * 100 < 10);
         case STRUCTURE_RAMPART:
             // console.log(`${structure} {structure.structureType} ${structure.hits / structure.hitsMax} ${Math.round((structure.hits / structure.hitsMax) * 100)} < ${wallHealPercent}`)
-            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent * 1000;
+            return (structure.hits / structure.hitsMax) * 100 < wallHealPercent * 100;
         case STRUCTURE_WALL:
             return (structure.hits / structure.hitsMax) * 100 < wallHealPercent;
     }
@@ -180,6 +180,7 @@ repair = function (room, towers) {
         }
     }
     if (room.energyAvailable <= room.energyCapacityAvailable / 2) return 0;
+    if (creepRoomMap.get(room.name + "eenergy") < 2000) return 0;
 
     // first check cached target
     for (var tower of towers) {
@@ -218,7 +219,8 @@ repair = function (room, towers) {
 
         for (var tower of towers) {
             // console.log(tower)
-            closestTarget = tower.pos.findClosestByRange(customStructureSpecificPercentLimits);
+            // closestTarget = tower.pos.findClosestByRange(customStructureSpecificPercentLimits);
+            closestTarget = customStructureSpecificPercentLimits[0];
 
             // damagedStructures.forEach((e, i) => (new RoomVisual().text(e.hits + " Order: " + i, e.pos, {align: 'left'})));
 

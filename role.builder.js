@@ -159,7 +159,7 @@ global.roleBuilder = {
                     });
                 }
             } else {
-                roleBuilder.run(creep);
+                roleUpgrader.run(creep);
             }
             if (customStructureSpecificPercentLimits.length) {
                 repairTarget = creep.pos.findClosestByPath(customStructureSpecificPercentLimits);
@@ -187,24 +187,20 @@ global.roleBuilder = {
 
             if (creepRoomMap.get(creep.room.name + "handler") >= 1) {
                 Log(creep, 81);
-                if ((creepRoomMap.get(creep.room.name + "eenergy") === undefined && creep.room.energyAvailable < creep.room.energyCapacityAvailable / 2) || creepRoomMap.get(creep.room.name + "eenergy") < 1500) {
-                    Log(creep, 10);
-                    try {
-                        var link_controller = Game.getObjectById(Memory.rooms[creep.room.name].link_controller);
-                        if (link_controller && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-                            if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
-                                moveToTarget(creep, link_controller);
-                            }
-                            return;
+                Log(creep, 10);
+                try {
+                    var link_controller = Game.getObjectById(Memory.rooms[creep.room.name].link_controller);
+                    if (link_controller && link_controller.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                        if (creep.withdraw(link_controller, RESOURCE_ENERGY) != OK) {
+                            moveToTarget(creep, link_controller);
                         }
-                    } catch (error) {
-                        console.log(error);
-                        // console.trace();
+                        return;
                     }
-
-                    moveToTarget(creep, creep.room.controller.pos);
-                    return;
+                } catch (error) {
+                    console.log(error);
+                    // console.trace();
                 }
+
                 mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
                 if (mainStorage == undefined) {
                     Log(creep, "mainStorage could not be found");
@@ -225,6 +221,10 @@ global.roleBuilder = {
                     return;
                 }
             } else {
+                if ((creepRoomMap.get(creep.room.name + "eenergy") === undefined && creep.room.energyAvailable < creep.room.energyCapacityAvailable / 3) || creepRoomMap.get(creep.room.name + "eenergy") < 300) {
+                    moveToTarget(creep, creep.room.controller.pos);
+                    return;
+                }
                 var containers = creep.room.find(FIND_STRUCTURES).filter((structure) => {
                     return structure.structureType == STRUCTURE_CONTAINER && structure.store.getUsedCapacity() > 500;
                 });

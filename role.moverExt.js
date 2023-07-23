@@ -23,10 +23,10 @@ function findReplacementTarget(creep) {
             return;
         }
 
-        if (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 || Memory.rooms[source.room.name].sources[source.id].currentCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedBy > 0) {
+        if (Memory.rooms[source.room.name].sources[source.id].targetCarryParts == 0 || Memory.rooms[source.room.name].sources[source.id].currentCarryParts == 0 && Memory.rooms[source.room.name].sources[source.id].container.targettedByMover > 0) {
             console.log(`corrupt currentCarryParts/targettedByList found for ${source.id}`);
             totalCarryParts = 0;
-            _.forEach(Memory.rooms[source.room.name].sources[source.id].container.targettedByList, (creepName) => {
+            _.forEach(Memory.rooms[source.room.name].sources[source.id].container.targettedByMoverList, (creepName) => {
                 creepCarryParts = Game.creeps[creepName].body.reduce((previous, p) => {
                     return p.type == CARRY ? (previous += 1) : previous;
                 }, 0);
@@ -51,19 +51,12 @@ function findReplacementTarget(creep) {
                 }`
             );
 
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targettedByList.splice(creep.name);
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targettedBy = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targettedBy - 1;
-            var carryCount = creep.body.reduce((previous, p) => {
-                return p.type == CARRY ? (previous += 1) : previous;
-            }, 0);
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].currentCarryParts = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].currentCarryParts - carryCount;
-
             creep.memory.targetRoomName = source.room.name;
             creep.memory.targetSource = source.id;
             creep.memory.targetContainer = container.id;
 
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targettedByList.push(creep.name);
-            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targettedBy = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targettedBy + 1;
+            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targettedByMoverList.push(creep.name);
+            Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targettedByMover = Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targettedByMover + 1;
             var carryCount = creep.body.reduce((previous, p) => {
                 return p.type == CARRY ? (previous += 1) : previous;
             }, 0);
@@ -100,8 +93,8 @@ global.roleMoverExt = {
         creep.memory.noHeal = true;
 
         if (creep.isSpawning) {
-            if (Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targettedByList.lastIndexOf(creep.name) === -1) {
-                Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.targettedByList.push(creep.name);
+            if (Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targettedByMoverList.lastIndexOf(creep.name) === -1) {
+                Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].targettedByMoverList.push(creep.name);
             }
         }
 
@@ -127,7 +120,7 @@ global.roleMoverExt = {
         if (creep.memory.banking && creep.store.getUsedCapacity() == 0) {
             Log(creep, "setting banking false");
             creep.memory.banking = false;
-            if (creep.ticksToLive < Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container.distanceToSpawn * 2) {
+            if (creep.ticksToLive < Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].distanceToSpawn * 2) {
                 console.log(`${creep.name} is too old for another loop. Retiring.`);
                 creep.memory.DIE = true;
                 return;
@@ -228,7 +221,7 @@ global.roleMoverExt = {
                         } else if (Memory.rooms[creep.memory.targetRoomName].sources[creep.memory.targetSource].container == undefined) {
                             throw "no container";
                         } else {
-                            console.log(`moverExt has an unknown error`);
+                            throw `moverExt has an unknown error`;
                         }
                     } catch (e) {
                         console.log(`container is dead ${e} + ${e.stack}`);
@@ -293,7 +286,7 @@ global.roleMoverExt = {
 
             if (creep.memory.target_link != null) {
                 link = Game.getObjectById(creep.memory.target_link);
-                if (link != undefined) {
+                if (link != null) {
                     if (creep.transfer(link, RESOURCE_ENERGY) != OK) {
                         creep.Move(link);
                     }

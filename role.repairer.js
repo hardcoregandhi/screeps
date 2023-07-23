@@ -74,9 +74,11 @@ global.roleRepairer = {
 
             if (creep.memory.currentTarget != null) {
                 target = Game.getObjectById(creep.memory.currentTarget);
-                Log(creep, `currentTarget ${creep.memory.currentTarget}: ${target}`);
-                Log(creep, `target.hits: ${target.hits}: getRepairerStructureHealLimit: ${getRepairerStructureHealLimit(creep.room, target)}`);
-                if (target != undefined && getRepairerStructureHealLimit(creep.room, target, creep.memory.wallHealPercent)) {
+                if (target != null) {
+                    Log(creep, `currentTarget ${creep.memory.currentTarget}: ${target}`);
+                    Log(creep, `target.hits: ${target.hits}: getRepairerStructureHealLimit: ${getRepairerStructureHealLimit(creep.room, target)}`);
+                }
+                if (target != null && getRepairerStructureHealLimit(creep.room, target, creep.memory.wallHealPercent)) {
                     if (creep.repair(target) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } });
                     }

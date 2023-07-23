@@ -623,7 +623,7 @@ global.roleMoverLink = {
                 //             return
                 //         }
                 //     } catch (e) {
-                //         console.log(`${creep.name} failed to use ${link}, ${e}`)
+                //         console.log(`${creep.name} failed to use ${link}, ${e} + ${e.stack}`)
                 //     }
                 // }
                 return;

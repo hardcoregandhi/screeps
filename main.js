@@ -88,10 +88,13 @@ global.nextRoomTrackingRefreshTime = Game.time;
 global.refreshRoomTrackingNextTick = false;
 
 global.roomRefreshMap = {};
-for (s of Object.keys(myRooms)) {
-    for (r of myRooms[s]) {
-        roomRefreshMap[r] = nextRoomTrackingRefreshTime;
+if (Memory.RoomVisualData == undefined) {
+    for (s of Object.keys(myRooms)) {
+        for (r of myRooms[s]) {
+            roomRefreshMap[r] = nextRoomTrackingRefreshTime;
+        }
     }
+    Memory.roomRefreshMap = JSON.stringify(roomRefreshMap)
 }
 
 global.g_myUsername = "";
@@ -195,6 +198,7 @@ try {
 module.exports.loop = function () {
     profiler.wrap(function () {
         // Cleanup
+        roomRefreshMap = JSON.parse(Memory.roomRefreshMap)
 
         try {
             deadCreepCleanup();
@@ -309,6 +313,8 @@ module.exports.loop = function () {
         } catch (e) {
             console.log(`drawGUI() failed: ${e} + ${e.stack}`);
         }
+
+        Memory.roomRefreshMap = JSON.stringify(roomRefreshMap)
 
         // runRoads();
 
