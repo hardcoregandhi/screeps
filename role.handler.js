@@ -60,7 +60,7 @@ global.roleHandler = {
 
         // Deposit other resources that may have been picked up during scavenging
         mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
-        if (mainStorage == null) {
+        if (Memory.rooms[creep.room.name].mainStorage && mainStorage == null) {
             delete Memory.rooms[creep.room.name].mainStorage;
             resetMainStorage(creep.room.name);
         }
@@ -83,7 +83,7 @@ global.roleHandler = {
 
         mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
         storage = [];
-        if (mainStorage.structureType == STRUCTURE_CONTAINER) {
+        if (mainStorage && mainStorage.structureType == STRUCTURE_CONTAINER) {
             var storage = creep.room.find(FIND_STRUCTURES).filter((structure) => {
                 return structure.structureType == STRUCTURE_STORAGE && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
             });
@@ -186,7 +186,7 @@ global.roleHandler = {
             }
 
             // repair if mainStorage is container
-            if (mainStorage.structureType == STRUCTURE_CONTAINER) {
+            if (mainStorage && mainStorage.structureType == STRUCTURE_CONTAINER) {
                 if (mainStorage.hits < mainStorage.hitsMax / 2) {
                     if (creep.repair(mainStorage) == OK) {
                         return;
@@ -196,7 +196,9 @@ global.roleHandler = {
 
             if (creep.memory.currentTarget != null) {
                 currentTarget = Game.getObjectById(creep.memory.currentTarget);
-                if (currentTarget == null || currentTarget.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+                if (currentTarget == null) {
+                    creep.memory.currentTarget = null;
+                } else if (currentTarget.store == undefined || currentTarget.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
                     creep.memory.currentTarget = null;
                 } else {
                     Memory.rooms[creep.memory.baseRoomName].creeps.handlers.currentTargets.push(creep.memory.currentTarget);
@@ -259,7 +261,7 @@ global.roleHandler = {
             }
 
             if (!targets.length) {
-                if (mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 950000 && creep.room.controller.level == 8) {
+                if (mainStorage && mainStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 950000 && creep.room.controller.level == 8) {
                     var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
                     if (creep.transfer(terminal, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         Log(creep, "moving to terminal");
@@ -275,7 +277,7 @@ global.roleHandler = {
                     if (creep.store.getFreeCapacity()) {
                         creep.memory.moving = false;
                     } else {
-                        creep.Move(mainStorage.pos.x - 7, mainStorage.pos.y);
+                        // creep.Move(new RoomPosition(Memory.rooms[creep.memory.baseRoomName].mainSpawn.pos.x - 7, Memory.rooms[creep.memory.baseRoomName].mainSpawn.pos.y, creep.room.name));
                     }
                 } catch (e) {
                     console.log(`${creep}: ${e} + ${e.stack}`);

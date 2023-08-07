@@ -162,7 +162,7 @@ global.roleSoldier = {
             // }
             var enemyTargets = Game.rooms[creep.memory.targetRoomName]
                     .find(FIND_HOSTILE_CREEPS)
-                    .filter((c) => creep.owner.username != "KyberPrizrak");
+                    .filter((c) => creep.owner.username != "KyberPrizrak" && (c.body.find((part) => part.type == ATTACK) || c.body.find((part) => part.type == RANGED_ATTACK)));
             if (enemyTargets.length) {
                 if (creep.attack(enemyTargets[0]) != OK) {
                     creep.Move(enemyTargets[0], { maxRooms: 1 });
@@ -179,9 +179,48 @@ global.roleSoldier = {
                 }
                 return
             }
-            if (creep.attack(creep.room.controller) != OK) {
-                creep.heal(creep);
-                if (!creep.pos.inRangeTo(creep.room.controller, 2)) creep.Move(creep.room.controller, { maxRooms: 1 });
+            if (creep.room.controller.username == undefined || !creep.room.controller.my) {
+                var hostileSpawns = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((s) => {
+                    return s.structureType == STRUCTURE_SPAWN;
+                });
+                if (hostileSpawns.length) {
+                    hostileSpawns.sort((a, b) => a.hits - b.hits);
+                    if (creep.attack(hostileSpawns[0])) {
+                        creep.Move(hostileSpawns[0]);
+                    }
+                    return;
+                }
+        
+                allHostileStructures = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((s) => {
+                    return s.structureType != STRUCTURE_CONTROLLER && s.structureType != STRUCTURE_ROAD;
+                });
+                if (allHostileStructures.length) {
+                    closest = creep.pos.findClosestByPath(allHostileStructures);
+                    if (creep.attack(closest)) {
+                        creep.Move(closest);
+                    }
+                    return;
+                }
+                 var hostileCreeps = Game.rooms[creep.memory.targetRoomName]
+                    .find(FIND_HOSTILE_CREEPS);
+                if (hostileCreeps.length) {
+                    var closestHostile = creep.pos.findClosestByRange(hostileCreeps);
+                    // console.log(closestHostile)
+                    if (closestHostile) {
+                        creep.room.visual.circle(closestHostile.pos, {
+                            color: "red",
+                            radius: 1,
+                        });
+                        if (creep.attack(closestHostile) != OK) {
+                            creep.Move(closestHostile, { maxRooms: 1 });
+                        }
+                        return;
+                    }
+                }
+                if (creep.attack(creep.room.controller) != OK) {
+                    creep.heal(creep);
+                    if (!creep.pos.inRangeTo(creep.room.controller, 2)) creep.Move(creep.room.controller, { maxRooms: 1 });
+                }
             }
         }
     },

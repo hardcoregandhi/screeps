@@ -24,10 +24,10 @@ global.runCreeps = function () {
     });
 
     for (var name in Game.creeps) {
-        if (Object.keys(Game.creeps[name].memory).length == 0) {
-            Game.creeps[name].memory = JSON.parse(InterShardMemory.getRemote("shard3"));
-            Game.creeps[name].memory.InterShard.shift();
-        }
+        // if (Object.keys(Game.creeps[name].memory).length == 0) {
+        //     Game.creeps[name].memory = JSON.parse(InterShardMemory.getRemote("shard3"));
+        //     Game.creeps[name].memory.InterShard.shift();
+        // }
 
         if (Game.cpu.getUsed() > (Game.cpu.tickLimit / 10) * 9.9) {
             console.log("CPU limit");
@@ -71,22 +71,26 @@ global.runCreeps = function () {
                     delete creep.memory.DIE;
                 } else {
                     spawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].mainSpawn.id);
-                    creep.Move(spawn.pos);
-                    if (spawn.recycleCreep(creep) != 0) {
+                    if (spawn) {
                         creep.Move(spawn.pos);
+                        if (spawn.recycleCreep(creep) != 0) {
+                            creep.Move(spawn.pos);
+                        }
+                        continue;
                     }
-                    continue;
                 }
             }
 
             if (creep.room.name == creep.memory.baseRoomName) {
-                if (creep.room.memory.emergencyUpgrade == true || creep.room.controller.ticksToDowngrade <= 1000) {
+                if (creep.room.controller.ticksToDowngrade >= 3000) {
+                    creep.room.memory.emergencyUpgrade = false;
+                } else if (creep.room.memory.emergencyUpgrade == true || creep.room.controller.ticksToDowngrade <= 1000) {
                     creep.room.memory.emergencyUpgrade = true;
                     if(creep.body.some(e => e.type == WORK)) {
                         if (creep.store.getUsedCapacity(RESOURCE_ENERGY) != 0) {
                             if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                                creep.Move(room.controller)
-                                return
+                                creep.Move(creep.room.controller)
+                                continue
                             }
                         }
                     }

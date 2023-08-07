@@ -96,19 +96,28 @@ global.roleHarvester = {
         }
 
         if (creep.memory.mining) {
+            Log(creep, "creep.memory.mining");
             if (pickupNearby(creep) == OK) {
+                Log(creep, "pickupNearby OK");
                 return;
             }
 
             targetSource = Game.getObjectById(creep.memory.targetSource);
-            if (trackedHarvest(creep, targetSource) != OK) {
+            ret = trackedHarvest(creep, targetSource)
+            Log(creep, `trackedHarvest ${ret}`);
+            if (ret != OK) {
                 if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].targettedBy == 1) {
+                    Log(creep, `m2cont`);
                     creep.Move(Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id), 0)
                 } else {
+                    Log(creep, `m2source`);
                     creep.Move(targetSource, 1, 99);
                 }
+            } else {
+                return
             }
         } else {
+            Log(creep, "!creep.memory.mining");
             if (creep.memory.focusBuilding) {
                 fallbackToOtherRoles(creep);
                 return;

@@ -235,8 +235,23 @@ global.moveToRoomIgnoreStructures = function (creep, targetRoom) {
 
 global.moveToRoom = function (creep, targetRoom) {
     Log(creep, `moveToRoom(${creep}, ${targetRoom})`);
+    
+    var targetPos;
+    if (Game.rooms[targetRoom] == undefined) {
+        targetPos = new RoomPosition(25, 25, targetRoom);
+    } else {
+        targetPos = Game.rooms[targetRoom].controller
+    }
+    
+    return creep.moveTo(targetPos, {reusePath: 50});
+    
+    Log(creep, `targetPos ${JSON.stringify(targetPos)}`);
 
-    return creep.Move(new RoomPosition(25,25,targetRoom))
+    var myObject = {}
+    creep.Move(targetPos, 1, 5, {repath:1,travelData:myObject, repath:1,freshMatrix:true, allowSK:true, allowHostile:true, preferHighway:false, ensurePath:true, useFindRoute:true})
+    console.log(creep.pos.FindPathTo(targetPos))
+    console.log(JSON.stringify(creep.pos.FindPathTo(targetPos)))
+    return
 
     // if (creep.memory.pathfinderPath == undefined || creep.memory.pathfinderPath.length == 0) {
     let from = creep.pos;

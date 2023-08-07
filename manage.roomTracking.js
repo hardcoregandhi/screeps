@@ -1,6 +1,6 @@
 roomTracking = function () {
     Debug = function (roomName, str) {
-        if (1 && roomName == "W13N1") {
+        if (0 && roomName == "W46N42") {
             console.log(`${roomName}: ${str}`);
         }
     };
@@ -109,6 +109,7 @@ roomTracking = function () {
 
             if (Memory.rooms[r.name].mainSpawn && Memory.rooms[r.name].mainSpawn.id && Game.getObjectById(Memory.rooms[r.name].mainSpawn.id) == null) {
                 // room may have been lost
+                delete Memory.rooms[r.name].mainSpawn
                 if (spawns.length == 0 && stores.length == 0 && towers.length == 0 && !r.controller.safeModeAvailable) {
                     console.log(`Room is LOST! Removing ${r.name} from myRooms`);
                     RemoveFromList(Memory.myRooms, r.name);
@@ -121,11 +122,11 @@ roomTracking = function () {
             //console.log("allStructures find has used " + elapsed + " CPU time");
             //startCpu = Game.cpu.getUsed();
 
-            // //console.log(r.name)
+            // console.log(r.name)
 
             var total = 0;
             _.forEach(stores, (s) => {
-                creepRoomMap.set(r.name + "eenergy", (total += s.store[RESOURCE_ENERGY]));
+                creepRoomMap.set(r.name + "eenergy", (total += s.store.getUsedCapacity(RESOURCE_ENERGY)));
             });
             Debug(r.name, `eenergy: ${creepRoomMap.get(r.name + "eenergy")}`);
 
@@ -156,6 +157,11 @@ roomTracking = function () {
 
             // mainStorage
             // find room spawn
+            _.forEach(Memory.rooms[r.name].spawns, (s) => {
+                if (Game.getObjectById(s.id) == null) {
+                    delete s
+                }
+            });
             if (spawns.length) {
                 Debug(r.name, `refreshing spawns`);
 
@@ -354,9 +360,6 @@ roomTracking = function () {
             //console.log("eenergy calc has used " + elapsed + " CPU time");
             //startCpu = Game.cpu.getUsed();
             minerals = r.find(FIND_MINERALS);
-            if (Memory.rooms[r.name].mineral.id != undefined) {
-                delete Memory.rooms[r.name].mineral
-            }
             if (Memory.rooms[r.name].mineral == undefined) {
                 Memory.rooms[r.name].mineral = {};
                 _.forEach(minerals, (mineral) => {
@@ -492,7 +495,7 @@ roomTracking = function () {
                 }
             }
 
-            if (s.room.controller == undefined || (s.room.controller && s.room.controller.reservation != undefined && s.room.controller.reservation.username != g_myUsername && s.room.controller.reservation.ticksToEnd > 1000)) {
+            if (s.room.controller == undefined || (isInvaderCoreRoom(s.room))) {
                 console.log(`Memory.rooms[\'${r.name}\'].sources[\'${s.id}\']`);
                 _.forEach(Memory.rooms[r.name].sources[s.id].targettedByList, (c) => {
                     console.log(`killing ${c} due to invader core reservation`);
@@ -723,6 +726,19 @@ function addExternalSource(roomName, source) {
         Debug(r.name, `adding ${source.id} to externalSources`);
         Memory.rooms[roomName].externalSources.push(source.id);
     }
+}
+
+global.isInvaderCoreRoom = function(roomName) {
+    let r = Game.rooms[roomName]
+    if (r == undefined) {
+        return false;
+    }
+    // return r.controller && r.controller.reservation != undefined && r.controller.reservation.username != g_myUsername && r.controller.reservation.ticksToEnd > 100
+    return r.find(FIND_HOSTILE_STRUCTURES, {
+                filter: (s) => {
+                    return s.structureType == STRUCTURE_INVADER_CORE;
+                },
+            }).length;
 }
 
 resetSourceContainerTracking = function () {

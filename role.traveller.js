@@ -43,13 +43,9 @@ global.roleTraveller = {
                     return;
                 }
             }
-        } else {
+        } else {s
             if (creep.memory.baseRoomName != creep.room.name) {
-                const route = Game.map.findRoute(creep.room.name, creep.memory.baseRoomName);
-                if (route.length > 0) {
-                    const exit = creep.pos.findClosestByRange(route[0].exit);
-                    creep.Move(exit);
-                }
+                creep.Move(new RoomPosition(25, 25, creep.memory.baseRoomName));
             } else {
                 var targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
                     return structure.structureType == STRUCTURE_STORAGE;

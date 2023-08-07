@@ -188,7 +188,7 @@ global.runStructs = function () {
             }
         }
 
-        if (room.find(FIND_HOSTILE_CREEPS).filter((c) => c.body.find((part) => part.type == ATTACK || part.type == RANGED_ATTACK)).length && !Object.keys(Memory.rooms.W3N7.towers).length && room.controller.level <=2) {
+        if (room.find(FIND_HOSTILE_CREEPS).filter((c) => c.body.find((part) => part.type == ATTACK || part.type == RANGED_ATTACK)).length && !Object.keys(Memory.rooms[room.name].towers).length && room.controller.level <=2) {
             room.controller.activateSafeMode();
         }
 

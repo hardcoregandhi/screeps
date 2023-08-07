@@ -39,7 +39,7 @@ global.healRoads = function (creep) {
 
 global.pickupNearby = function (creep) {
     // console.log("pickupNearby")
-    var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES).filter((r) => r.amount >= 150);
+    var droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES).filter((r) => r.amount >= 150 && creep.pos.inRangeTo(r, 1));
     var tombstoneResource = creep.room.find(FIND_TOMBSTONES).filter((r) => r.store.getUsedCapacity() >= 150);
     var ruinResource = creep.room.find(FIND_RUINS).filter((object) => creep.pos.inRangeTo(object, 1));
 
@@ -125,7 +125,7 @@ global.returnToHeal = function (creep, room) {
 };
 
 global.fallbackToOtherRoles = function (creep, roomName) {
-    if (creepRoomMap.get(roomName+"handler") == undefined || creepRoomMap.get(roomName+"handler") == 0) {
+    if (/*Memory.rooms[roomName].mainStorage != undefined && */(creepRoomMap.get(roomName+"handler") == undefined || creepRoomMap.get(roomName+"handler") == 0)) {
         roleHandler.run(creep);
     }
     var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
@@ -269,7 +269,7 @@ global.TransferAll = function (creep, storage) {
 
 
 global.xxxorder66section42fullreset = function() {
-    Object.keys(Game.rooms).forEach(r => Game.rooms[r].find(FIND_STRUCTURES).forEach(s => s.destroy()))
+    // Object.keys(Game.rooms).forEach(r => Game.rooms[r].find(FIND_STRUCTURES).forEach(s => s.destroy()))
     Object.keys(Game.creeps).forEach(c => Game.creeps[c].suicide())
     Object.keys(Memory).forEach(m => delete Memory[m])
 }

@@ -34,15 +34,21 @@ global.roleClaimer = {
         } else {
             if (creep.memory.claim != undefined) {
                 if (creep.claimController(Game.rooms[creep.memory.targetRoomName].controller) != OK) {
-                    creep.Move(Game.rooms[creep.memory.targetRoomName].controller);
+                    creep.moveTo(Game.rooms[creep.memory.targetRoomName].controller);
                 }
             }
             // if(!creep.room.controller.my) {
             //     creep.attackController(creep.room.controller)
             // }
             // console.log(creep.claimController(creep.room.controller));
-            if (creep.reserveController(Game.rooms[creep.memory.targetRoomName].controller) != OK) {
-                creep.Move(Game.rooms[creep.memory.targetRoomName].controller);
+            if (Game.rooms[creep.memory.targetRoomName].controller.owner && Game.rooms[creep.memory.targetRoomName].controller.owner.username != g_myUsername) {
+                if (creep.attackController(Game.rooms[creep.memory.targetRoomName].controller) != OK) {
+                    creep.moveTo(Game.rooms[creep.memory.targetRoomName].controller);
+                }
+            } else {
+                if (creep.reserveController(Game.rooms[creep.memory.targetRoomName].controller) != OK) {
+                    creep.moveTo(Game.rooms[creep.memory.targetRoomName].controller);
+                }
             }
         }
     },

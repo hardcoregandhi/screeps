@@ -65,3 +65,14 @@ creepTracking = function () {
     nextCreepRoomMapRefreshTime += nextCreepRoomMapRefreshInterval;
     refreshCreepTrackingNextTick = false;
 };
+
+global.getRoomCreepTypeCount = function(roomName, type, targetRoomName = null) {
+    if (targetRoomName != null) {
+        targetRoomName = `Target${targetRoomName}`
+    } else {
+        targetRoomName = ""
+    }
+    key = `${roomName}${type}${targetRoomName}`
+    ret = creepRoomMap.get(key)
+    return ret == null ? 0 : ret
+}

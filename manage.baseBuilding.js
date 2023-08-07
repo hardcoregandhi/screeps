@@ -68,7 +68,7 @@ global.runBaseBuilder = function () {
             }
 
             // console.log(`stageComplete = ${stageComplete}`)
-            if (stageComplete == true && Memory.rooms[roomName].building[currentRoomBuildingLevel].isComplete == false && r.find(FIND_MY_CONSTRUCTION_SITES).length == 0) {
+            if (stageComplete == true && Memory.rooms[roomName].building[currentRoomBuildingLevel].isComplete == false && r.find(FIND_MY_CONSTRUCTION_SITES).length == 0 && Memory.rooms[roomName].currentRoomBuildingLevel < r.controller.level) {
                 Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage++;
                 if (Memory.rooms[roomName].building[currentRoomBuildingLevel].currentStage > baseData[r.controller.level].stages.length) {
                     // this will only be hit once on the pass that all building is completed
@@ -329,8 +329,12 @@ buildRoads = function (r, debug = false) {
     }
 
     mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
+    
+    if(!mainSpawn) {
+        return
+    }
 
-    var currentRoomBuildingLevel = Memory.rooms[r.name].currentRoomBuildingLevel;
+    var currentRoomBuildingLevel = Math.min(Memory.rooms[r.name].currentRoomBuildingLevel, 8);
     var currentStage = Memory.rooms[r.name].building[currentRoomBuildingLevel].currentStage;
     baseCenter = Memory.rooms[r.name].mainSpawn.pos;
 
@@ -444,6 +448,12 @@ buildWalls = function (r, debug = false) {
         }
     }
     mainSpawn = Game.getObjectById(Memory.rooms[r.name].mainSpawn.id); // Use spawn just incase storage doesn't exist
+    if(!mainSpawn) {
+        return
+    }
+    if(Memory.rooms[r.name].mainStorage == undefined) {
+        return
+    }
 
     new RoomVisual().circle(mainSpawn, { fill: "transparent", radius: 0.55, stroke: "red" });
 
@@ -454,6 +464,12 @@ buildWalls = function (r, debug = false) {
                 r.createConstructionSite(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, "constructedWall");
             }
         }
+        // else {
+        //     r.visual.circle(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, { stroke: "light-green" });
+        //     if (!debug) {
+        //         r.createConstructionSite(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y, "rampart");
+        //     }
+        // }
     });
     _.forEach(wallData.rampart, (w) => {
         if (r.getTerrain().get(mainSpawn.pos.x + w.x, mainSpawn.pos.y + w.y) != 1) {
@@ -465,7 +481,7 @@ buildWalls = function (r, debug = false) {
     });
 };
 
-restartRoomBuildingLevel = function (roomName, level = 1) {
+restartRoomBuildingLevel = function (roomName, level = 2) {
     room = Game.rooms[roomName];
     if (room == undefined) return;
     room.memory.currentRoomBuildingLevel = level;

@@ -122,18 +122,32 @@ global.roleMoverLink = {
         }
 
         Log(creep, 5);
+        
+        var link_controller;
+        var link_storage;
+        var mainStorage;
+        var terminal;
+        var powerSpawn;
 
         try {
-            var link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
-            var link_storage = Game.getObjectById(Memory.rooms[creep.room.name].link_storage);
-            var mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
-            var terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
-            var powerSpawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.pspawn.id);
+            link_controller = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].link_controller);
+            link_storage = Game.getObjectById(Memory.rooms[creep.room.name].link_storage);
+            mainStorage = Game.getObjectById(Memory.rooms[creep.room.name].mainStorage);
+            terminal = Game.getObjectById(Memory.rooms[creep.room.name].structs.terminal.id);
+            vpowerSpawn = Game.getObjectById(Memory.rooms[creep.memory.baseRoomName].structs.pspawn.id);
             Log(creep, `link_controller: ${link_controller}`);
             Log(creep, `link_storage: ${link_storage}`);
             Log(creep, `mainStorage: ${mainStorage}`);
             Log(creep, `terminal: ${terminal}`);
-        } catch (e) {}
+        } catch (e) {
+            
+        }
+        
+        if (link_storage == null) {
+            delete Memory.rooms[creep.room.name].link_storage
+            creep.memory.DIE = 1;
+            return
+        }
 
         Log(creep, "creep.room.controller.ticksToDowngrade: " + creep.room.controller.ticksToDowngrade);
 

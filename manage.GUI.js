@@ -127,6 +127,8 @@ drawGUI = function () {
             buildWalls(r.name, true)
             // buildRoadsToSources(r.name, true)
             // buildRoadsToExtSources(r.name, true)
-        } catch (e) {}
+        } catch (e) {
+            console.log(`drawGUI() ${room} failed: ${e} + ${e.stack}`);
+        }
     }
 };

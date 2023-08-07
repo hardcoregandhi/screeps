@@ -1142,7 +1142,7 @@ PERMACACHE._unpackedRoomNames = PERMACACHE._unpackedRoomNames || {};
 exports.Traveler = Traveler;
 // this might be higher than you wish, setting it lower is a great way to diagnose creep behavior issues. When creeps
 // need to repath to often or they aren't finding valid paths, it can sometimes point to problems elsewhere in your code
-const MAX_CACHED_PATH_MEM_USAGE = 2000 // approx 100kb
+const MAX_CACHED_PATH_MEM_USAGE = 20000 // approx 100kb
 const MIN_CACHED_PATH_LENGTH = 999 // minimum path length to cache. Set to a very high value to stop caching.
 const REPORT_CPU_THRESHOLD = 1000;
 const DEFAULT_MAXOPS = 1000;

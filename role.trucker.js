@@ -50,7 +50,8 @@ global.roleTrucker = {
                 return;
             } else {
                 if (creep.room.name != creep.memory.targetRoomName) {
-                    creep.Move(new RoomPosition(25, 25, creep.memory.targetRoomName));
+                    // creep.Move(Game.flags.Flag1)
+                    creep.Move(new RoomPosition(45, 45, creep.memory.targetRoomName), undefined, undefined, {freshMatrix:true, allowSK:true, allowHostile:true, preferHighway:false, ensurePath:true, useFindRoute:true});
                     return;
                 }
                 if (creep.memory.targetCreep == undefined) {

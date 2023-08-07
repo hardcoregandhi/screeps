@@ -1,3 +1,5 @@
+const Traveler = require('Traveler');
+
 require("manage.GUI");
 require("manage.baseBuilding");
 require("manage.deadCreepCleanup");
@@ -19,7 +21,7 @@ require("manage.market");
 require("manage.factory");
 require("role.common");
 require("global.logging");
-const Traveler = require('Traveler');
+
 var roleHarvester = require("role.harvester");
 var roleMover = require("role.mover");
 var roleHarvesterExt = require("role.harvesterExt");

@@ -95,13 +95,13 @@ global.roleSieger = {
             return;
         }
 
-        hostileSpawns = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((s) => {
+        var hostileSpawns = creep.room.find(FIND_HOSTILE_STRUCTURES).filter((s) => {
             return s.structureType == STRUCTURE_SPAWN;
         });
         if (hostileSpawns.length) {
-            hostileSpawn.sort((a, b) => a.hits - b.hits);
-            if (creep.dismantle(hostileSpawn[0])) {
-                creep.move(hostileSpawn[0]);
+            hostileSpawns.sort((a, b) => a.hits - b.hits);
+            if (creep.dismantle(hostileSpawns[0])) {
+                creep.move(hostileSpawns[0]);
             }
             return;
         }

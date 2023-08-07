@@ -55,12 +55,11 @@ global.roleBuilderExt = {
             if (healRoads(creep) == OK) return;
 
             if (creep.memory.currentTarget != null) {
+                Log(creep, "current Target not null");
                 target = Game.getObjectById(creep.memory.currentTarget);
                 if (target != undefined) {
                     if (creep.build(target) == ERR_NOT_IN_RANGE) {
-                        creep.Move(target, {
-                            visualizePathStyle: { stroke: "#ffffff" },
-                        });
+                        creep.moveTo(target);
                     }
                     return;
                 } else {
@@ -68,10 +67,11 @@ global.roleBuilderExt = {
                     roomRefreshMap[creep.memory.targetRoomName] = Game.time;
                 }
             }
-
-            if (Game.rooms[creep.memory.targetRoomName] == null) {
-                creep.Move(new RoomPosition(25, 25, creep.memory.targetRoomName));
-                return;
+            
+            if (creep.room.name != creep.memory.targetRoomName) {
+                Log(creep, "Moving to room");
+                moveToRoom(creep, creep.memory.targetRoomName)
+                return
             }
 
             var targets = Game.rooms[creep.memory.targetRoomName].find(FIND_CONSTRUCTION_SITES);

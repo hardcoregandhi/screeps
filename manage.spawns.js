@@ -9,169 +9,175 @@ global.runSpawns = function () {
     // spawnCreep(roleBuilder, "auto", {memory:{interShard:["W10S0", "PORTAL", "W11S5"], baseRoomName:"W11S5"}}, "W6S1")
 
     for (var room in Game.rooms) {
-        r = Game.rooms[room];
-        if (!myRooms[Game.shard.name].includes(r.name) || Memory.rooms[r.name].mainSpawn == undefined) {
-            // console.log(`skipping ${r.name}`)
-            continue;
-        }
-        // console.log(`runSpawns(): ${r.name}`)energyCapacityAvailable
-        // if((Memory.rooms[room].mainStorage == undefined && creepRoomMap.get(r.name + "harvester") < Memory.rooms[r.name].totalMiningSpots * 2) || r.controller.level <=2) {
-        //     spawnCreep(roleHarvester, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name, experimentalMovement: true, focusBuilding: true } }, "W6S1");
-        //     continue;
-        // }
-
-        // if (r.find(STRUCTURE_SPAWN).length === 0 && creepRoomMap.get(r.name + "builder") < 5){
-        //     // No spawn? Builders to create it, which will then default to upgraders to maintain the room after
-        //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name } }, "W6S1");
-        //     continue
-        // }
-
-        // if (Memory.rooms[room].structs.terminal && r.name != "W17N1")
-        // delete Memory.rooms[room].structs.terminal.supportRoom
-
-        // Neighbouring room investigations
-        unsearchedNeighbouringRooms = _.filter(Memory.rooms[r.name].neighbouringRooms, (roomName) => {
-            return Memory.rooms[roomName] == undefined;
-        });
-        // console.log(unsearchedNeighbouringRooms)
-
-        if (Memory.rooms[r.name].spawnQueue != undefined && Memory.rooms[r.name].spawnQueue.length) {
-            customBody = Memory.rooms[r.name].spawnQueue[0][1]
-            if (getBodyCost(customBody) == 0 || getBodyCost(customBody) > Game.rooms[r.name].energyCapacityAvailable) {
-                customBody = "auto"
-            }
-            var ret = spawnCreep(eval(Memory.rooms[r.name].spawnQueue[0][0]), customBody, Memory.rooms[r.name].spawnQueue[0][2], Memory.rooms[r.name].spawnQueue[0][3]);
-            if (ret == 0) {
-                Memory.rooms[r.name].spawnQueue = _.drop(Memory.rooms[r.name].spawnQueue);
+        try {
+            r = Game.rooms[room];
+            // console.log(room)
+            if (!myRooms[Game.shard.name].includes(r.name) || Memory.rooms[r.name].mainSpawn == undefined) {
+                // console.log(`skipping ${r.name}`)
                 continue;
             }
-        }
-        Debug(r.name, "runSpawns");
-
-        mainStorage = Game.getObjectById(Memory.rooms[r.name].mainStorage);
-
-        if (Memory.createClaimer) {
-            if (spawnCreep(roleClaimer, null, { memory: { baseRoomName: r.name } }, r.name) == 0) {
-                Memory.createClaimer = false;
+            // console.log(`runSpawns(): ${r.name}`)energyCapacityAvailable
+            // if((Memory.rooms[room].mainStorage == undefined && creepRoomMap.get(r.name + "harvester") < Memory.rooms[r.name].totalMiningSpots * 2) || r.controller.level <=2) {
+            //     spawnCreep(roleHarvester, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name, experimentalMovement: true, focusBuilding: true } }, "W6S1");
+            //     continue;
+            // }
+    
+            // if (r.find(STRUCTURE_SPAWN).length === 0 && creepRoomMap.get(r.name + "builder") < 5){
+            //     // No spawn? Builders to create it, which will then default to upgraders to maintain the room after
+            //     spawnCreep(roleBuilder, [WORK,WORK,WORK,WORK,WORK,CARRY,CARRY,CARRY,CARRY,CARRY,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,MOVE,], { memory: { baseRoomName: r.name } }, "W6S1");
+            //     continue
+            // }
+    
+            // if (Memory.rooms[room].structs.terminal && r.name != "W17N1")
+            // delete Memory.rooms[room].structs.terminal.supportRoom
+    
+            // Neighbouring room investigations
+            unsearchedNeighbouringRooms = _.filter(Memory.rooms[r.name].neighbouringRooms, (roomName) => {
+                return Memory.rooms[roomName] == undefined;
+            });
+            // console.log(unsearchedNeighbouringRooms)
+    
+            if (Memory.rooms[r.name].spawnQueue != undefined && Memory.rooms[r.name].spawnQueue.length) {
+                customBody = Memory.rooms[r.name].spawnQueue[0][1]
+                if (getBodyCost(customBody) == 0 || getBodyCost(customBody) > Game.rooms[r.name].energyCapacityAvailable) {
+                    customBody = "auto"
+                }
+                var ret = spawnCreep(eval(Memory.rooms[r.name].spawnQueue[0][0]), customBody, Memory.rooms[r.name].spawnQueue[0][2], Memory.rooms[r.name].spawnQueue[0][3]);
+                if (ret == 0) {
+                    Memory.rooms[r.name].spawnQueue = _.drop(Memory.rooms[r.name].spawnQueue);
+                    continue;
+                }
             }
-        } else if (Memory.rooms[r.name].mainStorage != null && creepRoomMap.get(r.name + "eenergy") != 0 && (creepRoomMap.get(r.name + "handler") == undefined || creepRoomMap.get(r.name + "handler") < 1)) {
-            // console.log("spawnHandler")
-            spawnCreep(roleHandler, "auto", null, r.name);
-            continue;
-        } else if (spawnMover(r)) {
-            // console.log("spawnMover")
-            continue;
-        } else if (creepRoomMap.get(r.name + "moverLink") < 1 && r.memory.link_storage != undefined) {
-            spawnCreep(roleMoverLink, "auto", { memory: { baseRoomName: r.name } }, r.name);
-            continue;
-        } else if (creepRoomMap.get(r.name + "harvester") == undefined || spawnHarvester(r)) {
-            // console.log("spawnHarvester")
-            continue;
-            /*} else if (unsearchedNeighbouringRooms.length > 0) {
-            // spawnCreep(roleExplorer, null, {memory: {targetRoomName:unsearchedNeighbouringRooms[0]}}, r.name);
-            continue;*/
-        } else if (Memory.rooms[r.name].mainStorage == undefined) {
-            continue;
-        } else if (creepRoomMap.get(r.name + "builder") < 1 && creepRoomMap.get(r.name + "csites") != 0 && mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity()/10) {
-            spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
-            continue;
-        } else if (r.controller.level >=5 && creepRoomMap.get(r.name + "handler") < 2 && r.energyCapacityAvailable > 1000) {
-            spawnCreep(roleHandler, "auto", { memory: { baseRoomName: r.name } }, r.name);
-            continue;
-        } else if (creepRoomMap.get(r.name + "upgrader") < 1 && r.controller.level < 8 && mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity()/10) {
-            // console.log("spawnUpgrader")
-            spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
-            continue;
-        } else if ((creepRoomMap.get(r.name + "upgraderSupport") == undefined || creepRoomMap.get(r.name + "upgraderSupport") < Math.max(1, Math.floor(creepRoomMap.get(r.name + "upgrader") / 2))) &&
-                    r.controller.level < 8 && creepRoomMap.get(r.name + "upgrader") >= 1) {
-            // console.log("spawnUpgraderSupport")
-            spawnCreep(roleUpgraderSupport, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name);
-            continue;
-        } else if (creepRoomMap.get(r.name + "upgrader") < 2 && r.controller.level < 8 && r.energyAvailable == r.energyCapacityAvailable && mainStorage.store.getFreeCapacity() <= mainStorage.store.getCapacity()/10 && (Memory.rooms[r.name].roomExpansion ? Memory.rooms[r.name].roomExpansion.active : true)) {
-            spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
-            continue;
-        } else if (creepRoomMap.get(r.name + "upgrader") < 1 && r.controller.level == 8 && r.controller.ticksToDowngrade < 10000) {
-            spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
-            continue;
-        // } else if (r.controller.level >=3 && creepRoomMap.get(r.name + "repairer") == undefined){
-        //     spawnCreep(roleRepairer, "auto", { memory: { baseRoomName: r.name } }, r.name);
-        } else if (creepRoomMap.get(r.name + "builder") < Math.min(creepRoomMap.get(r.name + "csites"), 3) && creepRoomMap.get(r.name + "csites") != 0 && creepRoomMap.get(r.name + "eenergy") > 10000) {
-            spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
-            continue;
-        } else if (creepRoomMap.get(r.name + "upgrader") == 2 && creepRoomMap.get(r.name + "eenergy") > 50000 && (r.controller.level < 8 || (r.controller.level == 8 && r.controller.ticksToDowngrade < 10000)) && !Memory.rooms[r.name].pauseGrowth) {
-            spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
-            continue;
-        } else if (
-            room.energyAvailable == room.energyCapacityAvailable &&
-            Game.getObjectById(Memory.rooms[r.name].mainStorage).store.getFreeCapacity() <= 50 &&
-            Game.getObjectById(Memory.rooms[r.name].mainStorage).structureType == STRUCTURE_STORAGE
-        ) {
-            spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name);
-            continue;
-        } else if (r.controller.level < 3) {
-            continue;
-        } else if (scoutNeighbouringRooms(r)) {
-            continue;
-        } else if (r.controller.level >= 6 && creepRoomMap.get(r.name + "eenergy") > 150000 && spawnHarvesterMineralSupport(r.name)) {
-            continue;
-        } else if (r.controller.level >= 6 && spawnHarvesterMineral(r)) {
-            continue;
-        } else if (roomExpansion(r.name)) {
-            continue;
-        } else if (( creepRoomMap.get(r.name + "repairer")  == undefined || creepRoomMap.get(r.name + "repairer") < 1) &&
-                    creepRoomMap.get(r.name + "eenergy") > 70000) {
-            spawnCreep(roleRepairer, "auto", null, r.name);
-            continue;
-        } else if (r.controller.level < 4) {
-            continue;
-        } else if (roomExpansion(r.name)) {
-            continue;
-        } else if (spawnExternalMover(r.name)) {
-            continue;
-        } else if (spawnExternalHarvester(r.name)) {
-            continue;
-        } else if (creepRoomMap.get(r.name + "handler") < 2 && r.energyCapacityAvailable > 1000) {
-            spawnCreep(roleHandler, null, { memory: { baseRoomName: r.name } }, r.name);
-            continue;
-        } else if (creepRoomMap.get(r.name + "handler") < 3 && r.energyCapacityAvailable > 1000 && r.controller.level >= 7) {
-            spawnCreep(roleHandler, "auto", { memory: { baseRoomName: r.name } }, r.name);
-            continue;
-        } else if (creepRoomMap.get(r.name + "eenergy") > 750000 && r.controller.level < 8) {
-            spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name); //spawn builders to upgrade which will then use the storage annd not the link
-            continue;
-
-        } else if (creepRoomMap.get(r.name + "csites") > 5) {
-            continue;
-        } else if (r.controller.level == 8 && spawnPowerHarvester(r.name)) {
-            continue;
-        } else if (creepRoomMap.get(r.name + "eenergy") > 150000 && spawnHarvesterDeposit(r.name)) {
-            continue;
-        } else if (spawnBuilderExt(r.name)) {
-            continue;
-        } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 1 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8 && !Memory.rooms[r.name].pauseGrowth && (Memory.rooms.W5N8.roomExpansion ? Memory.rooms.W5N8.roomExpansion.active : true)) {
-            spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
-            continue;
+            Debug(r.name, "runSpawns");
+    
+            mainStorage = Game.getObjectById(Memory.rooms[r.name].mainStorage);
+    
+            if (Memory.createClaimer) {
+                if (spawnCreep(roleClaimer, null, { memory: { baseRoomName: r.name } }, r.name) == 0) {
+                    Memory.createClaimer = false;
+                }
+            } else if (Memory.rooms[r.name].mainStorage != null && creepRoomMap.get(r.name + "eenergy") != 0 && (creepRoomMap.get(r.name + "handler") == undefined || creepRoomMap.get(r.name + "handler") < 1)) {
+                // console.log("spawnHandler")
+                spawnCreep(roleHandler, "auto", null, r.name);
+                continue;
+            } else if (spawnMover(r)) {
+                // console.log("spawnMover")
+                continue;
+            } else if (creepRoomMap.get(r.name + "moverLink") < 1 && r.memory.link_storage != undefined) {
+                spawnCreep(roleMoverLink, "auto", { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            } else if (creepRoomMap.get(r.name + "harvester") == undefined || spawnHarvester(r)) {
+                // console.log("spawnHarvester")
+                continue;
+                /*} else if (unsearchedNeighbouringRooms.length > 0) {
+                // spawnCreep(roleExplorer, null, {memory: {targetRoomName:unsearchedNeighbouringRooms[0]}}, r.name);
+                continue;*/
+            } else if (Memory.rooms[r.name].mainStorage == undefined) {
+                continue;
+            } else if (creepRoomMap.get(r.name + "builder") < 1 && creepRoomMap.get(r.name + "csites") != 0 && mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity()/10) {
+                spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            } else if (r.controller.level >=5 && creepRoomMap.get(r.name + "handler") < 2 && r.energyCapacityAvailable > 1000) {
+                spawnCreep(roleHandler, "auto", { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            } else if (creepRoomMap.get(r.name + "upgrader") < 1 && r.controller.level < 8 && mainStorage.store.getUsedCapacity() > mainStorage.store.getCapacity()/10) {
+                // console.log("spawnUpgrader")
+                spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            } else if ((creepRoomMap.get(r.name + "upgraderSupport") == undefined || creepRoomMap.get(r.name + "upgraderSupport") < Math.max(1, Math.floor(creepRoomMap.get(r.name + "upgrader") / 2))) &&
+                        r.controller.level < 8 && creepRoomMap.get(r.name + "upgrader") >= 1) {
+                // console.log("spawnUpgraderSupport")
+                spawnCreep(roleUpgraderSupport, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name);
+                continue;
+            } else if (creepRoomMap.get(r.name + "upgrader") < 2 && r.controller.level < 8 && r.energyAvailable == r.energyCapacityAvailable && mainStorage.store.getFreeCapacity() <= mainStorage.store.getCapacity()/10 && (Memory.rooms[r.name].roomExpansion ? Memory.rooms[r.name].roomExpansion.active : true)) {
+                spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            } else if (creepRoomMap.get(r.name + "upgrader") < 1 && r.controller.level == 8 && r.controller.ticksToDowngrade < 10000) {
+                spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            // } else if (r.controller.level >=3 && creepRoomMap.get(r.name + "repairer") == undefined){
+            //     spawnCreep(roleRepairer, "auto", { memory: { baseRoomName: r.name } }, r.name);
+            } else if (creepRoomMap.get(r.name + "builder") < Math.min(creepRoomMap.get(r.name + "csites"), 3) && creepRoomMap.get(r.name + "csites") != 0 && creepRoomMap.get(r.name + "eenergy") > 10000) {
+                spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            } else if (creepRoomMap.get(r.name + "upgrader") == 2 && creepRoomMap.get(r.name + "eenergy") > 50000 && (r.controller.level < 8 || (r.controller.level == 8 && r.controller.ticksToDowngrade < 10000)) && !Memory.rooms[r.name].pauseGrowth) {
+                spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            } else if (
+                room.energyAvailable == room.energyCapacityAvailable &&
+                Game.getObjectById(Memory.rooms[r.name].mainStorage).store.getFreeCapacity() <= 50 &&
+                Game.getObjectById(Memory.rooms[r.name].mainStorage).structureType == STRUCTURE_STORAGE
+            ) {
+                spawnCreep(roleUpgrader, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name);
+                continue;
+            } else if (r.controller.level < 3) {
+                continue;
+            } else if (scoutNeighbouringRooms(r)) {
+                continue;
+            } else if (r.controller.level >= 6 && creepRoomMap.get(r.name + "eenergy") > 150000 && spawnHarvesterMineralSupport(r.name)) {
+                continue;
+            } else if (r.controller.level >= 6 && spawnHarvesterMineral(r)) {
+                continue;
+            } else if (roomExpansion(r.name)) {
+                continue;
+            } else if (( creepRoomMap.get(r.name + "repairer")  == undefined || creepRoomMap.get(r.name + "repairer") < 1) &&
+                        creepRoomMap.get(r.name + "eenergy") > 70000) {
+                spawnCreep(roleRepairer, "auto", null, r.name);
+                continue;
+            } else if (r.controller.level < 4) {
+                continue;
+            } else if (roomExpansion(r.name)) {
+                continue;
+            } else if (spawnExternalMover(r.name)) {
+                continue;
+            } else if (spawnExternalHarvester(r.name)) {
+                continue;
+            } else if (creepRoomMap.get(r.name + "handler") < 2 && r.energyCapacityAvailable > 1000) {
+                spawnCreep(roleHandler, null, { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            } else if (creepRoomMap.get(r.name + "handler") < 3 && r.energyCapacityAvailable > 1000 && r.controller.level >= 7) {
+                spawnCreep(roleHandler, "auto", { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            } else if (creepRoomMap.get(r.name + "eenergy") > 750000 && r.controller.level < 8) {
+                spawnCreep(roleBuilder, "auto", { memory: { baseRoomName: r.name, noHeal: true } }, r.name); //spawn builders to upgrade which will then use the storage annd not the link
+                continue;
+    
+            } else if (creepRoomMap.get(r.name + "csites") > 5) {
+                continue;
+            } else if (r.controller.level == 8 && spawnPowerHarvester(r.name)) {
+                continue;
+            } else if (creepRoomMap.get(r.name + "eenergy") > 150000 && spawnHarvesterDeposit(r.name)) {
+                continue;
+            } else if (r.controller.level >= 6 && spawnBuilderExt(r.name)) {
+                continue;
+            } else if (creepRoomMap.get(r.name + "upgrader") + creepRoomMap.get(r.name + "builder") < 1 && creepRoomMap.get(r.name + "csites") < 1 && r.controller.level < 8 && !Memory.rooms[r.name].pauseGrowth && (Memory.rooms[r.name].roomExpansion ? Memory.rooms[r.name].roomExpansion.active : true)) {
+                spawnCreep(roleUpgrader, null, { memory: { baseRoomName: r.name } }, r.name);
+                continue;
+            }
+            // else if (r.energyAvailable == r.energyCapacityAvailable) {
+            //     spawnCreep(roleHandler, "auto")
+            // }
+            // if (creepRoomMap.get(r.name+"upgrader") > 2) {
+            //     // _.forEach(Game.creeps, c => { if(c.memory.role == 'harvester' && c.body.length == 5){ console.log(c.body.length)} } )
+            //     c = _.find(Game.creeps, function(c) { if(c.memory.role == 'harvester' && c.body.length == 5){ return c } } )
+            //     if(c) {
+            //         c.memory.role = 'DIE'
+            //     }
+            // }
+    
+            // else if (r.name == "W16S21" && creepRoomMap.get(r.name+"harvesterExt") < 1) {
+            //     spawnCreep(roleHarvesterExt, null, { memory: {baseRoomName: r.name }}, r.name);
+            //     continue
+            // }
+            // else if (r.name == "W16S21" && creepRoomMap.get(r.name+"moverExt") < 2) {
+            //     spawnCreep(roleMoverExt, null, { memory: {baseRoomName: r.name }}, r.name);
+            //     continue
+            // }
+            nextSpawnOffset += 1;
+        
+        } catch (e) {
+            console.log(`runSpawns() failed: ${e} + ${e.stack}`);
         }
-        // else if (r.energyAvailable == r.energyCapacityAvailable) {
-        //     spawnCreep(roleHandler, "auto")
-        // }
-        // if (creepRoomMap.get(r.name+"upgrader") > 2) {
-        //     // _.forEach(Game.creeps, c => { if(c.memory.role == 'harvester' && c.body.length == 5){ console.log(c.body.length)} } )
-        //     c = _.find(Game.creeps, function(c) { if(c.memory.role == 'harvester' && c.body.length == 5){ return c } } )
-        //     if(c) {
-        //         c.memory.role = 'DIE'
-        //     }
-        // }
-
-        // else if (r.name == "W16S21" && creepRoomMap.get(r.name+"harvesterExt") < 1) {
-        //     spawnCreep(roleHarvesterExt, null, { memory: {baseRoomName: r.name }}, r.name);
-        //     continue
-        // }
-        // else if (r.name == "W16S21" && creepRoomMap.get(r.name+"moverExt") < 2) {
-        //     spawnCreep(roleMoverExt, null, { memory: {baseRoomName: r.name }}, r.name);
-        //     continue
-        // }
-        nextSpawnOffset += 1;
     }
 
     // if (!Game.rooms["W17S21"].controller.my) {

@@ -51,8 +51,25 @@ global.roleMover = {
             }
 
             if (mainStorage == null) {
-                Log(creep, "falling back to building");
-                return roleHarvester.run(creep);
+                Log(creep, JSON.stringify(creep.body).includes(`"type":"work"`))
+                if (JSON.stringify(creep.body).includes(`"type":"work"`)) {
+                    Log(creep, "falling back to other roles");
+                    return fallbackToOtherRoles(creep, creep.memory.baseRoomName);
+                } else {
+                    targets = creep.room.find(FIND_STRUCTURES).filter((structure) => {
+                        return (
+                            (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_TOWER) &&
+                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                        );
+                    });
+                    target = creep.pos.findClosestByPath(targets);
+                    Log(creep, `target: ${target}`);
+    
+                    if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.Move(target.pos);
+                    }
+                }
+                return
             } else {
 
                 if (mainStorage.structureType == STRUCTURE_CONTAINER) {
@@ -94,18 +111,21 @@ global.roleMover = {
                     creep.memory.targetSource = containers[0].pos.findClosestByRange(FIND_SOURCES).id;
                 }
             }
-
-            target = Game.getObjectById(creep.memory.targetContainer);
-            if (target == null) {
-                delete creep.memory.targetContainer;
-                if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource] != undefined && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
-                    creep.memory.targetContainer = Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id;
-                    target = Game.getObjectById(creep.memory.targetContainer);
-                } else {
-                    // console.log(`${creep} has lost it's target container. retiring.`);
-                    // creep.memory.DIE = true;
+            var target;
+            if (creep.memory.targetContainer != undefined) {
+                target = Game.getObjectById(creep.memory.targetContainer);
+                if (target == null) {
+                    delete creep.memory.targetContainer;
+                    if (Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource] != undefined && Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container != undefined) {
+                        creep.memory.targetContainer = Memory.rooms[creep.memory.baseRoomName].sources[creep.memory.targetSource].container.id;
+                        target = Game.getObjectById(creep.memory.targetContainer);
+                    } else {
+                        // console.log(`${creep} has lost it's target container. retiring.`);
+                        // creep.memory.DIE = true;
+                    }
                 }
             }
+            Log(creep, `1 ${target}`);
 
             if (target == null) {
                 // console.log("moving to sourcce")
@@ -115,6 +135,8 @@ global.roleMover = {
                 creep.Move(droppedEnergy[0]);
                 return
             }
+            
+            Log(creep, `2 ${target}`);
 
             if (creep.memory.targetSource == undefined) {
                 creep.memory.targetSource = target.pos.findClosestByRange(FIND_SOURCES).id;

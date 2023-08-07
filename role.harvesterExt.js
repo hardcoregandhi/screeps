@@ -161,7 +161,7 @@ global.roleHarvesterExt = {
             Log(creep, targetSource);
             if (trackedHarvest(creep, targetSource) != OK) {
                 // console.log(creep.harvest(targetSource))
-                creep.Move(targetSource);
+                creep.Move(targetSource, 1, 1, {ensurePath:true});
             }
             return;
         } else {
